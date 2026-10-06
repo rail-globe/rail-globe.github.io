@@ -245,6 +245,19 @@ def zh(s):
     return s
 
 
+def readable_on_dark(col):
+    """Lift a dark line colour (Beijing suburban navy) so it shows on dark satellite imagery."""
+    if not col:
+        return col
+    import colorsys
+    r, g, b = (int(col[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    h, l, sat = colorsys.rgb_to_hls(r, g, b)
+    if l >= 0.5:
+        return col
+    r, g, b = colorsys.hls_to_rgb(h, 0.64, max(sat, 0.55))
+    return "#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255))
+
+
 def colour_of(*tags):
     for t in tags:
         c = (t or {}).get("colour", "").strip()
@@ -318,6 +331,8 @@ for wid, t, co, country in ways:
     if (r == "rail" or r in METRO_RAIL) and t.get("service"):
         if t["service"] in YARD_SERVICE:
             yard_tracks.append(co)
+        if r == "rail" and country == "cn" and wid in way_suburb:
+            suburb_ways.append((wid, co))     # platform loops the service actually runs through
     elif r in METRO_RAIL or (r == "rail" and wid in way_metro and country == "cn"):
         metro_ways.append((wid, t, co))       # includes heavy-rail metro such as MTR East Rail, Guangzhou 18/22
     elif r == "rail":
@@ -551,7 +566,7 @@ for wid, t, co in metro_ways:
         entries.append((nm or "", col or colour_of(t), co, reg, ""))
 for wid, co in suburb_ways:
     nm, col = way_suburb[wid]
-    entries.append((nm, col if col != "#000000" else None, co, region_of(*co[0]), "s"))
+    entries.append((nm, readable_on_dark(col) if col != "#000000" else None, co, region_of(*co[0]), "s"))
 for nm, col, co in moved:
     entries.append((nm, col, co, region_of(*co[0]) or "cn", "m"))
 # A line that leaves its province (Shanghai line 11 into Kunshan, Beijing lines into Hebei) is kept

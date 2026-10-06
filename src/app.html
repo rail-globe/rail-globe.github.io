@@ -347,7 +347,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const swatch = c.id === 'yards'
       ? `<i style="height:1.5px;background:${col('yard')}"></i>`
       : c.id === 'suburb'
-      ? `<i style="height:3px;background:#2f5f9e;box-shadow:0 0 0 1.5px #fff"></i>`
+      ? `<i style="height:2.5px;background:${col('main')};box-shadow:0 0 0 3.5px rgba(92,200,255,0.6)"></i>`
       : c.id === 'metro'
       ? `<i style="height:4px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 1.5px #fff"></i>`
       : c.id === 'border'
@@ -654,21 +654,18 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
     // Urban rail in official line colours on a white casing, the way a metro map draws it. That
     // includes intercity and suburban lines a metro company operates (k = "m"), which are long
-    // enough to show from further out. A bureau-operated suburban service (k = "s") shares its track
-    // with a national line that keeps its own colour, so it is drawn shifted to one side.
+    // enough to show from further out.
     const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, 0.4 * k, 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
     const urban = ['all', ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
-    const shared = ['==', ['get', 'k'], 's'];
-    const beside = ['interpolate', ['linear'], ['zoom'], 6, 1.6, 12, 4.5, 16, 7];
-    const fadeIn = ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9];
     map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': fadeIn } });
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
     map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
       paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1) } });
-    map.addLayer({ id: 'suburb-casing', type: 'line', source: 'metro', minzoom: 6, filter: shared, layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': fadeIn } });
-    map.addLayer({ id: 'suburb', type: 'line', source: 'metro', minzoom: 6, filter: shared, layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': beside } });
+    // A bureau-operated suburban service (k = "s") runs on a national line that keeps its own colour.
+    // It is a soft coloured band underneath that line: both tracks of a double line fall into one
+    // band, and the line itself still reads in the middle.
+    map.addLayer({ id: 'suburb', type: 'line', source: 'metro', minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(3.6), 'line-blur': metroW(0.5), 'line-opacity': 0.62 } }, 'branch');
     map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR,
@@ -836,7 +833,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     document.getElementById('clearSel').addEventListener('click', () => select(null));
 
     // ---- hover + click on lines ----
-    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'suburb', 'build', 'main', 'branch'];
+    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'build', 'main', 'branch', 'suburb'];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
       const layers = PICK.filter(id => map.getLayoutProperty(id, 'visibility') !== 'none');
@@ -853,7 +850,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       let meta = f.layer.id === 'suburb' ? '市郊列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : '地铁') : CLASS_NAME[p.c] || '';
       if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
       if (p.s && p.c !== 'hsr350' && p.c !== 'hsr250') meta += ` · ${p.s} km/h`;
-      const who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
+      let who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
+      // a suburban service shares this track: name it under the line it runs on
+      if (f.layer.id !== 'suburb' && map.getLayoutProperty('suburb', 'visibility') !== 'none') {
+        const sv = map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]], { layers: ['suburb'] })[0];
+        if (sv && sv.properties.n) who += `<br><span>市郊列车：${esc(sv.properties.n)}</span>`;
+      }
       tip.setLngLat(e.lngLat).setHTML(`<b>${esc(p.n || '未命名线路')}</b><span>${esc(meta)}</span>${who}`).addTo(map);
     });
     map.getCanvas().addEventListener('mouseleave', () => tip.remove());
@@ -1087,7 +1089,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     for (const id of [...FAST, 'build', 'main', 'branch']) set(id, visible[id]);
     for (const id of ['yards', 'depots', 'depot-labels']) set(id, visible.yards);
     for (const id of ['metro-casing', 'metro', 'metro-stations', 'metro-station-labels']) set(id, visible.metro);
-    for (const id of ['suburb-casing', 'suburb']) set(id, visible.suburb);
+    set('suburb', visible.suburb);
     set('stations', visible.stations);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
     set('station-labels', visible.stations);
