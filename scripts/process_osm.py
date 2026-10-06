@@ -365,6 +365,11 @@ print("Bay Area intercity lines:", sorted(line_name[k] for k in ic_keys))
 print("classes:", dict(Counter((w["g"], w["c"]) for w in rail)))
 print("track km whose own tags differ from their line's class:", {k: round(v) for k, v in changed.most_common()})
 
+# Classified tracks for scripts/build_graph.py, which builds the routing network.
+with open(RAW / "routing_input.pkl", "wb") as f:
+    pickle.dump([(w["c"], w["n"], w["g"], w["co"]) for w in rail] + [("svc", "", "", co) for co in yard_tracks],
+                f, protocol=pickle.HIGHEST_PROTOCOL)
+
 # ---------------------------------------------------------------- one operator per UK line
 op_cover = defaultdict(Counter)      # line -> brand -> km of its track served
 op_score = defaultdict(Counter)

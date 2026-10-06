@@ -11,6 +11,7 @@
 - 地铁：大湾区（广州、深圳、佛山、东莞、港铁、澳门轻轨）、北京、西安，按线路官方色
 - 站场与车辆基地、车站、国界
 - 地球和平面两种视图，线路搜索，快速定位
+- 两站之间怎么走（仅中国）：点两个车站或输入站名，给出沿真实线路的走法、里程和估算运行时间。不是车次和时刻表
 
 每条线路只有一个等级和一种颜色，按其多数轨道的等级整条归类。虚线只表示在建线路。
 
@@ -39,6 +40,7 @@ python3 scripts/serve.py
 python3 scripts/extract_osm.py        # 中国、港澳台
 python3 scripts/extract_osm.py uk     # 英国
 python3 scripts/process_osm.py        # 分类并写出 data/ 下的图层
+python3 scripts/build_graph.py        # 两站寻路用的线路网络
 python3 scripts/build_border.py       # 国界
 python3 scripts/build.py              # 生成页面
 ```

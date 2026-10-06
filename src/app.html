@@ -1,234 +1,309 @@
 <title>中国铁路网卫星图</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
 <style>
-/* Layout: a full-bleed satellite globe; a translucent control column docks left on desktop and becomes a bottom sheet on phones. */
+/* Layout: a satellite globe fills the window. One floating translucent card holds everything else,
+   split into three tabs (route, lines, layers); on a phone the card is a draggable bottom sheet.
+   Type is the system font and colour comes from the system dark palette, so the rail colours,
+   which are the data, are the only strong colour on screen. */
 :root {
   color-scheme: dark;
-  --ground: #05090c;          /* space behind the globe */
+  --ground: #05090c;
   --ground-glow: #10202b;
-  --panel: rgba(11, 17, 20, 0.86);
-  --panel-solid: #0f171b;
-  --fg: #edf2f3;
-  --muted: #93a3a9;
-  --rule: rgba(214, 232, 238, 0.13);
-  --field: rgba(214, 232, 238, 0.07);
-  --accent: #ff3b5c;          /* 复兴号红, also the 350 km/h class */
-  --hsr350: #ff3b5c;
-  --hsr250: #ff9f1c;
-  --hsr200: #ffd84d;
-  --metro: #5cc8ff;           /* 地铁无官方色时的默认色 */
-  --yard: #ffd08a;            /* 站场、车辆基地 */
+  --label: #ffffff;
+  --label2: rgba(235, 235, 245, 0.66);
+  --label3: rgba(235, 235, 245, 0.38);
+  --sep: rgba(255, 255, 255, 0.1);
+  --fill: rgba(120, 120, 128, 0.32);
+  --fill2: rgba(120, 120, 128, 0.18);
+  --material: rgba(28, 28, 30, 0.7);          /* thick material: the card */
+  --material-thin: rgba(50, 50, 54, 0.62);    /* thin material: chips and map buttons */
+  --solid: #1c1c1e;
+  --blue: #0a84ff;
+  --green: #30d158;
+  --red: #ff453a;
+  /* rail data colours */
+  --hsr350: #ff453a;
+  --hsr250: #ff9f0a;
+  --hsr200: #ffd60a;
+  --metro: #5cc8ff;
+  --yard: #ffd08a;
   --build: #ff8fb1;
   --main: #d7ecff;
   --branch: #8fb6cf;
   --station: #ffffff;
   --border: #ffffff;
-  --border-halo: #b98cff;     /* 国界线的晕带 */
-  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-  --font-num: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", var(--font-body);
-  --r: 10px;
+  --border-halo: #b98cff;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", system-ui, sans-serif;
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);     /* settles without overshoot */
+  --card-w: 22.5rem;
+  --edge: 0 0 0 0.5px rgba(255, 255, 255, 0.14) inset, 0 1px 0 rgba(255, 255, 255, 0.1) inset;
 }
 html, body { height: 100%; }
 [hidden] { display: none !important; }
-body { margin: 0; background: var(--ground); color: var(--fg); font: 13px/1.5 var(--font-body); overflow: hidden; }
+body { margin: 0; background: var(--ground); color: var(--label); font: 0.875rem/1.45 var(--font); overflow: hidden; -webkit-font-smoothing: antialiased; }
 #map { position: fixed; inset: 0; background: radial-gradient(circle at 62% 46%, var(--ground-glow) 0%, var(--ground) 62%); }
 button, input { font: inherit; color: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+/* feedback belongs to the press, not the release */
+button, .gh { transition: transform 100ms ease-out, background-color 160ms ease-out, opacity 160ms ease-out; }
+button:active, .gh:active { transform: scale(0.97); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
-/* ---------- control column ---------- */
+/* ---------- the card ---------- */
 #panel {
-  position: fixed; z-index: 2;
-  top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  width: 336px; display: flex; flex-direction: column;
-  background: var(--panel); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
-  border: 1px solid var(--rule); border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.45);
-  overflow: hidden;
+  position: fixed; z-index: 2; top: 12px; left: 12px; width: var(--card-w); max-height: calc(100% - 24px);
+  display: flex; flex-direction: column; overflow: hidden; border-radius: 18px;
+  background: var(--material); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
+  box-shadow: var(--edge), 0 18px 50px rgba(0, 0, 0, 0.5);
 }
-.head { padding: 18px 18px 14px; border-bottom: 1px solid var(--rule); display: grid; gap: 12px; }
-.title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.eyebrow { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
-h1 { margin: 2px 0 0; font-size: 22px; line-height: 1.2; font-weight: 700; letter-spacing: 0.02em; text-wrap: balance; }
-h1 .bar { display: inline-block; width: 4px; height: 0.9em; background: var(--accent); margin-right: 8px; vertical-align: -0.08em; border-radius: 1px; }
-#sheetToggle { display: none; }
-.head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
-.gh { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--field); color: var(--fg); text-decoration: none; font-size: 12px; line-height: 1.4; }
-.gh:hover { background: var(--panel-solid); border-color: rgba(214, 232, 238, 0.3); }
-.gh:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.gh .star { color: #f2c94c; }
-.gh b { font: 600 13px var(--font-num); font-variant-numeric: tabular-nums; padding-left: 6px; border-left: 1px solid var(--rule); }
-.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.fig { display: grid; gap: 0; }
-.fig b { font: 600 34px/1 var(--font-num); letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
-.fig b small { font: 500 14px var(--font-body); margin-left: 3px; color: var(--muted); }
-.fig span { font-size: 12px; color: var(--muted); }
-.fig.hs b { color: var(--accent); }
-.src { font-size: 11px; color: var(--muted); }
+.grabber { display: none; }
+.head { padding: 16px 16px 12px; display: grid; gap: 12px; }
+.title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
+.facts { margin: 2px 0 0; font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
+.gh { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 999px; background: var(--fill2); color: var(--label); text-decoration: none; font-size: 0.75rem; font-weight: 500; }
+.gh:hover { background: var(--fill); }
+.gh .star { color: #ffd60a; }
+.gh b { font-weight: 600; font-variant-numeric: tabular-nums; padding-left: 6px; border-left: 0.5px solid var(--sep); }
 
-.scroll { overflow-y: auto; flex: 1; min-height: 0; overscroll-behavior: contain; }
-section { padding: 14px 18px; border-bottom: 1px solid var(--rule); display: grid; gap: 8px; }
-section:last-child { border-bottom: 0; }
-h2 { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.08em; display: flex; justify-content: space-between; align-items: baseline; }
-h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; letter-spacing: 0.02em; }
+/* segmented control; the thumb finds the active segment by itself */
+.segmented { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 2px; border-radius: 9px; background: var(--fill2); --i: 0; }
+.segmented button { position: relative; z-index: 1; border: 0; background: transparent; padding: 5px 8px; border-radius: 7px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; }
+.segmented button:is([aria-selected="true"], [aria-pressed="true"]) { font-weight: 600; }
+.segmented .thumb { position: absolute; z-index: 0; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / var(--n, 2)); border-radius: 7px;
+  background: rgba(99, 99, 102, 0.9); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset;
+  transform: translateX(calc(var(--i) * 100%)); transition: transform 280ms var(--ease); }
+.segmented:has(button:nth-of-type(2):is([aria-selected="true"], [aria-pressed="true"])) { --i: 1; }
+.segmented:has(button:nth-of-type(3):is([aria-selected="true"], [aria-pressed="true"])) { --i: 2; }
 
-/* legend rows double as layer toggles */
-.layers { display: grid; gap: 2px; margin: 0 -8px; }
-.lyr { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: pointer; user-select: none; }
-.lyr:hover { background: var(--field); }
-.lyr input { position: absolute; opacity: 0; pointer-events: none; }
-.sw { height: 14px; display: flex; align-items: center; }
-.sw i { display: block; width: 100%; border-radius: 3px; }
-.lyr .name { display: grid; line-height: 1.3; }
-.lyr .name small { color: var(--muted); font-size: 11px; }
-.lyr .spd { font: 600 15px var(--font-num); color: var(--muted); font-variant-numeric: tabular-nums; }
-.lyr.off .sw, .lyr.off .name, .lyr.off .spd { opacity: 0.35; }
-.lyr:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 16px; }
+.tab { display: grid; gap: 18px; animation: fade 180ms ease-out; }
+@keyframes fade { from { opacity: 0; } }
+.caption { margin: 0 4px 6px; font-size: 0.75rem; color: var(--label2); letter-spacing: 0.01em; display: flex; justify-content: space-between; }
+.hint { margin: 8px 4px 0; font-size: 0.75rem; line-height: 1.5; color: var(--label2); }
+.group { border-radius: 12px; background: var(--fill2); overflow: hidden; }
+.group > * + * { border-top: 0.5px solid var(--sep); }
+.row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; min-height: 44px; box-sizing: border-box; }
+.link { border: 0; background: transparent; padding: 2px 4px; color: var(--blue); cursor: pointer; font-size: 0.8125rem; }
 
-.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; background: var(--field); border-radius: 9px; }
-.seg button { border: 0; background: transparent; padding: 6px 8px; border-radius: 7px; cursor: pointer; display: grid; line-height: 1.25; text-align: left; }
-.seg button small { color: var(--muted); font-size: 11px; }
-.seg button[aria-pressed="true"] { background: var(--panel-solid); box-shadow: 0 0 0 1px var(--rule) inset; }
-.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
-.seg button:focus-visible, .linelist button:focus-visible, #search:focus-visible, #clearSel:focus-visible, #sheetToggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.range { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; }
-.range input { accent-color: var(--accent); width: 100%; }
-.range output { font: 600 14px var(--font-num); color: var(--fg); min-width: 3ch; text-align: right; }
-.note { font-size: 11px; color: var(--muted); margin: 0; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips button { border: 1px solid var(--rule); background: var(--field); border-radius: 999px; padding: 4px 11px; cursor: pointer; font-size: 12px; }
-.chips button:hover { background: var(--panel-solid); }
-.chips button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* ---------- route ---------- */
+.od { position: relative; overflow: visible; }
+.odrow { display: flex; align-items: center; gap: 10px; padding: 0 44px 0 12px; min-height: 44px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.dot.from { background: var(--green); }
+.dot.to { background: var(--red); }
+.odf { position: relative; flex: 1; min-width: 0; }
+.odf input, .searchbar input { width: 100%; box-sizing: border-box; border: 0; background: transparent; padding: 10px 0; outline: none; }
+.odf input::placeholder, .searchbar input::placeholder { color: var(--label3); }
+.odf input::-webkit-search-cancel-button, .searchbar input::-webkit-search-cancel-button { filter: grayscale(1) brightness(1.6); }
+.swap { position: absolute; right: 8px; top: 50%; margin-top: -15px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: var(--fill); display: grid; place-items: center; cursor: pointer; }
+.sugg { position: absolute; z-index: 5; left: -31px; right: -44px; top: calc(100% + 2px); margin: 0; padding: 4px; list-style: none; max-height: 232px; overflow-y: auto;
+  border-radius: 12px; background: var(--solid); box-shadow: var(--edge), 0 12px 32px rgba(0, 0, 0, 0.55); animation: pop 160ms var(--ease); transform-origin: top center; }
+.sugg button { width: 100%; border: 0; background: transparent; text-align: left; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.sugg button:hover, .sugg button:focus-visible { background: var(--fill2); outline: none; }
+.od-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
+.route-sum { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 0 4px 10px; }
+.route-sum b { font-size: 1.75rem; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.route-sum b small { font-size: 0.8125rem; font-weight: 500; letter-spacing: 0; color: var(--label2); margin-left: 4px; }
+.route-sum span { color: var(--label2); }
+.steps, .linelist, .oplist { list-style: none; margin: 0; padding: 0; }
+.steps li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+.steps li i, .linelist i, .oplist i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.steps li span:first-of-type { flex: 1; min-width: 0; }
+.steps .km, .linelist .kmh, .spd { font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
+.steps li.change { padding: 6px 12px 6px 30px; font-size: 0.75rem; color: var(--label2); }
 
-#sel { display: grid; gap: 4px; padding: 10px 12px; border-radius: var(--r); background: var(--field); border: 1px solid var(--rule); }
-#sel .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-#sel b { font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
-#clearSel { border: 1px solid var(--rule); background: transparent; border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: 12px; flex: none; }
-#search { width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); background: var(--field); outline: none; }
-#search::placeholder { color: var(--muted); }
-.linelist { list-style: none; margin: 0 -8px; padding: 0; display: grid; gap: 1px; }
-.linelist button { width: 100%; border: 0; background: transparent; padding: 6px 8px; border-radius: 7px; display: grid; grid-template-columns: 8px 1fr auto; gap: 10px; align-items: center; cursor: pointer; text-align: left; }
-.linelist button:hover, .linelist button[aria-current="true"] { background: var(--field); }
-.linelist i { width: 8px; height: 8px; border-radius: 50%; }
-.linelist .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.linelist .kmh { font: 600 14px var(--font-num); color: var(--muted); font-variant-numeric: tabular-nums; }
-.more { font-size: 12px; color: var(--muted); padding: 4px 0 0; }
-.oplist { grid-template-columns: 1fr 1fr; column-gap: 4px; }
-.oplist button { grid-template-columns: 8px 1fr; gap: 8px; font-size: 12px; padding: 5px 8px; }
-.oplist button[aria-pressed="true"] { background: var(--field); box-shadow: 0 0 0 1px var(--rule) inset; }
-.foot { font-size: 11px; color: var(--muted); line-height: 1.6; }
-.foot a { color: inherit; }
+/* ---------- lines ---------- */
+.searchbar { display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 10px; background: var(--fill2); color: var(--label2); }
+.searchbar input { color: var(--label); padding: 8px 0; }
+.selcard { padding: 10px 12px; display: grid; gap: 2px; background: rgba(10, 132, 255, 0.2); }
+.selcard .sel-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.selcard b { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.selcard span { font-size: 0.75rem; color: var(--label2); }
+.linelist button { width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 42px; text-align: left; cursor: pointer; }
+.linelist button:hover { background: var(--fill2); }
+.linelist button[aria-current="true"] { background: rgba(10, 132, 255, 0.22); }
+.linelist .nm, .oplist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* hover card */
-.maplibregl-popup.tip .maplibregl-popup-content { background: var(--panel-solid); color: var(--fg); border: 1px solid var(--rule); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font: 12px/1.45 var(--font-body); }
-.maplibregl-popup.tip .maplibregl-popup-tip { display: none; }
-.tip b { font-size: 13px; display: block; }
-.tip span { color: var(--muted); }
-.maplibregl-ctrl-attrib { background: rgba(11,17,20,0.7) !important; color: var(--muted); }
-.maplibregl-ctrl-attrib a { color: var(--muted) !important; }
-.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner { color: var(--muted); font-size: 11px; }
+/* ---------- layers ---------- */
+.lyr { cursor: pointer; }
+.lyr .sw { width: 28px; flex: none; display: flex; align-items: center; }
+.lyr .sw i { display: block; width: 100%; border-radius: 3px; }
+.txt { display: grid; flex: 1; min-width: 0; line-height: 1.25; }
+.txt b { font-weight: 500; }
+.txt small { font-size: 0.75rem; color: var(--label2); }
+.lyr.off .sw, .lyr.off .txt, .lyr.off .spd { opacity: 0.4; }
+.switch { -webkit-appearance: none; appearance: none; flex: none; position: relative; width: 38px; height: 23px; margin: 0; border-radius: 999px; background: var(--fill); cursor: pointer; transition: background-color 220ms var(--ease); }
+.switch::before { content: ""; position: absolute; top: 2px; left: 2px; width: 19px; height: 19px; border-radius: 999px; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35); transition: transform 220ms var(--ease), width 160ms var(--ease); }
+.switch:checked { background: var(--green); }
+.switch:checked::before { transform: translateX(15px); }
+.switch:active::before { width: 23px; }
+.switch:checked:active::before { transform: translateX(11px); }
+.oplist { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+.oplist button { width: 100%; display: flex; align-items: center; gap: 8px; border: 0; border-radius: 9px; background: var(--fill2); padding: 7px 10px; font-size: 0.75rem; text-align: left; cursor: pointer; }
+.oplist button:hover { background: var(--fill); }
+.oplist button[aria-pressed="true"] { background: rgba(10, 132, 255, 0.3); }
+.range span { flex: none; }
+.range input { flex: 1; min-width: 0; accent-color: var(--blue); }
+.range output { flex: none; min-width: 3.2ch; text-align: right; color: var(--label2); font-variant-numeric: tabular-nums; }
+.credits { font-size: 0.6875rem; line-height: 1.55; color: var(--label2); letter-spacing: 0.01em; margin: 0 4px; }
+.credits a { color: inherit; }
+
+/* ---------- on the map ---------- */
+#jumps { position: fixed; z-index: 2; top: 12px; left: calc(var(--card-w) + 24px); display: flex; gap: 8px; }
+#jumps button, .maplibregl-ctrl-group, #loading { background: var(--material-thin); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3); }
+#jumps button { border: 0; border-radius: 999px; padding: 6px 13px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+#jumps button:hover { background: rgba(72, 72, 76, 0.7); }
+.maplibregl-ctrl-top-right .maplibregl-ctrl { margin: 12px 12px 0 0; }
+.maplibregl-ctrl-group { border-radius: 11px; overflow: hidden; }
+.maplibregl-ctrl-group:not(:empty) { box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3); }
+.maplibregl-ctrl-group button { width: 36px; height: 36px; }
+.maplibregl-ctrl-group button + button { border-top: 0.5px solid var(--sep); }
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1); }
+.maplibregl-ctrl-attrib { background: rgba(28, 28, 30, 0.6) !important; }
+.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner, .maplibregl-ctrl-attrib a { color: var(--label2) !important; font-size: 0.6875rem; }
 .maplibregl-ctrl-attrib-button { filter: invert(1); opacity: 0.75; }
-.maplibregl-ctrl-group { background: var(--panel-solid); border: 1px solid var(--rule); }
-.maplibregl-ctrl-group button + button { border-top-color: var(--rule); }
-.maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(0.9); }
-.maplibregl-ctrl-scale { background: rgba(11,17,20,0.6); color: var(--fg); border-color: var(--fg); font-family: var(--font-num); font-size: 12px; }
+.maplibregl-ctrl-scale { background: rgba(28, 28, 30, 0.5); color: var(--label); border-color: var(--label2); font: 0.6875rem var(--font); font-variant-numeric: tabular-nums; }
+#loading { position: fixed; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; font-size: 0.8125rem; color: var(--label2); }
+#loading::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--label3); border-top-color: var(--label); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+/* popovers arrive from the thing that opened them */
+@keyframes pop { from { opacity: 0; transform: scale(0.94); } }
+.maplibregl-popup.tip .maplibregl-popup-content { background: rgba(38, 38, 40, 0.86); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); color: var(--label);
+  border-radius: 12px; padding: 9px 12px; box-shadow: var(--edge), 0 10px 28px rgba(0, 0, 0, 0.5); font: 0.8125rem/1.45 var(--font); animation: pop 170ms var(--ease); transform-origin: bottom center; }
+.maplibregl-popup.tip .maplibregl-popup-tip { display: none; }
+.tip b { display: block; font-weight: 600; }
+.tip span { color: var(--label2); font-size: 0.75rem; }
+.pop-actions { display: flex; gap: 6px; margin-top: 8px; }
+.pop-actions button { display: flex; align-items: center; gap: 6px; border: 0; border-radius: 8px; background: var(--fill); padding: 7px 11px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+.pop-actions button:hover { background: rgba(140, 140, 148, 0.42); }
+.pin { width: 12px; height: 12px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); }
+.pin.from { background: var(--green); }
+.pin.to { background: var(--red); }
 
-#loading { position: fixed; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 10px 16px; border-radius: 999px; background: var(--panel-solid); border: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
-
-/* ---------- phone: bottom sheet ---------- */
+/* ---------- phone: the card is a bottom sheet moved by a spring (see the script) ---------- */
 @media (max-width: 720px) {
-  #panel { left: 8px; right: 8px; top: auto; width: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); max-height: 62%; border-radius: 14px; }
-  #panel.collapsed .scroll { display: none; }
-  .head { padding: 14px 16px 12px; gap: 10px; }
-  h1 { font-size: 19px; }
-  .fig b { font-size: 28px; }
-  #sheetToggle { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--rule); background: var(--field); border-radius: 999px; padding: 4px 10px; cursor: pointer; font-size: 12px; flex: none; }
-  section { padding: 12px 16px; }
+  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 88%; max-height: none; border-radius: 16px 16px 0 0;
+    transform: translateY(var(--sheet-y, 70%)); will-change: transform; box-shadow: var(--edge), 0 -8px 40px rgba(0, 0, 0, 0.45); }
+  .grabber { display: block; width: 36px; height: 5px; border-radius: 3px; background: var(--label3); margin: 6px auto 0; }
+  .head { padding: 8px 16px 12px; touch-action: none; cursor: grab; }
+  .scroll { flex: none; height: calc(var(--sheet-visible, 50vh) - var(--head-h, 120px)); padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box; }
+  #jumps { left: 12px; right: 60px; top: calc(12px + env(safe-area-inset-top, 0px)); overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  #jumps::-webkit-scrollbar { display: none; }
   .maplibregl-ctrl-top-right { top: env(safe-area-inset-top, 0px); }
   #loading { top: 30%; }
-  .src { display: none; }
-  #panel:not(.collapsed) .src { display: block; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/* gentler equivalents rather than nothing */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  button:active, .gh:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #panel, #jumps button, .maplibregl-ctrl-group, #loading, .maplibregl-popup.tip .maplibregl-popup-content { background: var(--solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --label2: rgba(255, 255, 255, 0.86); --sep: rgba(255, 255, 255, 0.4); --material: #111113; --material-thin: #1c1c1e; }
+  #panel, #jumps button, .group { outline: 1px solid rgba(255, 255, 255, 0.5); outline-offset: -1px; }
+}
 </style>
 
-<div id="map" role="region" aria-label="中国铁路网卫星地图"></div>
+<div id="map" role="region" aria-label="铁路网卫星地图"></div>
 <div id="loading">正在载入线路数据…</div>
+<nav id="jumps" aria-label="快速定位"></nav>
 
-<aside id="panel" aria-label="图层与线路">
+<aside id="panel" aria-label="路线、线路与图层">
   <div class="head">
+    <div class="grabber" aria-hidden="true"></div>
     <div class="title-row">
       <div>
-        <div class="eyebrow">中国 · 英国 · 卫星影像叠加</div>
-        <h1><span class="bar"></span>中国铁路网</h1>
+        <h1>中国铁路网</h1>
+        <p class="facts">16.5 万公里 · 高铁 5.0 万公里</p>
       </div>
-      <div class="head-actions">
-        <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
-          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
-          <span>Star</span><b id="ghCount" hidden></b>
-        </a>
-        <button id="sheetToggle" type="button" aria-expanded="true" aria-controls="scroll">收起</button>
-      </div>
+      <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+        <span>Star</span><b id="ghCount" hidden></b>
+      </a>
     </div>
-    <div class="figs">
-      <div class="fig"><b>16.5<small>万公里</small></b><span>中国铁路营业里程</span></div>
-      <div class="fig hs"><b>5.0<small>万公里</small></b><span>其中高铁</span></div>
+    <div class="segmented" id="tabs" role="tablist" style="--n: 3">
+      <span class="thumb"></span>
+      <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route">路线</button>
+      <button type="button" role="tab" data-tab="lines" aria-selected="false" aria-controls="tab-lines">线路</button>
+      <button type="button" role="tab" data-tab="layers" aria-selected="false" aria-controls="tab-layers">图层</button>
     </div>
-    <div class="src">2025 年末数据 · 交通运输部《2025年交通运输行业发展统计公报》</div>
   </div>
 
   <div class="scroll" id="scroll">
-    <section>
-      <h2>图层 <em id="dataDate"></em></h2>
-      <div class="layers" id="layers"></div>
-    </section>
-
-    <section>
-      <h2>视图</h2>
-      <div class="seg" role="group" aria-label="地图投影">
-        <button type="button" id="projGlobe" aria-pressed="true">地球<small>球面视图，不失真</small></button>
-        <button type="button" id="projFlat" aria-pressed="false">平面<small>墨卡托投影</small></button>
+    <div class="tab" id="tab-route" role="tabpanel">
+      <div>
+        <div class="group od">
+          <div class="odrow"><i class="dot from"></i><div class="odf"><input id="odFrom" type="search" placeholder="出发站" autocomplete="off" aria-label="出发站"><ul class="sugg" id="suggFrom" hidden></ul></div></div>
+          <div class="odrow"><i class="dot to"></i><div class="odf"><input id="odTo" type="search" placeholder="到达站" autocomplete="off" aria-label="到达站"><ul class="sugg" id="suggTo" hidden></ul></div></div>
+          <button type="button" class="swap" id="odSwap" aria-label="互换出发和到达">
+            <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 13V3M5 3L2.5 5.5M5 3l2.5 2.5M11 3v10m0 0l-2.5-2.5M11 13l2.5-2.5"/></svg>
+          </button>
+        </div>
+        <div class="od-actions"><button type="button" class="link" id="odClear">清除</button></div>
       </div>
-      <div class="chips" id="jumps" role="group" aria-label="快速定位"></div>
-    </section>
-
-    <section>
-      <h2>英国运营公司 <em id="opCount"></em></h2>
-      <div class="seg" role="group" aria-label="英国线路上色方式">
-        <button type="button" id="ukByOp" aria-pressed="true">按运营公司<small>每条线取主要运营方</small></button>
-        <button type="button" id="ukByClass" aria-pressed="false">按线路等级<small>与中国同一套颜色</small></button>
+      <div id="routeOut" hidden>
+        <div class="route-sum"><b id="routeKm"></b><span id="routeTime"></span></div>
+        <ol class="group steps" id="routeSteps"></ol>
       </div>
-      <ul class="linelist oplist" id="opList"></ul>
-      <p class="note">点一家公司只看它的线路，再点一次恢复。浅色的英国线路没有客运运行线路数据，多为货运线。</p>
-    </section>
+      <p class="hint" id="routeNote">在地图上点一个车站，选“设为出发”或“设为到达”，也可以直接输入站名。仅支持中国境内车站；给出的是沿真实线路的走法和估算运行时间，不是车次和时刻表。</p>
+    </div>
 
-    <section>
-      <h2>卫星底图</h2>
-      <p class="note" id="baseNote">Esri World Imagery 在线高清影像，放大到城市、车站级别时可看清站房与线路走向。</p>
-      <label class="range" for="dim">影像亮度
-        <input type="range" id="dim" min="30" max="100" step="5" value="70">
-        <output id="dimOut" for="dim">70%</output>
-      </label>
-    </section>
-
-    <section>
-      <h2>高铁与城际线路 <em id="lineCount"></em></h2>
-      <div id="sel" hidden>
-        <div class="row"><b id="selName"></b><button type="button" id="clearSel">清除</button></div>
-        <span class="note" id="selMeta"></span>
+    <div class="tab" id="tab-lines" role="tabpanel" hidden>
+      <div id="sel" class="group selcard" hidden>
+        <div class="sel-top"><b id="selName"></b><button type="button" class="link" id="clearSel">清除</button></div>
+        <span id="selMeta"></span>
       </div>
-      <input id="search" type="search" placeholder="搜索线路，如 京沪、广珠城际、High Speed" autocomplete="off" aria-label="搜索线路">
-      <ul class="linelist" id="lineList"></ul>
-      <div class="more" id="more"></div>
-    </section>
+      <div>
+        <p class="caption"><span>高铁与城际线路</span><span id="lineCount"></span></p>
+        <div class="searchbar">
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="search" type="search" placeholder="搜索线路，如 京沪、广珠城际" autocomplete="off" aria-label="搜索线路">
+        </div>
+      </div>
+      <div>
+        <ul class="group linelist" id="lineList"></ul>
+        <div class="hint" id="more"></div>
+      </div>
+    </div>
 
-    <section class="foot">
-      <div>线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL）。中国、英国数据均为 Geofabrik <span id="osmDate">2026-10-03</span> 提取；地铁线路名称与颜色取自 OSM 线路关系。每条线路按其多数轨道的等级整条归类。速度等级取自 OSM maxspeed 标签，未标注者按同名线路推断；双线分别绘制的区段会重叠显示。</div>
-      <div>卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics），在线加载，需要联网。</div>
-    </section>
+    <div class="tab" id="tab-layers" role="tabpanel" hidden>
+      <div>
+        <p class="caption">线路与设施</p>
+        <div class="group" id="layers"></div>
+      </div>
+      <div>
+        <p class="caption">视图</p>
+        <div class="segmented" role="group" aria-label="地图投影">
+          <span class="thumb"></span>
+          <button type="button" id="projGlobe" aria-pressed="true">地球</button>
+          <button type="button" id="projFlat" aria-pressed="false">平面</button>
+        </div>
+      </div>
+      <div>
+        <p class="caption"><span>英国线路的颜色</span><span id="opCount"></span></p>
+        <div class="segmented" role="group" aria-label="英国线路上色方式">
+          <span class="thumb"></span>
+          <button type="button" id="ukByOp" aria-pressed="true">按运营公司</button>
+          <button type="button" id="ukByClass" aria-pressed="false">按线路等级</button>
+        </div>
+        <ul class="oplist" id="opList"></ul>
+        <p class="hint">点一家公司只看它的线路，再点一次恢复。浅色的英国线路没有客运运行线路数据，多为货运线。</p>
+      </div>
+      <div>
+        <p class="caption">卫星影像</p>
+        <div class="group">
+          <label class="row range" for="dim"><span>亮度</span><input type="range" id="dim" min="30" max="100" step="5" value="70"><output id="dimOut" for="dim">70%</output></label>
+        </div>
+        <p class="hint" id="baseNote">Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。</p>
+      </div>
+      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-03 提取；地铁线路名称与颜色取自 OSM 线路关系。每条线路按其多数轨道的等级整条归类，速度等级取自 OSM 限速标签。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
+    </div>
   </div>
 </aside>
 
@@ -265,7 +340,7 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
   const layersEl = document.getElementById('layers');
   for (const c of CLASSES) {
     const lab = document.createElement('label');
-    lab.className = 'lyr';
+    lab.className = 'row lyr';
     const swatch = c.id === 'yards'
       ? `<i style="height:1.5px;background:${col('yard')}"></i>`
       : c.id === 'metro'
@@ -273,17 +348,16 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
       : c.id === 'border'
       ? `<i style="height:2px;border-radius:0;background:repeating-linear-gradient(90deg,${col('border')} 0 9px,transparent 9px 12px,${col('border')} 12px 14px,transparent 14px 17px);box-shadow:0 0 7px 2px ${col('border-halo')}"></i>`
       : c.id === 'stations'
-      ? `<i style="width:9px;height:9px;border-radius:50%;background:${col('station')};box-shadow:0 0 0 2px #0008;margin-left:12px"></i>`
+      ? `<i style="width:9px;height:9px;border-radius:50%;background:${col('station')};box-shadow:0 0 0 2px #0008;margin-left:9px"></i>`
       : c.id === 'build'
         ? `<i style="height:0;border-top:3px dashed ${col('build')};border-radius:0"></i>`
         : `<i style="height:${FAST.includes(c.id) ? 4 : c.id === 'main' ? 2.5 : 1.5}px;background:${col(c.id)};${FAST.includes(c.id) ? `box-shadow:0 0 8px ${col(c.id)}` : ''}"></i>`;
-    lab.innerHTML = `<input type="checkbox" id="t-${c.id}" checked><span class="sw">${swatch}</span><span class="name">${c.label}<small>${c.sub}</small></span><span class="spd">${c.spd}</span>`;
+    lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b>${c.label}</b>${c.sub ? `<small>${c.sub}</small>` : ''}</span>${c.spd ? `<span class="spd">${c.spd}</span>` : ''}<input type="checkbox" class="switch" id="t-${c.id}" checked>`;
     lab.querySelector('input').addEventListener('change', e => { visible[c.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
     layersEl.appendChild(lab);
   }
 
   const panel = document.getElementById('panel');
-  const sheetBtn = document.getElementById('sheetToggle');
 
   // Star count for the GitHub button; the button works without it if the request fails.
   fetch('https://api.github.com/repos/rail-globe/rail-globe.github.io')
@@ -296,17 +370,110 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
     })
     .catch(() => {});
 
-  const setSheet = collapsed => {
-    panel.classList.toggle('collapsed', collapsed);
-    sheetBtn.textContent = collapsed ? '图层与线路' : '收起';
-    sheetBtn.setAttribute('aria-expanded', String(!collapsed));
+  // ---- tabs ----
+  const tabButtons = [...document.querySelectorAll('#tabs button')];
+  const showTab = id => {
+    for (const b of tabButtons) b.setAttribute('aria-selected', String(b.dataset.tab === id));
+    for (const t of document.querySelectorAll('.tab')) t.hidden = t.id !== 'tab-' + id;
+    document.getElementById('scroll').scrollTop = 0;
   };
-  sheetBtn.addEventListener('click', () => setSheet(!panel.classList.contains('collapsed')));
-  if (isPhone()) setSheet(true);
+  for (const b of tabButtons) b.addEventListener('click', () => { showTab(b.dataset.tab); if (isPhone() && sheet.detent() === 'peek') sheet.to('mid'); });
+
+  // ---- bottom sheet (phone) ----
+  // The sheet follows the finger 1:1 from where it was grabbed, resists softly past its ends, and on
+  // release is thrown by a spring that starts from the finger's velocity toward the detent the
+  // gesture was heading for. It can be grabbed again at any moment, also in mid-flight.
+  const sheet = (() => {
+    const head = panel.querySelector('.head');
+    let H = 0, y = 0, v = 0, raf = 0, at = 'peek', drag = null, dragged = false;
+    const stops = () => ({ large: 0, mid: Math.max(0, H - Math.round(innerHeight * 0.48)), peek: Math.max(0, H - head.offsetHeight) });
+    const paint = () => panel.style.setProperty('--sheet-y', y + 'px');
+    const settle = () => {
+      panel.style.setProperty('--sheet-visible', Math.round(H - y) + 'px');
+      panel.style.setProperty('--head-h', head.offsetHeight + 'px');
+      if (onSettle) onSettle();
+    };
+    let onSettle = null;
+    const rubber = (over, dim) => (over * dim * 0.55) / (dim + 0.55 * Math.abs(over));
+    const project = (vel, rate = 0.998) => (vel / 1000) * rate / (1 - rate);
+    const spring = (target, bounce) => {
+      cancelAnimationFrame(raf);
+      if (reduced) { y = target; v = 0; paint(); settle(); return; }
+      const omega = 2 * Math.PI / 0.34, zeta = bounce ? 0.8 : 1;
+      let last = performance.now();
+      const step = now => {
+        const dt = Math.min(0.032, (now - last) / 1000) / 4;
+        last = now;
+        for (let i = 0; i < 4; i++) { v += (-omega * omega * (y - target) - 2 * zeta * omega * v) * dt; y += v * dt; }
+        if (Math.abs(y - target) < 0.5 && Math.abs(v) < 8) { y = target; v = 0; paint(); settle(); raf = 0; return; }
+        paint();
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    };
+    const to = name => { at = name; if (isPhone()) spring(stops()[name], false); };
+    const layout = () => {
+      cancelAnimationFrame(raf);
+      if (!isPhone()) { panel.style.removeProperty('--sheet-y'); return; }
+      H = panel.offsetHeight;
+      y = stops()[at]; v = 0;
+      paint(); settle();
+    };
+    head.addEventListener('pointerdown', e => {
+      if (!isPhone() || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      cancelAnimationFrame(raf);                       // interrupt: take over from wherever it is now
+      drag = { py: e.clientY, y0: y, id: e.pointerId, moved: false, hist: [[e.timeStamp, e.clientY]], onControl: !!e.target.closest('button, a') };
+      addEventListener('pointermove', move);
+      addEventListener('pointerup', release);
+      addEventListener('pointercancel', release);
+    });
+    const move = e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dy = e.clientY - drag.py;
+      if (!drag.moved) {
+        if (Math.abs(dy) < 8) return;                  // a little hysteresis before it counts as a drag
+        drag.moved = true;
+        try { head.setPointerCapture(e.pointerId); } catch (err) { /* the window listeners still follow it */ }
+      }
+      const { large, peek } = stops();
+      let ny = drag.y0 + dy;
+      if (ny < large) ny = large - rubber(large - ny, H);
+      else if (ny > peek) ny = peek + rubber(ny - peek, H);
+      y = ny;
+      paint();
+      drag.hist.push([e.timeStamp, e.clientY]);
+      while (drag.hist.length > 2 && e.timeStamp - drag.hist[0][0] > 100) drag.hist.shift();
+    };
+    const release = e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const d = drag;
+      drag = null;
+      removeEventListener('pointermove', move);
+      removeEventListener('pointerup', release);
+      removeEventListener('pointercancel', release);
+      if (!d.moved) {                                  // a tap on the bare header toggles the sheet
+        if (!d.onControl) to(at === 'peek' ? 'mid' : 'peek');
+        else if (y !== stops()[at]) spring(stops()[at], false);
+        return;
+      }
+      dragged = true;
+      const [t0, y0] = d.hist[0], [t1, y1] = d.hist[d.hist.length - 1];
+      v = t1 > t0 ? (y1 - y0) / (t1 - t0) * 1000 : 0;   // px per second at release
+      const landing = y + project(v), s = stops();
+      at = Object.keys(s).reduce((best, k) => (Math.abs(s[k] - landing) < Math.abs(s[best] - landing) ? k : best), 'peek');
+      const v0 = v;
+      spring(s[at], Math.abs(v0) > 300);
+      v = v0;                                          // hand the finger's velocity to the spring
+    };
+    head.addEventListener('click', e => { if (dragged) { dragged = false; e.preventDefault(); e.stopPropagation(); } }, true);
+    addEventListener('resize', layout);
+    layout();
+    return { to, layout, detent: () => at, visible: () => H - stops()[at === 'large' ? 'mid' : at], whenSettled: fn => { onSettle = fn; } };
+  })();
 
   const padding = () => isPhone()
-    ? { top: 56, bottom: Math.min(panel.offsetHeight + 24, Math.round(innerHeight * 0.7)), left: 16, right: 16 }
-    : { top: 40, bottom: 40, left: 370, right: 60 };
+    ? { top: 64, bottom: Math.min(sheet.visible() + 20, Math.round(innerHeight * 0.6)), left: 16, right: 16 }
+    : { top: 64, bottom: 40, left: 396, right: 60 };
 
   // Chinese labels are drawn with the device's own fonts. The few Latin and punctuation glyphs come
   // from data/glyphs.json through an in-page protocol, so no font files are fetched from a server.
@@ -350,8 +517,10 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
   // Until the viewer moves the map, keep the whole country framed when the window changes size
   // (the container can still be settling when the map is created).
   let touched = !!startView;
+  const frameChina = duration => { try { map.fitBounds(CHINA, { padding: padding(), duration }); } catch (err) { /* window too small for the padding; the next resize retries */ } };
   map.on('movestart', e => { if (e.originalEvent) touched = true; });
-  map.on('resize', () => { if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 }); });
+  map.on('resize', () => { if (!touched) frameChina(0); });
+  sheet.whenSettled(() => { if (!touched && isPhone()) frameChina(reduced ? 0 : 450); });
   // The page can be loaded before its window has a size (a hidden pane or tab). The map then starts
   // at a small default size and misses the first size change, so check the size ourselves.
   const mapEl = document.getElementById('map');
@@ -362,8 +531,8 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
   new ResizeObserver(fitToWindow).observe(mapEl);
   // Crossing between the wide and the narrow layout: the bottom sheet starts collapsed so the map shows.
   matchMedia('(max-width: 720px)').addEventListener('change', e => {
-    setSheet(e.matches);
-    if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 });
+    sheet.layout();
+    map.resize();        // fires 'resize', which reframes the country if the viewer has not moved the map
   });
   document.addEventListener('visibilitychange', fitToWindow);
   // Once the viewer has moved the map, the address bar keeps the current view so it can be bookmarked.
@@ -389,7 +558,7 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
       touched = label !== '中国';
       if (!touched) history.replaceState(null, '', location.pathname + location.search);
       map.fitBounds(bounds, { padding: padding(), duration: reduced ? 0 : 1800 });
-      if (isPhone()) setSheet(true);
+      if (isPhone()) sheet.to('peek');
     });
     document.getElementById('jumps').appendChild(b);
   }
@@ -398,7 +567,7 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
     btn.addEventListener('click', () => {
       map.setProjection({ type });
       for (const [t, b] of Object.entries(projBtn)) b.setAttribute('aria-pressed', String(t === type));
-      if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 });
+      if (!touched) frameChina(0);
     });
   }
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
@@ -494,6 +663,11 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
     map.addLayer({ id: 'hl-core', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]) } });
+    map.addSource('route', { type: 'geojson', data: EMPTY });
+    map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': lineW([4.6, 6, 7.5, 9, 11]), 'line-opacity': 0.95 } });
+    map.addLayer({ id: 'route', type: 'line', source: 'route', layout: round,
+      paint: { 'line-color': '#0a84ff', 'line-width': lineW([2.6, 3.6, 4.6, 5.6, 7.2]) } });
 
     map.addLayer({ id: 'stations', type: 'circle', source: 'stations', minzoom: 5,
       filter: ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
@@ -632,12 +806,13 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
       map.setFilter('hl-core', f);
       styleRail();
       selBox.hidden = !name;
+      if (name) showTab('lines');
       if (name) {
         const l = byName.get(name);
         document.getElementById('selName').textContent = name;
         document.getElementById('selMeta').textContent = l ? `${l.c === 'hsr200' ? '城际 / 快速铁路' : '高速铁路'}${l.s ? ` · 标注最高时速 ${l.s} km/h` : ''}` : '';
         if (fly && l) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 10, duration: reduced ? 0 : 1200 });
-        if (isPhone() && fly) setSheet(true);
+        if (isPhone() && fly) sheet.to('peek');
       }
       renderList();
     }
@@ -665,7 +840,218 @@ h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; lette
       tip.setLngLat(e.lngLat).setHTML(`<b>${esc(p.n || '未命名线路')}</b><span>${esc(meta)}</span>${who}`).addTo(map);
     });
     map.getCanvas().addEventListener('mouseleave', () => tip.remove());
+
+    // ---- route between two stations (China only) ----
+    // The network (data/graph.json) is the running lines themselves: junction nodes, track edges with
+    // line, class and length, and one hub per station linked to each line that calls there.
+    const routable = stations.features.filter(f => f.properties.g != null);
+    const hubName = new Map(routable.map(f => [f.properties.g, f.properties.n]));
+    const od = { from: null, to: null };
+    const pins = { from: null, to: null };
+    const odInput = { from: document.getElementById('odFrom'), to: document.getElementById('odTo') };
+    const routeOut = document.getElementById('routeOut'), routeNote = document.getElementById('routeNote');
+    const NOTE = routeNote.textContent;
+    let network = null;
+    const loadNetwork = () => network || (network = getJSON('data/graph.json').then(g => {
+      const N = g.nodes.length / 2, M = g.edges.length / 5;
+      const head = new Uint32Array(N + 1);
+      for (let i = 0; i < M; i++) { head[g.edges[i * 5] + 1]++; head[g.edges[i * 5 + 1] + 1]++; }
+      for (let i = 0; i < N; i++) head[i + 1] += head[i];
+      const fill = head.slice(0, N);
+      const to = new Uint32Array(2 * M), via = new Uint32Array(2 * M), cost = new Float32Array(2 * M), shapeAt = new Uint32Array(M + 1);
+      for (let i = 0; i < M; i++) {
+        const u = g.edges[i * 5], v = g.edges[i * 5 + 1], cls = g.lines[g.edges[i * 5 + 2]][1];
+        const c = cls === 'x' ? g.transferMin : g.edges[i * 5 + 3] / 1000 / g.speed[cls] * 60;   // minutes
+        to[fill[u]] = v; via[fill[u]] = i; cost[fill[u]++] = c;
+        to[fill[v]] = u; via[fill[v]] = i; cost[fill[v]++] = c;
+        shapeAt[i + 1] = shapeAt[i] + g.edges[i * 5 + 4];
+      }
+      return { g, N, head, to, via, cost, shapeAt };
+    }));
+    // Dijkstra on running time with a binary heap
+    const fastest = (G, s, t) => {
+      const dist = new Float64Array(G.N).fill(Infinity), from = new Int32Array(G.N).fill(-1), by = new Int32Array(G.N).fill(-1);
+      const heap = [[0, s]];
+      dist[s] = 0;
+      const swap = (i, j) => { const x = heap[i]; heap[i] = heap[j]; heap[j] = x; };
+      while (heap.length) {
+        const [d, u] = heap[0], last = heap.pop();
+        if (heap.length) {
+          heap[0] = last;
+          for (let i = 0; ;) {
+            const l = 2 * i + 1, r = l + 1;
+            let m = i;
+            if (l < heap.length && heap[l][0] < heap[m][0]) m = l;
+            if (r < heap.length && heap[r][0] < heap[m][0]) m = r;
+            if (m === i) break;
+            swap(i, m); i = m;
+          }
+        }
+        if (u === t) break;
+        if (d > dist[u]) continue;
+        for (let k = G.head[u]; k < G.head[u + 1]; k++) {
+          const v = G.to[k], nd = d + G.cost[k];
+          if (nd < dist[v]) {
+            dist[v] = nd; from[v] = u; by[v] = G.via[k];
+            heap.push([nd, v]);
+            for (let i = heap.length - 1; i > 0;) { const q = (i - 1) >> 1; if (heap[q][0] <= heap[i][0]) break; swap(i, q); i = q; }
+          }
+        }
+      }
+      if (!isFinite(dist[t])) return null;
+      const path = [];
+      for (let u = t; u !== s; u = from[u]) path.push([from[u], u, by[u]]);
+      return { minutes: dist[t], path: path.reverse() };
+    };
+    const edgeCoords = (G, e, start) => {
+      const g = G.g, u = g.edges[e * 5], v = g.edges[e * 5 + 1];
+      let x = g.nodes[u * 2], y = g.nodes[u * 2 + 1];
+      const pts = [[x / 1e5, y / 1e5]];
+      for (let k = G.shapeAt[e]; k < G.shapeAt[e + 1]; k++) { x += g.shapes[k * 2]; y += g.shapes[k * 2 + 1]; pts.push([x / 1e5, y / 1e5]); }
+      pts.push([g.nodes[v * 2] / 1e5, g.nodes[v * 2 + 1] / 1e5]);
+      return start === u ? pts : pts.reverse();
+    };
+    const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; };
+    async function showRoute() {
+      clearRoute();
+      routeNote.textContent = NOTE;
+      if (!od.from || !od.to) return;
+      if (od.from.g === od.to.g) { routeNote.textContent = '出发和到达是同一个车站。'; return; }
+      routeNote.textContent = '正在计算…';
+      let G;
+      try { G = await loadNetwork(); } catch (err) { network = null; routeNote.textContent = '线路网络载入失败，请检查网络后重试。'; return; }
+      const res = fastest(G, od.from.g, od.to.g);
+      if (!res) { routeNote.textContent = `${od.from.n} 和 ${od.to.n} 之间没有连通的线路。例如海南岛、台湾与大陆之间没有轨道相连。`; return; }
+      const g = G.g, coords = [], raw = [];
+      let metres = 0, change = null;
+      for (const [a, b, e] of res.path) {
+        const [name, cls] = g.lines[g.edges[e * 5 + 2]], m = g.edges[e * 5 + 3];
+        if (cls === 'x') {            // through a station hub: a change of line unless it is an end of the trip
+          const hub = a >= g.hubStart ? a : b;
+          if (hub !== od.from.g && hub !== od.to.g) change = hubName.get(hub);
+          continue;
+        }
+        const pts = edgeCoords(G, e, a);
+        coords.push(...(coords.length ? pts.slice(1) : pts));
+        metres += m;
+        raw.push({ name, cls, m, change });
+        change = null;
+      }
+      // Only real, named lines are listed: short unnamed links are folded away, repeats are joined.
+      const steps = [];
+      for (const st of raw) {
+        const last = steps[steps.length - 1];
+        if (last && last.name === st.name && !st.change) last.m += st.m;
+        else if (!st.name && !st.change && last) last.m += st.m;
+        else steps.push({ ...st });
+      }
+      // Stubs of a kilometre or two (station approaches, depot links) are not worth listing.
+      const named = steps.filter(st => st.name);
+      const minM = Math.min(10000, Math.max(2000, metres * 0.005));
+      const shown = named.some(st => st.m >= minM) ? named.filter(st => st.m >= minM) : named;
+      map.getSource('route').setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } });
+      const mins = Math.max(1, Math.round(res.minutes - 2 * g.transferMin));
+      document.getElementById('routeKm').innerHTML = `${Math.round(metres / 1000).toLocaleString()}<small>公里</small>`;
+      document.getElementById('routeTime').textContent = `纯运行约 ${mins >= 60 ? Math.floor(mins / 60) + ' 小时 ' : ''}${mins % 60} 分`;
+      document.getElementById('routeSteps').replaceChildren(...shown.flatMap(st => {
+        const items = [];
+        if (st.change) {
+          const c = document.createElement('li');
+          c.className = 'change';
+          c.textContent = `在 ${st.change} 换线`;
+          items.push(c);
+        }
+        const li = document.createElement('li');
+        li.innerHTML = `<i style="background:${col(st.cls)}"></i><span></span><span class="km">${Math.max(1, Math.round(st.m / 1000))} km</span>`;
+        li.children[1].textContent = st.name;
+        items.push(li);
+        return items;
+      }));
+      routeOut.hidden = false;
+      routeNote.textContent = '走法沿真实线路计算，时间按线路等级估算、不含停站，不代表有直达车次。';
+      const xs = coords.map(c => c[0]), ys = coords.map(c => c[1]);
+      touched = true;
+      if (isPhone()) sheet.to('mid');
+      map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: padding(), maxZoom: 11, duration: reduced ? 0 : 1200 });
+    }
+    function setStop(role, f) {
+      od[role] = f ? { n: f.properties.n, g: f.properties.g, at: f.geometry.coordinates } : null;
+      if (f) showTab('route');
+      odInput[role].value = f ? f.properties.n : '';
+      if (pins[role]) { pins[role].remove(); pins[role] = null; }
+      if (f) {
+        const el = document.createElement('div');
+        el.className = 'pin ' + role;
+        el.setAttribute('aria-label', role === 'from' ? '出发站' : '到达站');
+        pins[role] = new maplibregl.Marker({ element: el }).setLngLat(f.geometry.coordinates).addTo(map);
+        loadNetwork().catch(() => { network = null; });
+      }
+      showRoute();
+    }
+    // station name search for the two fields
+    for (const role of ['from', 'to']) {
+      const input = odInput[role], list = document.getElementById(role === 'from' ? 'suggFrom' : 'suggTo');
+      const render = () => {
+        const q = input.value.trim();
+        if (!q || (od[role] && od[role].n === q)) { list.hidden = true; return; }
+        const hits = routable.filter(f => f.properties.n.includes(q))
+          .sort((a, b) => (b.properties.n === q) - (a.properties.n === q) || b.properties.n.startsWith(q) - a.properties.n.startsWith(q)
+            || (b.properties.h || 0) - (a.properties.h || 0) || a.properties.n.length - b.properties.n.length).slice(0, 8);
+        list.replaceChildren(...hits.map(f => {
+          const li = document.createElement('li'), b = document.createElement('button');
+          b.type = 'button';
+          b.textContent = f.properties.n;
+          b.addEventListener('click', () => { list.hidden = true; setStop(role, f); });
+          li.appendChild(b);
+          return li;
+        }));
+        list.hidden = !hits.length;
+      };
+      input.addEventListener('input', () => { if (!input.value.trim() && od[role]) setStop(role, null); render(); });
+      input.addEventListener('focus', render);
+      input.addEventListener('blur', () => setTimeout(() => { list.hidden = true; }, 180));
+    }
+    document.getElementById('odSwap').addEventListener('click', () => {
+      const a = od.from && routable.find(f => f.properties.g === od.from.g), b = od.to && routable.find(f => f.properties.g === od.to.g);
+      setStop('from', b || null);
+      setStop('to', a || null);
+    });
+    document.getElementById('odClear').addEventListener('click', () => { setStop('from', null); setStop('to', null); });
+    // clicking a station offers it as origin or destination
+    const stationPop = new maplibregl.Popup({ className: 'tip station-pop', closeButton: false, offset: 10, maxWidth: '240px' });
+    const offerStation = f => {
+      const box = document.createElement('div');
+      const title = document.createElement('b');
+      title.textContent = f.properties.n;
+      box.appendChild(title);
+      if (f.properties.g == null) {
+        const none = document.createElement('span');
+        none.textContent = '线路查询只支持中国境内、已接入线路网的车站';
+        box.appendChild(none);
+      } else {
+        const row = document.createElement('div');
+        row.className = 'pop-actions';
+        for (const [role, label] of [['from', '设为出发'], ['to', '设为到达']]) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.innerHTML = `<i class="dot ${role}"></i>`;
+          b.append(label);
+          b.addEventListener('click', () => { stationPop.remove(); setStop(role, f); });
+          row.appendChild(b);
+        }
+        box.appendChild(row);
+      }
+      tip.remove();
+      stationPop.setLngLat(f.geometry.coordinates).setDOMContent(box).addTo(map);
+    };
+
     map.on('click', e => {
+      const st = map.getLayer('stations') && map.queryRenderedFeatures([[e.point.x - 7, e.point.y - 7], [e.point.x + 7, e.point.y + 7]], { layers: ['stations'] })[0];
+      if (st) {       // rendered features lose their identity; find the original by name and place
+        const [x, y] = st.geometry.coordinates;
+        offerStation(stations.features.find(f => f.properties.n === st.properties.n && Math.abs(f.geometry.coordinates[0] - x) < 1e-3 && Math.abs(f.geometry.coordinates[1] - y) < 1e-3) || st);
+        return;
+      }
       const f = pick(e.point);
       if (f && f.properties.n && FAST.includes(f.properties.c) && f.layer.id !== 'metro') select(f.properties.n, false);
       else if (!f) select(null);
