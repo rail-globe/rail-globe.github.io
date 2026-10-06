@@ -20,6 +20,9 @@ Tracks are grouped into lines by name (spelling variants such as 京沪高铁 / 
 unnamed connecting stretches follow the line they join.
 
 Metro lines keep their official colour (property col) from the OSM route relations.
+Suburban services that run over national-rail track (Beijing S2, Shanghai Jinshan...) are a second
+dimension: the track keeps its own line and class, and the service is written to metro.geojson
+as well (property k = "s") so the map can draw it alongside.
 UK lines carry their main passenger operator (property o).
 """
 import json
@@ -29,7 +32,8 @@ import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from shapely.geometry import MultiLineString, Point
+from shapely.geometry import MultiLineString, Point, shape
+from shapely.prepared import prep
 from shapely.ops import linemerge
 from shapely.strtree import STRtree
 
@@ -42,11 +46,16 @@ SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight;industrial"}
 METRO_RAIL = {"subway", "light_rail", "monorail"}
 METRO_DEFAULT = "#5cc8ff"
 # Not metro: trams, airport people movers, theme-park and company-campus lines.
-NOT_METRO = re.compile(r"有轨|华为|比亚迪|世界之窗|旅客捷运|旅客捷運|旅客自动|APM T\d|People Mover|旅游专线|云轨|车辆段|联络线|付线")
+NOT_METRO = re.compile(r"有轨|华为|比亚迪|世界之窗|旅客捷运|旅客捷運|旅客自动|APM T\d|APM$|People Mover|旅游专线|云轨|车辆段|联络线|付线"
+                       r"|直通|贯通|直达|^TSB$|^[上下]行线$|自动旅客|机场捷运")   # through-running services are trains, not lines
 # Greater Bay Area intercity network: lines named 城际 plus branches that carry another name,
 # and lines mostly used by the intercity train services (route relations of the 城际 operators).
 IC_NAME = re.compile(r"城际|琶洲支线|^江门线$|^广深[ⅠⅡⅢⅣ]?线$")
 IC_NETWORK = re.compile(r"城际")
+SUBURBAN = re.compile(r"市郊|市域|金山铁路|绍兴城际")     # suburban train services, matched on name and network
+# Metro regions: the delta and Beijing-Tianjin are cut to these provinces, the rest are plain boxes.
+PROVINCES = {"110000": "bj", "120000": "tj", "310000": "sh", "320000": "js", "330000": "zj"}
+BOX_REGIONS = ("gba", "xa", "cd", "cq")
 IC_SHARE = 0.4      # share of a line's Bay Area track used by intercity services
 MINOR_LINE_KM = 10  # track km below which a named "line" is treated as a fragment of its neighbour
 # Names reused all over the country (connectors, depot leads); such a name only identifies a line locally.
@@ -179,9 +188,29 @@ stations_raw += [(t, lon, lat, "uk") for t, lon, lat in uk["stations"]]
 places_raw += [(kind, t, lon, lat, "uk") for kind, t, lon, lat in uk.get("places", [])]
 
 
+prov_polys = {}
+prov_file = RAW / "border" / "100000_full.json"     # province outlines cached by scripts/build_border.py
+if prov_file.exists():
+    for f in json.load(open(prov_file))["features"]:
+        k = PROVINCES.get(str(f["properties"]["adcode"]))
+        if k:
+            g = shape(f["geometry"]).buffer(0)
+            prov_polys[k] = (g.bounds, prep(g))
+else:
+    print("no province outlines (run scripts/build_border.py); Beijing-Tianjin and delta metros are skipped")
+
+
+def in_metro_box(lon, lat):
+    return any(w <= lon <= e and s <= lat <= n for w, s, e, n in REGIONS.values())
+
+
 def region_of(lon, lat):
-    for k, (w, s, e, n) in REGIONS.items():
+    for k in BOX_REGIONS:
+        w, s, e, n = REGIONS.get(k, (0, 0, -1, -1))
         if w <= lon <= e and s <= lat <= n:
+            return k
+    for k, (b, g) in prov_polys.items():
+        if b[0] <= lon <= b[2] and b[1] <= lat <= b[3] and g.contains(Point(lon, lat)):
             return k
     return None
 
@@ -226,6 +255,7 @@ def metro_line_name(m, t):
 
 
 way_metro = {}       # way id -> (line name, colour)
+way_suburb = {}      # national-rail way id -> (suburban service name, colour)
 ic_rel_ways = set()  # ways used by Greater Bay Area intercity train services
 for rid, t, members in ex["relations"]:
     if t.get("type") != "route":
@@ -233,6 +263,8 @@ for rid, t, members in ex["relations"]:
     m = masters.get(rid, {})
     if t.get("route") in METRO_RAIL:
         info = (metro_line_name(m, t), colour_of(m, t))
+        if NOT_METRO.search(info[0] or ""):
+            continue             # its track is claimed by the real line's own relation instead
         for mtype, ref in members:
             if mtype == "w":
                 way_metro.setdefault(ref, info)
@@ -240,6 +272,11 @@ for rid, t, members in ex["relations"]:
         net = " ".join(filter(None, (m.get("network"), t.get("network"), t.get("operator"), m.get("name"), t.get("name"))))
         if IC_NETWORK.search(net):
             ic_rel_ways.update(ref for mtype, ref in members if mtype == "w")
+        if SUBURBAN.search(" ".join(filter(None, (m.get("network"), t.get("network"), m.get("name"), t.get("name"))))):
+            info = (zh(m.get("name:zh") or m.get("name") or t.get("name:zh") or t.get("name")), colour_of(m, t))
+            for mtype, ref in members:
+                if mtype == "w":
+                    way_suburb.setdefault(ref, info)
 
 uk_masters = {}
 for rid, t, members in uk["relations"]:
@@ -257,7 +294,7 @@ for rid, t, members in uk["relations"]:
                     uk_way_ops[ref][brand] = weight
 
 # ---------------------------------------------------------------- split ways into rail / metro / build / yards
-rail, build, metro_ways, yard_tracks = [], [], [], []
+rail, build, metro_ways, yard_tracks, suburb_ways = [], [], [], [], []
 for wid, t, co, country in ways:
     r = t.get("railway")
     if (r == "rail" or r in METRO_RAIL) and t.get("service"):
@@ -268,6 +305,8 @@ for wid, t, co, country in ways:
     elif r == "rail":
         if t.get("usage") in SKIP_USAGE:
             continue
+        if country == "cn" and wid in way_suburb:
+            suburb_ways.append((wid, co))     # the track stays a rail line; the service is drawn on top
         sp = speed_of(t)
         rail.append({"id": wid, "n": name_of(t, country), "sp": sp, "g": country, "co": co, "km": km(co),
                      "ops": uk_way_ops.get(wid) if country == "uk" else None,
@@ -462,28 +501,41 @@ known_lines = {}
 for nm, col in way_metro.values():
     if nm:
         known_lines.setdefault(re.sub(r"\s+", "", nm), (nm, col))
-metro_groups = defaultdict(list)
+entries = []                    # (name, colour, coords, own region or None, kind)
 loose = defaultdict(list)       # tracks that belong to no route relation
 for wid, t, co in metro_ways:
     reg = region_of(*co[0])
-    if not reg:
-        continue
     if wid in way_metro:
         nm, col = way_metro[wid]
     else:
         own = zh(t.get("name:zh") or t.get("name") or "")
         nm, col = known_lines.get(own, (None, None))
         if nm is None:
-            loose[(reg, own)].append(co)
+            if reg:
+                loose[(reg, own)].append(co)
             continue
-    if NOT_METRO.search(nm or ""):
-        continue
-    metro_groups[(reg, nm or "")].append((co, col or colour_of(t)))
+    if not NOT_METRO.search(nm or ""):
+        entries.append((nm or "", col or colour_of(t), co, reg, ""))
+for wid, co in suburb_ways:
+    nm, col = way_suburb[wid]
+    entries.append((nm, col if col != "#000000" else None, co, region_of(*co[0]), "s"))
+# A line that leaves its province (Shanghai line 11 into Kunshan, Beijing lines into Hebei) is kept
+# whole: track outside the outlines takes the region most of its line lies in.
+line_region = defaultdict(Counter)
+for nm, col, co, reg, kind in entries:
+    if nm and reg:
+        line_region[(nm, kind)][reg] += len(co)
+metro_groups = defaultdict(list)
+for nm, col, co, reg, kind in entries:
+    if not reg and nm and line_region.get((nm, kind)):
+        reg = line_region[(nm, kind)].most_common(1)[0][0]
+    if reg:
+        metro_groups[(reg, nm, kind)].append((co, col))
 for (reg, own), lines in loose.items():      # keep longer unmatched tracks, in the default colour
     if not NOT_METRO.search(own) and sum(km(c) for c in lines) >= 3:
-        metro_groups[(reg, own)] += [(co, None) for co in lines]
+        metro_groups[(reg, own, "")] += [(co, None) for co in lines]
 metro_feats, metro_km, metro_geoms = [], Counter(), []
-for (reg, nm), items in metro_groups.items():
+for (reg, nm, kind), items in metro_groups.items():
     cols = Counter()
     for co, col in items:
         if col:
@@ -496,8 +548,11 @@ for (reg, nm), items in metro_groups.items():
         props = {"r": reg, "col": col}
         if nm:
             props["n"] = nm
+        if kind:
+            props["k"] = kind
         metro_feats.append({"type": "Feature", "properties": props, "geometry": geometry(simp)})
 write("metro.geojson", metro_feats)
+print("suburban services:", sorted(f["properties"].get("n", "?") for f in metro_feats if f["properties"].get("k")))
 print("metro lines per region:", dict(Counter(f["properties"]["r"] for f in metro_feats)),
       "| track km:", {k: round(v) for k, v in metro_km.items()},
       "| without official colour:", sorted(f["properties"].get("n", "?") for f in metro_feats if f["properties"]["col"] == METRO_DEFAULT))
@@ -531,7 +586,7 @@ for t, lon, lat, country in stations_raw:
         continue
     pt = Point(lon, lat)
     is_metro = t.get("station") in METRO_RAIL | {"funicular", "tram"} or t.get("subway") == "yes" or t.get("light_rail") == "yes"
-    on_metro = country == "cn" and region_of(lon, lat) and len(metro_tree.query(pt, predicate="dwithin", distance=0.0025))
+    on_metro = country == "cn" and in_metro_box(lon, lat) and len(metro_tree.query(pt, predicate="dwithin", distance=0.0025))
     if is_metro or (on_metro and not len(rail_tree.query(pt, predicate="dwithin", distance=0.002))):
         if on_metro:
             k = (nm, round(lon / 0.006), round(lat / 0.006))   # one dot per interchange

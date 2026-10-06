@@ -324,7 +324,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     { id: 'hsr350', label: '高速铁路', sub: '设计时速 300–350', spd: '350', src: 'hsr' },
     { id: 'hsr250', label: '高速铁路', sub: '时速 250（含未标注）', spd: '250', src: 'hsr' },
     { id: 'hsr200', label: '城际 / 快速铁路', sub: '时速 200 及以下，含大湾区城际', spd: '≤200', src: 'hsr' },
-    { id: 'metro', label: '地铁', sub: '大湾区、北京、西安，按线路官方色', spd: '', src: 'metro' },
+    { id: 'metro', label: '地铁与市郊铁路', sub: '京津、江浙沪、成渝、大湾区、西安', spd: '', src: 'metro' },
     { id: 'build', label: '在建线路', sub: '高铁为粉色虚线', spd: '', src: 'build' },
     { id: 'main', label: '普速干线', sub: '客货共线的主要干线', spd: '', src: 'conv' },
     { id: 'branch', label: '普速支线及其他', sub: '不含站场与专用线', spd: '', src: 'conv' },
@@ -551,8 +551,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     if (v) { touched = true; map.jumpTo(v); }
   });
   const JUMPS = [
-    ['中国', CHINA], ['英国', [[-8.2, 49.8], [1.9, 59]]], ['大湾区', [[112.4, 21.9], [114.6, 23.6]]],
-    ['北京', [[116.0, 39.65], [116.85, 40.2]]], ['西安', [[108.65, 34.1], [109.25, 34.5]]],
+    ['中国', CHINA], ['京津', [[115.9, 38.85], [117.9, 40.35]]], ['长三角', [[118.4, 29.7], [122.0, 32.5]]],
+    ['大湾区', [[112.4, 21.9], [114.6, 23.6]]], ['成渝', [[103.5, 29.2], [107.0, 31.0]]],
+    ['西安', [[108.65, 34.1], [109.25, 34.5]]], ['英国', [[-8.2, 49.8], [1.9, 59]]],
   ];
   for (const [label, bounds] of JUMPS) {
     const b = document.createElement('button');
@@ -651,11 +652,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addLayer({ id: 'build', type: 'line', source: 'build',
       paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
     // Metro lines in their official colours on a white casing, the way a metro map draws them.
+    // A suburban service (k = "s") shares its track with a national line, which keeps its own colour
+    // underneath; the service is shifted to one side so both can be read.
     const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
+    const beside = ['interpolate', ['linear'], ['zoom'], 6, ['case', ['==', ['get', 'k'], 's'], 1.6, 0], 12, ['case', ['==', ['get', 'k'], 's'], 4.5, 0], 16, ['case', ['==', ['get', 'k'], 's'], 7, 0]];
     map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
     map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1) } });
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': beside } });
     map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR,
@@ -837,7 +841,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       map.getCanvas().style.cursor = f ? 'pointer' : '';
       if (!f) { tip.remove(); return; }
       const p = f.properties;
-      let meta = CLASS_NAME[f.layer.id === 'metro' ? 'metro' : p.c] || '';
+      let meta = f.layer.id === 'metro' ? (p.k === 's' ? '市郊铁路' : '地铁') : CLASS_NAME[p.c] || '';
       if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
       if (p.s && p.c !== 'hsr350' && p.c !== 'hsr250') meta += ` · ${p.s} km/h`;
       const who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';

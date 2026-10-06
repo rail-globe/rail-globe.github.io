@@ -27,11 +27,15 @@ REL_TAGS = ("type", "route", "route_master", "name", "name:zh", "name:en", "ref"
 NAME_TAGS = ("name", "name:zh", "name:en")
 METRO_RAIL = {"subway", "light_rail", "monorail"}
 YARD_KINDS = {"yard", "depot", "workshop", "engine_shed", "roundhouse"}
-# west, south, east, north. Metro lines are only kept inside these boxes.
+# west, south, east, north. Metro tracks are only kept inside these boxes; scripts/process_osm.py
+# then narrows the Beijing-Tianjin and Yangtze-delta boxes down to the provinces themselves.
 METRO_REGIONS = {
     "gba": (111.3, 21.5, 115.5, 24.5),     # Guangdong-Hong Kong-Macao Greater Bay Area
-    "bj": (115.9, 39.4, 117.3, 40.6),      # Beijing
+    "jj": (115.4, 38.5, 118.1, 41.1),      # Beijing and Tianjin
+    "jzh": (116.3, 27.0, 123.0, 35.2),     # Shanghai, Jiangsu, Zhejiang
     "xa": (108.5, 33.9, 109.5, 34.6),      # Xi'an (with Xianyang)
+    "cd": (103.2, 29.9, 104.9, 31.3),      # Chengdu (with the lines out to Deyang, Meishan, Ziyang)
+    "cq": (105.9, 29.0, 107.2, 30.2),      # Chongqing
 }
 
 
