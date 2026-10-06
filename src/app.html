@@ -1,0 +1,694 @@
+<title>中国铁路网卫星图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap">
+<style>
+/*MAPLIBRE_CSS*/
+</style>
+<style>
+/* Layout: a full-bleed satellite globe; a translucent control column docks left on desktop and becomes a bottom sheet on phones. */
+:root {
+  color-scheme: dark;
+  --ground: #05090c;          /* space behind the globe */
+  --ground-glow: #10202b;
+  --panel: rgba(11, 17, 20, 0.86);
+  --panel-solid: #0f171b;
+  --fg: #edf2f3;
+  --muted: #93a3a9;
+  --rule: rgba(214, 232, 238, 0.13);
+  --field: rgba(214, 232, 238, 0.07);
+  --accent: #ff3b5c;          /* 复兴号红, also the 350 km/h class */
+  --hsr350: #ff3b5c;
+  --hsr250: #ff9f1c;
+  --hsr200: #ffd84d;
+  --metro: #5cc8ff;           /* 地铁无官方色时的默认色 */
+  --yard: #ffd08a;            /* 站场、车辆基地 */
+  --build: #ff8fb1;
+  --main: #d7ecff;
+  --branch: #8fb6cf;
+  --station: #ffffff;
+  --border: #ffffff;
+  --border-halo: #b98cff;     /* 国界线的晕带 */
+  --font-body: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+  --font-num: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", var(--font-body);
+  --r: 10px;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--ground); color: var(--fg); font: 13px/1.5 var(--font-body); overflow: hidden; }
+#map { position: fixed; inset: 0; background: radial-gradient(circle at 62% 46%, var(--ground-glow) 0%, var(--ground) 62%); }
+button, input { font: inherit; color: inherit; }
+
+/* ---------- control column ---------- */
+#panel {
+  position: fixed; z-index: 2;
+  top: calc(12px + env(safe-area-inset-top, 0px)); left: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  width: 336px; display: flex; flex-direction: column;
+  background: var(--panel); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--rule); border-radius: 14px; box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+.head { padding: 18px 18px 14px; border-bottom: 1px solid var(--rule); display: grid; gap: 12px; }
+.title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); }
+h1 { margin: 2px 0 0; font-size: 22px; line-height: 1.2; font-weight: 700; letter-spacing: 0.02em; text-wrap: balance; }
+h1 .bar { display: inline-block; width: 4px; height: 0.9em; background: var(--accent); margin-right: 8px; vertical-align: -0.08em; border-radius: 1px; }
+#sheetToggle { display: none; }
+.head-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.gh { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--rule); border-radius: 999px; background: var(--field); color: var(--fg); text-decoration: none; font-size: 12px; line-height: 1.4; }
+.gh:hover { background: var(--panel-solid); border-color: rgba(214, 232, 238, 0.3); }
+.gh:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.gh .star { color: #f2c94c; }
+.gh b { font: 600 13px var(--font-num); font-variant-numeric: tabular-nums; padding-left: 6px; border-left: 1px solid var(--rule); }
+.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fig { display: grid; gap: 0; }
+.fig b { font: 600 34px/1 var(--font-num); letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+.fig b small { font: 500 14px var(--font-body); margin-left: 3px; color: var(--muted); }
+.fig span { font-size: 12px; color: var(--muted); }
+.fig.hs b { color: var(--accent); }
+.src { font-size: 11px; color: var(--muted); }
+
+.scroll { overflow-y: auto; flex: 1; min-height: 0; overscroll-behavior: contain; }
+section { padding: 14px 18px; border-bottom: 1px solid var(--rule); display: grid; gap: 8px; }
+section:last-child { border-bottom: 0; }
+h2 { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: 0.08em; display: flex; justify-content: space-between; align-items: baseline; }
+h2 em { font-style: normal; font-family: var(--font-num); font-size: 13px; letter-spacing: 0.02em; }
+
+/* legend rows double as layer toggles */
+.layers { display: grid; gap: 2px; margin: 0 -8px; }
+.lyr { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 8px; cursor: pointer; user-select: none; }
+.lyr:hover { background: var(--field); }
+.lyr input { position: absolute; opacity: 0; pointer-events: none; }
+.sw { height: 14px; display: flex; align-items: center; }
+.sw i { display: block; width: 100%; border-radius: 3px; }
+.lyr .name { display: grid; line-height: 1.3; }
+.lyr .name small { color: var(--muted); font-size: 11px; }
+.lyr .spd { font: 600 15px var(--font-num); color: var(--muted); font-variant-numeric: tabular-nums; }
+.lyr.off .sw, .lyr.off .name, .lyr.off .spd { opacity: 0.35; }
+.lyr:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; background: var(--field); border-radius: 9px; }
+.seg button { border: 0; background: transparent; padding: 6px 8px; border-radius: 7px; cursor: pointer; display: grid; line-height: 1.25; text-align: left; }
+.seg button small { color: var(--muted); font-size: 11px; }
+.seg button[aria-pressed="true"] { background: var(--panel-solid); box-shadow: 0 0 0 1px var(--rule) inset; }
+.seg button:disabled { opacity: 0.4; cursor: not-allowed; }
+.seg button:focus-visible, .linelist button:focus-visible, #search:focus-visible, #clearSel:focus-visible, #sheetToggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.range { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; color: var(--muted); font-size: 12px; }
+.range input { accent-color: var(--accent); width: 100%; }
+.range output { font: 600 14px var(--font-num); color: var(--fg); min-width: 3ch; text-align: right; }
+.note { font-size: 11px; color: var(--muted); margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 1px solid var(--rule); background: var(--field); border-radius: 999px; padding: 4px 11px; cursor: pointer; font-size: 12px; }
+.chips button:hover { background: var(--panel-solid); }
+.chips button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+#sel { display: grid; gap: 4px; padding: 10px 12px; border-radius: var(--r); background: var(--field); border: 1px solid var(--rule); }
+#sel .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+#sel b { font-size: 15px; min-width: 0; overflow-wrap: anywhere; }
+#clearSel { border: 1px solid var(--rule); background: transparent; border-radius: 6px; padding: 2px 8px; cursor: pointer; font-size: 12px; flex: none; }
+#search { width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--rule); background: var(--field); outline: none; }
+#search::placeholder { color: var(--muted); }
+.linelist { list-style: none; margin: 0 -8px; padding: 0; display: grid; gap: 1px; }
+.linelist button { width: 100%; border: 0; background: transparent; padding: 6px 8px; border-radius: 7px; display: grid; grid-template-columns: 8px 1fr auto; gap: 10px; align-items: center; cursor: pointer; text-align: left; }
+.linelist button:hover, .linelist button[aria-current="true"] { background: var(--field); }
+.linelist i { width: 8px; height: 8px; border-radius: 50%; }
+.linelist .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linelist .kmh { font: 600 14px var(--font-num); color: var(--muted); font-variant-numeric: tabular-nums; }
+.more { font-size: 12px; color: var(--muted); padding: 4px 0 0; }
+.oplist { grid-template-columns: 1fr 1fr; column-gap: 4px; }
+.oplist button { grid-template-columns: 8px 1fr; gap: 8px; font-size: 12px; padding: 5px 8px; }
+.oplist button[aria-pressed="true"] { background: var(--field); box-shadow: 0 0 0 1px var(--rule) inset; }
+.foot { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.foot a { color: inherit; }
+
+/* hover card */
+.maplibregl-popup.tip .maplibregl-popup-content { background: var(--panel-solid); color: var(--fg); border: 1px solid var(--rule); border-radius: 8px; padding: 7px 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.5); font: 12px/1.45 var(--font-body); }
+.maplibregl-popup.tip .maplibregl-popup-tip { display: none; }
+.tip b { font-size: 13px; display: block; }
+.tip span { color: var(--muted); }
+.maplibregl-ctrl-attrib { background: rgba(11,17,20,0.7) !important; color: var(--muted); }
+.maplibregl-ctrl-attrib a { color: var(--muted) !important; }
+.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner { color: var(--muted); font-size: 11px; }
+.maplibregl-ctrl-attrib-button { filter: invert(1); opacity: 0.75; }
+.maplibregl-ctrl-group { background: var(--panel-solid); border: 1px solid var(--rule); }
+.maplibregl-ctrl-group button + button { border-top-color: var(--rule); }
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon { filter: invert(1) brightness(0.9); }
+.maplibregl-ctrl-scale { background: rgba(11,17,20,0.6); color: var(--fg); border-color: var(--fg); font-family: var(--font-num); font-size: 12px; }
+
+#loading { position: fixed; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 10px 16px; border-radius: 999px; background: var(--panel-solid); border: 1px solid var(--rule); font-size: 12px; color: var(--muted); }
+
+/* ---------- phone: bottom sheet ---------- */
+@media (max-width: 720px) {
+  #panel { left: 8px; right: 8px; top: auto; width: auto; bottom: calc(8px + env(safe-area-inset-bottom, 0px)); max-height: 62%; border-radius: 14px; }
+  #panel.collapsed .scroll { display: none; }
+  .head { padding: 14px 16px 12px; gap: 10px; }
+  h1 { font-size: 19px; }
+  .fig b { font-size: 28px; }
+  #sheetToggle { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--rule); background: var(--field); border-radius: 999px; padding: 4px 10px; cursor: pointer; font-size: 12px; flex: none; }
+  section { padding: 12px 16px; }
+  .maplibregl-ctrl-top-right { top: env(safe-area-inset-top, 0px); }
+  #loading { top: 30%; }
+  .src { display: none; }
+  #panel:not(.collapsed) .src { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="map" role="region" aria-label="中国铁路网卫星地图"></div>
+<div id="loading">正在载入线路数据…</div>
+
+<aside id="panel" aria-label="图层与线路">
+  <div class="head">
+    <div class="title-row">
+      <div>
+        <div class="eyebrow">中国 · 英国 · 卫星影像叠加</div>
+        <h1><span class="bar"></span>中国铁路网</h1>
+      </div>
+      <div class="head-actions">
+        <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
+          <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
+          <span>Star</span><b id="ghCount" hidden></b>
+        </a>
+        <button id="sheetToggle" type="button" aria-expanded="true" aria-controls="scroll">收起</button>
+      </div>
+    </div>
+    <div class="figs">
+      <div class="fig"><b>16.5<small>万公里</small></b><span>中国铁路营业里程</span></div>
+      <div class="fig hs"><b>5.0<small>万公里</small></b><span>其中高铁</span></div>
+    </div>
+    <div class="src">2025 年末数据 · 交通运输部《2025年交通运输行业发展统计公报》</div>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <section>
+      <h2>图层 <em id="dataDate"></em></h2>
+      <div class="layers" id="layers"></div>
+    </section>
+
+    <section>
+      <h2>视图</h2>
+      <div class="seg" role="group" aria-label="地图投影">
+        <button type="button" id="projGlobe" aria-pressed="true">地球<small>球面视图，不失真</small></button>
+        <button type="button" id="projFlat" aria-pressed="false">平面<small>墨卡托投影</small></button>
+      </div>
+      <div class="chips" id="jumps" role="group" aria-label="快速定位"></div>
+    </section>
+
+    <section>
+      <h2>英国运营公司 <em id="opCount"></em></h2>
+      <div class="seg" role="group" aria-label="英国线路上色方式">
+        <button type="button" id="ukByOp" aria-pressed="true">按运营公司<small>每条线取主要运营方</small></button>
+        <button type="button" id="ukByClass" aria-pressed="false">按线路等级<small>与中国同一套颜色</small></button>
+      </div>
+      <ul class="linelist oplist" id="opList"></ul>
+      <p class="note">点一家公司只看它的线路，再点一次恢复。浅色的英国线路没有客运运行线路数据，多为货运线。</p>
+    </section>
+
+    <section>
+      <h2>卫星底图</h2>
+      <p class="note" id="baseNote">Esri World Imagery 在线高清影像，放大到城市、车站级别时可看清站房与线路走向。</p>
+      <label class="range" for="dim">影像亮度
+        <input type="range" id="dim" min="30" max="100" step="5" value="70">
+        <output id="dimOut" for="dim">70%</output>
+      </label>
+    </section>
+
+    <section>
+      <h2>高铁与城际线路 <em id="lineCount"></em></h2>
+      <div id="sel" hidden>
+        <div class="row"><b id="selName"></b><button type="button" id="clearSel">清除</button></div>
+        <span class="note" id="selMeta"></span>
+      </div>
+      <input id="search" type="search" placeholder="搜索线路，如 京沪、广珠城际、High Speed" autocomplete="off" aria-label="搜索线路">
+      <ul class="linelist" id="lineList"></ul>
+      <div class="more" id="more"></div>
+    </section>
+
+    <section class="foot">
+      <div>线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL）。中国、英国数据均为 Geofabrik <span id="osmDate">2026-10-03</span> 提取；地铁线路名称与颜色取自 OSM 线路关系。每条线路按其多数轨道的等级整条归类。速度等级取自 OSM maxspeed 标签，未标注者按同名线路推断；双线分别绘制的区段会重叠显示。</div>
+      <div>卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics），在线加载，需要联网。</div>
+    </section>
+  </div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
+<script>
+(() => {
+  const css = getComputedStyle(document.documentElement);
+  const col = k => css.getPropertyValue('--' + k).trim();
+  const abs = u => new URL(u, document.baseURI).href;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isPhone = () => matchMedia('(max-width: 720px)').matches;
+
+  const CLASSES = [
+    { id: 'hsr350', label: '高速铁路', sub: '设计时速 300–350', spd: '350', src: 'hsr' },
+    { id: 'hsr250', label: '高速铁路', sub: '时速 250（含未标注）', spd: '250', src: 'hsr' },
+    { id: 'hsr200', label: '城际 / 快速铁路', sub: '时速 200 及以下，含大湾区城际', spd: '≤200', src: 'hsr' },
+    { id: 'metro', label: '地铁', sub: '大湾区、北京、西安，按线路官方色', spd: '', src: 'metro' },
+    { id: 'build', label: '在建线路', sub: '高铁为粉色虚线', spd: '', src: 'build' },
+    { id: 'main', label: '普速干线', sub: '客货共线的主要干线', spd: '', src: 'conv' },
+    { id: 'branch', label: '普速支线及其他', sub: '不含站场与专用线', spd: '', src: 'conv' },
+    { id: 'yards', label: '站场与车辆基地', sub: '站线、动车所、车辆段，放大后显示', spd: '', src: 'yards' },
+    { id: 'stations', label: '车站', sub: '白点为高铁沿线车站', spd: '', src: 'stations' },
+    { id: 'border', label: '国界', sub: '', spd: '', src: 'border' },
+  ];
+  const CLASS_NAME = { hsr350: '高速铁路 · 300–350 km/h', hsr250: '高速铁路 · 250 km/h', hsr200: '城际 / 快速铁路', metro: '地铁', main: '普速干线', branch: '普速铁路', build: '在建线路' };
+  const FAST = ['hsr350', 'hsr250', 'hsr200'];   // classes drawn from the 'hsr' source
+  const lineW = (a) => ['interpolate', ['exponential', 1.5], ['zoom'], 3, a[0], 6, a[1], 9, a[2], 12, a[3], 16, a[4]];
+  const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
+  let selected = null;
+  let ukOp = true;      // colour UK lines by operator
+  let opSel = null;     // operator shown on its own
+
+  // legend / toggles
+  const layersEl = document.getElementById('layers');
+  for (const c of CLASSES) {
+    const lab = document.createElement('label');
+    lab.className = 'lyr';
+    const swatch = c.id === 'yards'
+      ? `<i style="height:1.5px;background:${col('yard')}"></i>`
+      : c.id === 'metro'
+      ? `<i style="height:4px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 1.5px #fff"></i>`
+      : c.id === 'border'
+      ? `<i style="height:2px;border-radius:0;background:repeating-linear-gradient(90deg,${col('border')} 0 9px,transparent 9px 12px,${col('border')} 12px 14px,transparent 14px 17px);box-shadow:0 0 7px 2px ${col('border-halo')}"></i>`
+      : c.id === 'stations'
+      ? `<i style="width:9px;height:9px;border-radius:50%;background:${col('station')};box-shadow:0 0 0 2px #0008;margin-left:12px"></i>`
+      : c.id === 'build'
+        ? `<i style="height:0;border-top:3px dashed ${col('build')};border-radius:0"></i>`
+        : `<i style="height:${FAST.includes(c.id) ? 4 : c.id === 'main' ? 2.5 : 1.5}px;background:${col(c.id)};${FAST.includes(c.id) ? `box-shadow:0 0 8px ${col(c.id)}` : ''}"></i>`;
+    lab.innerHTML = `<input type="checkbox" id="t-${c.id}" checked><span class="sw">${swatch}</span><span class="name">${c.label}<small>${c.sub}</small></span><span class="spd">${c.spd}</span>`;
+    lab.querySelector('input').addEventListener('change', e => { visible[c.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
+    layersEl.appendChild(lab);
+  }
+
+  const panel = document.getElementById('panel');
+  const sheetBtn = document.getElementById('sheetToggle');
+
+  // Star count for the GitHub button; the button works without it if the request fails.
+  fetch('https://api.github.com/repos/rail-globe/rail-globe.github.io')
+    .then(r => (r.ok ? r.json() : null))
+    .then(d => {
+      if (!d || typeof d.stargazers_count !== 'number') return;
+      const el = document.getElementById('ghCount');
+      el.textContent = d.stargazers_count.toLocaleString();
+      el.hidden = false;
+    })
+    .catch(() => {});
+
+  const setSheet = collapsed => {
+    panel.classList.toggle('collapsed', collapsed);
+    sheetBtn.textContent = collapsed ? '图层与线路' : '收起';
+    sheetBtn.setAttribute('aria-expanded', String(!collapsed));
+  };
+  sheetBtn.addEventListener('click', () => setSheet(!panel.classList.contains('collapsed')));
+  if (isPhone()) setSheet(true);
+
+  const padding = () => isPhone()
+    ? { top: 56, bottom: Math.min(panel.offsetHeight + 24, Math.round(innerHeight * 0.7)), left: 16, right: 16 }
+    : { top: 40, bottom: 40, left: 370, right: 60 };
+
+  // Chinese labels are drawn with the device's own fonts. The few Latin and punctuation glyphs come
+  // from data/glyphs.json through an in-page protocol, so no font files are fetched from a server.
+  const glyphData = fetch(abs('data/glyphs.json')).then(r => r.json()).catch(() => ({}));
+  maplibregl.addProtocol('localglyph', async params => {
+    const b64 = (await glyphData)[params.url.split('/').pop()];
+    if (!b64) return { data: new ArrayBuffer(0) };
+    const bin = atob(b64);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return { data: buf.buffer };
+  });
+
+  const CHINA = [[73.5, 17.5], [135, 53.6]];
+  // A view in the address bar (#zoom/lat/lng) opens the map there; otherwise it frames China.
+  const parseView = () => {
+    const m = location.hash.match(/^#(\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/);
+    return m && Math.abs(+m[2]) <= 85 && Math.abs(+m[3]) <= 180 ? { zoom: +m[1], center: [+m[3], +m[2]] } : null;
+  };
+  const startView = parseView();
+  const map = new maplibregl.Map({
+    container: 'map',
+    style: {
+      version: 8,
+      glyphs: 'localglyph://{fontstack}/{range}',
+      projection: { type: 'globe' },
+      sky: { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 4.5, 0.8, 7, 0] },
+      sources: {},
+      layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#0b1a2a' } }],
+    },
+    ...(startView || { bounds: CHINA, fitBoundsOptions: { padding: padding() } }),
+    minZoom: 1.2,
+    maxZoom: 18,
+    attributionControl: false,
+    localIdeographFontFamily: "'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', sans-serif",
+    transformRequest: url => ({ url: abs(url) }),
+    dragRotate: false,
+    pitchWithRotate: false,
+  });
+  map.touchZoomRotate.disableRotation();
+  // Until the viewer moves the map, keep the whole country framed when the window changes size
+  // (the container can still be settling when the map is created).
+  let touched = !!startView;
+  map.on('movestart', e => { if (e.originalEvent) touched = true; });
+  map.on('resize', () => { if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 }); });
+  // The page can be loaded before its window has a size (a hidden pane or tab). The map then starts
+  // at a small default size and misses the first size change, so check the size ourselves.
+  const mapEl = document.getElementById('map');
+  const fitToWindow = () => {
+    const c = map.getCanvas();
+    if (mapEl.clientWidth && (Math.abs(c.clientWidth - mapEl.clientWidth) > 1 || Math.abs(c.clientHeight - mapEl.clientHeight) > 1)) map.resize();
+  };
+  new ResizeObserver(fitToWindow).observe(mapEl);
+  // Crossing between the wide and the narrow layout: the bottom sheet starts collapsed so the map shows.
+  matchMedia('(max-width: 720px)').addEventListener('change', e => {
+    setSheet(e.matches);
+    if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 });
+  });
+  document.addEventListener('visibilitychange', fitToWindow);
+  // Once the viewer has moved the map, the address bar keeps the current view so it can be bookmarked.
+  // The default view is never written, so a plain reload always returns to the whole country.
+  map.on('moveend', () => {
+    if (!touched) return;
+    const c = map.getCenter();
+    history.replaceState(null, '', `#${map.getZoom().toFixed(2)}/${c.lat.toFixed(4)}/${c.lng.toFixed(4)}`);
+  });
+  addEventListener('hashchange', () => {
+    const v = parseView();
+    if (v) { touched = true; map.jumpTo(v); }
+  });
+  const JUMPS = [
+    ['中国', CHINA], ['英国', [[-8.2, 49.8], [1.9, 59]]], ['大湾区', [[112.4, 21.9], [114.6, 23.6]]],
+    ['北京', [[116.0, 39.65], [116.85, 40.2]]], ['西安', [[108.65, 34.1], [109.25, 34.5]]],
+  ];
+  for (const [label, bounds] of JUMPS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    b.addEventListener('click', () => {
+      touched = label !== '中国';
+      if (!touched) history.replaceState(null, '', location.pathname + location.search);
+      map.fitBounds(bounds, { padding: padding(), duration: reduced ? 0 : 1800 });
+      if (isPhone()) setSheet(true);
+    });
+    document.getElementById('jumps').appendChild(b);
+  }
+  const projBtn = { globe: document.getElementById('projGlobe'), mercator: document.getElementById('projFlat') };
+  for (const [type, btn] of Object.entries(projBtn)) {
+    btn.addEventListener('click', () => {
+      map.setProjection({ type });
+      for (const [t, b] of Object.entries(projBtn)) b.setAttribute('aria-pressed', String(t === type));
+      if (!touched) map.fitBounds(CHINA, { padding: padding(), duration: 0 });
+    });
+  }
+  map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
+  map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: '© OpenStreetMap 贡献者' }), 'bottom-right');
+
+  // Revalidate so rebuilt data is never read from a stale cache; retries cover a dropped connection.
+  const getJSON = (u, tries = 3) => fetch(u, { cache: 'no-cache' })
+    .then(r => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); })
+    .catch(err => { if (tries <= 1) throw err; return new Promise(ok => setTimeout(ok, 400)).then(() => getJSON(u, tries - 1)); });
+
+  // The satellite imagery is loaded online; check once so a blocked or offline connection is explained.
+  const probeLive = () => {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 5000);
+    return fetch('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/12/26', { mode: 'cors', signal: ctl.signal })
+      .then(r => r.ok).catch(() => false).finally(() => clearTimeout(t));
+  };
+
+  const dataReady = Promise.all([
+    getJSON('data/rail_hsr.geojson'), getJSON('data/rail_build.geojson'),
+    getJSON('data/rail_conv.geojson'), getJSON('data/stations.geojson'), getJSON('data/lines.json'),
+    getJSON('data/cities.json'), getJSON('data/border.geojson'), getJSON('data/metro.geojson'),
+    getJSON('data/metro_stations.geojson'), getJSON('data/uk_operators.json'), probeLive(),
+  ]);
+  dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
+
+  map.on('load', async () => {
+    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, ops, live] = await dataReady;
+
+    // ---- imagery ----
+    const dim = document.getElementById('dim');
+    map.addSource('esri', {
+      type: 'raster', tileSize: 256, maxzoom: 19,
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics',
+    });
+    map.addLayer({ id: 'esri', type: 'raster', source: 'esri', paint: { 'raster-fade-duration': 150 } });
+
+    // ---- national boundary: dash-dot line on a violet halo ----
+    map.addSource('border', { type: 'geojson', data: border, tolerance: 0.3 });
+    const LAND = ['==', ['get', 'k'], 'land'], SEA = ['==', ['get', 'k'], 'sea'];
+    map.addLayer({ id: 'border-halo', type: 'line', source: 'border', filter: LAND, layout: { 'line-join': 'round' },
+      paint: { 'line-color': col('border-halo'), 'line-width': lineW([4, 6, 9, 12, 16]), 'line-blur': lineW([3, 4, 6, 8, 10]), 'line-opacity': 0.55 } });
+    map.addLayer({ id: 'border-casing', type: 'line', source: 'border', filter: LAND, layout: { 'line-join': 'round' },
+      paint: { 'line-color': '#0b1418', 'line-width': lineW([2.2, 2.8, 3.6, 4.4, 5.6]), 'line-opacity': 0.55 } });
+    map.addLayer({ id: 'border', type: 'line', source: 'border', filter: LAND, layout: { 'line-join': 'round' },
+      paint: { 'line-color': col('border'), 'line-width': lineW([1.1, 1.5, 2, 2.6, 3.4]), 'line-dasharray': [6, 2, 1.2, 2] } });
+    map.addLayer({ id: 'border-sea-halo', type: 'line', source: 'border', filter: SEA,
+      paint: { 'line-color': col('border-halo'), 'line-width': lineW([3, 4, 6, 8, 10]), 'line-blur': lineW([2, 3, 4, 6, 8]), 'line-opacity': 0.5 } });
+    map.addLayer({ id: 'border-sea', type: 'fill', source: 'border', filter: SEA,
+      paint: { 'fill-color': col('border'), 'fill-opacity': 0.9 } });
+
+    // ---- rail ----
+    map.addSource('conv', { type: 'geojson', data: conv, tolerance: 0.45 });
+    map.addSource('build', { type: 'geojson', data: build, tolerance: 0.45 });
+    map.addSource('hsr', { type: 'geojson', data: hsr, tolerance: 0.35 });
+    map.addSource('stations', { type: 'geojson', data: stations });
+    map.addSource('metro', { type: 'geojson', data: metro, tolerance: 0.3 });
+    map.addSource('metro-stations', { type: 'geojson', data: metroStations });
+    map.addSource('cities', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: cities.map(([n, x, y, r]) => ({ type: 'Feature', properties: { n, r }, geometry: { type: 'Point', coordinates: [x, y] } })) },
+    });
+
+    const FAST_COLOR = ['match', ['get', 'c'], 'hsr350', col('hsr350'), 'hsr250', col('hsr250'), col('hsr200')];
+    const round = { 'line-cap': 'round', 'line-join': 'round' };
+    const EMPTY = { type: 'FeatureCollection', features: [] };
+    // Yard and depot tracks sit under everything else and only appear once zoomed in.
+    map.addSource('yards', { type: 'geojson', data: EMPTY, tolerance: 0.2 });
+    map.addSource('depots', { type: 'geojson', data: EMPTY });
+    map.addLayer({ id: 'yards', type: 'line', source: 'yards', minzoom: 9.5, layout: round,
+      paint: { 'line-color': col('yard'), 'line-opacity': 0.8, 'line-width': ['interpolate', ['exponential', 1.5], ['zoom'], 9.5, 0.4, 13, 1, 16, 2.2] } });
+    // Colours, widths and opacities of the rail layers are set in styleRail().
+    map.addLayer({ id: 'branch', type: 'line', source: 'conv', filter: ['==', ['get', 'c'], 'branch'], minzoom: 3.5, layout: round });
+    map.addLayer({ id: 'main', type: 'line', source: 'conv', filter: ['==', ['get', 'c'], 'main'], layout: round });
+    map.addLayer({ id: 'build', type: 'line', source: 'build',
+      paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
+    // Metro lines in their official colours on a white casing, the way a metro map draws them.
+    const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
+    map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
+    map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1) } });
+    map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': FAST_COLOR,
+        'line-width': lineW([3.5, 5.5, 8, 10, 14]), 'line-blur': lineW([2.5, 4, 6, 8, 10]), 'line-opacity': 0.35 } });
+    for (const id of ['hsr200', 'hsr250', 'hsr350']) map.addLayer({ id, type: 'line', source: 'hsr', filter: ['==', ['get', 'c'], id], layout: round });
+    map.addLayer({ id: 'hl', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95 } });
+    map.addLayer({ id: 'hl-core', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]) } });
+
+    map.addLayer({ id: 'stations', type: 'circle', source: 'stations', minzoom: 5,
+      filter: ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
+      paint: {
+        'circle-color': ['case', ['has', 'h'], col('station'), '#c9dbe6'],
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, ['case', ['has', 'h'], 1.6, 1], 9, ['case', ['has', 'h'], 3.6, 2.2], 14, ['case', ['has', 'h'], 6, 4]],
+        'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 12, 1.5],
+      } });
+    map.addLayer({ id: 'station-labels', type: 'symbol', source: 'stations', minzoom: 8,
+      filter: ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]],
+      layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 8, 11, 14, 14],
+        'text-offset': [0, 0.9], 'text-anchor': 'top', 'text-optional': true, 'symbol-sort-key': ['case', ['has', 'h'], 0, 1] },
+      paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.4 } });
+
+    map.addLayer({ id: 'depots', type: 'circle', source: 'depots', minzoom: 9.5,
+      paint: { 'circle-color': col('yard'), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9.5, 2, 14, 4.5],
+        'circle-stroke-color': '#0b1418', 'circle-stroke-width': 1.2 } });
+    map.addLayer({ id: 'depot-labels', type: 'symbol', source: 'depots', minzoom: 10.5,
+      layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 10.5, 11, 15, 13],
+        'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
+      paint: { 'text-color': col('yard'), 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.4 } });
+    map.addLayer({ id: 'metro-stations', type: 'circle', source: 'metro-stations', minzoom: 10,
+      paint: { 'circle-color': '#ffffff', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 13, 3.2, 16, 5.5],
+        'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 10, 0.6, 14, 1.6] } });
+    map.addLayer({ id: 'metro-station-labels', type: 'symbol', source: 'metro-stations', minzoom: 12.2,
+      layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 12, 10.5, 16, 13],
+        'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
+      paint: { 'text-color': '#eaf4fb', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.3 } });
+
+    map.addLayer({ id: 'city-dots', type: 'circle', source: 'cities', maxzoom: 9,
+      filter: ['any', ['==', ['get', 'r'], 1], ['>=', ['zoom'], 4.6]],
+      paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 2, 8, 4], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.4 } });
+    map.addLayer({ id: 'city-labels', type: 'symbol', source: 'cities', maxzoom: 9,
+      filter: ['any', ['==', ['get', 'r'], 1], ['>=', ['zoom'], 4.6]],
+      layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 3, ['case', ['==', ['get', 'r'], 1], 12, 11], 8, 16],
+        'text-anchor': 'left', 'text-offset': [0.6, 0], 'text-optional': true, 'symbol-sort-key': ['get', 'r'], 'text-letter-spacing': 0.05 },
+      paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.6 } });
+
+    if (!live) document.getElementById('baseNote').textContent = '在线卫星影像加载不了，请检查网络后刷新页面。线路和车站仍可正常查看。';
+
+    const dimOut = document.getElementById('dimOut');
+    const applyDim = () => {
+      const v = dim.value / 100;
+      dimOut.textContent = dim.value + '%';
+      map.setPaintProperty('esri', 'raster-brightness-max', v);
+      map.setPaintProperty('esri', 'raster-saturation', -0.15);
+    };
+    dim.addEventListener('input', applyDim);
+    applyDim();
+
+    // ---- line list ----
+    const listed = lines.filter(l => l.tk >= 15);
+    const byName = new Map(lines.map(l => [l.n, l]));
+    document.getElementById('lineCount').textContent = listed.length + ' 条';
+    const listEl = document.getElementById('lineList');
+    const moreEl = document.getElementById('more');
+    const search = document.getElementById('search');
+    const LIMIT = 80;
+    const renderList = () => {
+      const q = search.value.trim();
+      const hits = q ? listed.filter(l => l.n.includes(q)) : listed;
+      listEl.replaceChildren(...hits.slice(0, LIMIT).map(l => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.innerHTML = `<i style="background:${col(l.c)}"></i><span class="nm"></span><span class="kmh">${l.s || ''}</span>`;
+        b.querySelector('.nm').textContent = l.n;
+        if (selected === l.n) b.setAttribute('aria-current', 'true');
+        b.addEventListener('click', () => select(l.n, true));
+        li.appendChild(b);
+        return li;
+      }));
+      moreEl.textContent = hits.length > LIMIT ? `另有 ${hits.length - LIMIT} 条，输入关键词缩小范围` : hits.length ? '' : '没有匹配的线路';
+    };
+    search.addEventListener('input', renderList);
+    renderList();
+
+    // ---- colours, widths and opacities of the rail layers ----
+    // UK lines can take their operator's colour (property o); one operator can be isolated.
+    const OP_COLOR = ops.length ? ['match', ['get', 'o'], ...ops.flatMap(o => [o.n, o.col]), '#ffffff'] : '#ffffff';
+    const W = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6] };
+    const ZS = [3, 6, 9, 12, 16];
+    const stopW = (cls, i) => (ukOp && cls !== 'fast' ? ['case', ['has', 'o'], +(W[cls][i] * 1.6).toFixed(2), W[cls][i]] : W[cls][i]);
+    const widthFor = cls => ['interpolate', ['exponential', 1.5], ['zoom'], ...ZS.flatMap((z, i) => [z, stopW(cls, i)])];
+    const colorFor = base => (ukOp ? ['case', ['has', 'o'], OP_COLOR, base] : base);
+    const opacityFor = (base, dimmed = 0.12) => (ukOp && opSel ? ['case', ['all', ['has', 'o'], ['!=', ['get', 'o'], opSel]], dimmed, base] : base);
+    function styleRail() {
+      const sel = !!selected;
+      const set = (id, color, width, opacity) => {
+        map.setPaintProperty(id, 'line-color', color);
+        map.setPaintProperty(id, 'line-width', width);
+        map.setPaintProperty(id, 'line-opacity', opacity);
+      };
+      set('branch', colorFor(col('branch')), widthFor('branch'), opacityFor(sel ? 0.35 : 0.7));
+      set('main', colorFor(col('main')), widthFor('main'), opacityFor(sel ? 0.45 : 0.85));
+      for (const id of FAST) set(id, colorFor(col(id)), widthFor('fast'), opacityFor(sel ? 0.4 : 1));
+      map.setPaintProperty('hsr-glow', 'line-color', colorFor(FAST_COLOR));
+      map.setPaintProperty('hsr-glow', 'line-opacity', opacityFor(sel ? 0.12 : 0.35, 0.04));
+      map.setPaintProperty('hl-core', 'line-color', colorFor(FAST_COLOR));
+    }
+    styleRail();
+
+    // ---- UK operators ----
+    const opList = document.getElementById('opList');
+    const btnOp = document.getElementById('ukByOp'), btnCls = document.getElementById('ukByClass');
+    document.getElementById('opCount').textContent = ops.length + ' 家';
+    const renderOps = () => {
+      btnOp.setAttribute('aria-pressed', String(ukOp));
+      btnCls.setAttribute('aria-pressed', String(!ukOp));
+      opList.hidden = !ukOp;
+      opList.replaceChildren(...ops.map(o => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.title = `${o.n}：约 ${o.km.toLocaleString()} 公里轨道`;
+        b.innerHTML = `<i style="background:${o.col}"></i><span class="nm"></span>`;
+        b.querySelector('.nm').textContent = o.n;
+        b.setAttribute('aria-pressed', String(opSel === o.n));
+        b.addEventListener('click', () => { opSel = opSel === o.n ? null : o.n; styleRail(); renderOps(); });
+        li.appendChild(b);
+        return li;
+      }));
+    };
+    const setUkMode = on => { ukOp = on; if (!on) opSel = null; styleRail(); renderOps(); };
+    btnOp.addEventListener('click', () => setUkMode(true));
+    btnCls.addEventListener('click', () => setUkMode(false));
+    renderOps();
+
+    // ---- selection ----
+    const selBox = document.getElementById('sel');
+    function select(name, fly) {
+      selected = name;
+      if (name) touched = true;
+      const f = name ? ['==', ['get', 'n'], name] : ['==', ['get', 'n'], '\u0000'];
+      map.setFilter('hl', f);
+      map.setFilter('hl-core', f);
+      styleRail();
+      selBox.hidden = !name;
+      if (name) {
+        const l = byName.get(name);
+        document.getElementById('selName').textContent = name;
+        document.getElementById('selMeta').textContent = l ? `${l.c === 'hsr200' ? '城际 / 快速铁路' : '高速铁路'}${l.s ? ` · 标注最高时速 ${l.s} km/h` : ''}` : '';
+        if (fly && l) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 10, duration: reduced ? 0 : 1200 });
+        if (isPhone() && fly) setSheet(true);
+      }
+      renderList();
+    }
+    document.getElementById('clearSel').addEventListener('click', () => select(null));
+
+    // ---- hover + click on lines ----
+    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'build', 'main', 'branch'];
+    const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
+    const pick = pt => {
+      const layers = PICK.filter(id => map.getLayoutProperty(id, 'visibility') !== 'none');
+      const fs = map.queryRenderedFeatures([[pt.x - 5, pt.y - 5], [pt.x + 5, pt.y + 5]], { layers });
+      fs.sort((a, b) => PICK.indexOf(a.layer.id) - PICK.indexOf(b.layer.id));
+      return fs[0];
+    };
+    const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+    map.on('mousemove', e => {
+      const f = pick(e.point);
+      map.getCanvas().style.cursor = f ? 'pointer' : '';
+      if (!f) { tip.remove(); return; }
+      const p = f.properties;
+      let meta = CLASS_NAME[f.layer.id === 'metro' ? 'metro' : p.c] || '';
+      if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
+      if (p.s && p.c !== 'hsr350' && p.c !== 'hsr250') meta += ` · ${p.s} km/h`;
+      const who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
+      tip.setLngLat(e.lngLat).setHTML(`<b>${esc(p.n || '未命名线路')}</b><span>${esc(meta)}</span>${who}`).addTo(map);
+    });
+    map.getCanvas().addEventListener('mouseleave', () => tip.remove());
+    map.on('click', e => {
+      const f = pick(e.point);
+      if (f && f.properties.n && FAST.includes(f.properties.c) && f.layer.id !== 'metro') select(f.properties.n, false);
+      else if (!f) select(null);
+    });
+
+    applyVisibility();
+    document.getElementById('loading').hidden = true;
+    // Yard tracks are large and only visible when zoomed in, so they load after everything else.
+    getJSON('data/yards.geojson').then(d => map.getSource('yards').setData(d)).catch(() => {});
+    getJSON('data/depots.geojson').then(d => map.getSource('depots').setData(d)).catch(() => {});
+  });
+
+  function applyVisibility() {
+    if (!map.getLayer('hsr350')) return;
+    const set = (id, on) => map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
+    for (const id of [...FAST, 'build', 'main', 'branch']) set(id, visible[id]);
+    for (const id of ['yards', 'depots', 'depot-labels']) set(id, visible.yards);
+    for (const id of ['metro-casing', 'metro', 'metro-stations', 'metro-station-labels']) set(id, visible.metro);
+    set('stations', visible.stations);
+    for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
+    set('station-labels', visible.stations);
+    set('hsr-glow', FAST.some(id => visible[id]));
+    map.setFilter('hsr-glow', ['in', ['get', 'c'], ['literal', FAST.filter(id => visible[id])]]);
+  }
+})();
+</script>

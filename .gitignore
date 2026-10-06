@@ -1,0 +1,6 @@
+# Downloaded OSM extracts and intermediate files (about 4 GB); rebuild with the scripts
+data/raw/
+# Build variant without a document skeleton, not used by the site
+dist/
+__pycache__/
+.DS_Store
