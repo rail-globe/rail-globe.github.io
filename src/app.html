@@ -285,7 +285,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
           <button type="button" id="projFlat" aria-pressed="false">平面</button>
         </div>
       </div>
-      <div>
+      <div id="ukSec">
         <p class="caption"><span>英国线路的颜色</span><span id="opCount"></span></p>
         <div class="segmented" role="group" aria-label="英国线路上色方式">
           <span class="thumb"></span>
@@ -314,13 +314,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const col = k => css.getPropertyValue('--' + k).trim();
   const abs = u => new URL(u, document.baseURI).href;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const WITH_UK = /*WITH_UK*/true;      // set from site.json by scripts/build.py
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
 
   const CLASSES = [
     { id: 'hsr350', label: '高速铁路', sub: '设计时速 300–350', spd: '350', src: 'hsr' },
     { id: 'hsr250', label: '高速铁路', sub: '时速 250（含未标注）', spd: '250', src: 'hsr' },
     { id: 'hsr200', label: '城际 / 快速铁路', sub: '时速 200 及以下，含大湾区城际', spd: '≤200', src: 'hsr' },
-    { id: 'metro', label: '地铁与市郊铁路', sub: '京津、江浙沪、成渝、大湾区、西安', spd: '', src: 'metro' },
+    { id: 'metro', label: '地铁 / 市郊', sub: '含地铁公司运营的城际和市域线', spd: '', src: 'metro' },
+    { id: 'suburb', label: '市郊列车', sub: '铁路局运营，借国铁线路运行', spd: '', src: 'metro' },
     { id: 'build', label: '在建线路', sub: '高铁为粉色虚线', spd: '', src: 'build' },
     { id: 'main', label: '普速干线', sub: '客货共线的主要干线', spd: '', src: 'conv' },
     { id: 'branch', label: '普速支线及其他', sub: '不含站场与专用线', spd: '', src: 'conv' },
@@ -333,7 +335,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const lineW = (a) => ['interpolate', ['exponential', 1.5], ['zoom'], 3, a[0], 6, a[1], 9, a[2], 12, a[3], 16, a[4]];
   const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
   let selected = null;
-  let ukOp = true;      // colour UK lines by operator
+  let ukOp = WITH_UK;   // colour UK lines by operator
+  document.getElementById('ukSec').hidden = !WITH_UK;
   let opSel = null;     // operator shown on its own
 
   // legend / toggles
@@ -343,6 +346,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     lab.className = 'row lyr';
     const swatch = c.id === 'yards'
       ? `<i style="height:1.5px;background:${col('yard')}"></i>`
+      : c.id === 'suburb'
+      ? `<i style="height:3px;background:#2f5f9e;box-shadow:0 0 0 1.5px #fff"></i>`
       : c.id === 'metro'
       ? `<i style="height:4px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 1.5px #fff"></i>`
       : c.id === 'border'
@@ -550,7 +555,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     ['中国', CHINA], ['京津', [[115.9, 38.85], [117.9, 40.35]]], ['长三角', [[118.4, 29.7], [122.0, 32.5]]],
     ['大湾区', [[112.4, 21.9], [114.6, 23.6]]], ['成渝', [[103.5, 29.2], [107.0, 31.0]]],
     ['西安', [[108.65, 34.1], [109.25, 34.5]]], ['英国', [[-8.2, 49.8], [1.9, 59]]],
-  ];
+  ].filter(j => WITH_UK || j[0] !== '英国');
   for (const [label, bounds] of JUMPS) {
     const b = document.createElement('button');
     b.type = 'button';
@@ -647,14 +652,22 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addLayer({ id: 'main', type: 'line', source: 'conv', filter: ['==', ['get', 'c'], 'main'], layout: round });
     map.addLayer({ id: 'build', type: 'line', source: 'build',
       paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
-    // Metro lines in their official colours on a white casing, the way a metro map draws them.
-    // A suburban service (k = "s") shares its track with a national line, which keeps its own colour
-    // underneath; the service is shifted to one side so both can be read.
-    const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
-    const beside = ['interpolate', ['linear'], ['zoom'], 6, ['case', ['==', ['get', 'k'], 's'], 1.6, 0], 12, ['case', ['==', ['get', 'k'], 's'], 4.5, 0], 16, ['case', ['==', ['get', 'k'], 's'], 7, 0]];
-    map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
-    map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 6, layout: { 'line-cap': 'round', 'line-join': 'round' },
+    // Urban rail in official line colours on a white casing, the way a metro map draws it. That
+    // includes intercity and suburban lines a metro company operates (k = "m"), which are long
+    // enough to show from further out. A bureau-operated suburban service (k = "s") shares its track
+    // with a national line that keeps its own colour, so it is drawn shifted to one side.
+    const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, 0.4 * k, 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
+    const urban = ['all', ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
+    const shared = ['==', ['get', 'k'], 's'];
+    const beside = ['interpolate', ['linear'], ['zoom'], 6, 1.6, 12, 4.5, 16, 7];
+    const fadeIn = ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9];
+    map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': fadeIn } });
+    map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1) } });
+    map.addLayer({ id: 'suburb-casing', type: 'line', source: 'metro', minzoom: 6, filter: shared, layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': fadeIn } });
+    map.addLayer({ id: 'suburb', type: 'line', source: 'metro', minzoom: 6, filter: shared, layout: round,
       paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': beside } });
     map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -823,7 +836,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     document.getElementById('clearSel').addEventListener('click', () => select(null));
 
     // ---- hover + click on lines ----
-    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'build', 'main', 'branch'];
+    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'suburb', 'build', 'main', 'branch'];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
       const layers = PICK.filter(id => map.getLayoutProperty(id, 'visibility') !== 'none');
@@ -837,7 +850,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       map.getCanvas().style.cursor = f ? 'pointer' : '';
       if (!f) { tip.remove(); return; }
       const p = f.properties;
-      let meta = f.layer.id === 'metro' ? (p.k === 's' ? '市郊铁路' : '地铁') : CLASS_NAME[p.c] || '';
+      let meta = f.layer.id === 'suburb' ? '市郊列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : '地铁') : CLASS_NAME[p.c] || '';
       if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
       if (p.s && p.c !== 'hsr350' && p.c !== 'hsr250') meta += ` · ${p.s} km/h`;
       const who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
@@ -1057,7 +1070,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         return;
       }
       const f = pick(e.point);
-      if (f && f.properties.n && FAST.includes(f.properties.c) && f.layer.id !== 'metro') select(f.properties.n, false);
+      if (f && f.properties.n && FAST.includes(f.properties.c) && FAST.includes(f.layer.id)) select(f.properties.n, false);
       else if (!f) select(null);
     });
 
@@ -1074,6 +1087,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     for (const id of [...FAST, 'build', 'main', 'branch']) set(id, visible[id]);
     for (const id of ['yards', 'depots', 'depot-labels']) set(id, visible.yards);
     for (const id of ['metro-casing', 'metro', 'metro-stations', 'metro-station-labels']) set(id, visible.metro);
+    for (const id of ['suburb-casing', 'suburb']) set(id, visible.suburb);
     set('stations', visible.stations);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
     set('station-labels', visible.stations);

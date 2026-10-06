@@ -10,6 +10,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 page = (ROOT / "src" / "app.html").read_text()
 page = page.replace("/*MAPLIBRE_CSS*/", (ROOT / "vendor" / "maplibre-gl.css").read_text())
+# site.json decides what this build of the site contains, e.g. {"uk": false} leaves the UK out.
+site = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
+assert "/*WITH_UK*/true" in page
+page = page.replace("/*WITH_UK*/true", "true" if site.get("uk", True) else "false")
 local = '<!doctype html>\n<html lang="zh-CN">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + page
 (ROOT / "index.html").write_text(local)
 (ROOT / "dist").mkdir(exist_ok=True)
