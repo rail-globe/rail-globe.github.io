@@ -58,7 +58,7 @@ from shapely.prepared import prep
 from shapely.ops import linemerge, substring, unary_union
 from shapely.strtree import STRtree
 
-from single_track import bridge, join_up, one_track, smooth, stitch
+from single_track import bridge, curved, join_up, one_track, smooth, stitch
 from finish_display import finish_metro
 from rail_classes import grade_votes, principal_class
 from rail_status import corrected_tags, load_rules
@@ -77,6 +77,13 @@ RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data"
 TOL = {"hsr350": 0.00012, "hsr250": 0.00012, "hsr200": 0.0001,
        "main": 0.0002, "branch": 0.0003, "build": 0.0002, "metro": 0.00006}
+# How finely a bend is drawn back as a curve (single_track.curved): a point for about every so many
+# degrees of turning, at most so many to a stretch, none closer together than so far (degrees).
+# Every point is paid for in the size of the files the page loads, and the conventional network is
+# both the longest and the most winding: the fast lines and the metros, drawn thick and looked at
+# closely, get the fine curves, the conventional lines enough to take the corners off.
+CURVE = {"hsr350": (4, 5, 0.0003), "hsr250": (4, 5, 0.0003), "hsr200": (4, 5, 0.0003), "metro": (5, 4, 0.0003),
+         "main": (8, 3, 0.0006), "branch": (8, 3, 0.0006), "build": (8, 3, 0.0006)}
 SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight;industrial"}
 METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
 METRO_DEFAULT = "#5cc8ff"
@@ -227,9 +234,10 @@ def runs_of(lines):
     return list(merged.geoms) if merged.geom_type == "MultiLineString" else [merged]
 
 
-def rounded(geoms, tol, join=True):
+def rounded(geoms, tol, join=True, curve=None):
     """Simplified, rounded coordinate lists for the map layers. With join, the geometries are the
-    pieces of one line and are made continuous."""
+    pieces of one line and are made continuous. With curve (an entry of CURVE), the bends left by
+    simplifying are drawn back as curves, so a line has no sharp angle at its vertices."""
     if join and len(geoms) > 1:
         geoms = stitch(runs_of(geoms))
     out = []
@@ -238,9 +246,9 @@ def rounded(geoms, tol, join=True):
         # used to reintroduce metre-sized reversals at the joins, after they had been smoothed.
         # The reduction stage already removes duplicate tracks and turnback stubs. At this
         # stage preserve all remaining vertices: another run may end at one of them.
-        s = LineString(smooth(list(g.simplify(tol, preserve_topology=False).coords), reverse=181))
-        if s.length > 0:
-            out.append([[round(x, 6), round(y, 6)] for x, y in s.coords])
+        co = smooth(list(g.simplify(tol, preserve_topology=False).coords), reverse=181)
+        if len(co) > 1 and LineString(co).length > 0:
+            out.append([[round(x, 6), round(y, 6)] for x, y in (curved(co, *curve, within=tol) if curve else co)])
     return out
 
 
@@ -259,10 +267,10 @@ def drawn_once(tracks, every=None):
     return {k: d for k, (_, d) in once.items()}
 
 
-def merge_simplify(lines, tol, single=True):
+def merge_simplify(lines, tol, single=True, curve=None):
     """Join touching segments, simplify, and return (rounded coordinate lists, every run of track)."""
     parts = runs_of(lines)
-    return rounded(one_track(parts) if single else parts, tol, join=single), parts
+    return rounded(one_track(parts) if single else parts, tol, join=single, curve=curve), parts
 
 
 def same_way(chains):
@@ -910,7 +918,7 @@ for (cls, nm, country, op, by_metro), ws in groups.items():
         alone = [g for g in drawn if g.length < STUB_DEG and all(g.distance(h) > STUB_DEG for h in drawn if h is not g)]
         stubs += [(nm, g) for g in alone]
         drawn = [g for g in drawn if not any(g is a for a in alone)]
-    simp = rounded(drawn, TOL[cls])
+    simp = rounded(drawn, TOL[cls], curve=CURVE[cls])
     length = sum(w["km"] for w in ws)
     track_km[(country, cls)] += length
     listed = cls.startswith("hsr")
@@ -955,7 +963,7 @@ for nm, g in stubs:
     build_groups[(nm, True)].append(list(g.coords))
 print("pieces of fast lines drawn as under construction (laid ahead of the line):", sorted(Counter(nm for nm, _ in stubs).items()))
 for (nm, hs), lines in build_groups.items():
-    simp, _ = merge_simplify(lines, TOL["build"])
+    simp, _ = merge_simplify(lines, TOL["build"], curve=CURVE["build"])
     if simp:
         props = {"c": "build"}
         if nm:
@@ -966,7 +974,7 @@ for (nm, hs), lines in build_groups.items():
 for key, cls, on, lines, one in shared:
     if key in metro_run:
         continue
-    out = [[[round(x, 5), round(y, 5)] for x, y in g.simplify(TOL[cls], preserve_topology=False).coords]
+    out = [[[round(x, 6), round(y, 6)] for x, y in curved(list(g.simplify(TOL[cls], preserve_topology=False).coords), *CURVE[cls], within=TOL[cls])]
            for g in ([LineString(lines[0])] if one else single_path([lines], one_way=False))]
     if out:
         feats["shared"].append({"type": "Feature", "properties": {"c": cls, "n": line_name[key], "on": "、".join(on)},
@@ -1327,7 +1335,7 @@ for key, pieces in display_parts.items():
             if a[0] * b[0] + a[1] * b[1] < 0:
                 g = LineString(list(g.coords)[::-1])
         oriented.append(g)
-    simp = rounded(oriented, TOL["metro"], join=False)
+    simp = rounded(oriented, TOL["metro"], join=False)      # curved last of all, in finish_metro()
     if simp:
         metro_feats.append({"type": "Feature", "properties": metro_props(key), "geometry": geometry(simp)})
 print("metro lines drawn side by side (km):", {k: round(v, 1) for k, v in shared_km.most_common(16)},
@@ -1411,7 +1419,7 @@ for f in metro_feats:
     if lines:
         f["geometry"] = geometry(lines)
 
-finish_metro(metro_feats, metro_routing + [(nm, col, cos) for (nm, col), cos in moved_tracks.items()])
+finish_metro(metro_feats, metro_routing + [(nm, col, cos) for (nm, col), cos in moved_tracks.items()], curve=CURVE["metro"], within=TOL["metro"])
 
 # ---------------------------------------------------------------- metro lines by city
 def spread(f):

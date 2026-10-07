@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from shapely.geometry import LineString
 
-from single_track import bridge, one_track, smooth, stitch, unfold
+from single_track import bridge, curved, one_track, smooth, stitch, unfold
 
 
 def unfolded(parts):
@@ -22,7 +22,7 @@ def unfolded(parts):
     return parts
 
 
-def finish_metro(features, routing):
+def finish_metro(features, routing, curve=None, within=None):
     source = defaultdict(list)
     for name, colour, tracks in routing:
         source[name].extend([list(map(tuple, co)) for co in tracks])
@@ -48,7 +48,9 @@ def finish_metro(features, routing):
             parts = unfolded(parts)
         out = []
         for g in parts:
-            co = [[round(x, 6), round(y, 6)] for x, y in smooth(list(g.coords), reverse=181)]
+            # last of all the bends are drawn back as curves: nothing after this moves a vertex
+            co = smooth(list(g.coords), reverse=181)
+            co = [[round(x, 6), round(y, 6)] for x, y in (curved(co, *curve, within=within) if curve else co)]
             if len(co) > 1:
                 out.append(co)
         if out:

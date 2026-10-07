@@ -258,6 +258,87 @@ def smooth(co, reverse=150.0, corner=55.0):
     return co
 
 
+def curved(co, per=2.5, most=10, shortest=0.00006, corner=60.0, within=None):
+    """A railway curve is an arc, and simplifying leaves it a polygon with a visible angle at every
+    vertex. This draws the arc back: between two vertices the line follows a smooth curve through
+    them (a centripetal Catmull-Rom spline: it passes through every vertex, so nothing moves off
+    the track, and it cannot loop or overshoot), with more points the more the line turns there,
+    about one for every `per` degrees. A straight stretch gets none. A real corner, sharper than
+    `corner` degrees, is where two pieces were joined: the curve stops and starts again there.
+
+    `within` is the tolerance the line was simplified with (degrees). The track itself lies no
+    further than that from the straight line between two vertices, so the curve may not either:
+    where it would swing wider (a long stretch that turns one way at one end and the other way at
+    the other), it is pulled in towards the straight line until it fits."""
+    co = [tuple(c) for c in co]
+    n = len(co)
+    if n < 3:
+        return co
+    scale = math.cos(math.radians(co[n // 2][1]))
+    pts = [(x * scale, y) for x, y in co]
+
+    def turn(a, b, c):
+        v1, v2 = (b[0] - a[0], b[1] - a[1]), (c[0] - b[0], c[1] - b[1])
+        n1, n2 = math.hypot(*v1), math.hypot(*v2)
+        if not n1 or not n2:
+            return 0.0
+        return math.degrees(math.acos(max(-1.0, min(1.0, (v1[0] * v2[0] + v1[1] * v2[1]) / n1 / n2))))
+    turns = [0.0] + [turn(pts[i - 1], pts[i], pts[i + 1]) for i in range(1, n - 1)] + [0.0]
+    # A long straight next to a short chord would bow along its whole length to meet the curve.
+    # It is held straight: a point is set on it as far from the bend as the chord on the other
+    # side is long, and the line only curves between the bend and that point.
+    held, kept = [pts[0]], [co[0]]
+    for i in range(n - 1):
+        p1, p2 = pts[i], pts[i + 1]
+        length = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+        before = math.hypot(p1[0] - pts[i - 1][0], p1[1] - pts[i - 1][1]) if i > 0 else 0.0
+        after = math.hypot(pts[i + 2][0] - p2[0], pts[i + 2][1] - p2[1]) if i + 2 < n else 0.0
+        marks = []
+        if turns[i] >= per / 2 and before and length > 2.5 * before:
+            marks.append(min(before, length / 3) / length)
+        if turns[i + 1] >= per / 2 and after and length > 2.5 * after:
+            marks.append(1 - min(after, length / 3) / length)
+        for q in sorted(marks):
+            held.append((p1[0] + (p2[0] - p1[0]) * q, p1[1] + (p2[1] - p1[1]) * q))
+            kept.append(None)
+        held.append(p2)
+        kept.append(co[i + 1])
+    pts, n = held, len(held)
+    co = [c if c is not None else (pt[0] / scale, pt[1]) for c, pt in zip(kept, pts)]
+    turns = [0.0] + [turn(pts[i - 1], pts[i], pts[i + 1]) for i in range(1, n - 1)] + [0.0]
+    out = [co[0]]
+    for i in range(n - 1):
+        p1, p2 = pts[i], pts[i + 1]
+        length = math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+        bend = max(t for t in (turns[i], turns[i + 1]) if t <= corner) if min(turns[i], turns[i + 1]) <= corner else 0.0
+        steps = min(most, math.ceil(bend / per), int(length / shortest))
+        if steps > 1:
+            # beyond an end or a corner the curve has no neighbour to lean on: it leaves straight
+            p0 = pts[i - 1] if i > 0 and turns[i] <= corner else (2 * p1[0] - p2[0], 2 * p1[1] - p2[1])
+            p3 = pts[i + 2] if i + 2 < n and turns[i + 1] <= corner else (2 * p2[0] - p1[0], 2 * p2[1] - p1[1])
+            t1 = math.hypot(p1[0] - p0[0], p1[1] - p0[1]) ** 0.5
+            t2 = t1 + length ** 0.5
+            t3 = t2 + math.hypot(p3[0] - p2[0], p3[1] - p2[1]) ** 0.5
+            if 0 < t1 < t2 < t3:
+                added = []
+                for k in range(1, steps):
+                    t = t1 + (t2 - t1) * k / steps
+                    a1 = [(t1 - t) / t1 * p0[j] + t / t1 * p1[j] for j in (0, 1)]
+                    a2 = [(t2 - t) / (t2 - t1) * p1[j] + (t - t1) / (t2 - t1) * p2[j] for j in (0, 1)]
+                    a3 = [(t3 - t) / (t3 - t2) * p2[j] + (t - t2) / (t3 - t2) * p3[j] for j in (0, 1)]
+                    b1 = [(t2 - t) / t2 * a1[j] + t / t2 * a2[j] for j in (0, 1)]
+                    b2 = [(t3 - t) / (t3 - t1) * a2[j] + (t - t1) / (t3 - t1) * a3[j] for j in (0, 1)]
+                    c = [(t2 - t) / (t2 - t1) * b1[j] + (t - t1) / (t2 - t1) * b2[j] for j in (0, 1)]
+                    along = ((c[0] - p1[0]) * (p2[0] - p1[0]) + (c[1] - p1[1]) * (p2[1] - p1[1])) / length ** 2
+                    foot = (p1[0] + (p2[0] - p1[0]) * along, p1[1] + (p2[1] - p1[1]) * along)
+                    added.append((foot, (c[0] - foot[0], c[1] - foot[1])))
+                widest = max(math.hypot(*off) for _, off in added)
+                fit = within / widest if within and widest > within else 1.0
+                out += [((foot[0] + off[0] * fit) / scale, foot[1] + off[1] * fit) for foot, off in added]
+        out.append(co[i + 1])
+    return out
+
+
 def eased(before, after):
     """Two coordinate runs that are to be joined end to start. When the join would be a step to
     the side (two parallel tracks: the ends are abreast of each other), each is cut back by a few
