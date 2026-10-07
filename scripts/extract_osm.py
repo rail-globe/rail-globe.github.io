@@ -7,10 +7,13 @@ Reading a 1.6-2.3 GB extract takes a few minutes, so it is done once here;
 scripts/process_osm.py then classifies and writes the map layers from the pickles in seconds.
 
 Kept: railway=rail|construction ways including yard and siding tracks, with their tunnel/bridge
-and electrification tags; railway=subway|light_rail|monorail ways inside the metro regions;
+and electrification tags; railway=subway|light_rail|monorail|maglev ways everywhere;
 railway=station nodes/ways; named yards, depots and railway land (for depot labels);
-and train / metro route and route_master relations (line colours, operators).
+train / metro route and route_master relations (line colours, operators), and route=railway
+relations (which named line a track belongs to, including track it shares with another line).
 """
+import os
+import json
 import pickle
 import sys
 import time
@@ -25,25 +28,8 @@ WAY_TAGS = ("railway", "service", "usage", "highspeed", "maxspeed", "maxspeed:de
             "tunnel", "bridge", "electrified", "voltage", "frequency", "gauge", "tracks")
 REL_TAGS = ("type", "route", "route_master", "name", "name:zh", "name:en", "ref", "colour", "network", "operator")
 NAME_TAGS = ("name", "name:zh", "name:en")
-METRO_RAIL = {"subway", "light_rail", "monorail"}
+METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
 YARD_KINDS = {"yard", "depot", "workshop", "engine_shed", "roundhouse"}
-# west, south, east, north. Metro tracks are only kept inside these boxes; scripts/process_osm.py
-# then narrows the Beijing-Tianjin and Yangtze-delta boxes down to the provinces themselves.
-METRO_REGIONS = {
-    "gba": (111.3, 21.5, 115.5, 24.5),     # Guangdong-Hong Kong-Macao Greater Bay Area
-    "jj": (115.4, 38.5, 118.1, 41.1),      # Beijing and Tianjin
-    "jzh": (116.3, 27.0, 123.0, 35.2),     # Shanghai, Jiangsu, Zhejiang
-    "xa": (108.5, 33.9, 109.5, 34.6),      # Xi'an (with Xianyang)
-    "cd": (103.2, 29.9, 104.9, 31.3),      # Chengdu (with the lines out to Deyang, Meishan, Ziyang)
-    "cq": (105.9, 29.0, 107.2, 30.2),      # Chongqing
-}
-
-
-def region_of(lon, lat):
-    for k, (w, s, e, n) in METRO_REGIONS.items():
-        if w <= lon <= e and s <= lat <= n:
-            return k
-    return None
 
 
 def centre(way):
@@ -55,12 +41,18 @@ def centre(way):
 
 
 def main(files, out):
-    ways, stations, relations, places = [], [], [], []
+    missing = [str(RAW / pbf) for pbf in files if not (RAW / pbf).exists()]
+    if missing:          # never write a partial cache over a good one
+        sys.exit("missing input, nothing written: " + ", ".join(missing))
+    ways, stations, relations, places, sources = [], [], [], [], []
     for pbf in files:
         path = RAW / pbf
-        if not path.exists():
-            print("missing", path, file=sys.stderr)
-            continue
+        with osmium.io.Reader(str(path)) as reader:
+            header = reader.header()
+            sources.append({"file": pbf, "bytes": path.stat().st_size,
+                            "timestamp": header.get("osmosis_replication_timestamp"),
+                            "sequence": header.get("osmosis_replication_sequence_number"),
+                            "replication_url": header.get("osmosis_replication_base_url")})
         t0 = time.time()
         fp = osmium.FileProcessor(str(path)).with_locations("sparse_mem_array").with_filter(osmium.filter.KeyFilter("railway"))
         for o in fp:
@@ -78,9 +70,6 @@ def main(files, out):
                     continue
                 coords = [(round(n.lon, 6), round(n.lat, 6)) for n in o.nodes if n.location.valid()]
                 if len(coords) < 2:
-                    continue
-                metro_like = r in METRO_RAIL or (r == "construction" and t.get("construction") in METRO_RAIL)
-                if metro_like and not region_of(*coords[0]):
                     continue
                 ways.append((o.id, {k: t.get(k) for k in WAY_TAGS if t.get(k) is not None}, coords))
             elif o.is_node():
@@ -105,14 +94,19 @@ def main(files, out):
         for o in osmium.FileProcessor(str(path), osmium.osm.RELATION):
             t = o.tags
             kind = t.get("route") if t.get("type") == "route" else t.get("route_master") if t.get("type") == "route_master" else None
-            if kind in METRO_RAIL or kind == "train":
+            if kind in METRO_RAIL or kind in ("train", "railway"):
                 relations.append((o.id, {k: t.get(k) for k in REL_TAGS if t.get(k) is not None},
                                   [(m.type, m.ref) for m in o.members]))
         print(f"{pbf}: {len(relations)} route relations, {time.time() - t0:.0f}s", flush=True)
 
-    with open(RAW / out, "wb") as f:
-        pickle.dump({"ways": ways, "stations": stations, "relations": relations, "places": places,
-                     "regions": METRO_REGIONS}, f, protocol=pickle.HIGHEST_PROTOCOL)
+    if not ways or not stations:
+        sys.exit("nothing extracted, the cache is left as it was")
+    tmp = RAW / (out + ".tmp")            # written beside the cache and swapped in only when complete
+    with open(tmp, "wb") as f:
+        pickle.dump({"ways": ways, "stations": stations, "relations": relations, "places": places, "sources": sources},
+                    f, protocol=pickle.HIGHEST_PROTOCOL)
+    os.replace(tmp, RAW / out)
+    (RAW / (out + ".sources.json")).write_text(json.dumps(sources, ensure_ascii=False, indent=2))
     print("wrote", RAW / out)
 
 

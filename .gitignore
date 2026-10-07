@@ -4,3 +4,6 @@ data/raw/
 dist/
 __pycache__/
 .DS_Store
+# Working reports, logs and screenshots written by the scripts and checks; regenerated on each run
+output/
+.playwright-cli/

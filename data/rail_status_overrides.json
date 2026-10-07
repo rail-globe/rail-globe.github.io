@@ -1,0 +1,554 @@
+[
+  {
+    "id": "jibin-testing",
+    "names": [
+      "济滨高速线"
+    ],
+    "status": "rail",
+    "stage": "testing",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.xinhuanet.com/20260924/56aa9d49f5124a2cb5036b8e00d41f1e/c.html",
+        "published": "2026-09-24",
+        "fact": "国铁济南局确认9月24日启动全线联调联试；按用户已建成口径显示实线。"
+      }
+    ]
+  },
+  {
+    "id": "huaibeng-testing",
+    "names": [
+      "淮蚌高速线"
+    ],
+    "status": "rail",
+    "stage": "testing",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.rails.cn/html/news/13/2026/20260903_69254.html",
+        "published": "2026-09-03",
+        "fact": "检测中心记录8月18日开始淮蚌高铁联调联试；按用户已建成口径显示实线。"
+      }
+    ]
+  },
+  {
+    "id": "huaifu-testing",
+    "names": [
+      "淮阜高速线"
+    ],
+    "status": "rail",
+    "stage": "testing",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.rails.cn/html/news/13/2026/20260903_69254.html",
+        "published": "2026-09-03",
+        "fact": "检测中心记录8月24日开始淮阜高铁联调联试；按用户已建成口径显示实线。"
+      }
+    ]
+  },
+  {
+    "id": "chaoma-testing",
+    "names": [
+      "巢马高速线"
+    ],
+    "status": "rail",
+    "stage": "testing",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://ah.people.com.cn/n2/2026/0924/c375162-41706792.html",
+        "published": "2026-09-24",
+        "fact": "9月23日巢马高铁上下行完成385公里最高试验时速测试；按用户已建成口径显示实线。"
+      }
+    ]
+  },
+  {
+    "id": "tianpu-testing",
+    "names": [
+      "天蒲线"
+    ],
+    "status": "rail",
+    "stage": "testing",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.rails.cn/html/news/13/2026/20260903_69254.html",
+        "published": "2026-09-03",
+        "fact": "检测中心记录天蒲铁路进入联调联试；按用户已建成口径显示实线。"
+      }
+    ]
+  },
+  {
+    "id": "xiongshang-open",
+    "names": [
+      "京港高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "雄安至商丘",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.mot.gov.cn/xinwen/jiaotongyaowen/202609/t20260929_4225088.html",
+        "published": "2026-09-29",
+        "fact": "雄安至商丘段9月28日开通，不能据此推广到京港线其他在建区段。"
+      }
+    ],
+    "bbox": [
+      115.1,
+      34.4,
+      116.4,
+      39.1
+    ]
+  },
+  {
+    "id": "xikang-open",
+    "names": [
+      "西渝高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "西安至安康西以北",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.mot.gov.cn/xinwen/jiaotongyaowen/202609/t20260929_4225088.html",
+        "published": "2026-09-29",
+        "fact": "西安至安康段9月28日开通；安康以南另行核查。"
+      }
+    ],
+    "bbox": [
+      108,
+      32.732,
+      110,
+      34.5
+    ]
+  },
+  {
+    "id": "hayi-open",
+    "names": [
+      "哈伊高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.mot.gov.cn/xinwen/jiaotongyaowen/202609/t20260929_4225088.html",
+        "published": "2026-09-29",
+        "fact": "哈伊高铁9月28日开通。"
+      }
+    ]
+  },
+  {
+    "id": "yixing-open",
+    "names": [
+      "宜兴高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.mot.gov.cn/xinwen/jiaotongyaowen/202609/t20260929_4225088.html",
+        "published": "2026-09-29",
+        "fact": "宜兴高铁9月28日开通。"
+      }
+    ]
+  },
+  {
+    "id": "xishi-open",
+    "names": [
+      "武西高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "西安至十堰",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.rails.cn/html/news/2/2026/20260722_69054.html",
+        "published": "2026-07-22",
+        "fact": "国铁集团上半年建设总结确认西安至十堰高铁开通；不包括武汉枢纽改线。"
+      }
+    ],
+    "bbox": [
+      108.9,
+      32.55,
+      111.1,
+      34.5
+    ]
+  },
+  {
+    "id": "jinjian-lanjian-open",
+    "names": [
+      "金建高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "兰溪东至建德",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.rails.cn/html/news/2/2026/20260722_69054.html",
+        "published": "2026-07-22",
+        "fact": "国铁集团上半年总结确认金建高铁兰溪东至建德段开通，金华至兰溪东未据此提升。"
+      }
+    ],
+    "bbox": [
+      119.3,
+      29.231,
+      119.7,
+      29.7
+    ]
+  },
+  {
+    "id": "wenyu-open",
+    "names": [
+      "杭台高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "温岭至玉环",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www1.xinhuanet.com/20260808/55a472fb03fe4d3683208586681ed16f/c.html",
+        "published": "2026-08-08",
+        "fact": "8月8日温岭至玉环开通；杭州至绍兴北延伸工程不在范围内。"
+      }
+    ],
+    "bbox": [
+      121,
+      28.1,
+      121.5,
+      28.6
+    ]
+  },
+  {
+    "id": "banan-nanchong-open",
+    "names": [
+      "巴南高铁"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "南充北接入段",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://cq.gov.cn/ywdt/bmts/202406/t20240627_13328782.html",
+        "published": "2024-06-27",
+        "fact": "巴南高铁2024年6月27日开通；规则只覆盖南充北接入段，保留汉巴南联络线其他施工标签。"
+      }
+    ],
+    "bbox": [
+      106.07,
+      30.86,
+      106.1,
+      30.886
+    ]
+  },
+  {
+    "id": "huanghuang-open",
+    "names": [
+      "阜黄高速线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "黄冈至黄梅既有段",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.hubei.gov.cn/zwgk/hbyw/hbywqb/202204/t20220422_4094266.shtml",
+        "published": "2022-04-22",
+        "fact": "黄冈至黄梅段2022年4月22日开通；OSM将其记在阜黄高速线名下。"
+      }
+    ],
+    "bbox": [
+      115,
+      29.9,
+      116.1,
+      30.7
+    ]
+  },
+  {
+    "id": "fuhuang-reserved",
+    "names": [
+      "阜黄高速线"
+    ],
+    "status": "construction",
+    "stage": "reserved",
+    "scope": "阜阳至黄冈，限黄黄段以北",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.hubei.gov.cn/zwgk/hbyw/hbywqb/202608/t20260816_5995454.shtml",
+        "published": "2026-08-16",
+        "fact": "阜阳至黄冈项目仍推进开工；阜阳西提前铺好的短轨道按在建显示，已开的黄黄段另设范围。"
+      }
+    ],
+    "bbox": [
+      114,
+      30.9,
+      117,
+      34
+    ],
+    "review_after": "2026-11-01"
+  },
+  {
+    "id": "tongsujiayong-build",
+    "names": [
+      "通苏嘉甬高速铁路"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.suzhou.gov.cn/szsrmzf/tpxw/202609/e5f2ca726beb4cfc9b2db232e51b0ddb.shtml",
+        "published": "2026-09-17",
+        "fact": "9月16日常熟望虞河斜拉桥仍在架设施工，项目计划2027年底通车。"
+      }
+    ],
+    "review_after": "2027-06-01"
+  },
+  {
+    "id": "yongzhou-build",
+    "names": [
+      "甬舟铁路"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.hzzx.gov.cn/cshz/content/2026-09/14/content_9306664.htm",
+        "published": "2026-09-14",
+        "fact": "上铁集团消息确认全线桥梁主塔刚封顶，跨海工程仍施工。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "ningxuan-reserved",
+    "names": [
+      "宁宣城际铁路"
+    ],
+    "status": "construction",
+    "stage": "reserved",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.xuancheng.gov.cn/OpennessContent/show/3686590.html",
+        "published": "2026-03-31",
+        "fact": "宣城市2026年计划仍为力争宁宣铁路开工，宣城站预留轨道不能代表全线已建成。"
+      }
+    ],
+    "review_after": "2026-11-01"
+  },
+  {
+    "id": "nanxinhe-reserved",
+    "names": [
+      "南信合高速铁路"
+    ],
+    "status": "construction",
+    "stage": "reserved",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.xinyang.gov.cn/2026/02-12/753704.html",
+        "published": "2026-02-12",
+        "fact": "南信合高铁推进前期、力争年底开工；站内预留轨道保持在建。"
+      }
+    ],
+    "review_after": "2026-11-01"
+  },
+  {
+    "id": "qianji-reserved",
+    "names": [
+      "黔吉高速线"
+    ],
+    "status": "construction",
+    "stage": "reserved",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://wap.cq.gov.cn/zwgk/zfxxgkzl/fdzdgknr/zdxm/dtxx/202607/t20260720_15832060.html",
+        "published": "2026-07-20",
+        "fact": "黔吉高铁可研获批并计划年内开工，黔江站预铺轨道并非建成全线。"
+      }
+    ],
+    "review_after": "2026-11-01"
+  },
+  {
+    "id": "jiaoluoping-build",
+    "names": [
+      "焦洛平高速线"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://pds.gov.cn/contents/31698/465197.html",
+        "published": "2026-04-13",
+        "fact": "焦洛平高铁列入2026年施工任务，提前铺轨的车站段保持在建。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "yuwan-build",
+    "names": [
+      "渝万高速线"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.cq.gov.cn/zwgk/zfxxgkzl/fdzdgknr/zdxm/dtxx/202609/t20260901_16016757.html",
+        "published": "2026-09-01",
+        "fact": "8月31日轨道铺设完成，站房及四电仍施工，公告尚为验收和联调联试做准备。只匹配新渝万线，不匹配已开的郑渝线。"
+      }
+    ],
+    "review_after": "2026-10-31"
+  },
+  {
+    "id": "ninghuai-build",
+    "names": [
+      "宁淮城际线",
+      "宁淮城际铁路"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://jtj.nanjing.gov.cn/bmdt/202609/t20260930_5920597.html",
+        "published": "2026-09-30",
+        "fact": "南京交通局9月30日仍介绍宁淮施工进度，南京北站预留轨道保持在建。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "jizao-build",
+    "names": [
+      "济枣高速线",
+      "济南-枣庄高速铁路"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://jnjtj.jinan.gov.cn/col/col15131/art/2026/art_f87f94e3a0484aac8252e3fe4a190fc7.html",
+        "published": "2026-09-17",
+        "fact": "济南交通局记录路基、桥梁和隧道仍施工，已铺车站轨道不能作为整线建成证据。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "lanzhang-wuzhang-build",
+    "names": [
+      "兰张客专线"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://ggzyfw.beijing.gov.cn/jylcgcjs/20260123/5425989.html",
+        "published": "2026-01-23",
+        "fact": "武威至张掖段仍招标建设，匹配兰张客专线，不影响已开的兰州至武威兰张高速线。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "xiyu-south-build",
+    "names": [
+      "西渝高速线",
+      "西渝高铁"
+    ],
+    "status": "construction",
+    "stage": "construction",
+    "scope": "安康西以南及万州连接段",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://www.cq.gov.cn/zwgk/zfxxgkzl/fdzdgknr/zdxm/dtxx/202607/t20260728_15865190.html",
+        "published": "2026-07-28",
+        "fact": "安康至重庆段及万州连接段仍施工，安康以北西康已开通另设范围。"
+      }
+    ],
+    "bbox": [
+      105,
+      29,
+      110,
+      32.73
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "bohai-planning",
+    "names": [
+      "渤海海峡跨海通道（在建）"
+    ],
+    "status": "proposed",
+    "stage": "planning",
+    "scope": "同名线路",
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://jtt.ln.gov.cn/jtt/zfxxgk/fdzdgknr/jyta/srddbjy35/szxssjschy2026n/2026080510125261264/index.shtml",
+        "published": "2026-08-05",
+        "fact": "省交通厅答复为研究论证推进，不能按已开工通道画入在建层。"
+      }
+    ],
+    "review_after": "2027-01-01"
+  },
+  {
+    "id": "suishen-zhuxin-open",
+    "names": [
+      "穗深城际线"
+    ],
+    "status": "rail",
+    "stage": "opened",
+    "scope": "竹料至新塘南，保留深圳南延等其他施工区段",
+    "bbox": [
+      113.34,
+      23.13,
+      113.62,
+      23.38
+    ],
+    "checked": "2026-10-07",
+    "sources": [
+      {
+        "url": "https://gzw.gz.gov.cn/qy/qydt/content/post_10948672.html",
+        "published": "2026-08-03",
+        "fact": "广州地铁集团确认7月31日竹料至新塘南段开通，实现白云机场与深圳机场轨道直连。"
+      }
+    ]
+  }
+]

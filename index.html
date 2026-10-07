@@ -28,14 +28,18 @@
   --green: #30d158;
   --red: #ff453a;
   /* rail data colours */
-  --hsr350: #ff453a;
-  --hsr250: #ff9f0a;
-  --hsr200: #ffd60a;
+  --hsr400: #a04d8b;
+  --hsr350: #c995dd;
+  --hsr300: #7565ff;
+  --hsr250: #2787d5;
+  --hsr200: #40bbdf;
+  --hsr160: #6adc86;
+  --hsrslow: #65d5c4;
   --metro: #5cc8ff;
   --yard: #ffd08a;
   --build: #ff8fb1;
   --main: #d7ecff;
-  --branch: #8fb6cf;
+  --branch: #d7ecff;
   --station: #ffffff;
   --border: #ffffff;
   --border-halo: #b98cff;
@@ -107,6 +111,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   border-radius: 12px; background: var(--solid); box-shadow: var(--edge), 0 12px 32px rgba(0, 0, 0, 0.55); animation: pop 160ms var(--ease); transform-origin: top center; }
 .sugg button { width: 100%; border: 0; background: transparent; text-align: left; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
 .sugg button:hover, .sugg button:focus-visible { background: var(--fill2); outline: none; }
+.sugg small { margin-left: 8px; font-size: 0.6875rem; color: var(--label2); }
 .od-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
 .route-sum { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 0 4px 10px; }
 .route-sum b { font-size: 1.75rem; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
@@ -118,6 +123,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .steps li span:first-of-type { flex: 1; min-width: 0; }
 .steps .km, .linelist .kmh, .spd { font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
 .steps li.change { padding: 6px 12px 6px 30px; font-size: 0.75rem; color: var(--label2); }
+.steps li.minor { padding-top: 5px; padding-bottom: 5px; font-size: 0.75rem; color: var(--label2); }
+.steps li.minor i { width: 6px; height: 6px; margin: 0 1px; opacity: 0.8; }
 
 /* ---------- lines ---------- */
 .searchbar { display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 10px; background: var(--fill2); color: var(--label2); }
@@ -130,6 +137,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .linelist button:hover { background: var(--fill2); }
 .linelist button[aria-current="true"] { background: rgba(10, 132, 255, 0.22); }
 .linelist .nm, .oplist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linelist svg { flex: none; color: var(--label3); }
+.linelist .back { color: var(--blue); gap: 4px; }
+.linelist .back svg { color: var(--blue); }
 
 /* ---------- layers ---------- */
 .lyr { cursor: pointer; }
@@ -156,7 +166,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .credits a { color: inherit; }
 
 /* ---------- on the map ---------- */
-#jumps { position: fixed; z-index: 2; top: 12px; left: calc(var(--card-w) + 24px); display: flex; gap: 8px; }
+#jumps { position: fixed; z-index: 2; top: 12px; left: calc(var(--card-w) + 24px); right: 60px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 20px 4px 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+#jumps::-webkit-scrollbar { display: none; }
+#jumps button { flex: none; }
 #jumps button, .maplibregl-ctrl-group, #loading { background: var(--material-thin); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3); }
 #jumps button { border: 0; border-radius: 999px; padding: 6px 13px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
 #jumps button:hover { background: rgba(72, 72, 76, 0.7); }
@@ -223,7 +236,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     <div class="title-row">
       <div>
         <h1>中国铁路网</h1>
-        <p class="facts">16.5 万公里 · 高铁 5.0 万公里</p>
+        <p class="facts" id="facts">16.5 万公里 · 高铁 5.0 万公里</p>
       </div>
       <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -255,7 +268,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         <div class="route-sum"><b id="routeKm"></b><span id="routeTime"></span></div>
         <ol class="group steps" id="routeSteps"></ol>
       </div>
-      <p class="hint" id="routeNote">在地图上点一个车站，选“设为出发”或“设为到达”，也可以直接输入站名。仅支持中国境内车站；给出的是沿真实线路的走法和估算运行时间，不是车次和时刻表。</p>
+      <p class="hint" id="routeNote">在地图上点一个火车站或地铁站，选“设为出发”或“设为到达”，也可以直接输入站名。铁路和地铁可以一起算，相邻的火车站和地铁站之间按步行换乘。仅支持中国境内车站；给出的是沿真实线路的走法和估算时间，不是车次和时刻表。</p>
     </div>
 
     <div class="tab" id="tab-lines" role="tabpanel" hidden>
@@ -263,8 +276,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         <div class="sel-top"><b id="selName"></b><button type="button" class="link" id="clearSel">清除</button></div>
         <span id="selMeta"></span>
       </div>
+      <div class="segmented" id="lineKind" role="group" aria-label="线路类别" style="--n: 3">
+        <span class="thumb"></span>
+        <button type="button" data-kind="fast" aria-pressed="true">高铁</button>
+        <button type="button" data-kind="conv" aria-pressed="false">普速</button>
+        <button type="button" data-kind="metro" aria-pressed="false">地铁</button>
+      </div>
       <div>
-        <p class="caption"><span>高铁与城际线路</span><span id="lineCount"></span></p>
+        <p class="caption"><span id="lineCap">高铁与城际线路</span><span id="lineCount"></span></p>
         <div class="searchbar">
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           <input id="search" type="search" placeholder="搜索线路，如 京沪、广珠城际" autocomplete="off" aria-label="搜索线路">
@@ -306,7 +325,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         </div>
         <p class="hint" id="baseNote">Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。</p>
       </div>
-      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-03 提取；地铁线路名称与颜色取自 OSM 线路关系。每条线路按其多数轨道的等级整条归类，速度等级取自 OSM 限速标签。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
+      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；高铁里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
     </div>
   </div>
 </aside>
@@ -321,23 +340,22 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const WITH_UK = false;      // set from site.json by scripts/build.py
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
 
+  const FAST = ['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow'];
+  const DESIGN_LABEL = { hsr400: '>350', hsr350: '350', hsr300: '300', hsr250: '250', hsr200: '200', hsr160: '160', hsrslow: '<160' };
   const CLASSES = [
-    { id: 'hsr350', label: '高速铁路', sub: '设计时速 300–350', spd: '350', src: 'hsr' },
-    { id: 'hsr250', label: '高速铁路', sub: '时速 250（含未标注）', spd: '250', src: 'hsr' },
-    { id: 'hsr200', label: '城际 / 快速铁路', sub: '时速 200 及以下，含大湾区城际', spd: '≤200', src: 'hsr' },
-    { id: 'metro', label: '地铁 / 市郊', sub: '含地铁公司运营的城际和市域线', spd: '', src: 'metro' },
-    { id: 'suburb', label: '市郊列车', sub: '铁路局运营，借国铁线路运行', spd: '', src: 'metro' },
-    { id: 'build', label: '在建线路', sub: '高铁为粉色虚线', spd: '', src: 'build' },
-    { id: 'main', label: '普速干线', sub: '客货共线的主要干线', spd: '', src: 'conv' },
-    { id: 'branch', label: '普速支线及其他', sub: '不含站场与专用线', spd: '', src: 'conv' },
+    ...FAST.map(id => ({ id, label: '设计时速', sub: id === 'hsr400' ? '线下设计标准，不代表运行速度' : '', spd: DESIGN_LABEL[id] + ' km/h', src: 'hsr' })),
+    { id: 'unknown', label: '普速铁路', sub: '没有设计时速资料的其余线路', spd: '', src: 'conv' },
+    { id: 'metro', label: '地铁 / 市郊', sub: '全国各城市，含地铁公司运营的城际和市域线', spd: '', src: 'metro' },
+    { id: 'suburb', label: '市郊 / 城际列车', sub: '铁路局运营，借国铁线路运行，画在线路旁', spd: '', src: 'metro' },
+    { id: 'build', label: '在建线路', sub: '联调联试按已建成画实线', spd: '', src: 'build' },
     { id: 'yards', label: '站场与车辆基地', sub: '站线、动车所、车辆段，放大后显示', spd: '', src: 'yards' },
     { id: 'stations', label: '车站', sub: '白点为高铁沿线车站', spd: '', src: 'stations' },
     { id: 'border', label: '国界', sub: '', spd: '', src: 'border' },
   ];
-  const CLASS_NAME = { hsr350: '高速铁路 · 300–350 km/h', hsr250: '高速铁路 · 250 km/h', hsr200: '城际 / 快速铁路', metro: '地铁', main: '普速干线', branch: '普速铁路', build: '在建线路' };
-  const FAST = ['hsr350', 'hsr250', 'hsr200'];   // classes drawn from the 'hsr' source
+  const CLASS_NAME = { ...Object.fromEntries(FAST.map(id => [id, '设计时速 ' + DESIGN_LABEL[id] + ' km/h'])), metro: '地铁', main: '普速铁路', branch: '普速铁路', build: '在建线路' };
   const lineW = (a) => ['interpolate', ['exponential', 1.5], ['zoom'], 3, a[0], 6, a[1], 9, a[2], 12, a[3], 16, a[4]];
   const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
+  visible.main = visible.branch = true;
   let selected = null;
   let ukOp = WITH_UK;   // colour UK lines by operator
   document.getElementById('ukSec').hidden = !WITH_UK;
@@ -351,7 +369,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const swatch = c.id === 'yards'
       ? `<i style="height:1.5px;background:${col('yard')}"></i>`
       : c.id === 'suburb'
-      ? `<i style="height:2.5px;background:${col('main')};box-shadow:0 0 0 3.5px rgba(92,200,255,0.6)"></i>`
+      ? `<i style="height:2px;background:${col('main')};box-shadow:0 5px 0 0 #6fb4e8;margin-bottom:5px"></i>`
       : c.id === 'metro'
       ? `<i style="height:4px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 1.5px #fff"></i>`
       : c.id === 'border'
@@ -360,9 +378,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       ? `<i style="width:9px;height:9px;border-radius:50%;background:${col('station')};box-shadow:0 0 0 2px #0008;margin-left:9px"></i>`
       : c.id === 'build'
         ? `<i style="height:0;border-top:3px dashed ${col('build')};border-radius:0"></i>`
-        : `<i style="height:${FAST.includes(c.id) ? 4 : c.id === 'main' ? 2.5 : 1.5}px;background:${col(c.id)};${FAST.includes(c.id) ? `box-shadow:0 0 8px ${col(c.id)}` : ''}"></i>`;
+        : `<i style="height:${FAST.includes(c.id) ? 4 : c.id === 'main' ? 2.5 : 1.5}px;background:${col(c.id === 'unknown' ? 'main' : c.id)};${FAST.includes(c.id) ? `box-shadow:0 0 8px ${col(c.id)}` : ''}"></i>`;
     lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b>${c.label}</b>${c.sub ? `<small>${c.sub}</small>` : ''}</span>${c.spd ? `<span class="spd">${c.spd}</span>` : ''}<input type="checkbox" class="switch" id="t-${c.id}" checked>`;
-    lab.querySelector('input').addEventListener('change', e => { visible[c.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
+    lab.querySelector('input').addEventListener('change', e => { visible[c.id] = e.target.checked; if (c.id === 'unknown') visible.main = visible.branch = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
     layersEl.appendChild(lab);
   }
 
@@ -555,12 +573,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const v = parseView();
     if (v) { touched = true; map.jumpTo(v); }
   });
-  const JUMPS = [
-    ['中国', CHINA], ['京津', [[115.9, 38.85], [117.9, 40.35]]], ['长三角', [[118.4, 29.7], [122.0, 32.5]]],
-    ['大湾区', [[112.4, 21.9], [114.6, 23.6]]], ['成渝', [[103.5, 29.2], [107.0, 31.0]]],
-    ['西安', [[108.65, 34.1], [109.25, 34.5]]], ['英国', [[-8.2, 49.8], [1.9, 59]]],
-  ].filter(j => WITH_UK || j[0] !== '英国');
-  for (const [label, bounds] of JUMPS) {
+  // Quick jumps: the whole country first; the largest metro cities are added once the data is in.
+  const addJump = (label, bounds) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = label;
@@ -571,7 +585,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (isPhone()) sheet.to('peek');
     });
     document.getElementById('jumps').appendChild(b);
-  }
+  };
+  addJump('中国', CHINA);
+  const JUMP_CITIES = 10;
   const projBtn = { globe: document.getElementById('projGlobe'), mercator: document.getElementById('projFlat') };
   for (const [type, btn] of Object.entries(projBtn)) {
     btn.addEventListener('click', () => {
@@ -602,11 +618,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     getJSON('data/rail_conv.geojson'), getJSON('data/stations.geojson'), getJSON('data/lines.json'),
     getJSON('data/cities.json'), getJSON('data/border.geojson'), getJSON('data/metro.geojson'),
     getJSON('data/metro_stations.geojson'), getJSON('data/uk_operators.json'), probeLive(),
+    getJSON('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
   ]);
   dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
 
   map.on('load', async () => {
-    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, ops, live] = await dataReady;
+    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, ops, live, shared, metroCities] = await dataReady;
 
     // ---- imagery ----
     const dim = document.getElementById('dim');
@@ -635,6 +652,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addSource('conv', { type: 'geojson', data: conv, tolerance: 0.45 });
     map.addSource('build', { type: 'geojson', data: build, tolerance: 0.45 });
     map.addSource('hsr', { type: 'geojson', data: hsr, tolerance: 0.35 });
+    map.addSource('shared', { type: 'geojson', data: shared, tolerance: 0.35 });
     map.addSource('stations', { type: 'geojson', data: stations });
     map.addSource('metro', { type: 'geojson', data: metro, tolerance: 0.3 });
     map.addSource('metro-stations', { type: 'geojson', data: metroStations });
@@ -643,7 +661,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       data: { type: 'FeatureCollection', features: cities.map(([n, x, y, r]) => ({ type: 'Feature', properties: { n, r }, geometry: { type: 'Point', coordinates: [x, y] } })) },
     });
 
-    const FAST_COLOR = ['match', ['get', 'c'], 'hsr350', col('hsr350'), 'hsr250', col('hsr250'), col('hsr200')];
+    const FAST_COLOR = ['match', ['get', 'c'], ...FAST.flatMap(id => [id, col(id)]), col('main')];
     const round = { 'line-cap': 'round', 'line-join': 'round' };
     const EMPTY = { type: 'FeatureCollection', features: [] };
     // Yard and depot tracks sit under everything else and only appear once zoomed in.
@@ -661,26 +679,49 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // enough to show from further out.
     const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, 0.4 * k, 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
     const urban = ['all', ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
+    // Lines that share track are drawn side by side: the data gives each a slot (off: -0.5 and 0.5
+    // for two lines, -1, 0, 1 for three), which becomes a sideways offset of one line's width.
+    const slot = ['coalesce', ['get', 'off'], 0];
+    const metroOff = ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, ['*', slot, 0.7], 6, ['*', slot, 0.9], 9, ['*', slot, 2.3], 12, ['*', slot, 4.4], 16, ['*', slot, 7.6]];
     map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
     map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1) } });
-    // A bureau-operated suburban service (k = "s") runs on a national line that keeps its own colour.
-    // It is a soft coloured band underneath that line: both tracks of a double line fall into one
-    // band, and the line itself still reads in the middle.
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
+    // A bureau-operated suburban service (k = "s") shares its track with a national line that keeps
+    // its own colour, so it is drawn as one parallel line beside it. The data gives each service a
+    // single path with one direction, which keeps the offset on the same side all the way.
+    const beside = ['interpolate', ['linear'], ['zoom'], 6, 1.8, 9, 3.2, 12, 5, 16, 8];
+    map.addLayer({ id: 'suburb-casing', type: 'line', source: 'metro', minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
     map.addLayer({ id: 'suburb', type: 'line', source: 'metro', minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(3.6), 'line-blur': metroW(0.5), 'line-opacity': 0.62 } }, 'branch');
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': beside } });
     map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR,
         'line-width': lineW([3.5, 5.5, 8, 10, 14]), 'line-blur': lineW([2.5, 4, 6, 8, 10]), 'line-opacity': 0.35 } });
-    for (const id of ['hsr200', 'hsr250', 'hsr350']) map.addLayer({ id, type: 'line', source: 'hsr', filter: ['==', ['get', 'c'], id], layout: round });
+    for (const id of [...FAST].reverse()) map.addLayer({ id, type: 'line', source: 'hsr', filter: ['==', ['get', 'c'], id], layout: round });
+    // An intercity or high-speed line that runs over another line's track: the track keeps its own
+    // line and colour, and this one is drawn beside it in its own colour (one path, one direction).
+    // offset by one line's width: the two lines touch, and where this one steps aside from its own
+    // track the two drawn parts meet instead of leaving a gap
+    const besideFast = ['interpolate', ['exponential', 1.5], ['zoom'], 3, 1.15, 6, 1.9, 9, 2.7, 12, 3.6, 16, 5.2];
+    map.addLayer({ id: 'shared', type: 'line', source: 'shared', layout: round, paint: { 'line-color': FAST_COLOR, 'line-offset': besideFast } });
     map.addLayer({ id: 'hl', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95 } });
     map.addLayer({ id: 'hl-core', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]) } });
+    // a selected conventional line: the line is near white already, so it is lit as a bright core on a dark casing
+    map.addLayer({ id: 'hl-conv', type: 'line', source: 'conv', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+      paint: { 'line-color': '#05090c', 'line-width': lineW([2.8, 4, 5.4, 6.8, 9]), 'line-opacity': 0.8 } });
+    map.addLayer({ id: 'hl-conv-core', type: 'line', source: 'conv', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': lineW([1.3, 2, 3, 4, 5.4]) } });
+    // the selected line stays lit along the stretches where it runs beside another line
+    map.addLayer({ id: 'hl-shared', type: 'line', source: 'shared', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95, 'line-offset': besideFast } });
+    map.addLayer({ id: 'hl-shared-core', type: 'line', source: 'shared', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+      paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]), 'line-offset': besideFast } });
     map.addSource('route', { type: 'geojson', data: EMPTY });
     map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': lineW([4.6, 6, 7.5, 9, 11]), 'line-opacity': 0.95 } });
@@ -736,30 +777,93 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     dim.addEventListener('input', applyDim);
     applyDim();
 
-    // ---- line list ----
-    const listed = lines.filter(l => l.tk >= 15);
+    // ---- line list: railways by line, metros by city ----
+    const LISTS = { fast: lines.filter(l => l.kind === 'fast' && l.tk >= 15), conv: lines.filter(l => l.kind !== 'fast') };
+    const CAPTION = { fast: '高铁与城际线路', conv: '普速线路' };
     const byName = new Map(lines.map(l => [l.n, l]));
-    document.getElementById('lineCount').textContent = listed.length + ' 条';
+    const cityByName = new Map(metroCities.map(c => [c.n, c]));
+    const metroLineCount = metroCities.reduce((n, c) => n + c.lines.length, 0);
+    const realCities = metroCities.filter(c => !c.n.endsWith('城际'));
+    document.getElementById('facts').append(document.createElement('br'), `地铁 ${realCities.length} 城 · ${metroLineCount} 条线路`);
+    if (isPhone()) sheet.layout();        // the header grew by a line
+    for (const c of realCities.slice(0, JUMP_CITIES)) addJump(c.n, [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]]);
+    if (WITH_UK) addJump('英国', [[-8.2, 49.8], [1.9, 59]]);
     const listEl = document.getElementById('lineList');
     const moreEl = document.getElementById('more');
     const search = document.getElementById('search');
+    const kindButtons = [...document.querySelectorAll('#lineKind button')];
     const LIMIT = 80;
+    const CHEVRON = '<svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    let kind = 'fast';          // which list the lines tab shows
+    let metroCity = null;       // the city whose lines are listed
+    let selMetro = null;        // the selected metro line: { ct, n }
+    const row = (html, name, onClick, current) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.innerHTML = html;
+      b.querySelector('.nm').textContent = name;
+      if (current) b.setAttribute('aria-current', 'true');
+      b.addEventListener('click', onClick);
+      li.appendChild(b);
+      return li;
+    };
+    const cityRow = c => row(`<span class="nm"></span><span class="kmh">${c.lines.length} 条</span>${CHEVRON}`, c.n, () => openCity(c, true));
+    const metroRow = (c, l, withCity) => row(`<i style="background:${l.col}"></i><span class="nm"></span><span class="kmh">${withCity ? c.n : l.km + ' km'}</span>`,
+      l.n, () => selectMetro(c, l, true), selMetro && selMetro.ct === c.n && selMetro.n === l.n);
     const renderList = () => {
       const q = search.value.trim();
-      const hits = q ? listed.filter(l => l.n.includes(q)) : listed;
-      listEl.replaceChildren(...hits.slice(0, LIMIT).map(l => {
-        const li = document.createElement('li');
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.innerHTML = `<i style="background:${col(l.c)}"></i><span class="nm"></span><span class="kmh">${l.s || ''}</span>`;
-        b.querySelector('.nm').textContent = l.n;
-        if (selected === l.n) b.setAttribute('aria-current', 'true');
-        b.addEventListener('click', () => select(l.n, true));
-        li.appendChild(b);
-        return li;
-      }));
-      moreEl.textContent = hits.length > LIMIT ? `另有 ${hits.length - LIMIT} 条，输入关键词缩小范围` : hits.length ? '' : '没有匹配的线路';
+      const cap = document.getElementById('lineCap'), count = document.getElementById('lineCount');
+      let rows, total;
+      if (kind !== 'metro') {
+        const listed = LISTS[kind];
+        const hits = q ? listed.filter(l => l.n.includes(q)) : listed;
+        cap.textContent = CAPTION[kind];
+        count.textContent = listed.length + ' 条';
+        total = hits.length;
+        rows = hits.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : col(l.c)}"></i><span class="nm"></span><span class="kmh">${(l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? '分段' : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || '普速'}</span>`,
+          l.n, () => select(l.n, true), selected === l.n));
+      } else if (q) {
+        const found = [...metroCities.filter(c => c.n.includes(q)).map(cityRow),
+          ...metroCities.flatMap(c => c.lines.filter(l => l.n.includes(q)).map(l => metroRow(c, l, true)))];
+        cap.textContent = '地铁与市域线路';
+        count.textContent = `${realCities.length} 城 · ${metroLineCount} 条`;
+        total = found.length;
+        rows = found.slice(0, LIMIT);
+      } else if (metroCity) {
+        cap.textContent = metroCity.n;
+        count.textContent = `${metroCity.lines.length} 条 · ${metroCity.km} km`;
+        total = metroCity.lines.length;
+        rows = [row(`<svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M7 1L1 7l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nm"></span>`,
+          '全部城市', () => { metroCity = null; renderList(); }), ...metroCity.lines.map(l => metroRow(metroCity, l))];
+        rows[0].firstChild.classList.add('back');
+      } else {
+        cap.textContent = '地铁与市域线路';
+        count.textContent = `${realCities.length} 城 · ${metroLineCount} 条`;
+        total = metroCities.length;
+        rows = metroCities.map(cityRow);
+      }
+      listEl.replaceChildren(...rows);
+      moreEl.textContent = total > LIMIT && rows.length === LIMIT ? `另有 ${total - LIMIT} 条，输入关键词缩小范围` : total ? '' : '没有匹配的线路';
     };
+    const setKind = k => {
+      kind = k;
+      for (const b of kindButtons) b.setAttribute('aria-pressed', String(b.dataset.kind === k));
+      search.value = '';
+      search.placeholder = { fast: '搜索线路，如 京沪、广珠城际', conv: '搜索线路，如 陇海、成昆', metro: '搜索城市或线路，如 武汉、2号线' }[k];
+      renderList();
+    };
+    for (const b of kindButtons) b.addEventListener('click', () => setKind(b.dataset.kind));
+    function openCity(c, fly) {
+      metroCity = c;
+      search.value = '';
+      if (fly) {
+        touched = true;
+        map.fitBounds([[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], { padding: padding(), maxZoom: 12, duration: reduced ? 0 : 1400 });
+      }
+      renderList();
+      document.getElementById('scroll').scrollTop = 0;
+    }
     search.addEventListener('input', renderList);
     renderList();
 
@@ -773,7 +877,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const colorFor = base => (ukOp ? ['case', ['has', 'o'], OP_COLOR, base] : base);
     const opacityFor = (base, dimmed = 0.12) => (ukOp && opSel ? ['case', ['all', ['has', 'o'], ['!=', ['get', 'o'], opSel]], dimmed, base] : base);
     function styleRail() {
-      const sel = !!selected;
+      const sel = !!selected || !!selMetro;      // any selection, railway or metro, dims every other line
       const set = (id, color, width, opacity) => {
         map.setPaintProperty(id, 'line-color', color);
         map.setPaintProperty(id, 'line-width', width);
@@ -782,6 +886,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       set('branch', colorFor(col('branch')), widthFor('branch'), opacityFor(sel ? 0.35 : 0.7));
       set('main', colorFor(col('main')), widthFor('main'), opacityFor(sel ? 0.45 : 0.85));
       for (const id of FAST) set(id, colorFor(col(id)), widthFor('fast'), opacityFor(sel ? 0.4 : 1));
+      set('shared', FAST_COLOR, widthFor('fast'), selected ? ['case', ['==', ['get', 'n'], selected], 1, 0.4] : sel ? 0.4 : 1);
       map.setPaintProperty('hsr-glow', 'line-color', colorFor(FAST_COLOR));
       map.setPaintProperty('hsr-glow', 'line-opacity', opacityFor(sel ? 0.12 : 0.35, 0.04));
       map.setPaintProperty('hl-core', 'line-color', colorFor(FAST_COLOR));
@@ -814,30 +919,73 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     btnCls.addEventListener('click', () => setUkMode(false));
     renderOps();
 
-    // ---- selection ----
+    // ---- selection: one railway line or one metro line at a time ----
     const selBox = document.getElementById('sel');
-    function select(name, fly) {
+    const NO_LINE = ['==', ['get', 'n'], '\u0000'];
+    // Metro and suburban layers: the selected line is drawn wider and the others fade; they all
+    // fade when a railway line is selected.
+    function styleMetro() {
+      const on = selMetro && ['all', ['==', ['get', 'n'], selMetro.n], ['==', ['get', 'ct'], selMetro.ct]];
+      const fade = !!selected;
+      const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
+      const width = k => on ? metroW(k).map((v, i) => (i > 3 && i % 2 === 0 ? ['case', on, +(v * 1.7).toFixed(2), v] : v)) : metroW(k);
+      for (const [id, z0] of [['metro', 4.5], ['suburb', 6]]) {
+        map.setPaintProperty(id, 'line-width', width(1));
+        map.setPaintProperty(id, 'line-opacity', pick(1, 0.3, 1));
+        map.setPaintProperty(id + '-casing', 'line-width', width(1.75));
+        map.setPaintProperty(id + '-casing', 'line-opacity', ['interpolate', ['linear'], ['zoom'], z0, pick(0.7, 0.1, 0.4), 9, pick(1, 0.22, 0.9)]);
+      }
+    }
+    function select(name, fly, cls) {
       selected = name;
       if (name) touched = true;
-      const f = name ? ['==', ['get', 'n'], name] : ['==', ['get', 'n'], '\u0000'];
-      map.setFilter('hl', f);
-      map.setFilter('hl-core', f);
+      if (name) selMetro = null;
+      styleMetro();
+      applyHighlight();
       styleRail();
-      selBox.hidden = !name;
-      if (name) showTab('lines');
+      selBox.hidden = !name && !selMetro;
       if (name) {
+        showTab('lines');
         const l = byName.get(name);
+        const c = l ? l.c : cls;
+        const want = l ? l.kind : FAST.includes(c) ? 'fast' : 'conv';
+        if (kind !== want) setKind(want);
         document.getElementById('selName').textContent = name;
-        document.getElementById('selMeta').textContent = l ? `${l.c === 'hsr200' ? '城际 / 快速铁路' : '高速铁路'}${l.s ? ` · 标注最高时速 ${l.s} km/h` : ''}` : '';
+        // est: the share of the line whose band comes from the track's speed tags, with no
+        // documented design value yet; plain: the share drawn as conventional
+        const rest = l ? (l.est > 0.02 ? ' · 部分区段按轨道限速归档' : l.plain > 0.02 ? ' · 其余区段为普速' : '') : '';
+        document.getElementById('selMeta').textContent = l && l.design && l.design.length
+          ? `${l.design.length > 1 ? '分段设计时速' : '设计时速'} ${l.design.join(' / ')} km/h${rest}`
+          : l && l.est > 0.5 && DESIGN_LABEL[c] ? `${DESIGN_LABEL[c]} km/h 档 · 按轨道限速归档，设计时速待核实` : CLASS_NAME[c] || '';
         if (fly && l) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 10, duration: reduced ? 0 : 1200 });
         if (isPhone() && fly) sheet.to('peek');
       }
       renderList();
     }
-    document.getElementById('clearSel').addEventListener('click', () => select(null));
+    const METRO_KIND = { m: '城际 / 市域 · 地铁公司运营', s: '市郊 / 城际列车 · 铁路局运营' };
+    function selectMetro(c, l, fly) {
+      if (selected) select(null);
+      selMetro = l ? { ct: c.n, n: l.n } : null;
+      styleMetro();
+      styleRail();
+      selBox.hidden = !selMetro;
+      if (l) {
+        touched = true;
+        showTab('lines');
+        if (kind !== 'metro') setKind('metro');
+        metroCity = c;
+        document.getElementById('selName').textContent = l.n;
+        document.getElementById('selMeta').textContent = `${METRO_KIND[l.k] || '地铁'} · ${c.n} · ${l.km} km`;
+        if (fly) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 13, duration: reduced ? 0 : 1200 });
+        if (isPhone() && fly) sheet.to('peek');
+      }
+      renderList();
+    }
+    const clearSelection = () => { if (selMetro) selectMetro(null, null); if (selected) select(null); };
+    document.getElementById('clearSel').addEventListener('click', clearSelection);
 
     // ---- hover + click on lines ----
-    const PICK = ['hsr350', 'hsr250', 'hsr200', 'metro', 'build', 'main', 'branch', 'suburb'];
+    const PICK = [...FAST, 'shared', 'metro', 'suburb', 'build', 'main', 'branch'];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
       const layers = PICK.filter(id => map.getLayoutProperty(id, 'visibility') !== 'none');
@@ -851,23 +999,41 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       map.getCanvas().style.cursor = f ? 'pointer' : '';
       if (!f) { tip.remove(); return; }
       const p = f.properties;
-      let meta = f.layer.id === 'suburb' ? '市郊列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : '地铁') : CLASS_NAME[p.c] || '';
+      let meta = f.layer.id === 'suburb' ? '市郊 / 城际列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : `地铁 · ${p.ct}`) : CLASS_NAME[p.c] || '';
       if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
-      if (p.s && p.c !== 'hsr350' && p.c !== 'hsr250') meta += ` · ${p.s} km/h`;
+      if (p.d) meta = `${p.db === 'track' ? '轨道' : '线下'}设计 ${p.d} km/h${p.v ? ` · 参考运行 ${p.v} km/h` : ''}`;
+      else if (p.e) meta = `${DESIGN_LABEL[p.c]} km/h 档 · 按轨道限速归档，设计时速待核实`;
+      if (p.de) meta += ` · ${p.de.replace('~', ' 至 ')}`;
       let who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
-      // a suburban service shares this track: name it under the line it runs on
-      if (f.layer.id !== 'suburb' && map.getLayoutProperty('suburb', 'visibility') !== 'none') {
-        const sv = map.queryRenderedFeatures([[e.point.x - 5, e.point.y - 5], [e.point.x + 5, e.point.y + 5]], { layers: ['suburb'] })[0];
-        if (sv && sv.properties.n) who += `<br><span>市郊列车：${esc(sv.properties.n)}</span>`;
+      const near = id => map.getLayoutProperty(id, 'visibility') !== 'none'
+        && map.queryRenderedFeatures([[e.point.x - 9, e.point.y - 9], [e.point.x + 9, e.point.y + 9]], { layers: [id] })[0];
+      // two lines on one track: each names the other
+      if (f.layer.id === 'shared') who += `<br><span>与${esc(p.on)}共用轨道</span>`;
+      else if (FAST.includes(f.layer.id) || f.layer.id === 'main' || f.layer.id === 'branch') {
+        const sh = near('shared');
+        if (sh && sh.properties.on.split('、').includes(p.n)) who += `<br><span>共线：${esc(sh.properties.n)}</span>`;
+      }
+      // a suburban service runs beside this line: name it under the line it shares
+      if (f.layer.id !== 'suburb') {
+        const sv = near('suburb');
+        if (sv && sv.properties.n) who += `<br><span>市郊 / 城际列车：${esc(sv.properties.n)}</span>`;
       }
       tip.setLngLat(e.lngLat).setHTML(`<b>${esc(p.n || '未命名线路')}</b><span>${esc(meta)}</span>${who}`).addTo(map);
     });
     map.getCanvas().addEventListener('mouseleave', () => tip.remove());
 
     // ---- route between two stations (China only) ----
-    // The network (data/graph.json) is the running lines themselves: junction nodes, track edges with
-    // line, class and length, and one hub per station linked to each line that calls there.
-    const routable = stations.features.filter(f => f.properties.g != null);
+    // The network (data/graph.json) is the running lines themselves, railways and metros: junction
+    // nodes, track edges with line, class and length, one hub per station linked to each track that
+    // calls there, and a walk between a railway station and the metro stations beside it.
+    // a metro station is listed with its city: the smallest city outline that contains it
+    const cityAt = ([x, y]) => realCities.filter(c => x >= c.bbox[0] && x <= c.bbox[2] && y >= c.bbox[1] && y <= c.bbox[3])
+      .sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))[0];
+    for (const f of metroStations.features) {
+      f.properties.m = 1;
+      f.properties.ct = (cityAt(f.geometry.coordinates) || {}).n || '';
+    }
+    const routable = [...stations.features, ...metroStations.features].filter(f => f.properties.g != null);
     const hubName = new Map(routable.map(f => [f.properties.g, f.properties.n]));
     const od = { from: null, to: null };
     const pins = { from: null, to: null };
@@ -884,7 +1050,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const to = new Uint32Array(2 * M), via = new Uint32Array(2 * M), cost = new Float32Array(2 * M), shapeAt = new Uint32Array(M + 1);
       for (let i = 0; i < M; i++) {
         const u = g.edges[i * 5], v = g.edges[i * 5 + 1], cls = g.lines[g.edges[i * 5 + 2]][1];
-        const c = cls === 'x' ? g.transferMin : g.edges[i * 5 + 3] / 1000 / g.speed[cls] * 60;   // minutes
+        const c = cls === 'x' ? g.transferMin : cls === 'y' ? g.metroMin : g.edges[i * 5 + 3] / 1000 / g.speed[cls] * 60;   // minutes
         to[fill[u]] = v; via[fill[u]] = i; cost[fill[u]++] = c;
         to[fill[v]] = u; via[fill[v]] = i; cost[fill[v]++] = c;
         shapeAt[i + 1] = shapeAt[i] + g.edges[i * 5 + 4];
@@ -935,31 +1101,47 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       return start === u ? pts : pts.reverse();
     };
     const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; };
+    let routeSeq = 0;         // every call is a new query; an older one that is still waiting gives up
     async function showRoute() {
+      const seq = ++routeSeq, from = od.from, to = od.to;
       clearRoute();
       routeNote.textContent = NOTE;
-      if (!od.from || !od.to) return;
-      if (od.from.g === od.to.g) { routeNote.textContent = '出发和到达是同一个车站。'; return; }
+      if (!from || !to) return;
+      if (from.g === to.g) { routeNote.textContent = '出发和到达是同一个车站。'; return; }
       routeNote.textContent = '正在计算…';
       let G;
-      try { G = await loadNetwork(); } catch (err) { network = null; routeNote.textContent = '线路网络载入失败，请检查网络后重试。'; return; }
-      const res = fastest(G, od.from.g, od.to.g);
-      if (!res) { routeNote.textContent = `${od.from.n} 和 ${od.to.n} 之间没有连通的线路。例如海南岛、台湾与大陆之间没有轨道相连。`; return; }
+      try { G = await loadNetwork(); } catch (err) { network = null; if (seq === routeSeq) routeNote.textContent = '线路网络载入失败，请检查网络后重试。'; return; }
+      if (seq !== routeSeq) return;
+      const res = fastest(G, from.g, to.g);
+      if (!res) { routeNote.textContent = `${from.n} 和 ${to.n} 之间没有连通的线路。例如海南岛、台湾与大陆之间没有轨道相连。`; return; }
+      if (!res.path.some(([, , e]) => !'xyw'.includes(G.g.lines[G.g.edges[e * 5 + 2]][1]))) {
+        routeNote.textContent = `${from.n} 和 ${to.n} 紧挨着，步行即可。`;
+        return;
+      }
       const g = G.g, coords = [], raw = [];
-      let metres = 0, change = null;
+      const hubCost = { x: g.transferMin, y: g.metroMin };
+      const walkText = w => `从 ${w.from} 步行约 ${Math.max(100, Math.round(w.m / 50) * 50)} 米到 ${w.to}`;
+      let metres = 0, change = null, walk = null;
       for (const [a, b, e] of res.path) {
-        const [name, cls] = g.lines[g.edges[e * 5 + 2]], m = g.edges[e * 5 + 3];
-        if (cls === 'x') {            // through a station hub: a change of line unless it is an end of the trip
+        const [name, cls, , tint] = g.lines[g.edges[e * 5 + 2]], m = g.edges[e * 5 + 3];
+        if (cls === 'w') {            // on foot between a railway station and a metro station
+          walk = { from: hubName.get(a), to: hubName.get(b), m };
+          continue;
+        }
+        if (cls in hubCost) {         // through a station hub: a change of line unless it is an end of the trip
           const hub = a >= g.hubStart ? a : b;
-          if (hub !== od.from.g && hub !== od.to.g) change = hubName.get(hub);
+          if (walk) change = walkText(walk);
+          else if (hub !== from.g && hub !== to.g) change = `在 ${hubName.get(hub)} 换乘`;
+          walk = null;
           continue;
         }
         const pts = edgeCoords(G, e, a);
         coords.push(...(coords.length ? pts.slice(1) : pts));
         metres += m;
-        raw.push({ name, cls, m, change });
+        raw.push({ name, cls, m, change, tint });
         change = null;
       }
+      const lastWalk = walk && walkText(walk);     // the trip ends with a walk
       // Only real, named lines are listed: short unnamed links are folded away, repeats are joined.
       const steps = [];
       for (const st of raw) {
@@ -968,39 +1150,36 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         else if (!st.name && !st.change && last) last.m += st.m;
         else steps.push({ ...st });
       }
-      // Stubs of a kilometre or two (station approaches, depot links) are not worth listing.
-      const named = steps.filter(st => st.name);
+      // Every named line that is travelled is listed. Links of a kilometre or two between railway
+      // lines (station approaches, connecting curves) are shown small so the main lines stand out.
+      const shown = steps.filter(st => st.name);
       const minM = Math.min(10000, Math.max(2000, metres * 0.005));
-      const shown = named.some(st => st.m >= minM) ? named.filter(st => st.m >= minM) : named;
+      const minor = st => st.cls !== 'metro' && st.cls !== 'mrail' && st.m < minM && shown.some(o => o.m >= minM);
       map.getSource('route').setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } });
-      const mins = Math.max(1, Math.round(res.minutes - 2 * g.transferMin));
+      // getting on at the start and off at the end is not part of the journey time
+      const ends = [res.path[0], res.path[res.path.length - 1]].reduce((t, [, , e]) => t + (hubCost[g.lines[g.edges[e * 5 + 2]][1]] || 0), 0);
+      const mins = Math.max(1, Math.round(res.minutes - ends));
+      const note = text => { const c = document.createElement('li'); c.className = 'change'; c.textContent = text; return c; };
       document.getElementById('routeKm').innerHTML = `${Math.round(metres / 1000).toLocaleString()}<small>公里</small>`;
-      document.getElementById('routeTime').textContent = `纯运行约 ${mins >= 60 ? Math.floor(mins / 60) + ' 小时 ' : ''}${mins % 60} 分`;
+      document.getElementById('routeTime').textContent = `约 ${mins >= 60 ? Math.floor(mins / 60) + ' 小时 ' : ''}${mins % 60} 分`;
       document.getElementById('routeSteps').replaceChildren(...shown.flatMap(st => {
-        const items = [];
-        if (st.change) {
-          const c = document.createElement('li');
-          c.className = 'change';
-          c.textContent = `在 ${st.change} 换线`;
-          items.push(c);
-        }
         const li = document.createElement('li');
-        li.innerHTML = `<i style="background:${col(st.cls)}"></i><span></span><span class="km">${Math.max(1, Math.round(st.m / 1000))} km</span>`;
+        li.innerHTML = `<i style="background:${st.tint || col(st.cls)}"></i><span></span><span class="km">${Math.max(1, Math.round(st.m / 1000))} km</span>`;
         li.children[1].textContent = st.name;
-        items.push(li);
-        return items;
-      }));
+        if (minor(st)) li.className = 'minor';
+        return st.change ? [note(st.change), li] : [li];
+      }), ...(lastWalk ? [note(lastWalk)] : []));
       routeOut.hidden = false;
-      routeNote.textContent = '走法沿真实线路计算，时间按线路等级估算、不含停站，不代表有直达车次。';
+      routeNote.textContent = '走法沿真实线路计算。铁路时间按线路等级估算、不含停站，地铁按平均速度估算；不代表有直达车次。';
       const xs = coords.map(c => c[0]), ys = coords.map(c => c[1]);
       touched = true;
       if (isPhone()) sheet.to('mid');
       map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: padding(), maxZoom: 11, duration: reduced ? 0 : 1200 });
     }
-    function setStop(role, f) {
+    function setStop(role, f, keepText) {
       od[role] = f ? { n: f.properties.n, g: f.properties.g, at: f.geometry.coordinates } : null;
       if (f) showTab('route');
-      odInput[role].value = f ? f.properties.n : '';
+      if (!keepText) odInput[role].value = f ? f.properties.n : '';
       if (pins[role]) { pins[role].remove(); pins[role] = null; }
       if (f) {
         const el = document.createElement('div');
@@ -1017,20 +1196,26 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const render = () => {
         const q = input.value.trim();
         if (!q || (od[role] && od[role].n === q)) { list.hidden = true; return; }
-        const hits = routable.filter(f => f.properties.n.includes(q))
-          .sort((a, b) => (b.properties.n === q) - (a.properties.n === q) || b.properties.n.startsWith(q) - a.properties.n.startsWith(q)
-            || (b.properties.h || 0) - (a.properties.h || 0) || a.properties.n.length - b.properties.n.length).slice(0, 8);
+        // "奥体中心" exists in sixteen cities: the city can be typed with the name ("南京 奥体中心",
+        // "南京奥体中心"), the list scrolls, and among equal matches the ones nearest the map come first.
+        const words = q.split(/\s+/), centre = map.getCenter();
+        const label = f => (f.properties.ct || '') + f.properties.n;
+        const far = f => Math.hypot((f.geometry.coordinates[0] - centre.lng) * Math.cos(centre.lat * Math.PI / 180), f.geometry.coordinates[1] - centre.lat);
+        const rank = f => (f.properties.n === q || label(f) === q.replace(/\s+/g, '') ? 0 : f.properties.n.startsWith(q) ? 1 : 2);
+        const hits = routable.filter(f => label(f).includes(q) || words.every(w => label(f).includes(w)))
+          .sort((a, b) => rank(a) - rank(b) || far(a) - far(b)).slice(0, 40);
         list.replaceChildren(...hits.map(f => {
           const li = document.createElement('li'), b = document.createElement('button');
           b.type = 'button';
           b.textContent = f.properties.n;
+          if (f.properties.m) b.insertAdjacentHTML('beforeend', `<small>地铁${f.properties.ct ? ' · ' + esc(f.properties.ct) : ''}</small>`);
           b.addEventListener('click', () => { list.hidden = true; setStop(role, f); });
           li.appendChild(b);
           return li;
         }));
         list.hidden = !hits.length;
       };
-      input.addEventListener('input', () => { if (!input.value.trim() && od[role]) setStop(role, null); render(); });
+      input.addEventListener('input', () => { if (od[role] && input.value.trim() !== od[role].n) setStop(role, null, true); render(); });
       input.addEventListener('focus', render);
       input.addEventListener('blur', () => setTimeout(() => { list.hidden = true; }, 180));
     }
@@ -1049,7 +1234,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       box.appendChild(title);
       if (f.properties.g == null) {
         const none = document.createElement('span');
-        none.textContent = '线路查询只支持中国境内、已接入线路网的车站';
+        none.textContent = '路线查询只支持中国境内、已接入线路网的车站';
         box.appendChild(none);
       } else {
         const row = document.createElement('div');
@@ -1075,9 +1260,19 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         offerStation(stations.features.find(f => f.properties.n === st.properties.n && Math.abs(f.geometry.coordinates[0] - x) < 1e-3 && Math.abs(f.geometry.coordinates[1] - y) < 1e-3) || st);
         return;
       }
+      const ms = map.getLayer('metro-stations') && map.getLayoutProperty('metro-stations', 'visibility') !== 'none'
+        && map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['metro-stations'] })[0];   // a tight target: the dots are close together and the line between them is clickable too
+      if (ms) {
+        const [x, y] = ms.geometry.coordinates;
+        offerStation(metroStations.features.find(f => f.properties.n === ms.properties.n && Math.abs(f.geometry.coordinates[0] - x) < 1e-3 && Math.abs(f.geometry.coordinates[1] - y) < 1e-3) || ms);
+        return;
+      }
       const f = pick(e.point);
-      if (f && f.properties.n && FAST.includes(f.properties.c) && FAST.includes(f.layer.id)) select(f.properties.n, false);
-      else if (!f) select(null);
+      const city = f && (f.layer.id === 'metro' || f.layer.id === 'suburb') && cityByName.get(f.properties.ct);
+      const line = city && city.lines.find(l => l.n === f.properties.n);
+      if (line) selectMetro(city, line, false);
+      else if (f && f.properties.n && ['shared', 'main', 'branch', ...FAST].includes(f.layer.id)) select(f.properties.n, false, f.properties.c);
+      else if (!f) clearSelection();
     });
 
     applyVisibility();
@@ -1087,17 +1282,31 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     getJSON('data/depots.geojson').then(d => map.getSource('depots').setData(d)).catch(() => {});
   });
 
+  // The selected line is lit only where its class is switched on: the highlight layers read the same
+  // sources as the class layers, so they take the class switches as part of their filter.
+  function applyHighlight() {
+    if (!map.getLayer('hl-conv')) return;
+    const name = ['==', ['get', 'n'], selected || '\u0000'];
+    const on = ids => ['in', ['get', 'c'], ['literal', ids.filter(id => visible[id])]];
+    for (const id of ['hl', 'hl-core']) map.setFilter(id, ['all', name, on(FAST)]);
+    for (const id of ['hl-shared', 'hl-shared-core']) map.setFilter(id, ['all', name, on([...FAST, 'main', 'branch'])]);
+    for (const id of ['hl-conv', 'hl-conv-core']) map.setFilter(id, ['all', name, on(['main', 'branch'])]);
+  }
+
   function applyVisibility() {
     if (!map.getLayer('hsr350')) return;
+    applyHighlight();
     const set = (id, on) => map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
     for (const id of [...FAST, 'build', 'main', 'branch']) set(id, visible[id]);
     for (const id of ['yards', 'depots', 'depot-labels']) set(id, visible.yards);
     for (const id of ['metro-casing', 'metro', 'metro-stations', 'metro-station-labels']) set(id, visible.metro);
-    set('suburb', visible.suburb);
+    for (const id of ['suburb-casing', 'suburb']) set(id, visible.suburb);
     set('stations', visible.stations);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
     set('station-labels', visible.stations);
     set('hsr-glow', FAST.some(id => visible[id]));
+    set('shared', [...FAST, 'main', 'branch'].some(id => visible[id]));
+    map.setFilter('shared', ['in', ['get', 'c'], ['literal', [...FAST, 'main', 'branch'].filter(id => visible[id])]]);
     map.setFilter('hsr-glow', ['in', ['get', 'c'], ['literal', FAST.filter(id => visible[id])]]);
   }
 })();
