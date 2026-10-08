@@ -188,11 +188,14 @@ def hidden(lines, step):
     """Pairs of different lines drawn in the same place, on the same side: one covers the other."""
     pairs, where = defaultdict(float), {}
     for key, off, g, spacing, row in company(lines, step):
-        for pt, mates in row:
-            for other, side in mates:
-                if key < other and abs(off - side) < 0.4:
-                    pairs[(key, other)] += spacing
-                    where.setdefault((key, other), pt)
+        for i, (pt, mates) in enumerate(row):
+            # Slot ramps split a line into many short features. Near their seams
+            # several features can describe the same other line at this point.
+            # Count that line once, and integrate endpoints with half weight.
+            weight = .5 if i in (0, len(row) - 1) else 1.0
+            for other in {other for other, side in mates if key < other and abs(off - side) < 0.4}:
+                pairs[(key, other)] += spacing * weight
+                where.setdefault((key, other), pt)
     return sorted(((v * KM, k, where[k]) for k, v in pairs.items() if v * KM > 1), key=lambda f: -f[0])
 
 
@@ -210,17 +213,19 @@ def astray(lines, step):
     return sorted(((v * KM, k, where[k]) for k, v in found.items() if v * KM > 1), key=lambda f: -f[0])
 
 
-def sharp(lines, limit=70.0):
+def sharp(lines, limit=70.0, shortest=0.00003):
     """Sudden changes of direction: turns sharper than `limit` degrees."""
     found = []
     for key, pieces in lines.items():
         for g, _ in pieces:
             co = list(g.coords)
+            if co[0] == co[-1] and len(co) > 3:
+                co = co[-2:-1] + co       # include the closing seam of a circular line
             for a, b, c in zip(co, co[1:], co[2:]):
                 k = math.cos(math.radians(b[1]))
                 v1, v2 = ((b[0] - a[0]) * k, b[1] - a[1]), ((c[0] - b[0]) * k, c[1] - b[1])
                 n1, n2 = math.hypot(*v1), math.hypot(*v2)
-                if n1 > 0.00003 and n2 > 0.00003:
+                if n1 > shortest and n2 > shortest:
                     angle = math.degrees(math.acos(max(-1.0, min(1.0, (v1[0] * v2[0] + v1[1] * v2[1]) / n1 / n2))))
                     if angle > limit:
                         found.append((angle, key, Point(b)))
@@ -252,6 +257,14 @@ def report(layer):
     for angle, key, pt in found[:12]:
         print(f"      {angle:4.0f} deg  {key[1]} ({key[0]})  {here(pt, 17)}")
     if layer == "metro":
+        from check_curves import audit
+        corners = audit()
+        result["corners"] = corners
+        print(f"   corners: {corners['corners']} turns over 12 degrees, including feature seams, on {corners['affected_lines']} lines")
+        from check_bends import audit as bend_audit
+        bends = bend_audit()
+        result['bends'] = bends
+        print(f"     bends: {bends['bends']} fixed-distance candidates, {bends['reverse_bends']} near an opposite bend (source review, including light rail)")
         found = hidden(lines, step / 3)
         result["hidden"] = [{"km": length, "lines": [list(a), list(b)], "view": here(pt)} for length, (a, b), pt in found]
         print(f"   hidden: {len(found)} pairs of lines drawn on top of each other for more than 1 km")

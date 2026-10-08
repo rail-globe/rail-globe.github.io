@@ -60,9 +60,12 @@ from shapely.strtree import STRtree
 
 from single_track import bridge, curved, join_up, one_track, smooth, stitch
 from finish_display import finish_metro
+from metro_bends import trim_unowned_loop
 from rail_classes import grade_votes, principal_class
 from rail_status import corrected_tags, load_rules
 from side_by_side import side_by_side
+from metro_fit import fit as metro_fit, summary as metro_fit_summary
+from along import FINE, TRACK, TRACK_MIN, exactly, meeting, settled
 
 # The grouping below walks sets of names and coordinates. Python seeds their order afresh on every
 # run, and with it which line an ambiguous piece of track went to: 輕鐵505綫 came out 6 km long in
@@ -76,13 +79,14 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 OUT = ROOT / "data"
 TOL = {"hsr350": 0.00012, "hsr250": 0.00012, "hsr200": 0.0001,
-       "main": 0.0002, "branch": 0.0003, "build": 0.0002, "metro": 0.00006}
+       "main": 0.0002, "branch": 0.0003, "build": 0.0002, "metro": 0.00006,
+       "light": 0.00002}       # light rail: a 25 m curve is gone at 6 m tolerance
 # How finely a bend is drawn back as a curve (single_track.curved): a point for about every so many
 # degrees of turning, at most so many to a stretch, none closer together than so far (degrees).
 # Every point is paid for in the size of the files the page loads, and the conventional network is
 # both the longest and the most winding: the fast lines and the metros, drawn thick and looked at
 # closely, get the fine curves, the conventional lines enough to take the corners off.
-CURVE = {"hsr350": (4, 5, 0.0003), "hsr250": (4, 5, 0.0003), "hsr200": (4, 5, 0.0003), "metro": (5, 4, 0.0003),
+CURVE = {"hsr350": (4, 5, 0.0003), "hsr250": (4, 5, 0.0003), "hsr200": (4, 5, 0.0003), "metro": (10, 4, 0.0003), "light": (10, 6, 0.00004),
          "main": (8, 3, 0.0006), "branch": (8, 3, 0.0006), "build": (8, 3, 0.0006)}
 SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight;industrial"}
 METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
@@ -998,17 +1002,18 @@ RIDE = 0.0005        # ~55 m: a line this close to another one and running the s
 RIDE_LOOSE = 0.0016  # ~175 m: once in a corridor a line stays in it while it is this close (tracks spread at stations)
 RIDE_MIN = 0.006     # ~650 m: shorter company (a crossing, a shared station) is not drawn side by side
 RIDE_STEP = 0.0004
-RIDE_SLIVER = 0.0012 # ~130 m: a shorter piece between two shared stretches, or a shorter stretch with its own set of lines, is noise at a junction
+RIDE_SLIVER = 0.0012 # ~130 m: a shorter piece between two shared stretches, off to the side of both, is noise at a junction
 BARE = re.compile(r"[\dA-Za-z]+号?[线綫線]?")       # "15号线" names a line only within its city
 
 
-def heading(g, at):
-    a, b = g.interpolate(max(at - 0.0002, 0)), g.interpolate(min(at + 0.0002, g.length))
+def heading(g, at, d=0.0002):
+    a, b = g.interpolate(max(at - d, 0)), g.interpolate(min(at + d, g.length))
     d = math.hypot(b.x - a.x, b.y - a.y)
     return ((b.x - a.x) / d, (b.y - a.y) / d) if d else (0, 0)
 
 
 metro_co = {wid: co for wid, t, co in metro_ways}
+metro_light = {wid for wid, t, co in metro_ways if t.get("railway") in ("light_rail", "tram")}
 raw = defaultdict(lambda: {"col": Counter(), "rels": [], "extra": []})      # line name as the relations give it
 for nm, col, wids in metro_rels:
     ws = [w for w in dict.fromkeys(wids) if w in metro_co]
@@ -1172,6 +1177,9 @@ for nm, d in raw.items():
     line["col"].update(d["col"])
     line["groups"] += [[metro_co[w] for w in ws] for ws in d["rels"]]
     line["bag"] += d["extra"]
+    for ws in d["rels"]:
+        for w in ws:
+            line.setdefault("track", Counter())[w in metro_light] += km(metro_co[w])
 for (reg, own), cos in loose.items():       # a named line with no relation yet, in the default colour
     if own and not NOT_METRO.search(own) and sum(km(c) for c in cos) >= 3:
         metro_lines.setdefault((reg, final_name(own, reg)), {"col": Counter(), "groups": [], "bag": []})["bag"] += cos
@@ -1179,22 +1187,31 @@ for (reg, own), cos in loose.items():       # a named line with no relation yet,
 metro_feats, metro_km, metro_geoms = [], Counter(), []
 metro_routing = []       # (line name, colour, tracks) for scripts/build_graph.py: every track of the line
 paths = {}               # line -> the line as continuous pieces
+loop_report = []
+metro_anchors = [(x,y) for _,x,y in ex['stations']]
 for key, line in metro_lines.items():
     reg, nm = key
     line["colour"] = line["col"].most_common(1)[0][0] if line["col"] else METRO_DEFAULT
-    every = [co for g in line["groups"] for co in g] + line["bag"]
+    line["light"] = line.get("track", Counter())[True] > line.get("track", Counter())[False]
+    every = line["every"] = [co for g in line["groups"] for co in g] + line["bag"]
     runs = runs_of(every)
     metro_geoms += runs
     metro_km[reg] += sum(km(list(g.coords)) for g in runs)
     metro_routing.append((nm, line["colour"], list({tuple(co): co for co in every}.values())))
     groups = sorted(line["groups"], key=lambda g: -sum(km(co) for co in g))
+    display_bag = []
+    for co in line['bag']:
+        kept, record = trim_unowned_loop(co, metro_anchors)
+        display_bag.append(kept)
+        if record:
+            loop_report.append(dict(record, line=nm, kind='unowned_stationless_terminal_loop'))
     if groups:
-        pieces = single_path(groups + ([line["bag"]] if line["bag"] else []), keep=0.004)      # a metro branch can be half a kilometre long
+        pieces = single_path(groups + ([display_bag] if display_bag else []), keep=0.004)      # a metro branch can be half a kilometre long
     else:
-        pieces = runs
+        pieces = runs_of(display_bag) if display_bag else runs
     # one_track() takes out what is still there twice (a relation that lists both tracks, a line known
     # only by its track); stitch() joins what belongs together.
-    paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track([g for g in pieces if g.length > 0]))]
+    paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track([g for g in pieces if g.length > 0]), bends=True)]
 print(f"metro lines as continuous paths: {len(paths)} lines, {sum(g.length for v in paths.values() for g in v) * 100:.0f} (degrees x 100)", flush=True)
 
 # Lines moved here from the rail classes (run by a metro company) are known by their track only.
@@ -1207,8 +1224,9 @@ for (nm, col), cos in moved_tracks.items():
     runs = runs_of(cos)
     metro_km[key[0]] += sum(km(list(g.coords)) for g in runs)
     metro_geoms += runs
-    metro_lines[key] = {"colour": col or METRO_DEFAULT, "kind": "m"}
-    paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track(runs))]
+    metro_lines[key] = {"colour": col or METRO_DEFAULT, "kind": "m", "every": cos}
+    paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track(runs), bends=True)]
+metro_paths = paths          # each line's own track, as one path: what the drawing is measured against below
 
 # Lines in each other's company. Longest lines first: each line is laid along the lines already
 # there wherever it runs with one of them, and is its own reference everywhere else.
@@ -1222,6 +1240,10 @@ for reg, keys in by_reg.items():
     for key in sorted(keys, key=lambda k: (-sum(g.length for g in paths[k]), k[1])):
         tree = STRtree([g for g, _ in refs]) if refs else None
         fresh = []
+        light = metro_lines[key].get("light")
+
+        def width(r):                             # how close this line and the owner of a reference have to be
+            return TRACK if light or metro_lines[refs[r][1]].get("light") else RIDE
         for piece in paths[key]:
             n = max(2, int(piece.length / RIDE_STEP) + 1)
             at = [piece.length * i / (n - 1) for i in range(n)]
@@ -1229,11 +1251,15 @@ for reg, keys in by_reg.items():
             for pos in at if tree is not None else []:
                 pt, cands = piece.interpolate(pos), {}
                 for j in tree.query(pt, predicate="dwithin", distance=RIDE_LOOSE):
-                    ref = refs[int(j)][0]
-                    on = ref.project(pt)
+                    ref, near = refs[int(j)][0], width(int(j))
+                    on, d = ref.project(pt), ref.distance(pt)
+                    # not in its company: too far to the side, or past the end of it (the nearest
+                    # point of a reference that has ended is its end, however far the line has gone on)
+                    if d > (RIDE_LOOSE if near == RIDE else 2 * TRACK) or (d > 0.00003 and not 0 < on < ref.length):
+                        continue
                     h, k = heading(piece, pos), heading(ref, on)
                     if abs(h[0] * k[0] + h[1] * k[1]) > 0.85:
-                        cands[int(j)] = (ref.distance(pt) < RIDE, on)
+                        cands[int(j)] = (d < near, on)
                 # The reference being ridden is kept for as long as it is there; otherwise the first one
                 # laid here, a properly close one before a loosely close one. So every line in a corridor
                 # rides the same reference, and none rides two side by side.
@@ -1241,7 +1267,7 @@ for reg, keys in by_reg.items():
                     riding = max(cands, key=lambda j: (cands[j][0], -j)) if cands else None
                 hit.append((riding, cands[riding][1]) if riding is not None else None)
                 close.append(bool(riding is not None and cands[riding][0]))
-            taken, i = [], 0                      # stretches of the piece that ride on references
+            taken, i = [], 0                      # stretches of the piece that ride on references: (from, to, reference)
             while i < len(hit):
                 if hit[i] is None:
                     i += 1
@@ -1249,32 +1275,71 @@ for reg, keys in by_reg.items():
                 first, last, k = i, i, i + 1      # a run in company, whichever references it passes along
                 # Platform fans can spread for several hundred metres. A brief loss of the
                 # reference inside a long corridor does not mean the line leaves that corridor.
-                while k < len(hit) and k - last <= 20:
+                # Light rail has no such corridor: where it is not on another line's track it is alone.
+                while k < len(hit) and k - last <= (1 if light else 20):
                     if hit[k] is not None:
                         last = k
                     k += 1
                 # in company for long enough, and properly close for a good part of it (loosely close
                 # alone is two lines in neighbouring streets)
-                if at[last] - at[first] >= RIDE_MIN and sum(close[first:last + 1]) >= 0.5 * (last - first + 1):
-                    on = defaultdict(list)
+                if light or (at[last] - at[first] >= RIDE_MIN and sum(close[first:last + 1]) >= 0.5 * (last - first + 1)):
+                    passed = []                   # the references passed along, in order: [reference, first sample, last sample]
                     for m in range(first, last + 1):
-                        if hit[m] is not None:
-                            on[hit[m][0]].append(hit[m][1])
-                    for ref, where in on.items():
-                        rides[ref].append((min(where), max(where), key))
-                    taken.append((at[first], at[last]))
+                        if hit[m] is None:
+                            continue
+                        if passed and passed[-1][0] == hit[m][0] and (not light or passed[-1][2] == m - 1):
+                            passed[-1][2] = m
+                        else:
+                            passed.append([hit[m][0], m, m])
+                    # Where the line comes onto each reference and leaves it is found exactly: a line
+                    # that turns off at a junction is drawn on its own curve from the points on, not
+                    # carried along the reference to the next sample and cut across from there.
+                    for q, (r, m0, m1) in enumerate(passed):
+                        ref = refs[r][0]
+                        floor = max(taken[-1][1] if taken else 0.0, at[max(m0 - 1, 0)])
+                        ceiling = at[passed[q + 1][1]] if q + 1 < len(passed) else at[min(m1 + 1, n - 1)]
+                        span = exactly(piece, ref, at[m0], at[m1], width(r), floor, ceiling)
+                        if span is not None and width(r) == TRACK:
+                            span = settled(piece, ref, *span)
+                        if span is None or span[1] - span[0] < (TRACK_MIN if light else 2 * FINE):
+                            continue
+                        where = ([ref.project(piece.interpolate(span[0]))]
+                                 + [hit[m][1] for m in range(m0, m1 + 1) if hit[m] is not None and hit[m][0] == r and span[0] <= at[m] <= span[1]]
+                                 + [ref.project(piece.interpolate(span[1]))])
+                        # A reference that is a ring (a circle line) begins and ends at one place. A line
+                        # passing that place rides the end of the ring and then its beginning: two
+                        # stretches, not everything between the lowest position and the highest.
+                        legs = [[where[0]]]
+                        for v in where[1:]:
+                            if abs(v - legs[-1][-1]) > 0.5 * ref.length:
+                                onward = legs[-1][-1] > v
+                                legs[-1].append(ref.length if onward else 0.0)
+                                legs.append([0.0 if onward else ref.length])
+                            legs[-1].append(v)
+                        for leg in legs:
+                            rides[r].append((min(leg), max(leg), key))
+                        taken.append((span[0], span[1], r))
                 i = last + 1
-            edges = [0.0] + [v for span in taken for v in span] + [piece.length]
-            for a, b in zip(edges[::2], edges[1::2]):
-                if b - a > (RIDE_SLIVER if taken else 0):
-                    fresh.append(substring(piece, a, b))
+            # What is left is the line's own track. A short piece between two shared stretches is
+            # noise at a junction when it lies off to the side of both (the line's own tunnel for
+            # 100 m, 30 m from the path it is drawn along before and after), and the line's way
+            # from one to the other when it meets both: the curve at a junction.
+            edges = [0.0] + [v for span in taken for v in span[:2]] + [piece.length]
+            for q, (a, b) in enumerate(zip(edges[::2], edges[1::2])):
+                met = [refs[taken[x][2]][0].distance(piece.interpolate(v)) < TRACK
+                       for x, v in ((q - 1, a), (q, b)) if 0 <= x < len(taken)]
+                if b - a > RIDE_SLIVER or not taken or (b - a > 2 * FINE and all(met)):
+                    own = substring(piece, a, b)
+                    if light and own.geom_type == "LineString" and own.length > 0:
+                        own = meeting(own, refs[taken[q - 1][2]][0] if q >= 1 else None, refs[taken[q][2]][0] if q < len(taken) else None)
+                    fresh.append(own)
         refs += [(g, key) for g in fresh if g.geom_type == "LineString" and g.length > 0]
     # every reference is cut where a line joins or leaves it
     stretches = []                               # (reference, from, to, lines on it)
     for r, (g, owner) in enumerate(refs):
         cuts = [0.0]
         for v in sorted({v for a, b, _ in rides[r] for v in (a, b)}):
-            if v - cuts[-1] > RIDE_SLIVER and g.length - v > RIDE_SLIVER:      # no stretch of a few metres with a set of lines of its own
+            if v - cuts[-1] > 0.00002 and g.length - v > 0.00002:      # no stretch of a metre or two with a set of lines of its own
                 cuts.append(v)
         cuts.append(g.length)
         for a, b in zip(cuts, cuts[1:]):
@@ -1324,7 +1389,8 @@ for on, pieces in shared.items():
 for key, pieces in display_parts.items():
     # The corridor sampler drops short solo slivers (< RIDE_SLIVER). Their two neighbouring
     # reference ends can be up to twice that distance apart; carry the same line across them.
-    runs = stitch(runs_of(pieces), reach=3 * RIDE_SLIVER)
+    light = metro_lines[key].get("light")
+    runs = stitch(runs_of(pieces), reach=4 * TRACK if light else 3 * RIDE_SLIVER, ease=0.00002 if light else 0.00006, bends=True)
     guides = direction_guides[key]
     oriented = []
     for g in runs:
@@ -1335,7 +1401,7 @@ for key, pieces in display_parts.items():
             if a[0] * b[0] + a[1] * b[1] < 0:
                 g = LineString(list(g.coords)[::-1])
         oriented.append(g)
-    simp = rounded(oriented, TOL["metro"], join=False)      # curved last of all, in finish_metro()
+    simp = rounded(oriented, TOL["light" if light else "metro"], join=False)      # curved last of all, in finish_metro()
     if simp:
         metro_feats.append({"type": "Feature", "properties": metro_props(key), "geometry": geometry(simp)})
 print("metro lines drawn side by side (km):", {k: round(v, 1) for k, v in shared_km.most_common(16)},
@@ -1419,7 +1485,21 @@ for f in metro_feats:
     if lines:
         f["geometry"] = geometry(lines)
 
-finish_metro(metro_feats, metro_routing + [(nm, col, cos) for (nm, col), cos in moved_tracks.items()], curve=CURVE["metro"], within=TOL["metro"])
+bend_report = finish_metro(metro_feats, metro_routing + [(nm, col, cos) for (nm, col), cos in moved_tracks.items()], curve=CURVE["metro"], within=TOL["metro"],
+             light={key for key, line in metro_lines.items() if line.get("light")}, light_curve=CURVE["light"], light_within=TOL["light"],
+             anchors=metro_anchors)
+bend_report += loop_report
+bend_file = ROOT / 'output' / 'geometry' / 'metro-bend-repairs.json'
+bend_file.parent.mkdir(parents=True, exist_ok=True)
+bend_file.write_text(json.dumps(bend_report, ensure_ascii=False, indent=1))
+print(f'final metro bends: {len(bend_report)} source restorations/refits/terminal-loop reductions; report {bend_file}', flush=True)
+# How well the drawing lies on the track: lines carried across a junction, track left undrawn.
+fit_report = metro_fit(metro_feats, {key: line.get("every", ()) for key, line in metro_lines.items()}, metro_paths,
+                       {key for key, line in metro_lines.items() if line.get("light")})
+print(metro_fit_summary(fit_report), flush=True)
+fit_file = ROOT / "output" / "metro_fit.json"
+fit_file.parent.mkdir(exist_ok=True)
+fit_file.write_text(json.dumps(fit_report, ensure_ascii=False, indent=1))
 
 # ---------------------------------------------------------------- metro lines by city
 def spread(f):

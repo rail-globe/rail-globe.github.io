@@ -2,6 +2,7 @@
 
     python3 scripts/extract_osm.py        China, Hong Kong, Macao, Taiwan -> extract.pkl
     python3 scripts/extract_osm.py uk     United Kingdom                  -> extract_uk.pkl
+    python3 scripts/extract_osm.py jp     Japan                           -> extract_jp.pkl
 
 Reading a 1.6-2.3 GB extract takes a few minutes, so it is done once here;
 scripts/process_osm.py then classifies and writes the map layers from the pickles in seconds.
@@ -113,5 +114,7 @@ def main(files, out):
 if __name__ == "__main__":
     if sys.argv[1:] == ["uk"]:
         main(["united-kingdom.osm.pbf"], "extract_uk.pkl")
+    elif sys.argv[1:] == ["jp"]:
+        main(["japan-latest.osm.pbf"], "extract_jp.pkl")
     else:
         main(["china.osm.pbf", "taiwan.osm.pbf"], "extract.pkl")

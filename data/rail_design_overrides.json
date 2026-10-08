@@ -509,13 +509,14 @@
       "name": "汉丹铁路 · 老河口东~丹江",
       "track_name": "汉丹线",
       "endpoints": "老河口东~丹江",
-      "design": 60,
-      "design_infrastructure": 60,
+      "design": null,
+      "design_infrastructure": null,
       "design_track": null,
       "operating": null,
-      "url": "https://baike.baidu.com/item/汉丹铁路/11046464",
+      "url": "https://zh.wikipedia.org/wiki/汉丹铁路",
       "checked": "2026-10-07",
-      "basis": "Baidu Baike, 汉丹铁路: built with a design speed of 60 km/h, and a 2025 official assessment describes 老河口东至丹江口 as a class-III single-track diesel line at 60 km/h (read 2026-10-07); encyclopedia only, the figure is a low-confidence one but the stretch is not a fast line"
+      "basis": "zh.wikipedia 汉丹铁路 (infobox, citing 《襄樊铁路分局志》): 老河口东站至丹江站 is a class-III single-track line, not electrified, 最高速度 50 km/h; Baidu Baike gives 60 km/h. A maximum speed, not a design speed, and no fast line: drawn as conventional (read 2026-10-07)",
+      "conventional": true
     },
     {
       "name": "甬广高速铁路汕头段 · 汕头~汕头南",
@@ -576,6 +577,44 @@
       "url": "https://fzggw.cq.gov.cn/zwxx/bmdt/202002/t20200212_5171351_wap.html",
       "checked": "2026-10-07",
       "basis": "Chongqing Development and Reform Commission, 渝利铁路有望年内开工: the line starts at 重庆北火车站 and runs to 利川, 259.5 km of new main line, design running speed 200 km/h; a figure for the line, of which this is the first stretch; china-emu gives the stretch an operating speed of 200 only"
+    },
+    {
+      "name": "长株潭城际铁路乌山联络线 · 乌山~长沙西",
+      "track_name": "乌山联络线",
+      "endpoints": "乌山~长沙西",
+      "design": 250,
+      "design_infrastructure": 250,
+      "design_track": null,
+      "operating": 120,
+      "url": "https://www.china-emu.cn/RailRoads/Line/?LineName=长株城际铁路（及联络线）",
+      "checked": "2026-10-07",
+      "basis": "card 乌山~长沙西: 线下设计速度 250 km/h, 最高运行速度 120 km/h; its note puts only the connecting curves into the 石长铁路 at 120 km/h (radius 800 m). The 9.69 km main line (湖南日报 2019-12, https://m.voc.com.cn/xhn/news/201912/14158685.html) is taken at 250"
+    },
+    {
+      "name": "京包客运专线 · 呼和浩特~台阁牧（既有京包铁路）",
+      "track_name": "京包客专线",
+      "endpoints": "呼和浩特~台阁牧",
+      "design": null,
+      "design_infrastructure": null,
+      "design_track": null,
+      "operating": null,
+      "conventional": true,
+      "url": "https://zh.wikipedia.org/wiki/京包客运专线",
+      "checked": "2026-10-07",
+      "basis": "the new 250 km/h line ends at 呼和浩特东 (中新网 2017 via https://m.thepaper.cn/newsDetail_forward_1675090: 始于张家口南站，引入呼和浩特东站，全长286.8公里); west of it the trains run on the existing 京包铁路, upgraded for 200 km/h between 呼和浩特 and 包头 in 2015 (https://www.chinanews.com/sh/2015/01-08/6948997.shtml). The catalogue gives 台阁牧~包头 200 and no value for 呼和浩特~台阁牧: existing line with no design figure, drawn as conventional"
+    },
+    {
+      "name": "郑太高速铁路太原段 · 鸣李~长风街线路所（既有石太线）",
+      "track_name": "郑太客专线",
+      "endpoints": "鸣李~长风街线路所",
+      "design": null,
+      "design_infrastructure": null,
+      "design_track": null,
+      "operating": null,
+      "conventional": true,
+      "url": "https://www.mee.gov.cn/gkml/sthjbgw/spwj1/201604/t20160429_336897.htm",
+      "checked": "2026-10-07",
+      "basis": "环审〔2016〕51号: 线路起于既有太原南站; 太原南站至新鸣李站完全利用既有线; 设计行车速度250公里/小时 applies to the new line from 新鸣李 on. The catalogue lists this 太原段 (鸣李~长风街线路所) with no design value: existing line, drawn as conventional"
     }
   ]
 }

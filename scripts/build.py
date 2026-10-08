@@ -14,6 +14,8 @@ page = page.replace("/*MAPLIBRE_CSS*/", (ROOT / "vendor" / "maplibre-gl.css").re
 site = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
 assert "/*WITH_UK*/true" in page
 page = page.replace("/*WITH_UK*/true", "true" if site.get("uk", True) else "false")
+assert "/*WITH_JP*/true" in page
+page = page.replace("/*WITH_JP*/true", "true" if site.get("jp", False) else "false")
 local = '<!doctype html>\n<html lang="zh-CN">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + page
 (ROOT / "index.html").write_text(local)
 (ROOT / "dist").mkdir(exist_ok=True)

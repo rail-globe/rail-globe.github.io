@@ -62,6 +62,15 @@ class DesignSpeeds(unittest.TestCase):
         again = next(split_part(LineString([(0, 0), (1, 0)]), [(0, 1, section('a', 'b', 250))], fs[1]['properties']))
         self.assertNotIn('e', again['properties'])
 
+    def test_a_stretch_documented_as_an_old_line_is_drawn_conventional(self):
+        g = LineString([(0, 0), (2, 0)])
+        old_line = section('a', 'b', None, conventional=True)
+        fs = list(split_part(g, [(0, 1, old_line)], {'c': 'hsr250', 'n': 'line'}))
+        first, rest = fs[0]['properties'], fs[1]['properties']
+        self.assertEqual((first['c'], first.get('e'), first.get('d')), ('main', None, None))
+        self.assertEqual((first['de'], first['ref']), ('a~b', 'reference'))         # the source stays with it
+        self.assertEqual((rest['c'], rest.get('e')), ('hsr250', 1))                 # the rest of the line is as it was
+
     def test_a_card_without_track_name_is_found_by_its_own_title(self):
         card = dict(section('昌邑', '芝罘', 350), name='潍烟高速铁路', track_name='')
         self.assertIn(line_name('潍烟高速线'), card_aliases(card))

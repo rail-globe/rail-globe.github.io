@@ -76,6 +76,28 @@ class CurvedTest(unittest.TestCase):
     def test_a_real_corner_is_left_alone(self):
         self.assertEqual(curved([(0, 0), (1, 0), (1, 1)]), [(0, 0), (1, 0), (1, 1)])
 
+    def test_constrained_long_spans_keep_the_shared_heading(self):
+        # Independently scaling the two spans' offsets used to recreate the corner.
+        line = [(116, 40), (116.02, 40), (116.021, 40.001), (116.04, 40.008)]
+        out = curved(line, 10, 4, .0003, within=.00006, adaptive=True)
+        self.assertTrue(all(p in out for p in line))
+        self.assertLess(max(turns(out)), 11)
+        chords = LineString([(x * K, y) for x, y in line])
+        self.assertLessEqual(max(chords.distance(Point(x * K, y)) for x, y in out), .00006 + 1e-9)
+
+    def test_caoqiao_corner_is_sampled_even_below_the_old_spacing_limit(self):
+        line = [(116.356529, 39.852526), (116.357042, 39.852734),
+                (116.357285, 39.853138), (116.357494, 39.85346)]
+        out = curved(line, 10, 4, .0003, within=.00006, adaptive=True)
+        self.assertLess(max(turns(out)), 11)
+        self.assertTrue(all(p in out for p in line))
+
+    def test_adaptive_curve_is_repeatable_and_does_not_densify_straights(self):
+        line = [(116, 40), (116.02, 40), (116.04, 40)]
+        self.assertEqual(curved(line, 10, within=.00006, adaptive=True), line)
+        self.assertEqual(curved(self.line, 10, within=.00006, adaptive=True),
+                         curved(self.line, 10, within=.00006, adaptive=True))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -53,7 +53,7 @@ def slots(parts, near=NEAR, step=STEP):
         if len(geoms) > 1:
             for k, j in zip(*tree.query(pts, predicate="dwithin", distance=near)):
                 other, col, h = parts[j][0], parts[j][1], geoms[j]
-                if other == line or alike(col, colour):
+                if other == line:
                     continue
                 a, b = heading(g, at[k]), heading(h, h.project(pts[k]))
                 dot = a[0] * b[0] + a[1] * b[1]
@@ -61,19 +61,78 @@ def slots(parts, near=NEAR, step=STEP):
                     company[int(k)].append((col, other, 1 if dot > 0 else -1))
         row = []
         for k in range(n):
-            mates = company.get(k)
+            present = company.get(k, [])
+            # a line in the same colour is the same line under another name: it takes no slot,
+            # but it is there, and may be the one that says which way the bundle runs
+            mates = [m for m in present if not alike(m[0], colour)]
             if not mates:
                 row.append((float(at[k]), 0.0, 1))
                 continue
             # one slot per colour, in a fixed order, so every line keeps its side from one stretch
-            # to the next; the first line of the bundle says which way the bundle runs
+            # to the next
             classes = []
             for col in sorted({colour} | {m[0] for m in mates}):
                 if not any(alike(col, c) for c in classes):
                     classes.append(col)
             mine = next(x for x, c in enumerate(classes) if alike(c, colour))
-            lead = min(mates + [(colour, line, 1)])
-            row.append((float(at[k]), lead[2] * (mine - (len(classes) - 1) / 2), len(classes)))
+            # The bundle runs the way most of its lines are written; with as many each way, the
+            # way of its first line. Going by the first line alone, every line would change sides
+            # where a line written the other way joins the bundle or leaves it.
+            ways = sum(m[2] for m in present) + 1
+            way = (1 if ways > 0 else -1) if ways else min(present + [(colour, line, 1)])[2]
+            row.append((float(at[k]), way * (mine - (len(classes) - 1) / 2), len(classes)))
+        out.append(row)
+    return out
+
+
+def abreast(parts, near=0.0003, step=0.0005, reach=0.0012):
+    """Slots for railway lines that each lie on their own track, a few metres from the next: the
+    lines of one corridor (山手線, 京浜東北線 and 東海道本線 out of 東京). Same form as slots().
+
+    Here the lines are not on one path, so their order is given: a line's slot is its place in the
+    corridor counted from the left, seen along the line. Its neighbours are the lines within `near`
+    of it running the same way, and their neighbours in turn, out to `reach` on either side: every
+    line of a corridor then counts the same lines and comes to the same order, whichever of them
+    is asked."""
+    geoms = [g for _, _, g in parts]
+    tree = STRtree(geoms)
+    out = []
+    for i, (line, _, g) in enumerate(parts):
+        n = max(2, int(round(g.length / step)) + 1)
+        at = np.linspace(0, g.length, n)
+        pts = shapely.line_interpolate_point(g, at)
+        beside = defaultdict(set)
+        if len(geoms) > 1:
+            for k, j in zip(*tree.query(pts, predicate="dwithin", distance=near)):
+                if parts[j][0] != line:
+                    beside[int(k)].add(int(j))
+        row = []
+        for k in range(n):
+            if k not in beside:
+                row.append((float(at[k]), 0.0, 1))
+                continue
+            p, h = pts[k], heading(g, at[k])
+            right = {line: 0.0}                       # line -> how far to the right of this one it runs here
+            todo = [p]
+            while todo:
+                q = todo.pop()
+                for j in tree.query(q, predicate="dwithin", distance=near):
+                    other, o = parts[int(j)][0], geoms[int(j)]
+                    if other in right:
+                        continue
+                    on = o.project(p)
+                    there = o.interpolate(on)
+                    side = -(h[0] * (there.y - p.y) - h[1] * (there.x - p.x))
+                    way = heading(o, on)
+                    if abs(side) > reach or abs(h[0] * way[0] + h[1] * way[1]) < 0.9:
+                        continue                      # too far across to be the same corridor, or a line that crosses
+                    right[other] = side
+                    todo.append(o.interpolate(o.project(q)))
+            if len(right) == 1:
+                row.append((float(at[k]), 0.0, 1))
+                continue
+            order = sorted(right, key=lambda name: (right[name], str(name)))
+            row.append((float(at[k]), order.index(line) - (len(order) - 1) / 2, len(order)))
         out.append(row)
     return out
 
@@ -129,9 +188,10 @@ def eased(runs, ramp=RAMP, grain=GRAIN):
     return [(a, b, s) for a, b, s in out if b - a > 1e-9]
 
 
-def side_by_side(features, skip=lambda props: props.get("k") == "s"):
+def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=slots, min_run=MIN_RUN):
     """Rewrite the metro features so that each carries the slot of one stretch of its line: a line
-    becomes a few features, one per slot. Returns the new list; other features pass through."""
+    becomes a few features, one per slot. Returns the new list; other features pass through.
+    slots_of: slots() for lines drawn along one path, abreast() for lines each on its own track."""
     parts, where = [], []
     for fi, f in enumerate(features):
         props, g = f["properties"], f["geometry"]
@@ -142,11 +202,11 @@ def side_by_side(features, skip=lambda props: props.get("k") == "s"):
                 parts.append(((props.get("r"), props["n"]), props.get("col"), LineString(co)))
                 where.append(fi)
     by_slot = defaultdict(lambda: defaultdict(list))             # feature -> slot -> lines
-    for fi, (_, _, g), row in zip(where, parts, slots(parts)):
-        for a, b, slot in eased(stretches(row)):
+    for fi, (_, _, g), row in zip(where, parts, slots_of(parts)):
+        for a, b, slot in eased(stretches(row, min_run)):
             piece = substring(g, a, b)
             if piece.geom_type == "LineString" and piece.length > 0:
-                by_slot[fi][round(slot * 16) / 16].append([[round(x, 6), round(y, 6)] for x, y in piece.coords])
+                by_slot[fi][round(slot * 16) / 16].append([[round(x, 7), round(y, 7)] for x, y in piece.coords])
     out = []
     for fi, f in enumerate(features):
         if fi not in by_slot:

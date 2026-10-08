@@ -22,6 +22,17 @@ GRADES = ('hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow')
 LABELS = dict(zip(GRADES, ('>350', '350', '300', '250', '200', '160', '<160')))
 
 
+CONVENTIONAL = -1      # stands in for the design speed of a stretch documented as a conventional line
+
+
+def brief(s):
+    """A section as the coverage report lists it."""
+    out = {k: s[k] for k in ('name', 'endpoints', 'design', 'url')}
+    if s.get('conventional'):
+        out.update(design=None, conventional=True)
+    return out
+
+
 def grade(speed):
     """Standard design bands. Intermediate 165/205 belong to the 160/200 band."""
     if not speed or speed <= 0:
@@ -366,7 +377,14 @@ def split_part(g, spans, original):
             props.update(c=props['r'], e=1)
         else:
             props['c'] = 'main' if props['r'] != 'branch' else 'branch'
-        if section:
+        if section and section.get('conventional'):
+            # A source says what this stretch is, and it is not a fast line: an old line that the
+            # trains of a fast one run over into a city, a branch. It is drawn as a conventional
+            # line, with the source kept, instead of in the band of the line it is named after.
+            props.pop('e', None)
+            props['c'] = 'main' if props['r'] != 'branch' else 'branch'
+            props.update(dn=section['name'], de=section['endpoints'], ref=section['url'])
+        elif section:
             props.pop('e', None)
             props.update(c=grade(section['design']), d=section['design'],
                          dn=section['name'], de=section['endpoints'], ref=section['url'],
@@ -425,7 +443,10 @@ def apply(root=ROOT):
     if manual.exists():
         for s in json.loads(manual.read_text())['sections']:
             # a range read from a source note covers what it names and nothing more
-            sections[line_name(s['track_name'])].append({**s, 'scoped': True})
+            s = {**s, 'scoped': True}
+            if s.get('conventional'):
+                s['design'] = s.get('design') or CONVENTIONAL
+            sections[line_name(s['track_name'])].append(s)
     all_features, originals = [], {}
     for bucket in ('hsr', 'conv', 'shared'):
         originals[bucket] = json.loads((source / f'rail_{bucket}.geojson').read_text())
@@ -478,7 +499,7 @@ def apply(root=ROOT):
         if whole:
             for i, g in enumerate(parts):
                 spans[i].append((0.0, g.length, rows[0]))
-            used = [{k: s[k] for k in ('name', 'endpoints', 'design', 'url')} for s in rows]
+            used = [brief(s) for s in rows]
         todo, unplaced = ([] if whole else list(rows)), []
         while todo:
             s = todo.pop(0)
@@ -501,7 +522,7 @@ def apply(root=ROOT):
                 continue
             for i, a, b in path:
                 spans[i].append((a, b, s))
-            used.append({k: s[k] for k in ('name', 'endpoints', 'design', 'url')})
+            used.append(brief(s))
         # Cards that could not be placed, around a boundary the map does have: where every card
         # meeting at that boundary gives the same value, the line has it on both sides, up to the
         # next boundary.
@@ -516,7 +537,7 @@ def apply(root=ROOT):
             if path:
                 for i, a, b in path:
                     spans[i].append((a, b, s))
-                used.append({k: s[k] for k in ('name', 'endpoints', 'design', 'url')})
+                used.append(brief(s))
                 extended.append(s['name'])
                 continue
             missing = [n for n in ends if n not in graph.anchors]

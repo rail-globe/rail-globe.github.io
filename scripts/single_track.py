@@ -258,7 +258,73 @@ def smooth(co, reverse=150.0, corner=55.0):
     return co
 
 
-def curved(co, per=2.5, most=10, shortest=0.00006, corner=60.0, within=None):
+def bounded_curve(co, per, within, corner):
+    """Interpolate inside a corridor without breaking the tangent at a retained vertex.
+
+    Scaling each span's normal displacement separately changes its endpoint heading.
+    Instead the two spans use the same tangent direction, and shorten their Bezier
+    handles to fit the corridor. Adaptive subdivision follows the endpoint bends even
+    when the handles are tiny compared with a long straight chord.
+    """
+    scale = math.cos(math.radians(co[len(co) // 2][1]))
+    pts = [(x * scale, y) for x, y in co]
+
+    def unit(x, y):
+        n = math.hypot(x, y)
+        return (x / n, y / n) if n else (0.0, 0.0)
+
+    dirs = [unit(b[0] - a[0], b[1] - a[1]) for a, b in zip(pts, pts[1:])]
+    lengths = [math.dist(a, b) for a, b in zip(pts, pts[1:])]
+    tangents = [dirs[0]]
+    turns = [0.0]
+    for u, v in zip(dirs, dirs[1:]):
+        angle = math.degrees(math.acos(max(-1.0, min(1.0, u[0] * v[0] + u[1] * v[1]))))
+        turns.append(angle)
+        tangents.append(unit(u[0] + v[0], u[1] + v[1]) if per / 2 < angle <= corner else None)
+    tangents.append(dirs[-1])
+    turns.append(0.0)
+    if co[0] == co[-1]:
+        u, v = dirs[-1], dirs[0]
+        angle = math.degrees(math.acos(max(-1, min(1, u[0] * v[0] + u[1] * v[1]))))
+        turns[0] = turns[-1] = angle
+        tangents[0] = tangents[-1] = unit(u[0] + v[0], u[1] + v[1]) if per / 2 < angle <= corner else None
+    out = [co[0]]
+
+    def sample(p, depth=0):
+        a, b, c, d = p
+        chord = unit(d[0] - a[0], d[1] - a[1])
+        first, last = unit(b[0] - a[0], b[1] - a[1]), unit(d[0] - c[0], d[1] - c[1])
+        heading_error = max(math.degrees(math.acos(max(-1, min(1, t[0] * chord[0] + t[1] * chord[1]))))
+                            for t in (first, last) if t != (0.0, 0.0))
+        off = max(abs((q[0] - a[0]) * chord[1] - (q[1] - a[1]) * chord[0]) for q in (b, c))
+        if depth >= 16 or (heading_error <= per / 2 and off <= within / 12):
+            out.append((d[0] / scale, d[1]))
+            return
+        ab, bc, cd = [((u[0] + v[0]) / 2, (u[1] + v[1]) / 2) for u, v in zip(p, p[1:])]
+        abc, bcd = ((ab[0] + bc[0]) / 2, (ab[1] + bc[1]) / 2), ((bc[0] + cd[0]) / 2, (bc[1] + cd[1]) / 2)
+        middle = ((abc[0] + bcd[0]) / 2, (abc[1] + bcd[1]) / 2)
+        sample((a, ab, abc, middle), depth + 1)
+        sample((middle, bcd, cd, d), depth + 1)
+
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        direction, length = dirs[i], lengths[i]
+        if not length or max(turns[i] if turns[i] <= corner else 0, turns[i + 1] if turns[i + 1] <= corner else 0) <= per / 2:
+            out.append(co[i + 1])
+            continue
+        handles = []
+        for j, sign, p in ((i, 1, a), (i + 1, -1, b)):
+            tangent = tangents[j] or direction
+            cross = abs(tangent[0] * direction[1] - tangent[1] * direction[0])
+            # The Bezier weights of its two inner controls sum to at most 3/4.
+            # Both controls within 4/3 of the tolerance keep the entire curve inside.
+            size = min(length / 3, within * 4 / (3 * cross)) if cross > 1e-10 else length / 3
+            handles.append((p[0] + sign * tangent[0] * size, p[1] + sign * tangent[1] * size))
+        sample((a, handles[0], handles[1], b))
+        out[-1] = co[i + 1]                    # preserve junctions exactly, including float representation
+    return out
+
+
+def curved(co, per=2.5, most=10, shortest=0.00006, corner=60.0, within=None, adaptive=False):
     """A railway curve is an arc, and simplifying leaves it a polygon with a visible angle at every
     vertex. This draws the arc back: between two vertices the line follows a smooth curve through
     them (a centripetal Catmull-Rom spline: it passes through every vertex, so nothing moves off
@@ -269,11 +335,18 @@ def curved(co, per=2.5, most=10, shortest=0.00006, corner=60.0, within=None):
     `within` is the tolerance the line was simplified with (degrees). The track itself lies no
     further than that from the straight line between two vertices, so the curve may not either:
     where it would swing wider (a long stretch that turns one way at one end and the other way at
-    the other), it is pulled in towards the straight line until it fits."""
+    the other), it is pulled in towards the straight line until it fits.
+
+    With adaptive=True, shared tangent directions and adaptive Bezier subdivision
+    also preserve smooth joins under that constraint. `per` bounds the sampled
+    heading change; the fixed `most` and `shortest` limits do not apply in this mode.
+    Metro uses this mode because small curves remain visible at street scale."""
     co = [tuple(c) for c in co]
     n = len(co)
     if n < 3:
         return co
+    if within and adaptive:
+        return bounded_curve(co, per, within, corner)
     scale = math.cos(math.radians(co[n // 2][1]))
     pts = [(x * scale, y) for x, y in co]
 
@@ -339,24 +412,33 @@ def curved(co, per=2.5, most=10, shortest=0.00006, corner=60.0, within=None):
     return out
 
 
-def eased(before, after):
+def eased(before, after, least=0.00006, bends=False):
     """Two coordinate runs that are to be joined end to start. When the join would be a step to
     the side (two parallel tracks: the ends are abreast of each other), each is cut back by a few
-    times the width of the step, so that the join becomes a slant like a train changing tracks."""
+    times the width of the step, so that the join becomes a slant like a train changing tracks.
+    A step narrower than `least` is joined as it is. With `bends`, so are two pieces that meet
+    at an angle: one turning off the other at a junction."""
     step = math.hypot(before[-1][0] - after[0][0], before[-1][1] - after[0][1])
-    if step < 0.00006 or len(before) < 2 or len(after) < 2:
+    if step < least or len(before) < 2 or len(after) < 2:
         return before, after
     a, b = LineString(before), LineString(after)
     back = min(3 * step, a.length / 3, b.length / 3)
     if back <= 0:
         return before, after
+    if bends:
+        # Only between two pieces that run the same way where they are cut back. Where one turns
+        # off the other (the legs of a junction), the join would go across the inside of the bend.
+        p, q, r, t = a.interpolate(a.length - back), a.interpolate(a.length), b.interpolate(0), b.interpolate(back)
+        da, db = p.distance(q), r.distance(t)
+        if not da or not db or ((q.x - p.x) * (t.x - r.x) + (q.y - p.y) * (t.y - r.y)) / da / db < 0.7:
+            return before, after
     a, b = substring(a, 0, a.length - back), substring(b, back, b.length)
     if a.geom_type != "LineString" or b.geom_type != "LineString":
         return before, after
     return list(a.coords), list(b.coords)
 
 
-def stitch(pieces, reach=0.0012, far=0.005):
+def stitch(pieces, reach=0.0012, far=0.005, ease=0.00006, bends=False):
     """Make one line continuous: join its pieces wherever they stop short of each other.
 
     Drawing a double line by one of its tracks leaves seams: the kept track changes from one to
@@ -365,7 +447,9 @@ def stitch(pieces, reach=0.0012, far=0.005):
     and an end that stops within `reach` of the side of another run is carried on to it. Two ends
     further apart, up to `far`, are joined only when each points at the other: a stretch of the
     line that is missing from the data, with the line carrying straight on behind it. Runs come
-    back in the direction of their longest piece.
+    back in the direction of their longest piece. `ease` is the narrowest step to the side that
+    is turned into a slant; with `bends`, pieces that meet at an angle are joined as they are (the
+    metro layers: a light-rail line turning off at a junction must not be cut across the bend).
     """
     runs = [list(g.coords) for g in pieces if g.length > 0]
     if len(runs) < 2:
@@ -421,7 +505,7 @@ def stitch(pieces, reach=0.0012, far=0.005):
             if length > longest[0]:
                 longest = (length, enter == 1)
             if chain and chain[-1] != co[0]:
-                chain, co = eased(chain, co)
+                chain, co = eased(chain, co, ease, bends)
             chain += co if not chain or chain[-1] != co[0] else co[1:]
             nxt = link.get(2 * k + (1 - enter))
             k, enter = (ends[nxt][0], ends[nxt][1]) if nxt is not None else (None, 0)

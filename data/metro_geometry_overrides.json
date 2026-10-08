@@ -1,0 +1,12 @@
+[
+  {
+    "line": "深圳地铁6号线支线",
+    "at": [113.945758, 22.79846],
+    "minimum_radius_m": 350,
+    "maximum_shift_m": 35,
+    "checked": "2026-10-08",
+    "source": "https://www.szmc.net/public/cms/public/upload/infor/attach/2018-02-24/1519442359039.pdf",
+    "source_page": 20,
+    "reason": "中大站西侧两股 OSM 轨迹均有短距离反向折弯。2018 年环评正文第18页列区间正线最小曲线半径一般800m、困难450m、特别困难350m。仅校正显示线的局部走向，保留两端位置及方向，不将重拟合线宣称为实测竣工线位。"
+  }
+]
