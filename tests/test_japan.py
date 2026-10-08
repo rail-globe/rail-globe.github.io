@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from process_jp import colour_of, company, geometry, plain_name, readable_on_dark, shown_name
-from process_jp import KNOWN_LINE_FIRM, merge_short_connectors, jkind, metro_jk
+from process_jp import colour_of, company, geometry, known_colour, plain_name, readable_on_dark, shown_name
+from process_jp import KNOWN_LINE_FIRM, OTHER, merge_short_connectors, jkind, metro_jk
 
 
 def luminance(col):
@@ -31,6 +31,17 @@ class GeneratedJapanDataTest(unittest.TestCase):
             self.assertEqual({f["properties"].get("g") for f in features}, {"jp"}, name)
             self.assertLessEqual({f["properties"].get("jk") for f in features}, kinds, name)
 
+    def test_generated_lines_are_not_coloured_by_company(self):
+        # company colours were dropped: a line the source gives no colour is neutral, wherever it is
+        root = Path(__file__).resolve().parents[1]
+        features = json.loads((root / "data" / "jp_rail.geojson").read_text())["features"]
+        colours = lambda name: {f["properties"]["lc"] for f in features if f["properties"]["n"] == name}
+        for name in ("九州新幹線", "西九州新幹線", "北海道新幹線"):
+            self.assertEqual(colours(name), {OTHER}, name)
+        self.assertNotIn(OTHER, colours("東北新幹線") | colours("東海道新幹線") | colours("山陽新幹線"))
+        self.assertEqual(len(colours("北陸新幹線")), 2)
+        self.assertFalse((root / "data" / "jp_operators.json").exists())
+
     def test_generated_taxonomy_has_no_missing_or_conflicting_classification(self):
         root = Path(__file__).resolve().parents[1]
         audit = json.loads((root / "data" / "jp_taxonomy_audit.json").read_text())
@@ -44,14 +55,24 @@ class JapanTest(unittest.TestCase):
         self.assertEqual(company("東海旅客鉄道 (JR Central)")[0], "JR東海")
         self.assertEqual(company("JR West")[0], "JR西日本")
         self.assertEqual(company("東日本旅客鉄道;東京地下鉄")[0], "JR東日本")       # the first of several
-        self.assertEqual({company(o)[2] for o in ("九州旅客鉄道", "JR北海道")}, {"JR"})
+        self.assertEqual({company(o)[1] for o in ("九州旅客鉄道", "JR北海道")}, {"JR"})
 
     def test_another_company_keeps_its_name_and_may_have_a_short_one(self):
-        self.assertEqual(company("近畿日本鉄道"), ("近畿日本鉄道", None, "近鉄"))
+        self.assertEqual(company("近畿日本鉄道"), ("近畿日本鉄道", "近鉄"))
         self.assertEqual(company("東京急行電鉄")[0], "東急電鉄")
         self.assertEqual(company("株式会社ゆりかもめ")[0], "ゆりかもめ")
         self.assertEqual(company("沖縄都市モノレール (Okinawa City Monorail)")[0], "沖縄都市モノレール")
-        self.assertEqual(company(None), (None, None, ""))
+        self.assertEqual(company(None), (None, ""))
+
+    def test_the_shinkansen_take_the_line_colours_the_source_lists(self):
+        self.assertEqual(known_colour("東海道新幹線", "JR東海"), known_colour("山陽新幹線", "JR西日本"))      # both blue
+        self.assertEqual(known_colour("東北新幹線", "JR東日本"), known_colour("上越新幹線", "JR東日本"))      # both green
+        self.assertNotEqual(known_colour("北陸新幹線", "JR東日本"), known_colour("北陸新幹線", "JR西日本"))   # changes with the company
+        self.assertEqual(known_colour("北陸新幹線", "JR西日本"), known_colour("山陽新幹線", "JR西日本"))
+
+    def test_a_line_without_a_colour_of_its_own_gets_none_from_its_company(self):
+        for name, firm in (("九州新幹線", "JR九州"), ("西九州新幹線", "JR九州"), ("北海道新幹線", "JR北海道"), ("JR函館本線", "JR北海道")):
+            self.assertIsNone(known_colour(name, firm), name)
 
     def test_a_tracks_name_is_reduced_to_the_name_of_its_line(self):
         self.assertEqual(plain_name("JR東北本線"), "東北本線")

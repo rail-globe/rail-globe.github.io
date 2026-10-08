@@ -387,15 +387,21 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
   visible.main = visible.branch = true;
   let selected = null;
-  let ukOp = WITH_UK || WITH_JP;   // colour UK and Japanese conventional lines by line colour and operator
+  let ukOp = WITH_UK || WITH_JP;   // UK lines take their operator's colour, Japanese lines their own line colour
   document.getElementById('ukSec').hidden = !(WITH_UK || WITH_JP);
-  document.getElementById('opTitle').textContent = (WITH_UK && WITH_JP ? '英国、日本' : WITH_JP ? '日本' : '英国') + '线路的颜色';
-  if (WITH_JP) {
-    document.getElementById('opHint').textContent = '线路色优先；无线路色按公司色；都没有用中性灰。';
-    // Japan has one colour rule: hide the by-operator/by-class segmented outright (by DOM id),
-    // regardless of setCountry timing.
-    document.getElementById('ukByOp').closest('.segmented').hidden = true;
+  // What the colour section says for each country. Japan has one rule and no company colours, so
+  // it shows the note alone: no switch, no list of companies.
+  const OP_NOTE = { uk: document.getElementById('opHint').textContent, jp: '有线路色的线路用它自己的线路色，其余用同一种浅灰，不按公司上色。' };
+  function colourSection(g) {
+    const jp = g === 'jp';
+    document.getElementById('ukSec').hidden = !(WITH_UK || (WITH_JP && jp));
+    document.getElementById('opTitle').textContent = (jp ? '日本' : '英国') + '线路的颜色';
+    document.getElementById('opHint').textContent = OP_NOTE[jp ? 'jp' : 'uk'];
+    document.getElementById('opCount').hidden = jp;
+    document.getElementById('opList').hidden = jp || !ukOp;
+    document.getElementById('ukByOp').closest('.segmented').hidden = !WITH_UK || jp;
   }
+  colourSection('cn');
   let opSel = null;     // operator shown on its own
   let country = 'cn';   // the country the card is about: its title, figures, lists and quick jumps
   const JAPAN = [[128.5, 30.8], [146, 45.6]];
@@ -446,7 +452,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   }
   function relabelLegend() {
     // Japan uses its own operator taxonomy, NOT China's speed bands: hide the seven 动车组 rows and
-    // the 普速 row. Japan keeps: 普速 (its JR/私铁 drawn by company colour), 地铁, 车站, 国界.
+    // the 普速 row. Japan keeps: 普速 (its JR/私铁 drawn by line colour), 地铁, 车站, 国界.
     for (const id of FAST) {
       const el = rowEls[id];
       if (el) el.hidden = country === 'jp';
@@ -615,6 +621,24 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // ?shot in the address: the map keeps its drawing so that a picture of the canvas can be taken
   // at full resolution (for posters and posts), and the map is reachable as window.__map.
   const SHOT = new URLSearchParams(location.search).has('shot');
+  // A page that is not on screen gets no animation frames, and the map neither starts nor draws
+  // without them: there, screenshot mode hands out frames by the clock instead.
+  if (SHOT && document.hidden) {
+    const pending = new Map(), beat = new MessageChannel();
+    let next = 0, last = 0;
+    beat.port1.onmessage = () => {
+      const now = performance.now();
+      if (now - last >= 16) {
+        last = now;
+        const due = [...pending.values()];
+        pending.clear();
+        for (const frame of due) frame(now);
+      }
+      if (pending.size) beat.port2.postMessage(0);
+    };
+    window.requestAnimationFrame = frame => { pending.set(++next, frame); if (pending.size === 1) beat.port2.postMessage(0); return next; };
+    window.cancelAnimationFrame = id => pending.delete(id);
+  }
   const map = new maplibregl.Map({
     container: 'map',
     preserveDrawingBuffer: SHOT,
@@ -720,7 +744,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     getJSON('data/cities.json'), getJSON('data/border.geojson'), getJSON('data/metro.geojson'),
     getJSON('data/metro_stations.geojson'), getJSON('data/uk_operators.json'), probeLive(),
     getJSON('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
-    ...['jp_rail.geojson', 'jp_metro.geojson', 'jp_stations.geojson', 'jp_lines.json', 'jp_metro_cities.json', 'jp_operators.json', 'jp_facts.json']
+    ...['jp_rail.geojson', 'jp_metro.geojson', 'jp_stations.geojson', 'jp_lines.json', 'jp_metro_cities.json', 'jp_facts.json']
       .map(f => (WITH_JP ? getJSON('data/' + f) : null)),
   ]);
   dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
@@ -731,7 +755,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   try {
     window.__bootStage = 'data-ready';
     const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, ops, live, shared, metroCities,
-      jpRail, jpMetro, jpStations, jpLines, jpCities, jpOps, jpFacts] = await dataReady;
+      jpRail, jpMetro, jpStations, jpLines, jpCities, jpFacts] = await dataReady;
     // Japan comes as layers of its own with the same properties, and joins the layers drawn here.
     if (jpRail) {
       for (const f of jpRail.features) conv.features.push(f);   // Japan rail all on conv, split by jk
@@ -740,7 +764,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       lines.push(...jpLines);
       for (const c of jpCities) c.g = 'jp';
       metroCities.push(...jpCities);
-      ops.push(...jpOps);
       jpLayerAvail.build = build.features.some(f => f.properties.g === 'jp');
       jpLayerAvail.suburb = metro.features.some(f => f.properties.g === 'jp' && f.properties.k === 's');
     }
@@ -1082,9 +1105,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       renderJumps();
       rebuildKindButtons();
       setKind(g === 'jp' ? 'shinkansen' : 'fast');   // Japan opens on its own default (Shinkansen)
-      document.getElementById('ukSec').hidden = !(WITH_UK || (WITH_JP && g === 'jp'));
-      // Japan has one colour rule (line/company colour) — hide the inert "by operator / by class" pair.
-      document.getElementById('ukByOp').closest('.segmented').hidden = !WITH_UK || g === 'jp';
+      colourSection(g);
       if (routeCleanup) routeCleanup();      // drop any Chinese OD/pins/result so it never leaks into Japan
       syncRouteTab();
       relabelLegend();
@@ -1134,7 +1155,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const opList = document.getElementById('opList');
     document.getElementById('opCount').textContent = ops.length + ' 家';
     const renderOps = () => {
-      opList.hidden = !ukOp;
+      opList.hidden = !ukOp || country === 'jp';
       opList.replaceChildren(...ops.map(o => {
         const li = document.createElement('li');
         const b = document.createElement('button');

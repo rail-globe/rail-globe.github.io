@@ -2,7 +2,7 @@
 
     python3 scripts/extract_osm.py jp     japan-latest.osm.pbf -> data/raw/extract_jp.pkl
     python3 scripts/process_jp.py         -> data/jp_rail.geojson, jp_metro.geojson, jp_stations.geojson,
-                                             jp_lines.json, jp_metro_cities.json, jp_operators.json
+                                             jp_lines.json, jp_metro_cities.json
 
 The page adds these to the layers it already has (site.json: {"jp": true}), so the features carry
 the same properties as the Chinese ones: c (class), n (line), o (operator), plus lc, the line's
@@ -11,10 +11,11 @@ own colour. Nothing here touches the Chinese data or scripts/process_osm.py.
 How Japan draws its railways, and so how they are coloured here (user, 2026-10-08):
 - a line has a colour of its own (ラインカラー, set per line or service and used on route maps and
   station signs): a line that has one is drawn in it;
-- a line without one is drawn in the colour of its company. The six JR passenger companies have
-  corporate colours (北海道 萌黄, 東日本 緑, 東海 橙, 西日本 青, 四国 水色, 九州 赤); another company
-  takes the colour most of its own lines have;
-- the Shinkansen follow the same rule: 東海道 and 山陽 blue, the JR East lines green, 九州 red.
+- a line without one is drawn in one neutral colour. It does not take the colour of its company
+  (the user dropped company colours the same day, after seeing whole regions in one colour);
+- the Shinkansen follow the same rule. The source gives 東海道, 山陽 and the JR West part of 北陸
+  blue, 東北, 上越 and the JR East part of 北陸 green, 山形 orange and 秋田 pink, and says that
+  九州, 西九州 and 北海道 have no line colour (特にラインカラーは定められていない): those are neutral.
 Source for the conventions: https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧 (read 2026-10-08).
 
 A line is the track that carries its name in OSM (99% of running track is named, 98% has an
@@ -45,16 +46,15 @@ SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight", "yard"}
 METRO_RAIL = {"subway", "light_rail", "monorail"}
 TOL = {"fast": 0.00008, "rail": 0.00012, "metro": 0.00006, "light": 0.00002}
 CURVE = {"fast": (4, 5, 0.0003), "rail": (5, 4, 0.0003)}
-# The six JR passenger companies and JR Freight: (pattern on the operator tag, name, corporate colour
-# as it reads on dark imagery). The colour names are the companies' own; see the module docstring.
+# The six JR passenger companies and JR Freight: (pattern on the operator tag, name).
 JR = [
-    (r"北海道旅客鉄道|JR北海道|JR Hokkaido", "JR北海道", "#9bd53c"),      # 萌黄
-    (r"東日本旅客鉄道|JR東日本|JR East|East Japan Railway", "JR東日本", "#2fbf5f"),   # 緑
-    (r"東海旅客鉄道|JR東海|JR Central", "JR東海", "#ff8a2a"),            # 橙
-    (r"西日本旅客鉄道|JR西日本|JR West", "JR西日本", "#3d9bff"),           # 青
-    (r"四国旅客鉄道|JR四国|JR Shikoku", "JR四国", "#55d3ee"),             # 水色
-    (r"九州旅客鉄道|JR九州|JR Kyushu", "JR九州", "#ff4f4f"),              # 赤
-    (r"日本貨物鉄道|JR貨物|JR Freight", "JR貨物", "#93a4b8"),
+    (r"北海道旅客鉄道|JR北海道|JR Hokkaido", "JR北海道"),
+    (r"東日本旅客鉄道|JR東日本|JR East|East Japan Railway", "JR東日本"),
+    (r"東海旅客鉄道|JR東海|JR Central", "JR東海"),
+    (r"西日本旅客鉄道|JR西日本|JR West", "JR西日本"),
+    (r"四国旅客鉄道|JR四国|JR Shikoku", "JR四国"),
+    (r"九州旅客鉄道|JR九州|JR Kyushu", "JR九州"),
+    (r"日本貨物鉄道|JR貨物|JR Freight", "JR貨物"),
 ]
 # Companies known by a short name, which their lines are called by (近鉄大阪線, 名鉄名古屋本線).
 SHORT = {"近畿日本鉄道": "近鉄", "名古屋鉄道": "名鉄", "京浜急行電鉄": "京急", "西日本鉄道": "西鉄", "南海電気鉄道": "南海",
@@ -69,13 +69,16 @@ OPERATOR_ALIASES = {"東京急行電鉄": "東急電鉄"}
 KNOWN_LINE_FIRM = {"山田線": "JR東日本", "久留里線": "JR東日本"}
 # A line's name mistyped on some of its track.
 NAME_TYPOS = {"R久留里線": "久留里線"}
-# The Shinkansen of JR Central is drawn in blue like the San'yo line it runs on into, not in the
-# company's orange (東海道・山陽・北陸（西日本管轄区間）：青, same source as above).
-# The two lines that run through onto converted conventional track have colours of their own there
-# (山形新幹線：橙, 秋田新幹線：桃).
-KNOWN_COLOUR = {"東海道新幹線": "#3d9bff", "山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
+# The line colours of the Shinkansen, as the source in the module docstring gives them, in shades
+# that read on dark imagery: 東海道・山陽・北陸（西日本管轄区間）：青, 東北・上越・北陸（東日本管轄区間）：緑,
+# 山形新幹線：橙, 秋田新幹線：桃. 北陸 changes colour where it changes company, so it is listed by
+# company. 九州, 西九州 and 北海道 have no line colour there and are left out on purpose.
+BLUE, GREEN = "#3d9bff", "#2fbf5f"
+KNOWN_COLOUR = {"東海道新幹線": BLUE, "山陽新幹線": BLUE, ("北陸新幹線", "JR西日本"): BLUE,
+                "東北新幹線": GREEN, "上越新幹線": GREEN, ("北陸新幹線", "JR東日本"): GREEN,
+                "山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
 METRO_MIN_KM = 2.0         # shorter "lines" on metro-type track are rides in parks
-OTHER = "#c3ccd6"          # a company with no colour of its own on any line
+OTHER = "#c3ccd6"          # a line with no colour of its own
 # Japan rail kind (jk): a Japan-only taxonomy by operator + infrastructure, NOT China's 高铁/普速/地铁
 # and NOT any speed design. Authoritative lists in data/jp_operator_classification_list.json:
 #   shinkansen    route name is a Shinkansen (山形/秋田 excluded, they run on 1066mm conventional track)
@@ -138,17 +141,22 @@ def readable_on_dark(col):
 
 
 def company(operator):
-    """(company name, colour or None, short name its lines go by) from an operator tag."""
+    """(company name, short name its lines go by) from an operator tag."""
     first = (operator or "").split(";")[0].strip()
-    for pattern, name, colour in JR:
+    for pattern, name in JR:
         if re.search(pattern, first):
-            return name, colour, "JR"
+            return name, "JR"
     plain = re.sub(r"\s*[（(].*?[)）]", "", unicodedata.normalize("NFKC", first)).replace("株式会社", "").strip()
     if not plain:
-        return None, None, ""
+        return None, ""
     plain = OPERATOR_ALIASES.get(plain, plain)
     short = SHORT.get(plain) or re.sub(r"(電気鉄道|電気軌道|高速鉄道|電鉄|鉄道|鐵道)$", "", plain) or plain
-    return plain, None, short
+    return plain, short
+
+
+def known_colour(name, firm):
+    """The colour the source gives a line by name, or None: by company where the line changes colour with it."""
+    return KNOWN_COLOUR.get((name, firm)) or KNOWN_COLOUR.get(name)
 
 
 def jkind(name, firm):
@@ -310,7 +318,7 @@ def main():
         kind = t.get("railway")
         if t.get("service") or t.get("usage") in SKIP_USAGE or kind not in METRO_RAIL | {"rail"}:
             continue
-        firm, _, short = company(t.get("operator"))
+        firm, short = company(t.get("operator"))
         metro = kind in METRO_RAIL
         name = plain_name(t.get("name"), None if metro else firm)
         name = NAME_TYPOS.get(name, name)
@@ -422,7 +430,7 @@ def main():
             cover = part / sum(length[w] for w in tracks[key])
             mostly = part / total
             if "新幹線" in key[2] or cover < 0.25 or mostly < 0.25:
-                continue                            # passes through, or runs mostly somewhere else; the Shinkansen go by company
+                continue                            # passes through, or runs mostly somewhere else; the Shinkansen go by the list above
             bare_name = key_of(re.sub(r"^JR", "", key[2]))
             score = cover * mostly + (0.6 if bare_name in name else 0) + (0.2 if infrastructure else 0)
             if EXPRESS.search(name):
@@ -432,18 +440,10 @@ def main():
             votes[key][col] = max(votes[key].get(col, -9), score)
     line_colour = {}
     for key in tracks:
-        if key[2] in KNOWN_COLOUR:
-            line_colour[key] = KNOWN_COLOUR[key[2]]
+        if known_colour(key[2], key[1]):
+            line_colour[key] = known_colour(key[2], key[1])
         elif votes[key] and max(votes[key].values()) > (-0.95 if key[0] == "metro" else 0):
             line_colour[key] = readable_on_dark(max(votes[key].items(), key=lambda kv: (kv[1], kv[0]))[0])
-    # a company without a corporate colour here takes the colour most of its lines are drawn in
-    firm_colour = {name: colour for _, name, colour in JR}
-    by_firm = defaultdict(Counter)
-    for key, col in line_colour.items():
-        if key[0] == "rail":
-            by_firm[key[1]][col] += sum(length[w] for w in tracks[key])
-    for firm, cols in by_firm.items():
-        firm_colour.setdefault(firm, cols.most_common(1)[0][0])
     track_km = sum(length[w] for key, ws in tracks.items() if key[0] == "rail" for w in ws)
     own = sum(length[w] for key, ws in tracks.items() if key[0] == "rail" and key in line_colour for w in ws)
     print(f"japan rail: {sum(1 for k in tracks if k[0] == 'rail')} lines; a colour of their own on {own / track_km:.0%} of the track", flush=True)
@@ -457,7 +457,7 @@ def main():
     closed = join_up(list(once.values()))
     print(f"japan rail drawn once: {sum(g.length for r, _ in once.values() for g in r) * 100:.0f} -> "
           f"{sum(g.length for _, d in once.values() for g in d) * 100:.0f} (degrees x 100); gaps closed at junctions: {closed}", flush=True)
-    rail_feats, lines_json, firms_km = [], {}, Counter()
+    rail_feats, lines_json, plain_km = [], {}, Counter()
     for key in rail_keys:
         _, firm, name = key
         drawn = once[key][1]
@@ -477,9 +477,10 @@ def main():
         props = {"c": cls, "n": shown, "g": "jp", "jk": jk}
         if firm:
             props["o"] = firm
-            firms_km[firm] += total
-        # Japan's only colour: the line's own colour, else the company colour, else neutral OTHER.
-        col = line_colour.get(key) or firm_colour.get(firm) or OTHER
+        # Japan's only colour: the line's own colour, else neutral OTHER. Never the company's.
+        col = line_colour.get(key) or OTHER
+        if key not in line_colour:
+            plain_km[jk] += total
         if col:
             props["lc"] = col
         for seg_co in simp:
@@ -563,7 +564,7 @@ def main():
     write("jp_stations.geojson", {"type": "FeatureCollection", "features": stations})
     write("jp_lines.json", sorted(lines_json.values(), key=lambda r: -r["tk"]))
     write("jp_metro_cities.json", sorted(cities.values(), key=lambda c: -c["km"]))
-    write("jp_operators.json", [{"n": firm, "col": firm_colour.get(firm, OTHER), "km": round(v)} for firm, v in firms_km.most_common() if v >= 20])
+    print("japan rail without a colour of its own, track km by kind:", {k: round(v) for k, v in plain_km.most_common()}, flush=True)
     def feat_km(f):
         return sum(km(co) for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]))
     fast_km = sum(feat_km(f) for f in rail_feats if f["properties"].get("jk") == "shinkansen")

@@ -23,8 +23,12 @@ const checks = [
   ['JP hides build/suburb/yards rows', /hideForJp/],
   // 5. Japan station popup does not offer 设为出发/到达
   ['JP station popup blocked', /f\.properties\.g === 'jp'\)/],
-  // 6. Japan has one colour rule (line/company colour): no design-speed layers/toggles
-  ['JP rail drawn by line/company colour', /jpVisible/],
+  // 6. Japan has one colour rule (the line's own colour, else neutral; never the company's):
+  // no design-speed layers/toggles, no list of companies
+  ['JP rail drawn by line colour', /jpVisible/],
+  ['JP colour note says no company colours', /不按公司上色/],
+  ['JP shows no company list', /getElementById\('opList'\)\.hidden = jp \|\| !ukOp/],
+  ['page does not load company colours for Japan', /^(?![\s\S]*jp_operators)/],
   ['JP layer row: 新干线', /jp-shinkansen/],
   ['JP layer row: JR在来', /jp-jr/],
   ['JP layer row: 大手私铁', /jp-private_big/],
@@ -36,7 +40,8 @@ const checks = [
   ['China layers hidden when Japan is selected', /cn && visible\[id\]/],
   ['stations filtered to selected country', /map\.setFilter\('stations', \['all', countryFilter/],
   ['generic metro row hidden for Japan', /hideForJp = \{ metro: true/],
-  ['JP hides by-operator/by-class segmented', /closest\('\.segmented'\)\.hidden = !WITH_UK \|\| g === 'jp'/],
+  ['JP hides by-operator/by-class segmented', /closest\('\.segmented'\)\.hidden = !WITH_UK \|\| jp;/],
+  ['setCountry updates the colour section', /colourSection\(g\);/],
   // 7. the content has one width whether the list scrolls or not, so nothing moves between tabs:
   // the track leaves its right margin to the (thin) scrollbar, and the header reserves nothing
   ['thin scrollbar, no gutter', /scrollbar-width: thin/],
