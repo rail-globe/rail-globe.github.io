@@ -6,6 +6,18 @@
 
 在线查看：https://rail-globe.github.io/
 
+![全国铁路网，画在卫星影像的地球上](docs/images/china.jpg)
+
+![图例：动车组线路按设计时速分七档，普速铁路，未建成线路](docs/images/legend.png)
+
+| ![华东的高铁网](docs/images/speed.jpg) | ![上海的地铁](docs/images/shanghai.jpg) | ![上海虹桥站](docs/images/hongqiao.jpg) |
+|:-:|:-:|:-:|
+| 动车组线路按设计时速分七档上色 | 上海的地铁，按各线官方色 | 上海虹桥站：放大能看到每一股道 |
+| ![香港和深圳](docs/images/hongkong.jpg) | ![日本的铁路网](docs/images/japan.jpg) | ![东京的铁路和地铁](docs/images/tokyo.jpg) |
+| 香港和深圳：港铁、轻铁和深圳地铁 | 日本：新干线按公司色 | 东京：线路色优先，其次公司色 |
+
+截图里的卫星影像来自 Esri World Imagery，线路数据来自 OpenStreetMap 贡献者，许可见下面的“数据与许可”。
+
 ## 图上有什么
 
 - 中国：铁路按区段设计时速分 >350、350、300、250、200、160、<160 七档，没有设计时速资料的线路列为普速铁路，未建成线路用虚线
