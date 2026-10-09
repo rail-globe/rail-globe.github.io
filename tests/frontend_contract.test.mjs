@@ -42,7 +42,7 @@ const checks = [
   ['a line, a station or a city is shown on its country\'s page', /const enter = g => \{ if \(world \|\| g !== country\) setCountry\(g, false\); \};/],
   ['a stop of a route opens China\'s page', /if \(f\) enter\('cn'\);/],
   ['at the list the quick jumps are the countries', /if \(world\) \{ for \(const g of everyCountry\) addJump\(nameOf\(g\), null, \(\) => setCountry\(g, true\)\); return; \}/],
-  ['the phone sheet at rest shows the start of the list of countries', /peek: Math\.max\(0, H - head\.offsetHeight - \(world && !finding \? 108 : 0\)\)/],
+  ['the phone sheet at rest shows the header clear of the home indicator, and at the list its start', /peek: Math\.max\(0, H - head\.offsetHeight - safe\('Bottom'\) - \(world && !finding \? 108 : 0\)\)/],
   ['the level is plain state the app can ask for', /level: \(\) => \(world \? null : country\), openCountry: g => setCountry\(g, true\), openWorld: setWorld,\s+countries: \(\) => everyCountry\.map/],
   ['the thumb reaches a fourth and fifth choice', /nth-of-type\(5\)[^{]*\{ --i: 4; \}/],
   // 6b. one colour rule: the band of the design speed, else the line's own colour, else neutral; never the company's
@@ -135,6 +135,42 @@ const checks = [
   // 6h. the route network is fetched when a route is first asked for, in both modes
   ['the route network is not fetched at start', page => (page.match(/graph\.json/g) || []).length === 2 && /const loadNetwork = \(\) => network \|\| \(network = getJSON\('data\/graph\.json'\)/.test(page)
     && /if \(f\) \{[\s\S]{0,400}loadNetwork\(\)\.catch/.test(page)],
+  // 6i. on a phone (2026-10-09, "手机端页面优化一下")
+  // the credits are in sight at every height of the sheet: they ride on its upper edge
+  ['the credits and the scale ride on the sheet', /riders = riders && riders\.isConnected \? riders : document\.querySelector\('\.maplibregl-ctrl-bottom-right'\);\s+if \(riders\) riders\.style\.transform = `translateY\(\$\{Math\.round\(y - H\)\}px\)`;/],
+  ['at the sheet\'s highest the credits fold to their button, the scale goes', page => /const credits = at === 'large' && document\.querySelector\('\.maplibregl-ctrl-attrib\.maplibregl-compact-show'\);/.test(page) && /body\[data-sheet="large"\] \.maplibregl-ctrl-scale \{ display: none; \}/.test(page)],
+  ['the credits are never switched off', page => !/maplibregl-ctrl-attrib[^{]*\{[^}]*display: none/.test(page.slice(page.indexOf('/* Layout: a satellite globe')))],
+  // what a finger must hit is about 44px, by an unseen margin where the control is drawn smaller
+  ['touch margins round the small controls', /\.segmented button::after, \.back::after, \.gh::after, \.link::after, \.swap::after, \.searchbar \.clear::after, #jumps button::after,\s+\.maplibregl-ctrl-attrib-button::after \{ content: ""; position: absolute; \}/],
+  ['tabs, class buttons and quick jumps are 36px with 4px of margin either side', page => ['.segmented button { min-height: 36px; }', '.segmented button::after { inset: -4px 0; }', '.segmented.chips button { min-height: 36px; padding: 0 12px; }', '#jumps button { min-height: 36px; padding: 0 14px; }', '#jumps button::after { inset: -4px -2px; }', '.linelist button, .sugg button { min-height: 44px; }'].every(rule => page.includes(rule))],
+  ['the touch rules are for a phone or any finger', /@media \(max-width: 720px\), \(pointer: coarse\) \{/],
+  ['no zoom buttons under a finger', /\.maplibregl-ctrl-top-right \.maplibregl-ctrl-group \{ display: none; \}/],
+  ['hover styles only where a pointer hovers', page => /@media \(hover: hover\) \{/.test(page) && !/^(?!\s)[^\n@]*:hover[^\n]*\{/m.test(page.slice(page.indexOf('/* Layout: a satellite globe'), page.indexOf('@media (hover: hover)')))],
+  // the page does not scroll, select or zoom under a finger
+  ['no pull-to-refresh, no rubber band', /html, body \{ height: 100%; overscroll-behavior: none; \}/],
+  ['a long press does not select the card, two taps do not zoom the page', /#panel, #jumps \{ -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; \}\s+#panel input \{ -webkit-user-select: text; user-select: text; \}/],
+  // the sheet: its highest leaves the status bar and the quick jumps free, by the dynamic viewport
+  ['the sheet\'s height follows the dynamic viewport and the notch', /height: calc\(100% - 64px - env\(safe-area-inset-top, 0px\)\); height: calc\(100dvh - 64px - env\(safe-area-inset-top, 0px\)\);/],
+  ['the safe areas are read where the script needs them', /#safe \{[^}]*padding: env\(safe-area-inset-top, 0px\) env\(safe-area-inset-right, 0px\) env\(safe-area-inset-bottom, 0px\) env\(safe-area-inset-left, 0px\); \}[\s\S]*const safe = side => parseFloat\(getComputedStyle\(safeEl\)\['padding' \+ side\]\) \|\| 0;/],
+  ['beside the map the card stands clear of the notch and the home indicator of a phone on its side', /left: calc\(12px \+ env\(safe-area-inset-left, 0px\)\); width: var\(--card-w\); max-height: calc\(100% - 24px - env\(safe-area-inset-bottom, 0px\) - var\(--kb, 0px\)\);/],
+  ['a tap after a drag is a tap', /head\.addEventListener\('click', e => \{ if \(e\.timeStamp - draggedAt < 400\) \{ draggedAt = -1e9; e\.preventDefault\(\); e\.stopPropagation\(\); \} \}, true\);/],
+  // framing: in the part of the map that can be seen, again when the sheet settles elsewhere
+  ['the room of the map on a phone: between the quick jumps and the sheet', /\? \{ top: 64 \+ safe\('Top'\), bottom: Math\.min\(sheet\.visible\(\) \+ 44, Math\.round\(innerHeight \* 0\.62\)\), left: 16, right: 16 \}/],
+  ['every frame goes through one function that remembers it', page => /const frame = \(what, duration\) => \{ framed = what; show\(what, reduced \? 0 : duration\); \};/.test(page) && (page.match(/map\.fitBounds\(/g) || []).length === 1],
+  ['the viewer\'s own move ends it', /map\.on\('movestart', e => \{ if \(e\.originalEvent\) \{ touched = true; framed = null; \} \}\);/],
+  ['framed again when the sheet settles at another height', /if \(framed === was && \(!was\.room \|\| Math\.abs\(was\.room\[0\] - room\[0\]\) > 16 \|\| Math\.abs\(was\.room\[1\] - room\[1\]\) > 16\)\) show\(was, reduced \? 0 : 450\);/],
+  ['on a phone\'s or a tablet\'s globe the frame is reckoned on the sphere', /if \(globe && byFinger\(\)\) \{[\s\S]{0,700}map\.flyTo\(\{ \.\.\.onGlobe\(points, \[room\[0\] \* 0\.94, room\[1\] \* 0\.94\], middle, box\.clientHeight, zoom\), duration \}\);/],
+  // (the map takes an undefined maxZoom for a limit and then goes nowhere: a country and a quick jump have none)
+  ['beside the desktop card the frame is fitBounds as before, with a limit only where there is one', page => /else try \{ map\.fitBounds\(\[\[west, south\], \[east, north\]\], \{ padding: pad, duration, \.\.\.\(zoom \? \{ maxZoom: zoom \} : null\) \}\); \}/.test(page) && !/maxZoom: zoom\b/.test(page.replace('{ maxZoom: zoom }', ''))],
+  ['the sheet goes to its height before the map is framed for it', /if \(isPhone\(\) && fly\) sheet\.to\('peek'\);[^\n]*\n\s+if \(fly && l\) frame\(/],
+  // head matter a phone uses
+  ['a title for the whole site, the browser bars in the page\'s ground', page => /<title>Rail Globe · 铁路网卫星图<\/title>/.test(page) && /<meta name="theme-color" content="#05090c">/.test(page) && /--ground: #05090c;/.test(page)],
+  ['what the home screen needs', page => ['<meta name="apple-mobile-web-app-capable" content="yes">', '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">', '<link rel="manifest" href="manifest.webmanifest">', '<link rel="apple-touch-icon" href="apple-touch-icon.png">'].every(tag => page.includes(tag))],
+  ['the home-screen files are there and agree with the page', () => {
+    const manifest = JSON.parse(readFileSync(join(root, 'manifest.webmanifest'), 'utf8'));
+    return manifest.display === 'standalone' && manifest.theme_color === '#05090c' && manifest.background_color === '#05090c' && manifest.start_url === '.'
+      && manifest.icons.every(icon => existsSync(join(root, icon.src))) && manifest.icons.some(icon => icon.sizes === '512x512') && existsSync(join(root, 'apple-touch-icon.png'));
+  }],
   // 7. the content has one width whether the list scrolls or not, so nothing moves between tabs:
   // the track leaves its right margin to the (thin) scrollbar, and the header reserves nothing
   ['thin scrollbar, no gutter', /scrollbar-width: thin/],

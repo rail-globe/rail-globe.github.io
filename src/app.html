@@ -1,4 +1,15 @@
-<title>中国铁路网卫星图</title>
+<title>Rail Globe · 铁路网卫星图</title>
+<meta name="description" content="铁路、地铁和有轨电车，画在卫星影像的地球上。">
+<!-- What a phone uses: the colour of its browser bars (the page's ground), and what "add to home
+     screen" needs to open the page full screen under its own icon. -->
+<meta name="theme-color" content="#05090c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rail Globe">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -45,7 +56,10 @@
   --card-w: 22.5rem;
   --edge: 0 0 0 0.5px rgba(255, 255, 255, 0.14) inset, 0 1px 0 rgba(255, 255, 255, 0.1) inset;
 }
-html, body { height: 100%; }
+/* The page itself never scrolls: no pull-to-refresh and no rubber band while the sheet or a list is dragged. */
+html, body { height: 100%; overscroll-behavior: none; }
+/* The strips a phone keeps for its notch and its home indicator, where the script can read them. */
+#safe { position: fixed; visibility: hidden; pointer-events: none; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--ground); color: var(--label); font: 0.875rem/1.45 var(--font); overflow: hidden; -webkit-font-smoothing: antialiased; }
 #map { position: fixed; inset: 0; background: radial-gradient(circle at 62% 46%, var(--ground-glow) 0%, var(--ground) 62%); }
@@ -58,7 +72,7 @@ button:active, .gh:active { transform: scale(0.97); }
 
 /* ---------- the card ---------- */
 #panel {
-  position: fixed; z-index: 2; top: 12px; left: 12px; width: var(--card-w); max-height: calc(100% - 24px - var(--kb, 0px));
+  position: fixed; z-index: 2; top: 12px; left: calc(12px + env(safe-area-inset-left, 0px)); width: var(--card-w); max-height: calc(100% - 24px - env(safe-area-inset-bottom, 0px) - var(--kb, 0px));
   display: flex; flex-direction: column; overflow: hidden; border-radius: 18px;
   background: var(--material); -webkit-backdrop-filter: blur(30px) saturate(180%); backdrop-filter: blur(30px) saturate(180%);
   box-shadow: var(--edge), 0 18px 50px rgba(0, 0, 0, 0.5);
@@ -69,14 +83,12 @@ button:active, .gh:active { transform: scale(0.97); }
 h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
 .facts { margin: 2px 0 0; font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
 .gh { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 999px; background: var(--fill2); color: var(--label); text-decoration: none; font-size: 0.75rem; font-weight: 500; }
-.gh:hover { background: var(--fill); }
 .title-row h1 { flex: 1; min-width: 0; white-space: nowrap; }
 .head > .facts { margin-top: -8px; }
 /* The card has two levels: the list of countries, and a country's page with a way back. At the
    list the header is the search field and the site's name; a country's figures and tabs belong to
    its page. */
 .back { flex: none; display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; margin: -4px 0 -4px -4px; padding: 4px 6px 4px 4px; border-radius: 7px; color: var(--blue); font-size: 0.8125rem; cursor: pointer; }
-.back:hover { background: var(--fill2); }
 #panel.world :is(.back, .facts, #tabs) { display: none; }
 .countries button { padding: 12px; }
 .countries .txt { gap: 2px; }
@@ -136,7 +148,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .sugg { position: absolute; z-index: 5; left: -31px; right: -44px; top: calc(100% + 2px); margin: 0; padding: 4px; list-style: none; max-height: 232px; overflow-y: auto;
   border-radius: 12px; background: var(--solid); box-shadow: var(--edge), 0 12px 32px rgba(0, 0, 0, 0.55); animation: pop 160ms var(--ease); transform-origin: top center; }
 .sugg button { width: 100%; border: 0; background: transparent; text-align: left; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
-.sugg button:hover, .sugg button:focus-visible { background: var(--fill2); outline: none; }
+.sugg button:focus-visible { background: var(--fill2); outline: none; }
 .sugg small { margin-left: 8px; font-size: 0.6875rem; color: var(--label2); }
 .od-actions { display: flex; justify-content: flex-end; margin-top: 6px; }
 .route-sum { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 0 4px 10px; }
@@ -160,7 +172,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 /* the field has a clear button of its own, the same in every browser */
 .searchbar input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
 .searchbar .clear { flex: none; width: 28px; height: 28px; margin-right: -6px; border: 0; border-radius: 50%; background: transparent; color: var(--label2); display: grid; place-items: center; cursor: pointer; }
-.searchbar .clear:hover { color: var(--label); }
 /* While something is typed the card is the field and what it found: the title, the figures and
    the tabs step aside, and come back when the field is emptied. The field
    itself does not move, and on a phone the results get the room above the keyboard. */
@@ -174,7 +185,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .selcard b { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
 .selcard span { font-size: 0.75rem; color: var(--label2); }
 .linelist button { width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 42px; text-align: left; cursor: pointer; }
-.linelist button:hover { background: var(--fill2); }
+.linelist button:active { background: var(--fill2); }       /* the press shows at once, also under a finger */
 .linelist button[aria-current="true"] { background: rgba(10, 132, 255, 0.22); }
 .linelist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .linelist svg { flex: none; color: var(--label3); }
@@ -202,13 +213,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .credits a { color: inherit; }
 
 /* ---------- on the map ---------- */
-#jumps { position: fixed; z-index: 2; top: 12px; left: calc(var(--card-w) + 24px); right: 60px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 20px 4px 0;
+#jumps { position: fixed; z-index: 2; top: 12px; left: calc(var(--card-w) + 24px + env(safe-area-inset-left, 0px)); right: calc(60px + env(safe-area-inset-right, 0px)); display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 20px 4px 0;
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
 #jumps::-webkit-scrollbar { display: none; }
 #jumps button { flex: none; }
 #jumps button, .maplibregl-ctrl-group, #loading { background: var(--material-thin); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3); }
 #jumps button { border: 0; border-radius: 999px; padding: 6px 13px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
-#jumps button:hover { background: rgba(72, 72, 76, 0.7); }
+.maplibregl-ctrl-top-right, .maplibregl-ctrl-bottom-right { right: env(safe-area-inset-right, 0px); }
 .maplibregl-ctrl-top-right .maplibregl-ctrl { margin: 12px 12px 0 0; }
 .maplibregl-ctrl-group { border-radius: 11px; overflow: hidden; }
 .maplibregl-ctrl-group:not(:empty) { box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3); }
@@ -231,14 +242,58 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .tip span { color: var(--label2); font-size: 0.75rem; }
 .pop-actions { display: flex; gap: 6px; margin-top: 8px; }
 .pop-actions button { display: flex; align-items: center; gap: 6px; border: 0; border-radius: 8px; background: var(--fill); padding: 7px 11px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
-.pop-actions button:hover { background: rgba(140, 140, 148, 0.42); }
 .pin { width: 12px; height: 12px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); }
 .pin.from { background: var(--green); }
 .pin.to { background: var(--red); }
 
+/* A pointer that hovers gets hover feedback. A finger does not hover: there the hover style would
+   stay on whatever was tapped last. */
+@media (hover: hover) {
+  .gh:hover { background: var(--fill); }
+  .back:hover, .sugg button:hover, .linelist button:hover { background: var(--fill2); }
+  .searchbar .clear:hover { color: var(--label); }
+  #jumps button:hover { background: rgba(72, 72, 76, 0.7); }
+  .pop-actions button:hover { background: rgba(140, 140, 148, 0.42); }
+}
+
+/* ---------- touch: a phone, or any screen that is pointed at with a finger ---------- */
+@media (max-width: 720px), (pointer: coarse) {
+  /* A finger needs about 44px. The controls keep their modest look; where one is smaller than
+     that, an unseen margin around it takes the touch as well (never reaching into a neighbour). */
+  .segmented button, .back, .gh, .link, .searchbar .clear, #jumps button { position: relative; }
+  .segmented button::after, .back::after, .gh::after, .link::after, .swap::after, .searchbar .clear::after, #jumps button::after,
+  .maplibregl-ctrl-attrib-button::after { content: ""; position: absolute; }
+  .segmented button { min-height: 36px; }
+  .segmented button::after { inset: -4px 0; }
+  .segmented.chips { gap: 8px; }
+  .segmented.chips button { min-height: 36px; padding: 0 12px; }
+  .segmented.chips button::after { inset: -4px -2px; }
+  .back { min-height: 36px; }
+  .back::after { inset: -4px -6px -4px -8px; }
+  .gh::after { inset: -8px -4px; }
+  .link::after { inset: -6px -8px -14px; }
+  .swap::after, .searchbar .clear::after { inset: -8px; }
+  .maplibregl-ctrl-attrib-button::after { inset: -10px; }
+  #jumps button { min-height: 36px; padding: 0 14px; }
+  #jumps button::after { inset: -4px -2px; }
+  .linelist button, .sugg button { min-height: 44px; }
+  .pop-actions button { min-height: 44px; padding: 0 14px; }
+  /* a map under a finger is pinched: the zoom buttons give their corner back */
+  .maplibregl-ctrl-top-right .maplibregl-ctrl-group { display: none; }
+  /* A long press on the card is not a wish to select its text, and two quick taps are not a wish
+     to zoom the page; what is typed can still be selected. */
+  #panel, #jumps { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+  #panel input { -webkit-user-select: text; user-select: text; }
+  .scroll { touch-action: pan-y; }
+  #jumps { touch-action: pan-x; }
+}
+
 /* ---------- phone: the card is a bottom sheet moved by a spring (see the script) ---------- */
 @media (max-width: 720px) {
-  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 88%; max-height: none; border-radius: 16px 16px 0 0;
+  /* The sheet at its highest leaves the status bar and the row of quick jumps free; the dynamic
+     viewport height keeps that true while the browser's bars come and go. */
+  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: calc(100% - 64px - env(safe-area-inset-top, 0px)); height: calc(100dvh - 64px - env(safe-area-inset-top, 0px));
+    max-height: none; border-radius: 16px 16px 0 0;
     transform: translateY(calc(var(--sheet-y, 70%) + var(--vv-top, 0px))); will-change: transform; box-shadow: var(--edge), 0 -8px 40px rgba(0, 0, 0, 0.45); }
   .grabber { display: block; width: 36px; height: 5px; border-radius: 3px; background: var(--label3); margin: 6px auto 0; }
   .head { padding: 8px 16px 12px; touch-action: none; cursor: grab; }
@@ -248,9 +303,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   /* iOS zooms the page into a focused field whose text is smaller than 16px */
   .searchbar input, .odf input { font-size: 16px; }
   .tab { width: calc(100vw - 32px); }
-  #jumps { left: 12px; right: 60px; top: calc(12px + env(safe-area-inset-top, 0px)); overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  /* (the row is 4px taller than its chips above and below, for their touch margin) */
+  #jumps { left: 12px; right: 46px; top: calc(8px + env(safe-area-inset-top, 0px)); overflow-x: auto; scrollbar-width: none; padding: 4px 20px 8px 0; }
   #jumps::-webkit-scrollbar { display: none; }
-  .maplibregl-ctrl-top-right { top: env(safe-area-inset-top, 0px); }
+  /* The credits and the scale ride on the sheet's upper edge, moved with it by the script, so they
+     are in sight at every height; at its highest that is the corner the quick jumps leave free,
+     where there is room for the credits only. */
+  .maplibregl-ctrl-bottom-right { will-change: transform; }
+  body[data-sheet="large"] .maplibregl-ctrl-scale { display: none; }
   #loading { top: 30%; }
 }
 /* gentler equivalents rather than nothing */
@@ -268,6 +328,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 </style>
 
 <div id="map" role="region" aria-label="铁路网卫星地图"></div>
+<div id="safe" aria-hidden="true"></div>
 <div id="loading">正在载入线路数据…</div>
 <nav id="jumps" aria-label="快速定位"></nav>
 
@@ -390,6 +451,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const WITH_TILES = /*WITH_TILES*/false;
   const TILES = ({ 1: true, 0: false })[new URLSearchParams(location.search).get('tiles')] ?? WITH_TILES;
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
+  const byFinger = () => isPhone() || matchMedia('(pointer: coarse)').matches;      // a phone, upright or on its side, or a tablet
 
   const FAST = ['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow'];
   const DESIGN_LABEL = { hsr400: '>350', hsr350: '350', hsr300: '300', hsr250: '250', hsr200: '200', hsr160: '160', hsrslow: '<160' };
@@ -704,12 +766,32 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // The sheet follows the finger 1:1 from where it was grabbed, resists softly past its ends, and on
   // release is thrown by a spring that starts from the finger's velocity toward the detent the
   // gesture was heading for. It can be grabbed again at any moment, also in mid-flight.
+  // The strips a phone keeps for its notch ('Top') and its home indicator ('Bottom'), in px; 0 elsewhere.
+  const safeEl = document.getElementById('safe');
+  const safe = side => parseFloat(getComputedStyle(safeEl)['padding' + side]) || 0;
   const sheet = (() => {
     const head = panel.querySelector('.head');
-    let H = 0, y = 0, v = 0, raf = 0, at = 'peek', drag = null, dragged = false;
-    // at rest the header shows; at the list of countries, which has no tabs, also the start of the list
-    const stops = () => ({ large: 0, mid: Math.max(0, H - Math.round(innerHeight * 0.48)), peek: Math.max(0, H - head.offsetHeight - (world && !finding ? 108 : 0)) });
-    const paint = () => panel.style.setProperty('--sheet-y', y + 'px');
+    let H = 0, y = 0, v = 0, raf = 0, at = 'peek', drag = null, draggedAt = -1e9;
+    // Three heights. Highest: the whole sheet (its height leaves the quick jumps free, see the
+    // styles). Middle: about half the window. At rest: the header, clear of the home indicator;
+    // at the list of countries, which has no tabs, also the start of the list.
+    const stops = () => ({ large: 0, mid: Math.max(0, H - Math.round(innerHeight * 0.48)),
+      peek: Math.max(0, H - head.offsetHeight - safe('Bottom') - (world && !finding ? 108 : 0)) });
+    // The credits and the scale sit in the map's lower right corner, which the sheet covers:
+    // they ride on its upper edge instead, at every height.
+    let riders = null;
+    const paint = () => {
+      panel.style.setProperty('--sheet-y', y + 'px');
+      riders = riders && riders.isConnected ? riders : document.querySelector('.maplibregl-ctrl-bottom-right');
+      if (riders) riders.style.transform = `translateY(${Math.round(y - H)}px)`;
+      if (document.body.dataset.sheet !== at) {
+        document.body.dataset.sheet = at;
+        // at its highest the sheet leaves the credits one corner: they fold to their button, as
+        // they do when the map is first moved; a tap on it opens them again
+        const credits = at === 'large' && document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show');
+        if (credits) { credits.classList.remove('maplibregl-compact-show'); credits.removeAttribute('open'); }
+      }
+    };
     const settle = () => {
       panel.style.setProperty('--sheet-visible', Math.round(H - y) + 'px');
       panel.style.setProperty('--head-h', head.offsetHeight + 'px');
@@ -736,7 +818,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const to = name => { at = name; if (isPhone()) spring(stops()[name], false); };
     const layout = () => {
       cancelAnimationFrame(raf);
-      if (!isPhone()) { panel.style.removeProperty('--sheet-y'); return; }
+      if (!isPhone()) {
+        panel.style.removeProperty('--sheet-y');
+        if (riders) riders.style.transform = '';
+        delete document.body.dataset.sheet;
+        return;
+      }
       H = panel.offsetHeight;
       y = stops()[at]; v = 0;
       paint(); settle();
@@ -778,7 +865,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         else if (y !== stops()[at]) spring(stops()[at], false);
         return;
       }
-      dragged = true;
+      draggedAt = e.timeStamp;
       const [t0, y0] = d.hist[0], [t1, y1] = d.hist[d.hist.length - 1];
       v = t1 > t0 ? (y1 - y0) / (t1 - t0) * 1000 : 0;   // px per second at release
       const landing = y + project(v), s = stops();
@@ -787,7 +874,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       spring(s[at], Math.abs(v0) > 300);
       v = v0;                                          // hand the finger's velocity to the spring
     };
-    head.addEventListener('click', e => { if (dragged) { dragged = false; e.preventDefault(); e.stopPropagation(); } }, true);
+    // A mouse ends a drag with a click on whatever it was let go over: that click is not meant.
+    // A finger sends none, so only a click right after the drag is taken for it; the next tap,
+    // whenever it comes, is a tap.
+    head.addEventListener('click', e => { if (e.timeStamp - draggedAt < 400) { draggedAt = -1e9; e.preventDefault(); e.stopPropagation(); } }, true);
     addEventListener('resize', layout);
     layout();
     return { to, layout, detent: () => at, visible: () => H - stops()[at === 'large' ? 'mid' : at], whenSettled: fn => { onSettle = fn; } };
@@ -824,9 +914,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // the clear button empties the field without taking the focus, and so the keyboard, away from it
   queryClear.addEventListener('mousedown', e => e.preventDefault());
 
+  // The part of the map that can be seen: on a phone between the row of quick jumps and the sheet
+  // (with the credits riding on it), beside the card otherwise.
   const padding = () => isPhone()
-    ? { top: 64, bottom: Math.min(sheet.visible() + 20, Math.round(innerHeight * 0.6)), left: 16, right: 16 }
-    : { top: 64, bottom: 40, left: 396, right: 60 };
+    ? { top: 64 + safe('Top'), bottom: Math.min(sheet.visible() + 44, Math.round(innerHeight * 0.62)), left: 16, right: 16 }
+    : { top: 64, bottom: 40, left: 396 + safe('Left'), right: 60 + safe('Right') };
 
   // Chinese labels are drawn with the device's own fonts. The few Latin and punctuation glyphs come
   // from data/glyphs.json through an in-page protocol, so no font files are fetched from a server.
@@ -893,10 +985,82 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // Until the viewer moves the map, keep the whole country framed when the window changes size
   // (the container can still be settling when the map is created).
   let touched = !!startView;
-  const frameChina = duration => { try { map.fitBounds(CHINA, { padding: padding(), duration }); } catch (err) { /* window too small for the padding; the next resize retries */ } };
-  map.on('movestart', e => { if (e.originalEvent) touched = true; });
-  map.on('resize', () => { if (!touched) frameChina(0); });
-  sheet.whenSettled(() => { if (!touched && isPhone()) frameChina(reduced ? 0 : 450); });
+  // ---- framing: what the map was last asked to show, in the part of it that can be seen ----
+  // A country, a city, a line, a route or a station is framed in the room padding() leaves. The
+  // map remembers what it was asked to show until the viewer moves it by hand: when the sheet
+  // settles at another height, or the window changes, the same thing is framed again.
+  //   { country }                       a country: by its box, or under a finger by where its lines are (see show)
+  //   { bounds, maxZoom }               a box: a city, a line, a route
+  //   { point, zoom }                   a station, at least this far in
+  let framed = touched ? null : { country: 'cn' };
+  let extentOf = () => null;        // the corners of the boxes of a country's lines, once the lines are loaded
+  let globe = true;                 // the projection: the globe, or the flat map
+  // Where to put the camera so that these points fill a room of the map on the globe, with what
+  // they cover in the middle of the room. fitBounds reckons on the flat map: on the globe, with a
+  // room that is far from the middle of the window (a phone's sheet takes the lower third, and on
+  // its side the card takes the left half), the same camera leaves a wide country a quarter short
+  // of the room and off its middle. On a small screen that is most of what there is to see, so
+  // phones and tablets are framed by this; beside the desktop card fitBounds stays as it was. Here
+  // the points are laid on the sphere as the map draws it: its scale at the centre is the flat
+  // map's at that latitude, and what curves away is a little smaller for being further from the
+  // eye (which is one and a half window heights away). Size and place depend on each other, so
+  // they are found in a few rounds. room: [w, h] px; middle: its middle from the map's, px.
+  const onGlobe = (points, room, middle, viewHeight, maxZoom = 22) => {
+    const rad = Math.PI / 180, eye = 1.5 * viewHeight, closest = 512 * 2 ** maxZoom / (2 * Math.PI);
+    const lngs = points.map(p => p[0]), lats = points.map(p => p[1]);
+    let lng = (Math.min(...lngs) + Math.max(...lngs)) / 2, lat = (Math.min(...lats) + Math.max(...lats)) / 2;
+    let scale = Math.min(closest, 100);               // px for one radian at the centre
+    for (let round = 0; round < 8; round++) {
+      const f0 = lat * rad;
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const [pl, pf] of points) {
+        const f = pf * rad, dl = (pl - lng) * rad;
+        const facing = Math.sin(f0) * Math.sin(f) + Math.cos(f0) * Math.cos(f) * Math.cos(dl);      // 1 at the centre, less round the curve
+        const k = eye / (eye + scale / Math.cos(f0) * (1 - facing)) / Math.cos(f0);
+        const x = k * Math.cos(f) * Math.sin(dl), y = -k * (Math.cos(f0) * Math.sin(f) - Math.sin(f0) * Math.cos(f) * Math.cos(dl));    // y down, as on the screen
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      }
+      // the size that fills the room; a single point, or a box smaller than the closest zoom shows, gets that zoom
+      const span = Math.max((x1 - x0) / room[0], (y1 - y0) / room[1]);
+      scale = Math.min(closest, span > 0 ? 1 / span : closest);
+      // the place: the middle of what they cover, now so far from where it belongs
+      const ex = (x0 + x1) / 2 * scale - middle[0], ey = (y0 + y1) / 2 * scale - middle[1];
+      lng += ex / scale / rad;                                                  // the centre further east moves everything west
+      lat = Math.max(-80, Math.min(80, lat - ey / scale * Math.cos(f0) / rad));       // further south moves everything up
+    }
+    return { center: [lng, lat], zoom: Math.log2(scale * 2 * Math.PI / 512) };
+  };
+  const roomNow = () => { const pad = padding(), box = map.getContainer(); return [box.clientWidth - pad.left - pad.right, box.clientHeight - pad.top - pad.bottom]; };
+  const show = (what, duration) => {
+    const pad = padding(), box = map.getContainer(), room = roomNow();
+    if (room[0] < 60 || room[1] < 60) return;         // next to nothing of the map shows: the next settle or resize frames it
+    what.room = room;
+    // the middle of the room, seen from the middle of the map
+    const middle = [pad.left + room[0] / 2 - box.clientWidth / 2, pad.top + room[1] / 2 - box.clientHeight / 2];
+    const zoom = what.point ? Math.max(map.getZoom(), what.zoom) : what.maxZoom;
+    const [[west, south], [east, north]] = what.point ? [what.point, what.point] : what.bounds || (FOREIGN[what.country] ? FOREIGN[what.country].bounds : CHINA);
+    if (globe && byFinger()) {
+      // a country by where its lines are (its box is mostly sea and neighbours), anything else by its box, the edges sampled
+      const edge = [0, 0.25, 0.5, 0.75, 1].map(t => [west + (east - west) * t, south + (north - south) * t]);
+      const points = (what.country && extentOf(what.country)) || edge.flatMap(([x, y]) => [[x, south], [x, north], [west, y], [east, y]]);
+      map.flyTo({ ...onGlobe(points, [room[0] * 0.94, room[1] * 0.94], middle, box.clientHeight, zoom), duration });
+    } else if (what.point) map.flyTo({ center: what.point, zoom, offset: middle, duration });
+    // (a limit only where there is one: the map takes an undefined maxZoom for a limit too, and then goes nowhere)
+    else try { map.fitBounds([[west, south], [east, north]], { padding: pad, duration, ...(zoom ? { maxZoom: zoom } : null) }); } catch (err) { /* window too small for the padding; the next resize retries */ }
+  };
+  const frame = (what, duration) => { framed = what; show(what, reduced ? 0 : duration); };
+  map.on('movestart', e => { if (e.originalEvent) { touched = true; framed = null; } });
+  // (beside the desktop card a resized window re-frames only the view the page opened with, as before)
+  map.on('resize', () => { if (framed && (isPhone() || !touched)) show(framed, 0); });
+  // (a room that is a few px other than it was, the header a line taller, is not worth a move of the map)
+  // (and not before the next frame: what settled the sheet may be about to show something else)
+  sheet.whenSettled(() => {
+    const was = framed;
+    if (was && isPhone()) requestAnimationFrame(() => {
+      const room = roomNow();
+      if (framed === was && (!was.room || Math.abs(was.room[0] - room[0]) > 16 || Math.abs(was.room[1] - room[1]) > 16)) show(was, reduced ? 0 : 450);
+    });
+  });
   // The page can be loaded before its window has a size (a hidden pane or tab). The map then starts
   // at a small default size and misses the first size change, so check the size ourselves.
   const mapEl = document.getElementById('map');
@@ -920,29 +1084,30 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   });
   addEventListener('hashchange', () => {
     const v = parseView();
-    if (v) { touched = true; map.jumpTo(v); }
+    if (v) { touched = true; framed = null; map.jumpTo(v); }
   });
   // Quick jumps: the whole country first; the largest metro cities are added once the data is in.
-  const addJump = (label, bounds, open) => {
+  const addJump = (label, what, open) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = label;
     b.addEventListener('click', open || (() => {
       touched = label !== '中国';
       if (!touched) history.replaceState(null, '', location.pathname + location.search);
-      map.fitBounds(bounds, { padding: padding(), duration: reduced ? 0 : 1800 });
-      if (isPhone()) sheet.to('peek');
+      if (isPhone()) sheet.to('peek');           // first, so that the frame is for the room there will be
+      frame(what, 1800);
     }));
     document.getElementById('jumps').appendChild(b);
   };
-  addJump('中国', CHINA);
+  addJump('中国', { country: 'cn' });
   const JUMP_CITIES = 10;
   const projBtn = { globe: document.getElementById('projGlobe'), mercator: document.getElementById('projFlat') };
   for (const [type, btn] of Object.entries(projBtn)) {
     btn.addEventListener('click', () => {
       map.setProjection({ type });
       for (const [t, b] of Object.entries(projBtn)) b.setAttribute('aria-pressed', String(t === type));
-      if (!touched) frameChina(0);
+      globe = type === 'globe';
+      if (framed && !touched) show(framed, 0);
     });
   }
   if (SHOT) window.__map = map;
@@ -1269,6 +1434,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, [...FOREIGN[g].rail, ...FOREIGN[g].metro].map(([id, label]) => [id, label])])) };
     const labelOf = k => (KIND_SET[country].find(r => r[0] === k) || [])[1] || '';
     const byName = new Map(lines.map(l => [l.n, l]));
+    // a country is framed by where its lines are: the corners of their boxes (see show())
+    const extents = {};
+    extentOf = g => extents[g] || (extents[g] = lines.filter(l => abroad(l.g) === g)
+      .flatMap(l => [[l.bbox[0], l.bbox[1]], [l.bbox[0], l.bbox[3]], [l.bbox[2], l.bbox[1]], [l.bbox[2], l.bbox[3]]]));
     const cityByName = new Map(metroCities.map(c => [c.n, c]));
     // A country's page is about that country: its figures, its lines, its cities.
     const here = x => abroad(x.g) === country;
@@ -1294,8 +1463,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const renderJumps = () => {
       document.getElementById('jumps').replaceChildren();
       if (world) { for (const g of everyCountry) addJump(nameOf(g), null, () => setCountry(g, true)); return; }
-      if (FOREIGN[country]) addJump(FOREIGN[country].name, FOREIGN[country].bounds); else addJump('中国', CHINA);
-      for (const c of realCitiesOf(country).slice(0, JUMP_CITIES)) addJump(c.n, [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]]);
+      addJump(nameOf(country), { country });
+      for (const c of realCitiesOf(country).slice(0, JUMP_CITIES)) addJump(c.n, { bounds: [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]] });
     };
     const listEl = document.getElementById('lineList');
     const moreEl = document.getElementById('more');
@@ -1385,7 +1554,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       metroCity = c;
       if (fly) {
         touched = true;
-        map.fitBounds([[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], { padding: padding(), maxZoom: 12, duration: reduced ? 0 : 1400 });
+        frame({ bounds: [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]], maxZoom: 12 }, 1400);
       }
       renderList();
       document.getElementById('scroll').scrollTop = 0;
@@ -1429,7 +1598,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (FOREIGN[g] && onRoute) showTab('lines');
       if (fly) {
         if (!touched) history.replaceState(null, '', location.pathname + location.search);
-        map.fitBounds(FOREIGN[g] ? FOREIGN[g].bounds : CHINA, { padding: padding(), duration: reduced ? 0 : 1800 });
+        frame({ country: g }, 1800);
       }
     }
     // Back to the list of countries. The map stays where it is; a selected line is let go, since
@@ -1525,8 +1694,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
             ? `${l.design.length > 1 ? '分段设计时速' : '设计时速'} ${l.design.join(' / ')} km/h${rest}`
             : l && l.est > 0.5 && DESIGN_LABEL[c] ? `${DESIGN_LABEL[c]} km/h 档 · 按轨道限速归档，设计时速待核实` : CLASS_NAME[c] || '';
         }
-        if (fly && l) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 10, duration: reduced ? 0 : 1200 });
-        if (isPhone() && fly) sheet.to('peek');
+        if (isPhone() && fly) sheet.to('peek');        // first, so that the frame is for the room there will be
+        if (fly && l) frame({ bounds: [[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], maxZoom: 10 }, 1200);
       }
       renderList();
     }
@@ -1546,8 +1715,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         metroCity = c;
         document.getElementById('selName').textContent = l.n;
         document.getElementById('selMeta').textContent = `${METRO_KIND[l.k] || '地铁'} · ${c.n} · ${l.km} km`;
-        if (fly) map.fitBounds([[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], { padding: padding(), maxZoom: 13, duration: reduced ? 0 : 1200 });
         if (isPhone() && fly) sheet.to('peek');
+        if (fly) frame({ bounds: [[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], maxZoom: 13 }, 1200);
       }
       renderList();
     }
@@ -1779,7 +1948,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const xs = coords.map(c => c[0]), ys = coords.map(c => c[1]);
       touched = true;
       if (isPhone()) sheet.to('mid');
-      map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: padding(), maxZoom: 11, duration: reduced ? 0 : 1200 });
+      frame({ bounds: [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], maxZoom: 11 }, 1200);
     }
     function setStop(role, f, keepText) {
       if (f) enter('cn');           // a route is in China: its page, on the route tab
@@ -1887,9 +2056,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       } else {
         enter(e.country);
         touched = true;
-        map.fitBounds([e.at, e.at], { padding: padding(), maxZoom: Math.max(map.getZoom(), e.ref.properties.m ? 14 : 12), duration: reduced ? 0 : 1400 });
-        offerStation(e.ref);
         if (isPhone()) sheet.to('peek');
+        frame({ point: e.at, zoom: e.ref.properties.m ? 14 : 12 }, 1400);
+        offerStation(e.ref);
       }
       return true;
     }
