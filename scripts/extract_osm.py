@@ -1,8 +1,10 @@
 """Stage 1: pull railway and metro objects out of the Geofabrik extracts into data/raw/extract*.pkl.
 
     python3 scripts/extract_osm.py        China, Hong Kong, Macao, Taiwan -> extract.pkl
-    python3 scripts/extract_osm.py uk     United Kingdom                  -> extract_uk.pkl
+    python3 scripts/extract_osm.py uk     United Kingdom                  -> extract_uk.pkl (with trams,
+                                          heritage and narrow-gauge lines, tram stops and halts)
     python3 scripts/extract_osm.py jp     Japan                           -> extract_jp.pkl
+    python3 scripts/extract_osm.py kr     South Korea                     -> extract_kr.pkl
 
 Reading a 1.6-2.3 GB extract takes a few minutes, so it is done once here;
 scripts/process_osm.py then classifies and writes the map layers from the pickles in seconds.
@@ -26,7 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
 WAY_TAGS = ("railway", "service", "usage", "highspeed", "maxspeed", "maxspeed:design", "design_speed",
             "construction", "construction:railway", "name", "name:zh", "name:en", "network", "operator", "colour",
-            "tunnel", "bridge", "electrified", "voltage", "frequency", "gauge", "tracks")
+            "tunnel", "bridge", "electrified", "voltage", "frequency", "gauge", "tracks", "railway:preserved")
 REL_TAGS = ("type", "route", "route_master", "name", "name:zh", "name:en", "ref", "colour", "network", "operator")
 NAME_TAGS = ("name", "name:zh", "name:en")
 METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
@@ -41,7 +43,9 @@ def centre(way):
     return sum(xs) / len(xs), sum(ys) / len(ys)
 
 
-def main(files, out):
+def main(files, out, more=(), stops=()):
+    """more: further kinds of track and of route to keep for this country (tram, preserved, ...);
+    stops: further kinds of stopping place kept as stations (tram_stop, halt), marked with their kind."""
     missing = [str(RAW / pbf) for pbf in files if not (RAW / pbf).exists()]
     if missing:          # never write a partial cache over a good one
         sys.exit("missing input, nothing written: " + ", ".join(missing))
@@ -60,6 +64,11 @@ def main(files, out):
             t = o.tags
             r = t.get("railway")
             if o.is_way():
+                if r in stops:
+                    c = centre(o)
+                    if c and t.get("name"):
+                        stations.append(({**{k: t.get(k) for k in NAME_TAGS if t.get(k)}, "railway": r}, *c))
+                    continue
                 if r == "station" or r in YARD_KINDS:
                     c = centre(o)
                     if c and r == "station":
@@ -67,7 +76,7 @@ def main(files, out):
                     elif c and t.get("name"):
                         places.append((r, {k: t.get(k) for k in NAME_TAGS if t.get(k)}, *c))
                     continue
-                if r not in ("rail", "construction") and r not in METRO_RAIL:
+                if r not in ("rail", "construction") and r not in METRO_RAIL and r not in more:
                     continue
                 coords = [(round(n.lon, 6), round(n.lat, 6)) for n in o.nodes if n.location.valid()]
                 if len(coords) < 2:
@@ -77,6 +86,8 @@ def main(files, out):
                 if r == "station":
                     stations.append(({k: t.get(k) for k in NAME_TAGS + ("station", "subway", "light_rail") if t.get(k)},
                                      o.location.lon, o.location.lat))
+                elif r in stops and t.get("name"):
+                    stations.append(({**{k: t.get(k) for k in NAME_TAGS if t.get(k)}, "railway": r}, o.location.lon, o.location.lat))
                 elif r in YARD_KINDS and t.get("name"):
                     places.append((r, {k: t.get(k) for k in NAME_TAGS if t.get(k)}, o.location.lon, o.location.lat))
         print(f"{pbf}: {len(ways)} ways, {len(stations)} stations, {time.time() - t0:.0f}s", flush=True)
@@ -95,7 +106,7 @@ def main(files, out):
         for o in osmium.FileProcessor(str(path), osmium.osm.RELATION):
             t = o.tags
             kind = t.get("route") if t.get("type") == "route" else t.get("route_master") if t.get("type") == "route_master" else None
-            if kind in METRO_RAIL or kind in ("train", "railway"):
+            if kind in METRO_RAIL or kind in ("train", "railway") or kind in more:
                 relations.append((o.id, {k: t.get(k) for k in REL_TAGS if t.get(k) is not None},
                                   [(m.type, m.ref) for m in o.members]))
         print(f"{pbf}: {len(relations)} route relations, {time.time() - t0:.0f}s", flush=True)
@@ -113,8 +124,10 @@ def main(files, out):
 
 if __name__ == "__main__":
     if sys.argv[1:] == ["uk"]:
-        main(["united-kingdom.osm.pbf"], "extract_uk.pkl")
+        main(["united-kingdom.osm.pbf"], "extract_uk.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt"))
     elif sys.argv[1:] == ["jp"]:
         main(["japan-latest.osm.pbf"], "extract_jp.pkl")
+    elif sys.argv[1:] == ["kr"]:
+        main(["south-korea-latest.osm.pbf"], "extract_kr.pkl", more=("tram",), stops=("tram_stop", "halt"))
     else:
         main(["china.osm.pbf", "taiwan.osm.pbf"], "extract.pkl")

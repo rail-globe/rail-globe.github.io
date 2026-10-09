@@ -17,30 +17,41 @@ const checks = [
   // 2. setCountry clears route state and re-syncs the route empty state
   ['setCountry cleans route', /if \(routeCleanup\) routeCleanup\(\)/],
   ['setCountry syncs route tab', /syncRouteTab\(\);/],
-  // 3. switching to Japan off the route tab moves to lines (no dead tab), but 路线 still opens empty
-  ['auto-switch route->lines on JP', /g === 'jp' && onRoute\) showTab\('lines'\)/],
-  // 4. country-specific layer rows hidden for Japan (build / suburb / yards), kept otherwise
-  ['JP hides build/suburb/yards rows', /hideForJp/],
-  // 5. Japan station popup does not offer 设为出发/到达
-  ['JP station popup blocked', /f\.properties\.g === 'jp'\)/],
-  // 6. Japan has one colour rule (the line's own colour, else neutral; never the company's):
-  // no design-speed layers/toggles, no list of companies
-  ['JP rail drawn by line colour', /jpVisible/],
-  ['JP colour note says no company colours', /不按公司上色/],
-  ['JP shows no company list', /getElementById\('opList'\)\.hidden = jp \|\| !ukOp/],
-  ['page does not load company colours for Japan', /^(?![\s\S]*jp_operators)/],
-  ['JP layer row: 新干线', /jp-shinkansen/],
-  ['JP layer row: JR在来', /jp-jr/],
-  ['JP layer row: 大手私铁', /jp-private_big/],
-  ['JP layer row: 地方私铁·第三セク', /jp-private_local/],
-  ['JP layer row: 其他', /jp-unknown/],
-  ['JP layer row: 地下铁', /jp-subway/],
-  ['JP layer row: 城市轨道', /jp-urban/],
-  ['JP layers hidden when not selected', /el\.hidden = country !== 'jp'/],
-  ['China layers hidden when Japan is selected', /cn && visible\[id\]/],
+  // 3. switching to a country abroad off the route tab moves to lines (no dead tab), but 路线 still opens empty
+  ['auto-switch route->lines abroad', /FOREIGN\[g\] && onRoute\) showTab\('lines'\)/],
+  ['route empty state names the country', /routeJpNote'\)\.textContent = `\$\{c\.name\}暂不支持线路网寻路/],
+  // 4. the Chinese rows give way to the rows of the country abroad
+  ['Chinese-only rows hidden abroad', /hideAbroad = \{ metro: true/],
+  ['Chinese band rows hidden abroad', /for \(const id of \[\.\.\.FAST, 'unknown'\]\) if \(rowEls\[id\]\) rowEls\[id\]\.hidden = !cn;/],
+  // 5. a station abroad does not offer 设为出发/到达
+  ['station abroad blocked', /f\.properties\.g == null \|\| FOREIGN\[f\.properties\.g\]/],
+  // 6. countries abroad are entries of one configuration: classes, layers, rows and buttons come from it
+  ['countries abroad are configured, not branched on', /const FOREIGN = \{/],
+  ['no branch on one country', /^(?![\s\S]*country === 'jp')(?![\s\S]*country === 'uk')/],
+  ['Japan: its classes', /rail: \[\['shinkansen', '新干线'\], \['jr', 'JR在来'\], \['private_big', '大手私铁'\],\s+\['private_local', '地方私铁·第三セク', \['third_sector', 'private_local'\]\], \['unknown', '其他'\]\]/],
+  ['Japan: its metro classes', /metro: \[\['subway', '地下铁'\], \['urban', '城市轨道'\]\]/],
+  ['UK: its classes', /rail: \[\['hs', '高速铁路'\], \['main', '干线铁路'\], \['branch', '支线铁路'\], \['heritage', '遗产铁路'\]\]/],
+  ['UK: its metro classes', /metro: \[\['subway', '地铁'\], \['urban', '轻轨·有轨电车'\]\]/],
+  ['UK in the country switch', /data-g="uk"/],
+  ['Korea in the country switch', /data-g="kr"/],
+  ['Korea: its classes, two of them fast', /fast: \['hs', 'semi'\][\s\S]{0,200}rail: \[\['hs', '高速铁路'\], \['semi', '准高速铁路'\], \['main', '干线铁路'\], \['branch', '支线铁路'\]\]/],
+  ['the country switch has a row of its own', /<p class="facts" id="facts">[^\n]*\n\s*<div class="segmented mini" id="country"/],
+  ['the thumb reaches a fourth and fifth choice', /nth-of-type\(5\)[^{]*\{ --i: 4; \}/],
+  ['a country that is off leaves the switch', /b\.dataset\.g !== 'cn' && !FOREIGN\[b\.dataset\.g\]\) b\.remove\(\)/],
+  // 6b. one colour rule: the band of the design speed, else the line's own colour, else neutral; never the company's
+  ['a row per speed band the country has', /bands\[kind\]\.map\(band => \(\{ id: `\$\{g\}-\$\{kind\}-\$\{band\}`, label, band \}\)\)/],
+  ['the bands come from the data', /FAST\.filter\(band => rail\.features\.some\(f => f\.properties\.c === band && jkOf\(g, kind\)\.includes\(f\.properties\.jk\)\)\)/],
+  ['a layer per band, in the band colour', /'line-color': col\(band\), 'line-width': lineW\(abroadW\.fast\)/],
+  ['other lines: own colour, else neutral', /'line-color': \['coalesce', \['get', 'lc'\], col\('main'\)\]/],
+  ['colour note says no company colours', /不按公司上色/],
+  ['no company list, no operator colours', /^(?![\s\S]*opList)(?![\s\S]*OP_COLOR)(?![\s\S]*_operators)/],
+  ['layers abroad hidden unless their country is chosen', /const on = id\.startsWith\(country \+ '-'\) && abroadVisible\[id\];/],
+  ['China layers hidden when another country is chosen', /cn && visible\[id\]/],
   ['stations filtered to selected country', /map\.setFilter\('stations', \['all', countryFilter/],
-  ['generic metro row hidden for Japan', /hideForJp = \{ metro: true/],
-  ['JP hides by-operator/by-class segmented', /closest\('\.segmented'\)\.hidden = !WITH_UK \|\| jp;/],
+  ['lines being built filtered to selected country', /map\.setFilter\('build', countryFilter\)/],
+  ['yards and depots of every country are loaded', /\['', \.\.\.Object\.keys\(FOREIGN\)\.map\(g => g \+ '_'\)\]\.map\(pre => getJSON\(`data\/\$\{pre\}\$\{kind\}\.geojson`\)/],
+  ['yards and depots filtered to selected country', /set\(id, visible\.yards\);\s+map\.setFilter\(id, cn \? NOT_ABROAD : \['==', \['get', 'g'\], country\]\);/],
+  ['the yards row stays abroad', /^(?![\s\S]*yards: true)/],
   ['setCountry updates the colour section', /colourSection\(g\);/],
   // 7. the content has one width whether the list scrolls or not, so nothing moves between tabs:
   // the track leaves its right margin to the (thin) scrollbar, and the header reserves nothing
@@ -54,8 +65,6 @@ const checks = [
   ['chips wrap', /\.segmented\.chips \{ display: flex; flex-wrap: wrap;/],
   // 8. grid children may not stretch the tab beyond the card (overflow clipping the toggles)
   ['tab items can shrink', /\.tab > \* \{ min-width: 0; \}/],
-  ['operator list items can shrink', /\.oplist li \{ min-width: 0; \}/],
-  ['operator buttons can shrink in two columns', /\.oplist button \{ width: 100%; min-width: 0;/],
 ];
 
 let failed = 0;

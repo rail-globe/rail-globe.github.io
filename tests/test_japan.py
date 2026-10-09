@@ -5,8 +5,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from process_jp import colour_of, company, geometry, known_colour, plain_name, readable_on_dark, shown_name
-from process_jp import KNOWN_LINE_FIRM, OTHER, merge_short_connectors, jkind, metro_jk
+from process_jp import adopt_unnamed, colour_of, colouring, company, geometry, plain_name, readable_on_dark, shown_name
+from process_jp import KNOWN_LINE_FIRM, merge_short_connectors, jkind, metro_jk
 
 
 def luminance(col):
@@ -31,15 +31,21 @@ class GeneratedJapanDataTest(unittest.TestCase):
             self.assertEqual({f["properties"].get("g") for f in features}, {"jp"}, name)
             self.assertLessEqual({f["properties"].get("jk") for f in features}, kinds, name)
 
-    def test_generated_lines_are_not_coloured_by_company(self):
-        # company colours were dropped: a line the source gives no colour is neutral, wherever it is
+    def test_generated_lines_follow_the_one_colour_rule(self):
+        # a high-speed line by the band of its design speed, any other by its own colour or none
         root = Path(__file__).resolve().parents[1]
-        features = json.loads((root / "data" / "jp_rail.geojson").read_text())["features"]
-        colours = lambda name: {f["properties"]["lc"] for f in features if f["properties"]["n"] == name}
-        for name in ("九州新幹線", "西九州新幹線", "北海道新幹線"):
-            self.assertEqual(colours(name), {OTHER}, name)
-        self.assertNotIn(OTHER, colours("東北新幹線") | colours("東海道新幹線") | colours("山陽新幹線"))
-        self.assertEqual(len(colours("北陸新幹線")), 2)
+        features = [f["properties"] for f in json.loads((root / "data" / "jp_rail.geojson").read_text())["features"]]
+        fast = [p for p in features if p["jk"] == "shinkansen"]
+        self.assertTrue(fast)
+        self.assertEqual({(p["c"], p["d"]) for p in fast}, {("hsr250", 260)})
+        self.assertFalse([p["n"] for p in fast if "lc" in p])                    # speed comes before a line colour
+        self.assertTrue(all(p.get("ref") for p in fast))
+        others = [p for p in features if p["jk"] != "shinkansen"]
+        self.assertEqual({p["c"] for p in others}, {"main", "branch"})
+        self.assertFalse([p["n"] for p in others if "d" in p])
+        self.assertNotIn("#c3ccd6", {p.get("lc") for p in features})               # no colour is written for "no colour"
+        self.assertTrue(all("lc" in p for p in features if p["n"] in ("山形新幹線", "秋田新幹線")))
+        self.assertEqual(json.loads((root / "data" / "jp_facts.json").read_text())["bands"], ["hsr250"])
         self.assertFalse((root / "data" / "jp_operators.json").exists())
 
     def test_generated_taxonomy_has_no_missing_or_conflicting_classification(self):
@@ -64,15 +70,16 @@ class JapanTest(unittest.TestCase):
         self.assertEqual(company("沖縄都市モノレール (Okinawa City Monorail)")[0], "沖縄都市モノレール")
         self.assertEqual(company(None), (None, ""))
 
-    def test_the_shinkansen_take_the_line_colours_the_source_lists(self):
-        self.assertEqual(known_colour("東海道新幹線", "JR東海"), known_colour("山陽新幹線", "JR西日本"))      # both blue
-        self.assertEqual(known_colour("東北新幹線", "JR東日本"), known_colour("上越新幹線", "JR東日本"))      # both green
-        self.assertNotEqual(known_colour("北陸新幹線", "JR東日本"), known_colour("北陸新幹線", "JR西日本"))   # changes with the company
-        self.assertEqual(known_colour("北陸新幹線", "JR西日本"), known_colour("山陽新幹線", "JR西日本"))
+    def test_a_high_speed_line_is_coloured_by_its_design_speed_even_if_it_has_a_line_colour(self):
+        how = colouring("東北新幹線", "shinkansen", "#2fbf5f")
+        self.assertEqual((how["c"], how["d"]), ("hsr250", 260))
+        self.assertNotIn("lc", how)
+        self.assertTrue(how["ref"].startswith("https://"))
 
-    def test_a_line_without_a_colour_of_its_own_gets_none_from_its_company(self):
-        for name, firm in (("九州新幹線", "JR九州"), ("西九州新幹線", "JR九州"), ("北海道新幹線", "JR北海道"), ("JR函館本線", "JR北海道")):
-            self.assertIsNone(known_colour(name, firm), name)
+    def test_another_line_takes_its_own_colour_or_none(self):
+        self.assertEqual(colouring("JR山手線", "jr", "#9acd32"), {"lc": "#9acd32"})
+        self.assertEqual(colouring("JR函館本線", "jr", None), {})               # never its company's
+        self.assertEqual(colouring("山形新幹線", "jr", "#ff9a3d"), {"lc": "#ff9a3d"})   # runs on conventional track
 
     def test_a_tracks_name_is_reduced_to_the_name_of_its_line(self):
         self.assertEqual(plain_name("JR東北本線"), "東北本線")
@@ -190,6 +197,41 @@ class JapanTest(unittest.TestCase):
         row = rows["東北新幹線"]
         self.assertEqual(len(row["sections"]), 1)
         self.assertEqual(row["sections"][0]["design"], 260)
+
+
+class UnnamedTrackTest(unittest.TestCase):
+    """Track without a line name joins the line it connects, however many ways it is drawn as."""
+    A, B = ("rail", None, "A"), ("rail", None, "B")
+
+    @staticmethod
+    def way(*xs):
+        return ({}, [(float(x), 0.0) for x in xs])
+
+    def test_a_stretch_of_several_unnamed_ways_between_two_pieces_of_a_line_is_that_line(self):
+        ways = {1: self.way(0, 1), 2: self.way(1, 2), 3: self.way(2, 3), 4: self.way(3, 4), 5: self.way(4, 5)}
+        line_of = {1: self.A, 5: self.A}
+        self.assertEqual(adopt_unnamed(line_of, [2, 3, 4], ways), [])
+        self.assertEqual({line_of[w] for w in (2, 3, 4)}, {self.A})                 # the middle way touches no named track itself
+
+    def test_a_stretch_leading_off_one_line_is_that_line(self):
+        ways = {1: self.way(0, 1), 2: self.way(1, 2), 3: self.way(2, 3)}
+        line_of = {1: self.A}
+        self.assertEqual(adopt_unnamed(line_of, [2, 3], ways), [])
+        self.assertEqual(line_of[3], self.A)
+
+    def test_between_two_lines_it_goes_to_the_one_it_meets_at_more_places(self):
+        # the stretch (ways 2 and 6) meets A at (1, 0) and at (2, 1), and B only at (2, 0)
+        ways = {1: self.way(0, 1), 2: self.way(1, 2), 6: ({}, [(2.0, 0.0), (2.0, 1.0)]),
+                3: self.way(2, 3), 5: ({}, [(2.0, 1.0), (2.0, 2.0)])}
+        line_of = {1: self.A, 5: self.A, 3: self.B}
+        self.assertEqual(adopt_unnamed(line_of, [2, 6], ways), [])
+        self.assertEqual((line_of[2], line_of[6]), (self.A, self.A))
+
+    def test_track_that_meets_no_line_is_left(self):
+        ways = {1: self.way(0, 1), 8: self.way(10, 11), 9: self.way(11, 12)}
+        line_of = {1: self.A}
+        self.assertEqual(sorted(adopt_unnamed(line_of, [8, 9], ways)), [8, 9])
+        self.assertNotIn(8, line_of)
 
 
 class JapanKindTest(unittest.TestCase):

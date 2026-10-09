@@ -4,7 +4,7 @@ Inputs : data/raw/extract.pkl     (scripts/extract_osm.py: China, Hong Kong, Mac
          data/raw/extract_uk.pkl  (scripts/extract_osm.py uk: United Kingdom)
 Outputs: data/rail_hsr.geojson, rail_conv.geojson, rail_build.geojson, rail_shared.geojson, stations.geojson,
          metro.geojson, metro_stations.geojson, metro_cities.json, yards.geojson, depots.geojson,
-         uk_operators.json, lines.json
+         lines.json
 Nominal classes used for geometry grouping and routing before design annotation:
   hsr350  high-speed, maxspeed >= 300 km/h
   hsr250  high-speed, 250-299 (or unknown speed on a high-speed line)
@@ -455,15 +455,11 @@ ex = pickle.load(open(RAW / "extract.pkl", "rb"))
 ways = [(wid, t, co, "cn") for wid, t, co in ex["ways"]]
 stations_raw = [(t, lon, lat, "cn") for t, lon, lat in ex["stations"]]
 places_raw = [(kind, t, lon, lat, "cn") for kind, t, lon, lat in ex.get("places", [])]
-uk_file = RAW / "extract_uk.pkl"
-# site.json decides what this build of the site contains; {"uk": false} leaves the UK out.
-SITE = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
-WITH_UK = SITE.get("uk", True)
-uk = pickle.load(open(uk_file, "rb")) if WITH_UK and uk_file.exists() else {"ways": [], "stations": [], "relations": [], "places": []}
-if not WITH_UK:
-    print("UK left out (site.json)")
-elif not uk["ways"]:
-    print("no UK data yet (run scripts/extract_osm.py uk)")
+# The United Kingdom is not processed here any more: like Japan it has a script and layers of its
+# own (scripts/process_uk.py), and site.json's "uk" only tells the page to load them. The UK
+# branches further down get no input and do nothing; they are what the with-uk branch used.
+WITH_UK = False
+uk = {"ways": [], "stations": [], "relations": [], "places": []}
 ways += [(wid, t, co, "uk") for wid, t, co in uk["ways"]]
 stations_raw += [(t, lon, lat, "uk") for t, lon, lat in uk["stations"]]
 places_raw += [(kind, t, lon, lat, "uk") for kind, t, lon, lat in uk.get("places", [])]
@@ -876,11 +872,6 @@ for i, w in enumerate(rail):
     w["o"] = line_op.get(w["key"] or ("way", i)) if w["g"] == "uk" else None
     if w["o"]:
         op_km[w["o"]] += w["km"]
-op_colour = {brand: colour for _, brand, colour, _ in UK_OPERATORS}
-(OUT / "uk_operators.json").write_text(json.dumps(
-    [{"n": b, "col": op_colour[b], "km": round(k)} for b, k in op_km.most_common()], ensure_ascii=False))
-print("UK operators (track km):", {b: round(k) for b, k in op_km.most_common()},
-      "| no passenger operator:", round(sum(w["km"] for w in rail if w["g"] == "uk" and not w["o"])))
 
 # ---------------------------------------------------------------- lines run by metro companies
 metro_run = {key: (st["mcol"].most_common(1)[0][0] if st["mcol"] else None)

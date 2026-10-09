@@ -2,21 +2,23 @@
 
     python3 scripts/extract_osm.py jp     japan-latest.osm.pbf -> data/raw/extract_jp.pkl
     python3 scripts/process_jp.py         -> data/jp_rail.geojson, jp_metro.geojson, jp_stations.geojson,
-                                             jp_lines.json, jp_metro_cities.json
+                                             jp_lines.json, jp_metro_cities.json, jp_build.geojson,
+                                             jp_yards.geojson, jp_depots.geojson
 
 The page adds these to the layers it already has (site.json: {"jp": true}), so the features carry
 the same properties as the Chinese ones: c (class), n (line), o (operator), plus lc, the line's
 own colour. Nothing here touches the Chinese data or scripts/process_osm.py.
 
-How Japan draws its railways, and so how they are coloured here (user, 2026-10-08):
-- a line has a colour of its own (ラインカラー, set per line or service and used on route maps and
-  station signs): a line that has one is drawn in it;
-- a line without one is drawn in one neutral colour. It does not take the colour of its company
-  (the user dropped company colours the same day, after seeing whole regions in one colour);
-- the Shinkansen follow the same rule. The source gives 東海道, 山陽 and the JR West part of 北陸
-  blue, 東北, 上越 and the JR East part of 北陸 green, 山形 orange and 秋田 pink, and says that
-  九州, 西九州 and 北海道 have no line colour (特にラインカラーは定められていない): those are neutral.
-Source for the conventions: https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧 (read 2026-10-08).
+Colours follow the one rule for every country (user, 2026-10-08, after trying company colours and
+line colours for the Shinkansen and dropping both):
+- a high-speed line is drawn in the band of its design speed, the same seven bands as in China
+  (property c = the band, d = the speed): here the Shinkansen, all built for 260 km/h;
+- any other railway is drawn in its own line colour where it has one (ラインカラー, set per line or
+  service and used on route maps and station signs; property lc), otherwise in the neutral colour
+  of conventional lines (no lc). Never in the colour of its company;
+- metros, monorails and trams are drawn in their official line colour.
+Source for line colours as a convention: https://ja.wikipedia.org/wiki/日本の鉄道ラインカラー一覧
+(read 2026-10-08).
 
 A line is the track that carries its name in OSM (99% of running track is named, 98% has an
 operator), drawn once (scripts/single_track.py). Its colour comes from the route relations that
@@ -37,7 +39,9 @@ from shapely.geometry import LineString, MultiLineString
 from shapely.ops import linemerge
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from design_speeds import grade
 from side_by_side import abreast, side_by_side
+from yards import write_yards
 from single_track import curved, join_up, one_track, smooth, stitch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,16 +73,14 @@ OPERATOR_ALIASES = {"東京急行電鉄": "東急電鉄"}
 KNOWN_LINE_FIRM = {"山田線": "JR東日本", "久留里線": "JR東日本"}
 # A line's name mistyped on some of its track.
 NAME_TYPOS = {"R久留里線": "久留里線"}
-# The line colours of the Shinkansen, as the source in the module docstring gives them, in shades
-# that read on dark imagery: 東海道・山陽・北陸（西日本管轄区間）：青, 東北・上越・北陸（東日本管轄区間）：緑,
-# 山形新幹線：橙, 秋田新幹線：桃. 北陸 changes colour where it changes company, so it is listed by
-# company. 九州, 西九州 and 北海道 have no line colour there and are left out on purpose.
-BLUE, GREEN = "#3d9bff", "#2fbf5f"
-KNOWN_COLOUR = {"東海道新幹線": BLUE, "山陽新幹線": BLUE, ("北陸新幹線", "JR西日本"): BLUE,
-                "東北新幹線": GREEN, "上越新幹線": GREEN, ("北陸新幹線", "JR東日本"): GREEN,
-                "山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
+# The design speed of the Shinkansen: 「ミニ新幹線を除いて、1964年（昭和39年）に開業した東海道新幹線から
+# 全て設計最高速度260 km/hで建設されている」 (https://ja.wikipedia.org/wiki/新幹線, read 2026-10-08).
+# What each line runs at today (285 to 320 km/h on the older ones) is a running speed, not this.
+SHINKANSEN_DESIGN = (260, "https://ja.wikipedia.org/wiki/新幹線")
+# The two "mini-Shinkansen" run on converted conventional track at 130 km/h: conventional lines,
+# with the line colours the source in the module docstring gives them (山形新幹線：橙, 秋田新幹線：桃).
+KNOWN_COLOUR = {"山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
 METRO_MIN_KM = 2.0         # shorter "lines" on metro-type track are rides in parks
-OTHER = "#c3ccd6"          # a line with no colour of its own
 # Japan rail kind (jk): a Japan-only taxonomy by operator + infrastructure, NOT China's 高铁/普速/地铁
 # and NOT any speed design. Authoritative lists in data/jp_operator_classification_list.json:
 #   shinkansen    route name is a Shinkansen (山形/秋田 excluded, they run on 1066mm conventional track)
@@ -154,9 +156,14 @@ def company(operator):
     return plain, short
 
 
-def known_colour(name, firm):
-    """The colour the source gives a line by name, or None: by company where the line changes colour with it."""
-    return KNOWN_COLOUR.get((name, firm)) or KNOWN_COLOUR.get(name)
+def colouring(name, jk, line_colour):
+    """The properties that colour a railway line, by the one rule: a high-speed line by the band of
+    its design speed, any other line by its own colour if it has one, and otherwise nothing (the
+    page then draws it in the neutral colour of conventional lines)."""
+    if jk == "shinkansen":
+        speed, source = SHINKANSEN_DESIGN
+        return {"c": grade(speed), "d": speed, "ref": source}
+    return {"lc": line_colour} if line_colour else {}
 
 
 def jkind(name, firm):
@@ -304,6 +311,70 @@ def merge_short_connectors(tracks, ways, length, aliases=CONFIRMED_SHORT_ALIASES
     return moved
 
 
+def adopt_unnamed(line_of, unnamed, ways):
+    """Track that names no line (no name, or a tunnel or bridge named for itself) joins the line
+    it connects. It is taken stretch by stretch, a stretch being such track joined end to end,
+    however many ways it is drawn as: taken way by way, only a single way between two pieces of a
+    line was ever filled in, and a longer unnamed stretch left a gap in the line (Kings Park to
+    Burnside on Glasgow's Kirkhill Line, 21 ways). A stretch goes to the line it meets at most of
+    the places where it ends: the line on both sides of it, or the one it leads off. Returns
+    the track that meets no line at all, which stays undrawn."""
+    ends = lambda wid: (ways[wid][1][0], ways[wid][1][-1])
+    at = defaultdict(set)                          # a track end -> the lines that end there
+    for wid, key in line_of.items():
+        for end in ends(wid):
+            at[end].add(key)
+    group = {wid: wid for wid in unnamed}
+
+    def root(wid):
+        while group[wid] != wid:
+            group[wid] = group[group[wid]]
+            wid = group[wid]
+        return wid
+    first = {}
+    for wid in unnamed:
+        for end in ends(wid):
+            if end in first:
+                group[root(wid)] = root(first[end])
+            else:
+                first[end] = wid
+    stretches = defaultdict(list)
+    for wid in unnamed:
+        stretches[root(wid)].append(wid)
+    left = []
+    for wids in stretches.values():
+        met = Counter(key for end in sorted({end for wid in wids for end in ends(wid)}) for key in at[end])
+        if not met:
+            left.extend(wids)
+            continue
+        line = max(met.items(), key=lambda kv: (kv[1], str(kv[0])))[0]
+        for wid in wids:
+            line_of[wid] = line
+    return left
+
+
+def being_built(ways, code, name_of, build_name=lambda name: name, build_fast=lambda name: False):
+    """The lines under construction of a country, as features of the layer of lines being built
+    (drawn dashed): the track being built under one name is one line, drawn once; a line with
+    less than 2 km of it is left out. build_fast says which are high-speed lines (property h)."""
+    building = defaultdict(list)
+    for wid, (t, co) in ways.items():
+        if t.get("railway") == "construction" and (t.get("construction") or t.get("construction:railway")) in ("rail", "light_rail", "tram", "subway", None):
+            name = build_name(name_of(t.get("name")))
+            if name:
+                building[name].append(wid)
+    feats = []
+    for name, wids in sorted(building.items()):
+        drawn = stitch(one_track(runs_of([ways[w][1] for w in wids])))
+        simp = rounded(drawn, TOL["rail"], CURVE["rail"], places=5)
+        if simp and sum(km(co) for co in simp) >= 2:
+            props = {"c": "build", "n": name, "g": code}
+            if build_fast(name):
+                props["h"] = 1                       # a high-speed line: drawn in the colour of lines being built
+            feats.append({"type": "Feature", "properties": props, "geometry": geometry(simp)})
+    return feats
+
+
 def main():
     # written locally by scripts/extract_osm.py, so loading it is safe here
     ex = pickle.load(open(RAW / "extract_jp.pkl", "rb"))
@@ -379,28 +450,7 @@ def main():
                 line_of[w] = min(owners, key=lambda k: (track[k].distance(g), k))
     # A tunnel or a bridge named for itself, and track with no name, between two pieces of one
     # line is that line (榛名トンネル on the 上越新幹線): it would otherwise cut the line in two.
-    at = defaultdict(set)
-    for wid, key in line_of.items():
-        co = ways[wid][1]
-        at[co[0]].add(key)
-        at[co[-1]].add(key)
-    for _ in range(6):
-        left = []
-        for wid in unnamed:
-            co = ways[wid][1]
-            both = at[co[0]] & at[co[-1]]
-            pick = next(iter(both)) if len(both) == 1 else None
-            if pick is None and len(at[co[0]] | at[co[-1]]) == 1 and at[co[0]] and at[co[-1]]:
-                pick = next(iter(at[co[0]]))
-            if pick is None:
-                left.append(wid)
-                continue
-            line_of[wid] = pick
-            at[co[0]].add(pick)
-            at[co[-1]].add(pick)
-        if len(left) == len(unnamed):
-            break
-        unnamed = left
+    unnamed = adopt_unnamed(line_of, unnamed, ways)
     print(f"japan: {len(line_of)} ways on named lines, {sum(length[w] for w in line_of):.0f} km of track; "
           f"{sum(length[w] for w in unnamed):.0f} km of running track left without a line", flush=True)
 
@@ -430,7 +480,7 @@ def main():
             cover = part / sum(length[w] for w in tracks[key])
             mostly = part / total
             if "新幹線" in key[2] or cover < 0.25 or mostly < 0.25:
-                continue                            # passes through, or runs mostly somewhere else; the Shinkansen go by the list above
+                continue                            # passes through, or runs mostly somewhere else; the Shinkansen go by design speed
             bare_name = key_of(re.sub(r"^JR", "", key[2]))
             score = cover * mostly + (0.6 if bare_name in name else 0) + (0.2 if infrastructure else 0)
             if EXPRESS.search(name):
@@ -440,8 +490,8 @@ def main():
             votes[key][col] = max(votes[key].get(col, -9), score)
     line_colour = {}
     for key in tracks:
-        if known_colour(key[2], key[1]):
-            line_colour[key] = known_colour(key[2], key[1])
+        if key[2] in KNOWN_COLOUR:
+            line_colour[key] = KNOWN_COLOUR[key[2]]
         elif votes[key] and max(votes[key].values()) > (-0.95 if key[0] == "metro" else 0):
             line_colour[key] = readable_on_dark(max(votes[key].items(), key=lambda kv: (kv[1], kv[0]))[0])
     track_km = sum(length[w] for key, ws in tracks.items() if key[0] == "rail" for w in ws)
@@ -477,12 +527,10 @@ def main():
         props = {"c": cls, "n": shown, "g": "jp", "jk": jk}
         if firm:
             props["o"] = firm
-        # Japan's only colour: the line's own colour, else neutral OTHER. Never the company's.
-        col = line_colour.get(key) or OTHER
-        if key not in line_colour:
+        how = colouring(name, jk, line_colour.get(key))
+        props.update(how)
+        if not how:
             plain_km[jk] += total
-        if col:
-            props["lc"] = col
         for seg_co in simp:
             rail_feats.append({"type": "Feature", "properties": dict(props), "geometry": geometry([seg_co])})
         row = lines_json.setdefault(shown, {"n": shown, "g": "jp", "jk": jk, "bbox": bbox_of(simp), "tk": 0, "c": cls, "_firms": Counter()})
@@ -490,8 +538,10 @@ def main():
         row["bbox"] = [min(row["bbox"][0], box[0]), min(row["bbox"][1], box[1]), max(row["bbox"][2], box[2]), max(row["bbox"][3], box[3])]
         row["tk"] += total
         row["_firms"][firm] += total
-        if col and (not row.get("lc") or row["_firms"].most_common(1)[0][0] == firm):
-            row["lc"] = col
+        if "lc" in how and (not row.get("lc") or row["_firms"].most_common(1)[0][0] == firm):
+            row["lc"] = how["lc"]
+        if "d" in how:
+            row.update(how)
     # The lines of one corridor each lie on their own track, a few metres apart: drawn as they are,
     # they cover each other at any scale that shows a city. Each gets its place in the corridor
     # (property off), which the map turns into a shift to the side that fades out as one zooms in
@@ -562,6 +612,8 @@ def main():
     write("jp_rail.geojson", {"type": "FeatureCollection", "features": rail_feats})
     write("jp_metro.geojson", {"type": "FeatureCollection", "features": metro_feats})
     write("jp_stations.geojson", {"type": "FeatureCollection", "features": stations})
+    build_feats = being_built(ways, "jp", plain_name, build_fast=lambda name: "新幹線" in name)
+    write("jp_build.geojson", {"type": "FeatureCollection", "features": build_feats})
     write("jp_lines.json", sorted(lines_json.values(), key=lambda r: -r["tk"]))
     write("jp_metro_cities.json", sorted(cities.values(), key=lambda c: -c["km"]))
     print("japan rail without a colour of its own, track km by kind:", {k: round(v) for k, v in plain_km.most_common()}, flush=True)
@@ -569,7 +621,7 @@ def main():
         return sum(km(co) for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]))
     fast_km = sum(feat_km(f) for f in rail_feats if f["properties"].get("jk") == "shinkansen")
     all_km = sum(feat_km(f) for f in rail_feats)
-    write("jp_facts.json", {"km": round(all_km), "fast_km": round(fast_km)})
+    write("jp_facts.json", {"km": round(all_km), "fast_km": round(fast_km), "bands": sorted({f["properties"]["c"] for f in rail_feats if "d" in f["properties"]})})
     # Japan taxonomy audit: per-bucket line + km counts. Operator-less fragments land in "unknown"
     # on purpose (not noise-deleted, not dumped into private); see data/jp_taxonomy_audit.json.
     rail_keys = ("shinkansen", "jr", "private_big", "third_sector", "private_local", "unknown")
@@ -600,6 +652,8 @@ def main():
     print(f"jk buckets: { {k: jk_lines.get(k, 0) for k in rail_keys} } metro: {audit['metro']}", flush=True)
     print(f"japan: {len(lines_json)} railway lines, {all_km:.0f} km drawn ({fast_km:.0f} km Shinkansen); "
           f"{len(metro_rows)} metro lines in {len(cities)} cities, {sum(r['km'] for _, r in metro_rows)} km; {len(stations)} stations")
+    write_yards(ex, "jp")
+
 
 
 if __name__ == "__main__":

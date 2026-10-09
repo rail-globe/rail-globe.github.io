@@ -73,7 +73,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .facts { margin: 2px 0 0; font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
 .gh { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 999px; background: var(--fill2); color: var(--label); text-decoration: none; font-size: 0.75rem; font-weight: 500; }
 .gh:hover { background: var(--fill); }
-.title-row h1 { flex: 1; min-width: 0; }
+.title-row h1 { flex: 1; min-width: 0; white-space: nowrap; }
 .head > .facts { margin-top: -8px; }
 .segmented.mini { flex: none; }
 .segmented.mini button { padding: 3px 10px; font-size: 0.75rem; }
@@ -89,6 +89,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   transform: translateX(calc(var(--i) * 100%)); transition: transform 280ms var(--ease); }
 .segmented:has(button:nth-of-type(2):is([aria-selected="true"], [aria-pressed="true"])) { --i: 1; }
 .segmented:has(button:nth-of-type(3):is([aria-selected="true"], [aria-pressed="true"])) { --i: 2; }
+.segmented:has(button:nth-of-type(4):is([aria-selected="true"], [aria-pressed="true"])) { --i: 3; }
+.segmented:has(button:nth-of-type(5):is([aria-selected="true"], [aria-pressed="true"])) { --i: 4; }
+.segmented:has(button:nth-of-type(6):is([aria-selected="true"], [aria-pressed="true"])) { --i: 5; }
 /* Seven classes do not fit a segmented control the width of the card: Japan's are chips, each as
    wide as its name, that wrap onto a second row. */
 .segmented.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; border-radius: 0; background: none; }
@@ -135,9 +138,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .route-sum b { font-size: 1.75rem; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .route-sum b small { font-size: 0.8125rem; font-weight: 500; letter-spacing: 0; color: var(--label2); margin-left: 4px; }
 .route-sum span { color: var(--label2); }
-.steps, .linelist, .oplist { list-style: none; margin: 0; padding: 0; }
+.steps, .linelist { list-style: none; margin: 0; padding: 0; }
 .steps li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
-.steps li i, .linelist i, .oplist i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.steps li i, .linelist i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
 .steps li span:first-of-type { flex: 1; min-width: 0; }
 .steps .km, .linelist .kmh, .spd { font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
 .steps li.change { padding: 6px 12px 6px 30px; font-size: 0.75rem; color: var(--label2); }
@@ -154,7 +157,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .linelist button { width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 42px; text-align: left; cursor: pointer; }
 .linelist button:hover { background: var(--fill2); }
 .linelist button[aria-current="true"] { background: rgba(10, 132, 255, 0.22); }
-.linelist .nm, .oplist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linelist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .linelist svg { flex: none; color: var(--label3); }
 .linelist .back { color: var(--blue); gap: 4px; }
 .linelist .back svg { color: var(--blue); }
@@ -173,11 +176,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .switch:checked::before { transform: translateX(15px); }
 .switch:active::before { width: 23px; }
 .switch:checked:active::before { transform: translateX(11px); }
-.oplist { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
-.oplist li { min-width: 0; }
-.oplist button { width: 100%; min-width: 0; display: flex; align-items: center; gap: 8px; border: 0; border-radius: 9px; background: var(--fill2); padding: 7px 10px; font-size: 0.75rem; text-align: left; cursor: pointer; }
-.oplist button:hover { background: var(--fill); }
-.oplist button[aria-pressed="true"] { background: rgba(10, 132, 255, 0.3); }
 .range span { flex: none; }
 .range input { flex: 1; min-width: 0; accent-color: var(--blue); }
 .range output { flex: none; min-width: 3.2ch; text-align: right; color: var(--label2); font-variant-numeric: tabular-nums; }
@@ -255,11 +253,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     <div class="grabber" aria-hidden="true"></div>
     <div class="title-row">
       <h1 id="title">中国铁路网</h1>
-      <div class="segmented mini" id="country" role="group" aria-label="国家" style="--n: 2" hidden>
-        <span class="thumb"></span>
-        <button type="button" data-g="cn" aria-pressed="true">中国</button>
-        <button type="button" data-g="jp" aria-pressed="false">日本</button>
-      </div>
       <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
@@ -267,6 +260,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       </a>
     </div>
     <p class="facts" id="facts">16.5 万公里 · 高铁 5.0 万公里</p>
+    <div class="segmented mini" id="country" role="group" aria-label="国家" style="--n: 4" hidden>
+      <span class="thumb"></span>
+      <button type="button" data-g="cn" aria-pressed="true">中国</button>
+      <button type="button" data-g="jp" aria-pressed="false">日本</button>
+      <button type="button" data-g="kr" aria-pressed="false">韩国</button>
+      <button type="button" data-g="uk" aria-pressed="false">英国</button>
+    </div>
     <div class="segmented" id="tabs" role="tablist" style="--n: 3">
       <span class="thumb"></span>
       <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route">路线</button>
@@ -295,8 +295,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         <p class="hint" id="routeNote">在地图上点一个火车站或地铁站，选“设为出发”或“设为到达”，也可以直接输入站名。铁路和地铁可以一起算，相邻的火车站和地铁站之间按步行换乘。仅支持中国境内车站；给出的是沿真实线路的走法和估算时间，不是车次和时刻表。</p>
       </div>
       <div id="routeJp" hidden>
-        <p class="hint">日本暂不支持线路网寻路；路线走法目前仅覆盖中国境内已接入线路网的车站。</p>
-        <div class="od-actions"><button type="button" class="link" id="routeGoLines">查看日本线路 →</button></div>
+        <p class="hint" id="routeJpNote"></p>
+        <div class="od-actions"><button type="button" class="link" id="routeGoLines"></button></div>
       </div>
     </div>
 
@@ -338,14 +338,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         </div>
       </div>
       <div id="ukSec">
-        <p class="caption"><span id="opTitle">英国线路的颜色</span><span id="opCount"></span></p>
-        <div class="segmented" role="group" aria-label="线路上色方式">
-          <span class="thumb"></span>
-          <button type="button" id="ukByOp" aria-pressed="true">按运营公司</button>
-          <button type="button" id="ukByClass" aria-pressed="false">按线路等级</button>
-        </div>
-        <ul class="oplist" id="opList"></ul>
-        <p class="hint" id="opHint">点一家公司只看它的线路，再点一次恢复。浅色的英国线路没有客运运行线路数据，多为货运线。</p>
+        <p class="caption" id="opTitle">线路的颜色</p>
+        <p class="hint" id="opHint"></p>
       </div>
       <div>
         <p class="caption">卫星影像</p>
@@ -354,7 +348,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         </div>
         <p class="hint" id="baseNote">Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。</p>
       </div>
-      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取（日本为 2026-10-06）；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；高铁里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
+      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取（日本、韩国为 2026-10-06，英国为 2026-10-03）；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；高铁里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
     </div>
   </div>
 </aside>
@@ -366,7 +360,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const col = k => css.getPropertyValue('--' + k).trim();
   const abs = u => new URL(u, document.baseURI).href;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const WITH_UK = false;      // set from site.json by scripts/build.py
+  const WITH_UK = true;      // set from site.json by scripts/build.py
+  const WITH_KR = true;      // South Korea: data/kr_*.json, written by scripts/process_kr.py
   const WITH_JP = true;      // Japan: data/jp_*.json, written by scripts/process_jp.py
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
 
@@ -387,32 +382,60 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
   visible.main = visible.branch = true;
   let selected = null;
-  let ukOp = WITH_UK || WITH_JP;   // UK lines take their operator's colour, Japanese lines their own line colour
-  document.getElementById('ukSec').hidden = !(WITH_UK || WITH_JP);
-  // What the colour section says for each country. Japan has one rule and no company colours, so
-  // it shows the note alone: no switch, no list of companies.
-  const OP_NOTE = { uk: document.getElementById('opHint').textContent, jp: '有线路色的线路用它自己的线路色，其余用同一种浅灰，不按公司上色。' };
+  // Countries other than China come as layers of their own (data/<code>_*.json) with classes of
+  // their own (property jk): one map layer, one row in the layers tab and one button in the lines
+  // tab per class, all made from this configuration. A class listed with several jk values
+  // gathers them under one row. The colours follow one rule everywhere: a high-speed line by the
+  // band of its design speed, any other railway by its own line colour or else the neutral
+  // colour, metros and trams by their official line colour. Never by company.
+  const FOREIGN = {
+    jp: { name: '日本', on: WITH_JP, bounds: [[128.5, 30.8], [146, 45.6]],
+      // roughly: east of the Korea Strait and the Sea of Japan, down to the Yaeyama islands
+      inside: (lng, lat) => lat > 24 && lat < 46 && (lat < 31 ? lng > 123.5 && lng < 132 : lng > 128.6 + (lat - 33) * 0.92 && lng < 147),
+      fast: ['shinkansen'], fastWord: '新干线', fastMin: 15, build: true,
+      rail: [['shinkansen', '新干线'], ['jr', 'JR在来'], ['private_big', '大手私铁'],
+             ['private_local', '地方私铁·第三セク', ['third_sector', 'private_local']], ['unknown', '其他']],
+      metro: [['subway', '地下铁'], ['urban', '城市轨道']],
+      caption: { subway: '地下铁', urban: '城市轨道（路面电车/单轨/新交通）' },
+      kindName: { shinkansen: '新干线', jr: 'JR在来线', private_big: '大手私铁', third_sector: '第三部门铁路', private_local: '地方私铁', unknown: '其他铁路' },
+      search: { shinkansen: '搜索线路，如 東海道、東北', jr: '搜索线路，如 山手、中央', private_big: '搜索线路，如 近鉄、名鉄', private_local: '搜索线路，如 青い森、しなの',
+                unknown: '搜索未分类线路', subway: '搜索城市或线路，如 东京、銀座', urban: '搜索城市或线路，如 広島、千葉' } },
+    kr: { name: '韩国', on: WITH_KR, bounds: [[124.6, 33.1], [130.0, 38.65]],
+      // west of the Korea Strait, where Japan's box begins
+      inside: (lng, lat) => lat > 33 && lat < 38.7 && lng > 124.5 && lng < 128.6 + (lat - 33) * 0.92,
+      fast: ['hs', 'semi'], fastWord: '高速与准高速', fastMin: 0, build: true,
+      rail: [['hs', '高速铁路'], ['semi', '准高速铁路'], ['main', '干线铁路'], ['branch', '支线铁路']],
+      metro: [['subway', '地铁'], ['urban', '轻轨·单轨']],
+      caption: { subway: '地铁', urban: '轻轨与单轨' },
+      kindName: { hs: '高速铁路', semi: '准高速铁路', main: '干线铁路', branch: '支线铁路' },
+      search: { hs: '搜索线路，如 경부고속선', semi: '搜索线路，如 중앙선、경강선', main: '搜索线路，如 경부선、호남선', branch: '搜索线路，如 정선선',
+                subway: '搜索城市或线路，如 首尔、2호선', urban: '搜索城市或线路，如 釜山、경전철' } },
+    uk: { name: '英国', on: WITH_UK, bounds: [[-8.2, 49.8], [1.9, 59]],
+      inside: (lng, lat) => lat > 49.8 && lat < 61 && lng > -8.7 && lng < 1.9,      // the box around Great Britain and Ireland
+      fast: ['hs'], fastWord: '高速铁路', fastMin: 0, build: true,
+      rail: [['hs', '高速铁路'], ['main', '干线铁路'], ['branch', '支线铁路'], ['heritage', '遗产铁路']],
+      metro: [['subway', '地铁'], ['urban', '轻轨·有轨电车']],
+      caption: { subway: '地铁', urban: '轻轨与有轨电车' },
+      kindName: { hs: '高速铁路', main: '干线铁路', branch: '支线铁路', heritage: '遗产铁路' },
+      search: { hs: '搜索线路，如 High Speed 1', main: '搜索线路，如 West Coast、Great Western', branch: '搜索线路，如 Cambrian、Far North', heritage: '搜索线路，如 Ffestiniog、Severn Valley',
+                subway: '搜索城市或线路，如 伦敦、Central', urban: '搜索城市或线路，如 曼彻斯特、Docklands' } },
+  };
+  for (const g of Object.keys(FOREIGN)) if (!FOREIGN[g].on) delete FOREIGN[g];
+  const abroad = g => (FOREIGN[g] ? g : 'cn');     // the country a feature or a list row belongs to
+  const NOT_ABROAD = ['match', ['coalesce', ['get', 'g'], ''], [...Object.keys(FOREIGN), '-'], false, true];
+  const jkOf = (g, kind) => (FOREIGN[g].rail.find(r => r[0] === kind) || [])[2] || [kind];
+  const kindOf = l => FOREIGN[l.g].rail.find(r => (r[2] || [r[0]]).includes(l.jk))[0];
+  document.getElementById('ukSec').hidden = true;
   function colourSection(g) {
-    const jp = g === 'jp';
-    document.getElementById('ukSec').hidden = !(WITH_UK || (WITH_JP && jp));
-    document.getElementById('opTitle').textContent = (jp ? '日本' : '英国') + '线路的颜色';
-    document.getElementById('opHint').textContent = OP_NOTE[jp ? 'jp' : 'uk'];
-    document.getElementById('opCount').hidden = jp;
-    document.getElementById('opList').hidden = jp || !ukOp;
-    document.getElementById('ukByOp').closest('.segmented').hidden = !WITH_UK || jp;
+    document.getElementById('ukSec').hidden = !FOREIGN[g];
+    document.getElementById('opTitle').textContent = (FOREIGN[g] ? FOREIGN[g].name : '') + '线路的颜色';
+    document.getElementById('opHint').textContent = '高速线路按设计时速分档；其余铁路有官方线路色的用线路色，没有的用浅色；地铁、轻轨和有轨电车用官方线路色。不按公司上色。';
   }
-  colourSection('cn');
-  let opSel = null;     // operator shown on its own
   let country = 'cn';   // the country the card is about: its title, figures, lists and quick jumps
-  const JAPAN = [[128.5, 30.8], [146, 45.6]];
-  // roughly: east of the Korea Strait and the Sea of Japan, down to the Yaeyama islands
-  const inJapan = (lng, lat) => lat > 24 && lat < 46 && (lat < 31 ? lng > 123.5 && lng < 132 : lng > 128.6 + (lat - 33) * 0.92 && lng < 147);
 
   // legend / toggles
   const layersEl = document.getElementById('layers');
   const rowEls = {};
-  // which "China-only" layers Japan actually has data for. Filled once the JP data joins in.
-  let jpLayerAvail = { build: false, suburb: false };
   for (const c of CLASSES) {
     const lab = document.createElement('label');
     lab.className = 'row lyr';
@@ -434,47 +457,49 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     layersEl.appendChild(lab);
     rowEls[c.id] = lab;
   }
-  // Japan-only layer rows: one toggle per operator-taxonomy bucket. Each row shows/hides its own
-  // map layer(s). They are hidden until Japan is selected.
-  const JP_LAYER_ROWS = [
-    { id: 'jp-shinkansen', label: '新干线' }, { id: 'jp-jr', label: 'JR在来' },
-    { id: 'jp-private_big', label: '大手私铁' }, { id: 'jp-private_local', label: '地方私铁·第三セク' },
-    { id: 'jp-unknown', label: '其他' }, { id: 'jp-subway', label: '地下铁' }, { id: 'jp-urban', label: '城市轨道' }];
-  const jpVisible = Object.fromEntries(JP_LAYER_ROWS.map(r => [r.id, true]));
-  for (const r of JP_LAYER_ROWS) {
-    const lab = document.createElement('label');
-    lab.className = 'row lyr';
-    lab.innerHTML = `<span class="sw"><i style="height:1.5px;background:${r.id === 'jp-subway' ? '#e4002b' : r.id === 'jp-urban' ? '#84bd00' : col('conv')}"></i></span><span class="txt"><b>${r.label}</b></span><input type="checkbox" class="switch" id="t-${r.id}" checked>`;
-    lab.querySelector('input').addEventListener('change', e => { jpVisible[r.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
-    lab.hidden = true;
-    layersEl.appendChild(lab);
-    rowEls[r.id] = lab;
+  // The rows of a country abroad: one per class, and for its high-speed class one per speed band
+  // that the country has (the data says which), drawn like the Chinese band rows. They are made
+  // when the data has arrived and stay hidden until that country is chosen.
+  const abroadVisible = {};
+  function abroadRows(g, bands) {
+    const c = FOREIGN[g];
+    c.bands = bands;              // fast class -> the bands it has, fastest first
+    const rows = [...c.rail.flatMap(([kind, label]) => (c.fast.includes(kind)
+        ? bands[kind].map(band => ({ id: `${g}-${kind}-${band}`, label, band }))
+        : [{ id: `${g}-${kind}`, label }])),
+      ...c.metro.map(([kind, label]) => ({ id: `${g}-${kind}`, label, metro: kind }))];
+    for (const r of rows) {
+      const lab = document.createElement('label');
+      lab.className = 'row lyr';
+      const swatch = r.band ? `<i style="height:4px;background:${col(r.band)};box-shadow:0 0 8px ${col(r.band)}"></i>`
+        : `<i style="height:1.5px;background:${r.metro === 'subway' ? '#e4002b' : r.metro ? '#84bd00' : col('main')}"></i>`;
+      lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b>${r.label}</b></span>${r.band ? `<span class="spd">${DESIGN_LABEL[r.band]} km/h</span>` : ''}<input type="checkbox" class="switch" id="t-${r.id}" checked>`;
+      lab.querySelector('input').addEventListener('change', e => { abroadVisible[r.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
+      lab.hidden = true;
+      layersEl.appendChild(lab);
+      rowEls[r.id] = lab;
+      abroadVisible[r.id] = true;
+    }
   }
   function relabelLegend() {
-    // Japan uses its own operator taxonomy, NOT China's speed bands: hide the seven 动车组 rows and
-    // the 普速 row. Japan keeps: 普速 (its JR/私铁 drawn by line colour), 地铁, 车站, 国界.
-    for (const id of FAST) {
-      const el = rowEls[id];
-      if (el) el.hidden = country === 'jp';
-    }
-    if (rowEls.unknown) rowEls.unknown.hidden = country === 'jp';
-    const hideForJp = { metro: true, build: !jpLayerAvail.build, suburb: !jpLayerAvail.suburb, yards: true, border: true };
-    for (const id of ['metro', 'build', 'suburb', 'yards', 'border']) {
-      const el = rowEls[id];
-      if (el) el.hidden = country === 'jp' && hideForJp[id];
-    }
-    // JP taxonomy rows are shown only when Japan is selected.
-    for (const id of Object.keys(jpVisible)) {
-      const el = rowEls[id];
-      if (el) el.hidden = country !== 'jp';
-    }
+    // A country abroad has classes of its own: the Chinese rows give way to its rows, and of the
+    // speed bands only those it has are shown (they are among its own rows).
+    const cn = country === 'cn';
+    for (const id of [...FAST, 'unknown']) if (rowEls[id]) rowEls[id].hidden = !cn;
+    const hideAbroad = { metro: true, build: !(FOREIGN[country] && FOREIGN[country].hasBuild), suburb: true, border: true };
+    for (const id of ['metro', 'build', 'suburb', 'border']) if (rowEls[id]) rowEls[id].hidden = !cn && hideAbroad[id];
+    for (const id of Object.keys(abroadVisible)) rowEls[id].hidden = !id.startsWith(country + '-');
   }
 
   // Route tab is China-only: Japan shows an empty state instead of the Chinese OD inputs.
   const syncRouteTab = () => {
-    const jp = country === 'jp';
-    document.getElementById('routeCn').hidden = jp;
-    document.getElementById('routeJp').hidden = !jp;
+    const c = FOREIGN[country];
+    document.getElementById('routeCn').hidden = !!c;
+    document.getElementById('routeJp').hidden = !c;
+    if (c) {
+      document.getElementById('routeJpNote').textContent = `${c.name}暂不支持线路网寻路；路线走法目前仅覆盖中国境内已接入线路网的车站。`;
+      document.getElementById('routeGoLines').textContent = `查看${c.name}线路 →`;
+    }
   };
   // Route state (od, pins, result) is wired up later; setCountry runs before that, so the cleanup
   // is registered through this late-bound hook and called whenever the country changes.
@@ -738,14 +763,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     ]).finally(() => clearTimeout(t));
   };
 
+  const ABROAD_FILES = ['rail.geojson', 'metro.geojson', 'stations.geojson', 'lines.json', 'metro_cities.json', 'facts.json'];
   const dataReady = Promise.all([
     getJSON('data/rail_hsr.geojson'), getJSON('data/rail_build.geojson'),
     getJSON('data/rail_conv.geojson'), getJSON('data/stations.geojson'), getJSON('data/lines.json'),
     getJSON('data/cities.json'), getJSON('data/border.geojson'), getJSON('data/metro.geojson'),
-    getJSON('data/metro_stations.geojson'), getJSON('data/uk_operators.json'), probeLive(),
+    getJSON('data/metro_stations.geojson'), probeLive(),
     getJSON('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
-    ...['jp_rail.geojson', 'jp_metro.geojson', 'jp_stations.geojson', 'jp_lines.json', 'jp_metro_cities.json', 'jp_facts.json']
-      .map(f => (WITH_JP ? getJSON('data/' + f) : null)),
+    Promise.all(Object.keys(FOREIGN).map(g => Promise.all([...ABROAD_FILES, ...(FOREIGN[g].build ? ['build.geojson'] : [])].map(f => getJSON(`data/${g}_${f}`))))),
   ]);
   dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
 
@@ -754,19 +779,23 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   window.__bootStage = 'map-load';
   try {
     window.__bootStage = 'data-ready';
-    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, ops, live, shared, metroCities,
-      jpRail, jpMetro, jpStations, jpLines, jpCities, jpFacts] = await dataReady;
-    // Japan comes as layers of its own with the same properties, and joins the layers drawn here.
-    if (jpRail) {
-      for (const f of jpRail.features) conv.features.push(f);   // Japan rail all on conv, split by jk
-      metro.features.push(...jpMetro.features);
-      for (const f of jpStations.features) (f.properties.m ? metroStations : stations).features.push(f);
-      lines.push(...jpLines);
-      for (const c of jpCities) c.g = 'jp';
-      metroCities.push(...jpCities);
-      jpLayerAvail.build = build.features.some(f => f.properties.g === 'jp');
-      jpLayerAvail.suburb = metro.features.some(f => f.properties.g === 'jp' && f.properties.k === 's');
-    }
+    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, live, shared, metroCities, abroadData] = await dataReady;
+    // A country abroad comes as layers of its own with the same properties, and joins the layers drawn here.
+    const facts = {};
+    Object.keys(FOREIGN).forEach((g, i) => {
+      const [rail, itsMetro, itsStations, itsLines, itsCities, itsFacts, itsBuild] = abroadData[i];
+      for (const f of rail.features) conv.features.push(f);      // all on conv, told apart by g and jk
+      for (const f of itsMetro.features) metro.features.push(f);
+      for (const f of itsStations.features) (f.properties.m ? metroStations : stations).features.push(f);
+      for (const l of itsLines) lines.push(l);
+      for (const c of itsCities) { c.g = g; metroCities.push(c); }
+      for (const f of (itsBuild ? itsBuild.features : [])) build.features.push(f);
+      FOREIGN[g].hasBuild = !!(itsBuild && itsBuild.features.length);
+      facts[g] = itsFacts;
+      // only the speed bands the country has get a row and a layer: read off its lines
+      abroadRows(g, Object.fromEntries(FOREIGN[g].fast.map(kind => [kind,
+        FAST.filter(band => rail.features.some(f => f.properties.c === band && jkOf(g, kind).includes(f.properties.jk)))])));
+    });
 
     // ---- imagery ----
     const dim = document.getElementById('dim');
@@ -819,25 +848,31 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const slot = ['coalesce', ['get', 'off'], 0];
     const railOff = ['interpolate', ['linear'], ['zoom'], 7, 0, 9, ['*', slot, 1.9], 11, ['*', slot, 3.6], 13, ['*', slot, 5], 14.5, ['*', slot, 5], 16.5, 0];
     // Colours, widths and opacities of the rail layers are set in styleRail().
-    map.addLayer({ id: 'branch', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'branch'], ['!=', ['get', 'g'], 'jp']], minzoom: 3.5, layout: round, paint: { 'line-offset': railOff } });
-    map.addLayer({ id: 'main', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'main'], ['!=', ['get', 'g'], 'jp']], layout: round, paint: { 'line-offset': railOff } });
-    // Japan rail: each operator-taxonomy bucket is its own layer, drawn in its own line/company
-    // colour (lc -> company -> neutral), never China's 普速 colour and never a speed band.
-    const JP_RAIL_LAYERS = [['jp-shinkansen', ['==', ['get', 'jk'], 'shinkansen']],
-      ['jp-jr', ['==', ['get', 'jk'], 'jr']],
-      ['jp-private_big', ['==', ['get', 'jk'], 'private_big']],
-      ['jp-private_local', ['in', ['get', 'jk'], ['literal', ['third_sector', 'private_local']]]],
-      ['jp-unknown', ['==', ['get', 'jk'], 'unknown']]];
-    for (const [id, jkFilter] of JP_RAIL_LAYERS) map.addLayer({ id, type: 'line', source: 'conv',
-      filter: ['all', ['==', ['get', 'g'], 'jp'], jkFilter], layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'lc'], col('conv')], 'line-width': lineW([0.9, 1.4, 2.1, 3, 4.4]), 'line-offset': railOff } });
+    map.addLayer({ id: 'branch', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'branch'], NOT_ABROAD], minzoom: 3.5, layout: round, paint: { 'line-offset': railOff } });
+    map.addLayer({ id: 'main', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'main'], NOT_ABROAD], layout: round, paint: { 'line-offset': railOff } });
+    // Rail abroad: one layer per class, and for the high-speed class one per speed band, drawn
+    // like the Chinese bands. The other classes take the line's own colour where it has one and
+    // are then drawn full; a line without one looks like a conventional line in China.
+    const abroadW = { own: [0.9, 1.4, 2.1, 3, 4.4], fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6] };
+    const plainW = ['interpolate', ['exponential', 1.5], ['zoom'], ...[3, 6, 9, 12, 16].flatMap((z, i) => [z,
+      ['case', ['has', 'lc'], abroadW.own[i], ['==', ['get', 'c'], 'main'], abroadW.main[i], abroadW.branch[i]]])];
+    for (const g of Object.keys(FOREIGN)) {
+      const of = kind => [['==', ['get', 'g'], g], ['in', ['get', 'jk'], ['literal', jkOf(g, kind)]]];
+      for (const [kind] of FOREIGN[g].rail.filter(r => !FOREIGN[g].fast.includes(r[0]))) map.addLayer({ id: `${g}-${kind}`, type: 'line', source: 'conv',
+        filter: ['all', ...of(kind)], layout: round,
+        paint: { 'line-color': ['coalesce', ['get', 'lc'], col('main')], 'line-width': plainW, 'line-offset': railOff,
+          'line-opacity': ['case', ['has', 'lc'], 1, ['==', ['get', 'c'], 'main'], 0.85, 0.7] } });
+      for (const kind of FOREIGN[g].fast) for (const band of FOREIGN[g].bands[kind]) map.addLayer({ id: `${g}-${kind}-${band}`, type: 'line', source: 'conv',
+        filter: ['all', ...of(kind), ['==', ['get', 'c'], band]], layout: round,
+        paint: { 'line-color': col(band), 'line-width': lineW(abroadW.fast), 'line-offset': railOff } });
+    }
     map.addLayer({ id: 'build', type: 'line', source: 'build',
       paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
     // Urban rail in official line colours on a white casing, the way a metro map draws it. That
     // includes intercity and suburban lines a metro company operates (k = "m"), which are long
     // enough to show from further out.
     const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, 0.4 * k, 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
-    const urban = ['all', ['!=', ['get', 'g'], 'jp'], ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
+    const urban = ['all', NOT_ABROAD, ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
     // Lines that share track are drawn side by side: the data gives each a slot (off: -0.5 and 0.5
     // for two lines, -1, 0, 1 for three), which becomes a sideways offset of one line's width.
     const metroOff = ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, ['*', slot, 0.7], 6, ['*', slot, 0.9], 9, ['*', slot, 2.3], 12, ['*', slot, 4.4], 16, ['*', slot, 7.6]];
@@ -845,13 +880,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
     map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
       paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
-    // Japan metro split by jk: underground vs urban (tram/monorail/AGT).
-    for (const [id, jkf] of [['jp-subway', ['==', ['get', 'jk'], 'subway']], ['jp-urban', ['==', ['get', 'jk'], 'urban']]]) {
-      map.addLayer({ id: id + '-casing', type: 'line', source: 'metro', minzoom: 4.5,
-        filter: ['all', ['==', ['get', 'g'], 'jp'], ['!=', ['get', 'k'], 's'], jkf], layout: round,
+    // Metros abroad, one layer per class (underground / trams and the rest).
+    const abroadMetro = Object.keys(FOREIGN).flatMap(g => FOREIGN[g].metro.map(([kind]) => [`${g}-${kind}`, g, kind]));
+    for (const [id, g, kind] of abroadMetro) {
+      const filter = ['all', ['==', ['get', 'g'], g], ['!=', ['get', 'k'], 's'], ['==', ['get', 'jk'], kind]];
+      map.addLayer({ id: id + '-casing', type: 'line', source: 'metro', minzoom: 4.5, filter, layout: round,
         paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-      map.addLayer({ id, type: 'line', source: 'metro', minzoom: 4.5,
-        filter: ['all', ['==', ['get', 'g'], 'jp'], ['!=', ['get', 'k'], 's'], jkf], layout: round,
+      map.addLayer({ id, type: 'line', source: 'metro', minzoom: 4.5, filter, layout: round,
         paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
     }
     // A bureau-operated suburban service (k = "s") shares its track with a national line that keeps
@@ -950,37 +985,32 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const CAPTION = { fast: '高铁与城际线路', conv: '普速线路' };
     // Japan-only taxonomy (jk), not China's 高铁/普速/地铁 and not any speed class. Rail rows carry
     // jk (operator-based); metro rows carry jk (subway vs urban). 地方中小 + 第三セクター share a toggle.
-    const JP_RAIL = { shinkansen: lines.filter(l => l.jk === 'shinkansen' && l.tk >= 15),
-                      jr: lines.filter(l => l.jk === 'jr'),
-                      private_big: lines.filter(l => l.jk === 'private_big'),
-                      private_local: lines.filter(l => l.jk === 'third_sector' || l.jk === 'private_local'),
-                      unknown: lines.filter(l => l.jk === 'unknown') };
-    const JP_CAPTION = { shinkansen: '新干线', jr: 'JR在来', private_big: '大手私铁',
-                         private_local: '地方私铁·第三セク', unknown: '其他' };
-    const RAIL_KINDS = ['fast', 'conv', 'shinkansen', 'jr', 'private_big', 'private_local', 'unknown'];
+    const ABROAD_RAIL = Object.fromEntries(Object.keys(FOREIGN).map(g => [g, Object.fromEntries(FOREIGN[g].rail.map(([kind]) =>
+      [kind, lines.filter(l => l.g === g && jkOf(g, kind).includes(l.jk) && (!FOREIGN[g].fast.includes(kind) || l.tk >= FOREIGN[g].fastMin))]))]));
+    const RAIL_KINDS = ['fast', 'conv', ...Object.values(FOREIGN).flatMap(c => c.rail.map(r => r[0]))];
     const KIND_SET = { cn: [['fast', '高铁'], ['conv', '普速'], ['metro', '地铁']],
-                       jp: [['shinkansen', '新干线'], ['jr', 'JR在来'], ['private_big', '大手私铁'],
-                            ['private_local', '地方私铁·第三セク'], ['unknown', '其他'], ['subway', '地下铁'], ['urban', '城市轨道']] };
+      ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, [...FOREIGN[g].rail, ...FOREIGN[g].metro].map(([id, label]) => [id, label])])) };
+    const labelOf = k => (KIND_SET[country].find(r => r[0] === k) || [])[1] || '';
     const byName = new Map(lines.map(l => [l.n, l]));
     const cityByName = new Map(metroCities.map(c => [c.n, c]));
     // The card is about one country at a time: its figures, its lines, its cities.
-    const here = x => (x.g === 'jp') === (country === 'jp');
+    const here = x => abroad(x.g) === country;
     const citiesHere = () => metroCities.filter(here);
-    const realCitiesHere = () => citiesHere().filter(c => !c.n.endsWith('城际'));
+    const realCitiesHere = () => citiesHere().filter(c => !c.n.endsWith('城际') && !c.n.endsWith('其他'));
     const metroCountHere = () => citiesHere().reduce((n, c) => n + c.lines.length, 0);
+    const kmText = v => (v >= 1e4 ? (v / 1e4).toFixed(1) + ' 万公里' : Math.round(v).toLocaleString() + ' 公里');
     const RAIL_FACTS = { cn: document.getElementById('facts').textContent,
-      jp: jpFacts ? `${(jpFacts.km / 1e4).toFixed(1)} 万公里 · 新干线 ${(jpFacts.fast_km / 1e4).toFixed(1)} 万公里` : '' };
+      ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, `${kmText(facts[g].km)} · ${FOREIGN[g].fastWord} ${kmText(facts[g].fast_km)}`])) };
     const renderHead = () => {
-      document.getElementById('title').textContent = country === 'jp' ? '日本铁路网' : '中国铁路网';
+      document.getElementById('title').textContent = (FOREIGN[country] ? FOREIGN[country].name : '中国') + '铁路网';
       document.getElementById('facts').replaceChildren(RAIL_FACTS[country], document.createElement('br'),
         `地铁 ${realCitiesHere().length} 城 · ${metroCountHere()} 条线路`);
       if (isPhone()) sheet.layout();        // the header is a line taller than it starts
     };
     const renderJumps = () => {
       document.getElementById('jumps').replaceChildren();
-      if (country === 'jp') addJump('日本', JAPAN); else addJump('中国', CHINA);
+      if (FOREIGN[country]) addJump(FOREIGN[country].name, FOREIGN[country].bounds); else addJump('中国', CHINA);
       for (const c of realCitiesHere().slice(0, JUMP_CITIES)) addJump(c.n, [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]]);
-      if (WITH_UK && country !== 'jp') addJump('英国', [[-8.2, 49.8], [1.9, 59]]);
     };
     const listEl = document.getElementById('lineList');
     const moreEl = document.getElementById('more');
@@ -1032,24 +1062,24 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const cap = document.getElementById('lineCap'), count = document.getElementById('lineCount');
       let rows, total;
       if (RAIL_KINDS.includes(kind)) {
-        const listed = (country === 'jp' ? JP_RAIL[kind] : LISTS[kind]).filter(here);
+        const listed = (FOREIGN[country] ? ABROAD_RAIL[country][kind] : LISTS[kind]).filter(here);
         const hits = q ? listed.filter(l => l.n.includes(q)) : listed;
-        cap.textContent = country === 'jp' ? JP_CAPTION[kind] : CAPTION[kind];
+        cap.textContent = FOREIGN[country] ? labelOf(kind) : CAPTION[kind];
         count.textContent = listed.length + ' 条';
         total = hits.length;
-        rows = hits.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${l.g === 'jp' ? String(l.o || '').replace(/[&<>"]/g, '') : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? '分段' : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || '普速'}</span>`,
+        rows = hits.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + ' km/h' : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? '分段' : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || '普速'}</span>`,
           l.n, () => select(l.n, true), selected === l.n));
       } else {
         // metro branch. For Japan the metro kinds split by jk (subway / monorail / tram).
-        const mjk = country === 'jp' ? kind : null;
-        const MJK_CAP = { subway: '地下铁', urban: '城市轨道（路面电车/单轨/新交通）' };
+        const mjk = FOREIGN[country] ? kind : null;
+        const MJK_CAP = FOREIGN[country] ? FOREIGN[country].caption : {};
         const mCities = citiesHere().map(c => mjk ? { ...c, lines: c.lines.filter(l => l.jk === mjk) } : c)
           .filter(c => !mjk || c.lines.length);
         const mLines = mCities.reduce((n, c) => n + c.lines.length, 0);
         if (q) {
           const found = [...mCities.filter(c => c.n.includes(q)).map(cityRow),
             ...mCities.flatMap(c => c.lines.filter(l => l.n.includes(q)).map(l => metroRow(c, l, true)))];
-          cap.textContent = country === 'jp' ? MJK_CAP[mjk] : '地铁与市域线路';
+          cap.textContent = FOREIGN[country] ? MJK_CAP[mjk] : '地铁与市域线路';
           count.textContent = `${mCities.length} 城 · ${mLines} 条`;
           total = found.length;
           rows = found.slice(0, LIMIT);
@@ -1062,7 +1092,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
             '全部城市', () => { metroCity = null; renderList(); }), ...mc.lines.map(l => metroRow(mc, l))];
           rows[0].firstChild.classList.add('back');
         } else {
-          cap.textContent = country === 'jp' ? MJK_CAP[mjk] : '地铁与市域线路';
+          cap.textContent = FOREIGN[country] ? MJK_CAP[mjk] : '地铁与市域线路';
           count.textContent = `${mCities.length} 城 · ${mLines} 条`;
           total = mCities.length;
           rows = mCities.map(cityRow);
@@ -1075,8 +1105,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       kind = k;
       for (const b of kindButtons) b.setAttribute('aria-pressed', String(b.dataset.kind === k));
       search.value = '';
-      search.placeholder = (country === 'jp'
-        ? { shinkansen: '搜索线路，如 東海道、東北', jr: '搜索线路，如 山手、中央', private_big: '搜索线路，如 近鉄、名鉄', private_local: '搜索线路，如 青い森、しなの', unknown: '搜索未分类线路', subway: '搜索城市或线路，如 东京、銀座', urban: '搜索城市或线路，如 広島、千葉', metro: '搜索城市或线路，如 东京、銀座' }
+      search.placeholder = (FOREIGN[country] ? FOREIGN[country].search
         : { fast: '搜索线路，如 京沪、广珠城际', conv: '搜索线路，如 陇海、成昆', metro: '搜索城市或线路，如 武汉、2号线' })[k];
       renderList();
     };
@@ -1094,7 +1123,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     renderList();
     // ---- the country the card is about ----
     const countryEl = document.getElementById('country');
-    countryEl.hidden = !WITH_JP;
+    countryEl.hidden = !Object.keys(FOREIGN).length;
+    for (const b of countryEl.querySelectorAll('button')) if (b.dataset.g !== 'cn' && !FOREIGN[b.dataset.g]) b.remove();
+    countryEl.style.setProperty('--n', countryEl.querySelectorAll('button').length);
     function setCountry(g, fly) {
       country = g;
       for (const b of countryEl.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.g === g));
@@ -1104,7 +1135,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       renderHead();
       renderJumps();
       rebuildKindButtons();
-      setKind(g === 'jp' ? 'shinkansen' : 'fast');   // Japan opens on its own default (Shinkansen)
+      setKind(FOREIGN[g] ? FOREIGN[g].rail[0][0] : 'fast');   // a country abroad opens on its first class
       colourSection(g);
       if (routeCleanup) routeCleanup();      // drop any Chinese OD/pins/result so it never leaks into Japan
       syncRouteTab();
@@ -1113,27 +1144,21 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       // Route tab is unavailable for Japan: move off it to the lines tab, so switching countries
       // never lands on a dead tab. The user can still open 路线 and see the empty state.
       const onRoute = tabButtons.find(b => b.getAttribute('aria-selected') === 'true')?.dataset.tab === 'route';
-      if (g === 'jp' && onRoute) showTab('lines');
+      if (FOREIGN[g] && onRoute) showTab('lines');
       if (fly) {
         touched = g !== 'cn';
         if (!touched) history.replaceState(null, '', location.pathname + location.search);
-        map.fitBounds(g === 'jp' ? JAPAN : CHINA, { padding: padding(), duration: reduced ? 0 : 1800 });
+        map.fitBounds(FOREIGN[g] ? FOREIGN[g].bounds : CHINA, { padding: padding(), duration: reduced ? 0 : 1800 });
       }
     }
     for (const b of countryEl.querySelectorAll('button')) b.addEventListener('click', () => setCountry(b.dataset.g, true));
-    // a link that opens on Japan starts with Japan's card
-    setCountry(WITH_JP && startView && inJapan(map.getCenter().lng, map.getCenter().lat) ? 'jp' : 'cn', false);
+    // a link that opens on a country abroad starts with that country's card
+    setCountry((startView && Object.keys(FOREIGN).find(g => FOREIGN[g].inside(map.getCenter().lng, map.getCenter().lat))) || 'cn', false);
 
     // ---- colours, widths and opacities of the rail layers ----
-    // UK lines can take their operator's colour (property o); one operator can be isolated.
-    const OP_COLOR = ops.length ? ['match', ['get', 'o'], ...ops.flatMap(o => [o.n, o.col]), '#ffffff'] : '#ffffff';
     const W = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6] };
     const ZS = [3, 6, 9, 12, 16];
-    const stopW = (cls, i) => (ukOp && cls !== 'fast' ? ['case', ['any', ['has', 'o'], ['has', 'lc']], +(W[cls][i] * 1.6).toFixed(2), W[cls][i]] : W[cls][i]);
-    const widthFor = cls => ['interpolate', ['exponential', 1.5], ['zoom'], ...ZS.flatMap((z, i) => [z, stopW(cls, i)])];
-    // lc: the line's own colour (Japan), before the colour of its operator
-    const colorFor = base => (ukOp ? ['case', ['has', 'lc'], ['get', 'lc'], ['has', 'o'], OP_COLOR, base] : base);
-    const opacityFor = (base, dimmed = 0.12) => (ukOp && opSel ? ['case', ['all', ['has', 'o'], ['!=', ['get', 'o'], opSel]], dimmed, base] : base);
+    const widthFor = cls => ['interpolate', ['exponential', 1.5], ['zoom'], ...ZS.flatMap((z, i) => [z, W[cls][i]])];
     function styleRail() {
       const sel = !!selected || !!selMetro;      // any selection, railway or metro, dims every other line
       const set = (id, color, width, opacity) => {
@@ -1141,35 +1166,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         map.setPaintProperty(id, 'line-width', width);
         map.setPaintProperty(id, 'line-opacity', opacity);
       };
-      set('branch', colorFor(col('branch')), widthFor('branch'), opacityFor(sel ? 0.35 : 0.7));
-      set('main', colorFor(col('main')), widthFor('main'), opacityFor(sel ? 0.45 : 0.85));
-      for (const id of FAST) set(id, colorFor(col(id)), widthFor('fast'), opacityFor(sel ? 0.4 : 1));
+      set('branch', col('branch'), widthFor('branch'), sel ? 0.35 : 0.7);
+      set('main', col('main'), widthFor('main'), sel ? 0.45 : 0.85);
+      for (const id of FAST) set(id, col(id), widthFor('fast'), sel ? 0.4 : 1);
       set('shared', FAST_COLOR, widthFor('fast'), selected ? ['case', ['==', ['get', 'n'], selected], 1, 0.4] : sel ? 0.4 : 1);
-      map.setPaintProperty('hsr-glow', 'line-color', colorFor(FAST_COLOR));
-      map.setPaintProperty('hsr-glow', 'line-opacity', opacityFor(sel ? 0.12 : 0.35, 0.04));
-      map.setPaintProperty('hl-core', 'line-color', colorFor(FAST_COLOR));
+      map.setPaintProperty('hsr-glow', 'line-color', FAST_COLOR);
+      map.setPaintProperty('hsr-glow', 'line-opacity', sel ? 0.12 : 0.35);
+      map.setPaintProperty('hl-core', 'line-color', FAST_COLOR);
     }
     styleRail();
-
-    // ---- UK operators ----
-    const opList = document.getElementById('opList');
-    document.getElementById('opCount').textContent = ops.length + ' 家';
-    const renderOps = () => {
-      opList.hidden = !ukOp || country === 'jp';
-      opList.replaceChildren(...ops.map(o => {
-        const li = document.createElement('li');
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.title = `${o.n}：约 ${o.km.toLocaleString()} 公里轨道`;
-        b.innerHTML = `<i style="background:${o.col}"></i><span class="nm"></span>`;
-        b.querySelector('.nm').textContent = o.n;
-        b.setAttribute('aria-pressed', String(opSel === o.n));
-        b.addEventListener('click', () => { opSel = opSel === o.n ? null : o.n; styleRail(); renderOps(); });
-        li.appendChild(b);
-        return li;
-      }));
-    };
-    renderOps();
 
     // ---- selection: one railway line or one metro line at a time ----
     const selBox = document.getElementById('sel');
@@ -1181,7 +1186,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const fade = !!selected;
       const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
       const width = k => on ? metroW(k).map((v, i) => (i > 3 && i % 2 === 0 ? ['case', on, +(v * 1.7).toFixed(2), v] : v)) : metroW(k);
-      for (const [id, z0] of [['metro', 4.5], ['suburb', 6]]) {
+      for (const [id, z0] of [['metro', 4.5], ['suburb', 6], ...abroadMetro.map(m => [m[0], 4.5])]) {
         map.setPaintProperty(id, 'line-width', width(1));
         map.setPaintProperty(id, 'line-opacity', pick(1, 0.3, 1));
         map.setPaintProperty(id + '-casing', 'line-width', width(1.75));
@@ -1190,7 +1195,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     function select(name, fly, cls) {
       const of = name && byName.get(name);
-      if (WITH_JP && of && (of.g === 'jp') !== (country === 'jp')) setCountry(of.g === 'jp' ? 'jp' : 'cn', false);
+      if (of && abroad(of.g) !== country) setCountry(abroad(of.g), false);
       selected = name;
       if (name) touched = true;
       if (name) selMetro = null;
@@ -1202,15 +1207,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         showTab('lines');
         const l = byName.get(name);
         const c = l ? l.c : cls;
-        const want = l ? (l.g === 'jp' ? (l.jk === 'third_sector' ? 'private_local' : l.jk) : l.kind) : FAST.includes(c) ? 'fast' : 'conv';
+        const want = l ? (FOREIGN[l.g] ? kindOf(l) : l.kind) : FAST.includes(c) ? 'fast' : 'conv';
         if (kind !== want) setKind(want);
         document.getElementById('selName').textContent = name;
         // est: the share of the line whose band comes from the track's speed tags, with no
         // documented design value yet; plain: the share drawn as conventional
         const metaEl = document.getElementById('selMeta');
-        if (l && l.g === 'jp') {
-          const JKC = { shinkansen: '新干线', jr: 'JR在来线', private_big: '大手私铁', third_sector: '第三部门铁路', private_local: '地方私铁', unknown: '其他铁路' };
-          metaEl.textContent = (JKC[l.jk] || '日本铁路') + (l.o ? ' · ' + l.o : '');
+        if (l && FOREIGN[l.g]) {
+          const speed = l.d ? ` · ${l.e ? '最高时速' : '设计时速'} ${l.d} km/h${l.e ? '，设计时速待核实' : ''}` : '';
+          metaEl.textContent = (FOREIGN[l.g].kindName[l.jk] || FOREIGN[l.g].name + '铁路') + speed + (l.o ? ' · ' + l.o : '');
         } else {
           const rest = l ? (l.est > 0.02 ? ' · 部分区段按轨道限速归档' : l.plain > 0.02 ? ' · 其余区段为普速' : '') : '';
           metaEl.textContent = l && l.design && l.design.length
@@ -1224,7 +1229,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     const METRO_KIND = { m: '城际 / 市域 · 地铁公司运营', s: '市郊 / 城际列车 · 铁路局运营' };
     function selectMetro(c, l, fly) {
-      if (WITH_JP && c && l && (c.g === 'jp') !== (country === 'jp')) setCountry(c.g === 'jp' ? 'jp' : 'cn', false);
+      if (c && l && abroad(c.g) !== country) setCountry(abroad(c.g), false);
       if (selected) select(null);
       selMetro = l ? { ct: c.n, n: l.n } : null;
       styleMetro();
@@ -1247,7 +1252,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     // ---- hover + click on lines ----
     const PICK = [...FAST, 'shared', 'metro', 'suburb', 'build', 'main', 'branch',
-      ...Object.keys(jpVisible), 'jp-subway-casing', 'jp-urban-casing'];
+      ...Object.keys(abroadVisible), ...abroadMetro.map(m => m[0] + '-casing')];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
       const layers = PICK.filter(id => map.getLayoutProperty(id, 'visibility') !== 'none');
@@ -1263,8 +1268,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const p = f.properties;
       let meta = f.layer.id === 'suburb' ? '市郊 / 城际列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : `地铁 · ${p.ct}`) : CLASS_NAME[p.c] || '';
       if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
-      if (p.g === 'jp') meta = { shinkansen: '新干线', jr: 'JR在来线', private_big: '大手私铁', third_sector: '第三部门铁路', private_local: '地方私铁', unknown: '其他铁路' }[p.jk] || '日本铁路';
-      if (p.d) meta = `${p.db === 'track' ? '轨道' : '线下'}设计 ${p.d} km/h${p.v ? ` · 参考运行 ${p.v} km/h` : ''}`;
+      const there = FOREIGN[p.g];
+      if (there) meta = there.kindName[p.jk] || (there.caption[p.jk] ? `${there.caption[p.jk]} · ${p.ct}` : there.name + '铁路');
+      if (there && p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
+      if (p.d && there) meta += ` · ${p.e ? '最高时速' : '设计时速'} ${p.d} km/h${p.e ? '，设计时速待核实' : ''}`;
+      else if (p.d) meta = `${p.db === 'track' ? '轨道' : '线下'}设计 ${p.d} km/h${p.v ? ` · 参考运行 ${p.v} km/h` : ''}`;
       else if (p.e) meta = `${DESIGN_LABEL[p.c]} km/h 档 · 按轨道限速归档，设计时速待核实`;
       if (p.de) meta += ` · ${p.de.replace('~', ' 至 ')}`;
       let who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
@@ -1502,9 +1510,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const title = document.createElement('b');
       title.textContent = f.properties.n;
       box.appendChild(title);
-      if (f.properties.g == null || f.properties.g === 'jp') {
+      if (f.properties.g == null || FOREIGN[f.properties.g]) {
         const none = document.createElement('span');
-        none.textContent = f.properties.g === 'jp' ? '日本车站暂不支持线路网寻路' : '路线查询只支持中国境内、已接入线路网的车站';
+        none.textContent = FOREIGN[f.properties.g] ? FOREIGN[f.properties.g].name + '车站暂不支持线路网寻路' : '路线查询只支持中国境内、已接入线路网的车站';
         box.appendChild(none);
       } else {
         const row = document.createElement('div');
@@ -1538,10 +1546,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         return;
       }
       const f = pick(e.point);
-      const city = f && (f.layer.id === 'metro' || f.layer.id === 'suburb') && cityByName.get(f.properties.ct);
+      const city = f && f.layer.source === 'metro' && cityByName.get(f.properties.ct);
       const line = city && city.lines.find(l => l.n === f.properties.n);
       if (line) selectMetro(city, line, false);
-      else if (f && f.properties.n && ['shared', 'main', 'branch', ...FAST].includes(f.layer.id)) select(f.properties.n, false, f.properties.c);
+      else if (f && f.properties.n && (f.layer.source === 'conv' || ['shared', ...FAST].includes(f.layer.id))) select(f.properties.n, false, f.properties.c);
       else if (!f) clearSelection();
     });
 
@@ -1549,8 +1557,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     window.__bootStage = 'after-render';
     document.getElementById('loading').hidden = true;
     // Yard tracks are large and only visible when zoomed in, so they load after everything else.
-    getJSON('data/yards.geojson').then(d => map.getSource('yards').setData(d)).catch(() => {});
-    getJSON('data/depots.geojson').then(d => map.getSource('depots').setData(d)).catch(() => {});
+    // Yards and depots, China's and those of every country abroad, come last: they show only zoomed in.
+    for (const kind of ['yards', 'depots']) {
+      Promise.all(['', ...Object.keys(FOREIGN).map(g => g + '_')].map(pre => getJSON(`data/${pre}${kind}.geojson`).catch(() => ({ features: [] }))))
+        .then(parts => map.getSource(kind).setData({ type: 'FeatureCollection', features: parts.flatMap(d => d.features) }));
+    }
   } catch (e) {
     window.__bootError = String(e && (e.stack || e.message || e));
     document.getElementById('loading').textContent = '初始化失败：' + window.__bootError;
@@ -1567,7 +1578,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // JP rail rides the conv source (c = main/branch), so it is lit through hl-conv like China's conv.
     for (const id of ['hl', 'hl-core']) map.setFilter(id, ['all', name, on(FAST)]);
     for (const id of ['hl-shared', 'hl-shared-core']) map.setFilter(id, ['all', name, on([...FAST, 'main', 'branch'])]);
-    for (const id of ['hl-conv', 'hl-conv-core']) map.setFilter(id, ['all', name, ['any', on(['main', 'branch']), ['==', ['get', 'g'], 'jp']]]);
+    for (const id of ['hl-conv', 'hl-conv-core']) map.setFilter(id, ['all', name, ['any', on(['main', 'branch']), ['!', NOT_ABROAD]]]);
   }
 
   function applyVisibility() {
@@ -1575,24 +1586,29 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     applyHighlight();
     const set = (id, on) => map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none');
     const cn = country === 'cn';
-    for (const id of [...FAST, 'build', 'main', 'branch']) set(id, cn && visible[id]);
-    // Japan rail + metro buckets: only when Japan is selected, and only if the row toggle is on.
-    for (const id of Object.keys(jpVisible)) {
-      const on = country === 'jp' && jpVisible[id];
+    for (const id of [...FAST, 'main', 'branch']) set(id, cn && visible[id]);
+    set('build', visible.build && (cn || FOREIGN[country].hasBuild));
+    // The layers of a country abroad: only when it is chosen, and only if their row is on.
+    for (const id of Object.keys(abroadVisible)) {
+      const on = id.startsWith(country + '-') && abroadVisible[id];
       set(id, on);
-      if (id === 'jp-subway' || id === 'jp-urban') set(id + '-casing', on);
+      if (map.getLayer(id + '-casing')) set(id + '-casing', on);
     }
-    for (const id of ['yards', 'depots', 'depot-labels']) set(id, cn && visible.yards);
+    for (const id of ['yards', 'depots', 'depot-labels']) {
+      set(id, visible.yards);
+      map.setFilter(id, cn ? NOT_ABROAD : ['==', ['get', 'g'], country]);
+    }
     for (const id of ['metro-casing', 'metro']) set(id, cn && visible.metro);
     for (const id of ['suburb-casing', 'suburb']) set(id, cn && visible.suburb);
     set('stations', visible.stations);
-    const metroStationOn = country === 'jp' ? visible.stations : visible.metro;
+    const metroStationOn = cn ? visible.metro : visible.stations;
     set('metro-stations', metroStationOn);
     set('metro-station-labels', metroStationOn);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, cn && visible.border);
     set('station-labels', visible.stations);
     for (const id of ['city-dots', 'city-labels']) set(id, cn);
-    const countryFilter = country === 'jp' ? ['==', ['get', 'g'], 'jp'] : ['!=', ['get', 'g'], 'jp'];
+    const countryFilter = cn ? NOT_ABROAD : ['==', ['get', 'g'], country];
+    map.setFilter('build', countryFilter);
     map.setFilter('stations', ['all', countryFilter, ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]]]);
     map.setFilter('station-labels', ['all', countryFilter, ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]]]);
     map.setFilter('metro-stations', countryFilter);

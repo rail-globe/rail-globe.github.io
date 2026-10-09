@@ -16,6 +16,8 @@ assert "/*WITH_UK*/true" in page
 page = page.replace("/*WITH_UK*/true", "true" if site.get("uk", True) else "false")
 assert "/*WITH_JP*/true" in page
 page = page.replace("/*WITH_JP*/true", "true" if site.get("jp", False) else "false")
+assert "/*WITH_KR*/true" in page
+page = page.replace("/*WITH_KR*/true", "true" if site.get("kr", False) else "false")
 local = '<!doctype html>\n<html lang="zh-CN">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + page
 (ROOT / "index.html").write_text(local)
 (ROOT / "dist").mkdir(exist_ok=True)
