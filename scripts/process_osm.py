@@ -138,7 +138,13 @@ STUB_DEG = 0.05     # ~5 km: a piece of a fast line this short and this far from
 GENERIC = re.compile(r"联络|疏解|外绕|走行|动车所|动车段|出入|存车|牵出|渡线|站线|^[上下]行|^正线|^客车|^货车|机务|折返|环线$|^专用线$|^支线$")
 MPH = 1.609344
 YARD_SERVICE = {"yard", "siding", "crossover"}      # station and depot tracks; industrial spurs are left out
+# What names a depot or a yard among named railway land. The first list missed whole kinds of them
+# (a reader of the map pointed out metro depots without names): 动车运用所, 综合基地 and other
+# names ending in 基地, 定修段, 折返所, 存车场, and the Hong Kong, Macao and Taiwan forms 車廠, 機廠,
+# 機務段. A base for laying track or casting beams is a building site, not a depot.
 DEPOT_NAME = re.compile(r"动车所|动车段|车辆段|机务段|编组站|车辆基地|停车场|客技站|整备|折返段|车辆厂|机车厂|检修"
+                        r"|运用所|定修段|折返所|存车场|车厂|車廠|机厂|機廠|機務段|車輛段|車輛基地"
+                        r"|(?<!铺轨)(?<!长轨)(?<!焊轨)(?<!制梁)(?<!物流)(?<!培训)基地$"
                         r"|[Dd]epot|TMD|T&RSMD|TRSMD|Sidings|Yard|Works|Carriage|Traincare|Maintenance", re.I)
 # UK passenger operators: (pattern on the route's operator tag, brand, colour for dark imagery, weight).
 # A line is coloured by the operator whose services cover most of its track; open-access, sleeper and
@@ -1142,7 +1148,11 @@ for key in [k for k in loose if k[1] and loose[k]] if rel_tree is not None else 
     loose[key] = rest
 print("named metro track lying along one line, taken as that line's other track:", beside_metro)
 print(f"metro track outside relations attached to its line: {adopted_metro} pieces; "
-      f"left undrawn: {sum(km(c) for k, v in loose.items() if not k[1] for c in v):.0f} km unnamed")
+      f"left out of the lines: {sum(km(c) for k, v in loose.items() if not k[1] for c in v):.0f} km unnamed")
+# Unnamed metro track that is part of no line is what joins lines to each other and to their
+# depots (联络线, 出入段线). It is no line, so it is drawn with the yards and depots, where one
+# looks for it (a reader of the map asked where the metro connecting tracks were).
+yard_tracks += [co for key, cos in loose.items() if not key[1] for co in cos]
 
 # Lines by province and final name. Where a province has a single system (贵阳轨道交通, 重庆轨道交通...),
 # a bare "2号线" takes that system's name; elsewhere it stays as it is.
