@@ -8,7 +8,8 @@
 </style>
 <style>
 /* Layout: a satellite globe fills the window. One floating translucent card holds everything else:
-   a search field, then three tabs (route, lines, layers); on a phone the card is a draggable bottom sheet.
+   a search field, the list of countries, and for a country its page of tabs (route, lines, layers);
+   on a phone the card is a draggable bottom sheet.
    Type is the system font and colour comes from the system dark palette, so the rail colours,
    which are the data, are the only strong colour on screen. */
 :root {
@@ -75,8 +76,16 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .gh:hover { background: var(--fill); }
 .title-row h1 { flex: 1; min-width: 0; white-space: nowrap; }
 .head > .facts { margin-top: -8px; }
-.segmented.mini { flex: none; }
-.segmented.mini button { padding: 3px 10px; font-size: 0.75rem; }
+/* The card has two levels: the list of countries, and a country's page with a way back. At the
+   list the header is the search field and the site's name; a country's figures and tabs belong to
+   its page. */
+.back { flex: none; display: inline-flex; align-items: center; gap: 5px; border: 0; background: transparent; margin: -4px 0 -4px -4px; padding: 4px 6px 4px 4px; border-radius: 7px; color: var(--blue); font-size: 0.8125rem; cursor: pointer; }
+.back:hover { background: var(--fill2); }
+#panel.world :is(.back, .facts, #tabs) { display: none; }
+.countries button { padding: 12px; }
+.countries .txt { gap: 2px; }
+.countries .txt b { font-size: 0.9375rem; font-weight: 600; }
+.countries .txt small { font-variant-numeric: tabular-nums; }
 .gh .star { color: #ffd60a; }
 .gh b { font-weight: 600; font-variant-numeric: tabular-nums; padding-left: 6px; border-left: 0.5px solid var(--sep); }
 
@@ -156,10 +165,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .searchbar input::-webkit-search-cancel-button { -webkit-appearance: none; display: none; }
 .searchbar .clear { flex: none; width: 28px; height: 28px; margin-right: -6px; border: 0; border-radius: 50%; background: transparent; color: var(--label2); display: grid; place-items: center; cursor: pointer; }
 .searchbar .clear:hover { color: var(--label); }
-/* While something is typed the card is the field and what it found: the title, the figures, the
-   country switch and the tabs step aside, and come back when the field is emptied. The field
+/* While something is typed the card is the field and what it found: the title, the figures and
+   the tabs step aside, and come back when the field is emptied. The field
    itself does not move, and on a phone the results get the room above the keyboard. */
-#panel.finding :is(.title-row, .facts, #country, #tabs) { display: none; }
+#panel.finding :is(.title-row, .facts, #tabs) { display: none; }
 .found .kmh { flex: none; max-width: 58%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .found i.plain { background: none; box-shadow: 0 0 0 1.5px var(--label3) inset; }   /* a station, a city or a country has no colour */
 
@@ -266,7 +275,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 <div id="loading">正在载入线路数据…</div>
 <nav id="jumps" aria-label="快速定位"></nav>
 
-<aside id="panel" aria-label="搜索、路线、线路与图层">
+<aside id="panel" class="world" aria-label="搜索、国家、路线、线路与图层">
   <div class="head">
     <div class="grabber" aria-hidden="true"></div>
     <label class="searchbar">
@@ -277,21 +286,17 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       </button>
     </label>
     <div class="title-row">
-      <h1 id="title">中国铁路网</h1>
+      <button type="button" class="back" id="toWorld" aria-label="返回国家列表">
+        <svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M7 1L1 7l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>国家</span>
+      </button>
+      <h1 id="title">Rail Globe</h1>
       <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
         <span>Star</span><b id="ghCount" hidden></b>
       </a>
     </div>
-    <p class="facts" id="facts">16.5 万公里 · 高铁 5.0 万公里</p>
-    <div class="segmented mini" id="country" role="group" aria-label="国家" style="--n: 4" hidden>
-      <span class="thumb"></span>
-      <button type="button" data-g="cn" aria-pressed="true">中国</button>
-      <button type="button" data-g="jp" aria-pressed="false">日本</button>
-      <button type="button" data-g="kr" aria-pressed="false">韩国</button>
-      <button type="button" data-g="uk" aria-pressed="false">英国</button>
-    </div>
+    <p class="facts" id="facts"></p>
     <div class="segmented" id="tabs" role="tablist" style="--n: 3">
       <span class="thumb"></span>
       <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route">路线</button>
@@ -302,7 +307,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
   <div class="scroll" id="scroll">
     <div class="tab" id="tab-find" role="region" aria-label="搜索结果" hidden></div>
-    <div class="tab" id="tab-route" role="tabpanel">
+    <div class="tab" id="tab-world" role="region" aria-label="国家">
+      <ul class="group linelist countries" id="countryList"></ul>
+    </div>
+    <div class="tab" id="tab-route" role="tabpanel" hidden>
       <div id="routeCn">
         <div>
           <div class="group od">
@@ -319,10 +327,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
           <ol class="group steps" id="routeSteps"></ol>
         </div>
         <p class="hint" id="routeNote">在地图上点一个火车站或地铁站，选“设为出发”或“设为到达”，也可以直接输入站名。铁路和地铁可以一起算，相邻的火车站和地铁站之间按步行换乘。仅支持中国境内车站；给出的是沿真实线路的走法和估算时间，不是车次和时刻表。</p>
-      </div>
-      <div id="routeJp" hidden>
-        <p class="hint" id="routeJpNote"></p>
-        <div class="od-actions"><button type="button" class="link" id="routeGoLines"></button></div>
       </div>
     </div>
 
@@ -383,6 +387,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const WITH_UK = true;      // set from site.json by scripts/build.py
   const WITH_KR = true;      // South Korea: data/kr_*.json, written by scripts/process_kr.py
   const WITH_JP = true;      // Japan: data/jp_*.json, written by scripts/process_jp.py
+  // Tile mode: every country's layers come as vector tiles from one archive per country
+  // (data/tiles/<country>.pmtiles, cut by scripts/build_tiles.py), so only what is in view is
+  // fetched, instead of every GeoJSON file whole at the start. site.json sets the default;
+  // ?tiles=1 or ?tiles=0 in the address chooses for one visit, so the two can be compared on one build.
+  const WITH_TILES = true;
+  const TILES = ({ 1: true, 0: false })[new URLSearchParams(location.search).get('tiles')] ?? WITH_TILES;
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
 
   const FAST = ['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow'];
@@ -452,6 +462,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     document.getElementById('opHint').textContent = '高速线路按设计时速分档；其余铁路有官方线路色的用线路色，没有的用浅色；地铁、轻轨和有轨电车用官方线路色。不按公司上色。';
   }
   let country = 'cn';   // the country the card is about: its title, figures, lists and quick jumps
+  // The card has two levels. At the world it lists the countries; a country's page is entered from
+  // there, from a search result, or by a tap on a line or a station of that country on the map,
+  // and is left by its way back. Dragging the map changes neither. While the card is at the
+  // world, country is the one whose page was open last (its lists stay as they were left).
+  let world = true;
+  const FACTS_CN = '16.5 万公里 · 高铁 5.0 万公里';      // operating length at the end of 2025, see the credits
   // Two rows of the layers tab are the same for every country, lines being built and stations,
   // but each country has a switch of its own behind them: the row shows, and changes, the switch
   // of the country the card is about. China's are in visible, like its other classes.
@@ -639,20 +655,16 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
   }
 
-  // Route tab is China-only: Japan shows an empty state instead of the Chinese OD inputs.
+  // The route network covers China only: the 路线 tab is in the bar there and out of it in a
+  // country abroad (out of the document, so that the thumb counts the tabs that are left).
   const syncRouteTab = () => {
-    const c = FOREIGN[country];
-    document.getElementById('routeCn').hidden = !!c;
-    document.getElementById('routeJp').hidden = !c;
-    if (c) {
-      document.getElementById('routeJpNote').textContent = `${c.name}暂不支持线路网寻路；路线走法目前仅覆盖中国境内已接入线路网的车站。`;
-      document.getElementById('routeGoLines').textContent = `查看${c.name}线路 →`;
-    }
+    const bar = document.getElementById('tabs'), tab = tabButtons.find(b => b.dataset.tab === 'route');
+    if (FOREIGN[country]) tab.remove(); else if (!tab.isConnected) bar.insertBefore(tab, bar.querySelector('button'));
+    bar.style.setProperty('--n', bar.querySelectorAll('button').length);
   };
   // Route state (od, pins, result) is wired up later; setCountry runs before that, so the cleanup
   // is registered through this late-bound hook and called whenever the country changes.
   let routeCleanup = null;
-  document.getElementById('routeGoLines').addEventListener('click', () => showTab('lines'));
 
   const panel = document.getElementById('panel');
 
@@ -672,7 +684,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const queryEl = document.getElementById('query'), queryClear = document.getElementById('queryClear');
   let shownTab = 'route', finding = false;
   const paintTabs = () => {
-    for (const t of document.querySelectorAll('.tab')) t.hidden = t.id !== 'tab-' + (finding ? 'find' : shownTab);
+    for (const t of document.querySelectorAll('.tab')) t.hidden = t.id !== 'tab-' + (finding ? 'find' : world ? 'world' : shownTab);
     document.getElementById('scroll').scrollTop = 0;
   };
   const setFinding = on => {
@@ -699,7 +711,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const sheet = (() => {
     const head = panel.querySelector('.head');
     let H = 0, y = 0, v = 0, raf = 0, at = 'peek', drag = null, dragged = false;
-    const stops = () => ({ large: 0, mid: Math.max(0, H - Math.round(innerHeight * 0.48)), peek: Math.max(0, H - head.offsetHeight) });
+    // at rest the header shows; at the list of countries, which has no tabs, also the start of the list
+    const stops = () => ({ large: 0, mid: Math.max(0, H - Math.round(innerHeight * 0.48)), peek: Math.max(0, H - head.offsetHeight - (world && !finding ? 108 : 0)) });
     const paint = () => panel.style.setProperty('--sheet-y', y + 'px');
     const settle = () => {
       panel.style.setProperty('--sheet-visible', Math.round(H - y) + 'px');
@@ -914,16 +927,16 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     if (v) { touched = true; map.jumpTo(v); }
   });
   // Quick jumps: the whole country first; the largest metro cities are added once the data is in.
-  const addJump = (label, bounds) => {
+  const addJump = (label, bounds, open) => {
     const b = document.createElement('button');
     b.type = 'button';
     b.textContent = label;
-    b.addEventListener('click', () => {
+    b.addEventListener('click', open || (() => {
       touched = label !== '中国';
       if (!touched) history.replaceState(null, '', location.pathname + location.search);
       map.fitBounds(bounds, { padding: padding(), duration: reduced ? 0 : 1800 });
       if (isPhone()) sheet.to('peek');
-    });
+    }));
     document.getElementById('jumps').appendChild(b);
   };
   addJump('中国', CHINA);
@@ -958,15 +971,58 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     ]).finally(() => clearTimeout(t));
   };
 
-  const ABROAD_FILES = ['rail.geojson', 'metro.geojson', 'stations.geojson', 'lines.json', 'metro_cities.json', 'facts.json'];
-  const dataReady = Promise.all([
-    getJSON('data/rail_hsr.geojson'), getJSON('data/rail_build.geojson'),
-    getJSON('data/rail_conv.geojson'), getJSON('data/stations.geojson'), getJSON('data/lines.json'),
-    getJSON('data/cities.json'), getJSON('data/border.geojson'), getJSON('data/metro.geojson'),
-    getJSON('data/metro_stations.geojson'), probeLive(),
-    getJSON('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
-    Promise.all(Object.keys(FOREIGN).map(g => Promise.all([...ABROAD_FILES, ...(FOREIGN[g].build ? ['build.geojson'] : [])].map(f => getJSON(`data/${g}_${f}`))))),
-  ]);
+  // In tile mode each country has its archive of tiles and a few bytes beside it
+  // (data/tiles/<country>.json): the layers the archive has and what the page used to read off
+  // the whole files. The stations by name and place, which the search and the route fields list,
+  // are a file of their own (<country>.stations.json) that is fetched once the map is up.
+  // The archives are read in pieces by vendor/pmtiles.js, which is loaded from the site itself and
+  // only in this mode. Before the map is built on them, each archive's first bytes are read: if
+  // the reader, a small file or an archive is missing, or the host does not serve byte ranges,
+  // the page says so in the console and is as with the switch off, drawn from the whole files,
+  // rather than a globe with no lines. The lists of the card (lines, cities, figures) are small
+  // and always come whole.
+  const everyCountry = ['cn', ...Object.keys(FOREIGN)];
+  // the layers that draw a layer of several countries: [[layer id, its country, or null for all in one]]
+  const copies = {};
+  const each = id => copies[id] || [];
+  const script = src => new Promise((ok, fail) => {
+    const tag = document.createElement('script');
+    tag.src = abs(src);
+    tag.onload = ok;
+    tag.onerror = () => fail(new Error(src));
+    document.head.appendChild(tag);
+  });
+  const archiveOf = g => `data/tiles/${g}.pmtiles`;
+  const tilesReady = !TILES ? Promise.resolve(null)
+    : Promise.all([script('vendor/pmtiles.js'), ...everyCountry.map(g => getJSON(`data/tiles/${g}.json`, 1))]).then(async ([, ...beside]) => {
+      const protocol = new window.pmtiles.Protocol();          // answers pmtiles://<archive>/z/x/y by range requests
+      await Promise.all(everyCountry.map(g => {
+        const archive = new window.pmtiles.PMTiles(archiveOf(g));
+        protocol.add(archive);                                  // the map reads on from what was read here
+        return archive.getHeader();
+      }));
+      maplibregl.addProtocol('pmtiles', protocol.tile);
+      return Object.fromEntries(everyCountry.map((g, i) => [g, beside[i]]));
+    }).catch(err => {
+      console.warn('The tiles cannot be read; the page uses the whole files instead.', err);
+      return null;
+    });
+  const dataReady = tilesReady.then(tiles => {
+    // a file of lines or stations comes whole only when there are no tiles to draw it from
+    const whole = file => (tiles ? Promise.resolve({ type: 'FeatureCollection', features: [] }) : getJSON(file));
+    return Promise.all([
+      whole('data/rail_hsr.geojson'), whole('data/rail_build.geojson'),
+      whole('data/rail_conv.geojson'), whole('data/stations.geojson'), getJSON('data/lines.json'),
+      getJSON('data/cities.json'), getJSON('data/border.geojson'), whole('data/metro.geojson'),
+      whole('data/metro_stations.geojson'), probeLive(),
+      whole('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
+      Promise.all(Object.keys(FOREIGN).map(g => Promise.all([
+        whole(`data/${g}_rail.geojson`), whole(`data/${g}_metro.geojson`), whole(`data/${g}_stations.geojson`),
+        getJSON(`data/${g}_lines.json`), getJSON(`data/${g}_metro_cities.json`), getJSON(`data/${g}_facts.json`),
+        ...(FOREIGN[g].build ? [whole(`data/${g}_build.geojson`)] : [])]))),
+      tiles,
+    ]);
+  });
   dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
 
   window.__bootStage = 'script-start';
@@ -974,7 +1030,25 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   window.__bootStage = 'map-load';
   try {
     window.__bootStage = 'data-ready';
-    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, live, shared, metroCities, abroadData] = await dataReady;
+    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, live, shared, metroCities, abroadData, tiles] = await dataReady;
+    // Tile mode: a vector source per country ('tiles-cn', 'tiles-jp', ...), each reading its own
+    // archive. from('conv', 'jp') is what a layer says to draw Japan's lines from, in either mode;
+    // has() says whether a country's archive holds a layer at all.
+    const has = (name, g) => !tiles || tiles[g].layers.includes(name);
+    const from = (name, g = 'cn') => (tiles ? { source: 'tiles-' + g, 'source-layer': name } : { source: name });
+    const whole = (name, options) => { if (!tiles) map.addSource(name, { type: 'geojson', ...options }); };
+    // A layer that draws several countries at once (stations, lines being built, yards) is one
+    // layer over the shared source, or in tile mode one layer per country over that country's
+    // source: the plain id is China's, 'stations@jp' Japan's. each('stations') lists them.
+    const addMixed = (name, spec) => {
+      copies[spec.id] = tiles ? everyCountry.filter(g => has(name, g)).map(g => [g === 'cn' ? spec.id : spec.id + '@' + g, g]) : [[spec.id, null]];
+      for (const [id, g] of copies[spec.id]) map.addLayer({ ...spec, id, ...from(name, g || 'cn') });
+    };
+    // In tile mode the stations of the lists come as columns: name, place, and for China the
+    // number in the route network (g) and the mark of a high-speed station (h). See stationLists().
+    const listed = (cols, more) => cols.n.map((n, i) => ({ type: 'Feature',
+      properties: { n, ...(cols.g && cols.g[i] != null ? { g: cols.g[i] } : {}), ...(cols.h && cols.h[i] ? { h: 1 } : {}), ...more },
+      geometry: { type: 'Point', coordinates: [cols.x[i] / 1e5, cols.y[i] / 1e5] } }));
     // A country abroad comes as layers of its own with the same properties, and joins the layers drawn here.
     const facts = {};
     Object.keys(FOREIGN).forEach((g, i) => {
@@ -985,12 +1059,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       for (const l of itsLines) lines.push(l);
       for (const c of itsCities) { c.g = g; metroCities.push(c); }
       for (const f of (itsBuild ? itsBuild.features : [])) build.features.push(f);
-      FOREIGN[g].hasBuild = !!(itsBuild && itsBuild.features.length);
+      FOREIGN[g].hasBuild = tiles ? tiles[g].build > 0 : !!(itsBuild && itsBuild.features.length);
       facts[g] = itsFacts;
-      // only the speed bands the country has get a row and a layer: read off its lines
-      abroadRows(g, Object.fromEntries(FOREIGN[g].fast.map(kind => [kind,
-        FAST.filter(band => rail.features.some(f => f.properties.c === band && jkOf(g, kind).includes(f.properties.jk)))])));
+      // only the speed bands the country has get a row and a layer: read off its lines, or off
+      // the note of the same (class, band) pairs that comes with its tiles
+      abroadRows(g, Object.fromEntries(FOREIGN[g].fast.map(kind => [kind, tiles
+        ? FAST.filter(band => tiles[g].bands.some(([jk, c]) => c === band && jkOf(g, kind).includes(jk)))
+        : FAST.filter(band => rail.features.some(f => f.properties.c === band && jkOf(g, kind).includes(f.properties.jk)))])));
     });
+    if (tiles) for (const g of everyCountry) map.addSource('tiles-' + g, { type: 'vector', url: 'pmtiles://' + archiveOf(g) });
 
     // ---- imagery ----
     const dim = document.getElementById('dim');
@@ -1002,6 +1079,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addLayer({ id: 'esri', type: 'raster', source: 'esri', paint: { 'raster-fade-duration': 150 } });
 
     // ---- national boundary: dash-dot line on a violet halo ----
+    // (one small file, read whole in both modes)
     map.addSource('border', { type: 'geojson', data: border, tolerance: 0.3 });
     const LAND = ['==', ['get', 'k'], 'land'], SEA = ['==', ['get', 'k'], 'sea'];
     map.addLayer({ id: 'border-halo', type: 'line', source: 'border', filter: LAND, layout: { 'line-join': 'round' },
@@ -1016,13 +1094,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       paint: { 'fill-color': col('border'), 'fill-opacity': 0.9 } });
 
     // ---- rail ----
-    map.addSource('conv', { type: 'geojson', data: conv, tolerance: 0.45 });
-    map.addSource('build', { type: 'geojson', data: build, tolerance: 0.45 });
-    map.addSource('hsr', { type: 'geojson', data: hsr, tolerance: 0.35 });
-    map.addSource('shared', { type: 'geojson', data: shared, tolerance: 0.35 });
-    map.addSource('stations', { type: 'geojson', data: stations });
-    map.addSource('metro', { type: 'geojson', data: metro, tolerance: 0.3 });
-    map.addSource('metro-stations', { type: 'geojson', data: metroStations });
+    whole('conv', { data: conv, tolerance: 0.45 });
+    whole('build', { data: build, tolerance: 0.45 });
+    whole('hsr', { data: hsr, tolerance: 0.35 });
+    whole('shared', { data: shared, tolerance: 0.35 });
+    whole('stations', { data: stations });
+    whole('metro', { data: metro, tolerance: 0.3 });
+    whole('metro-stations', { data: metroStations });
     window.__bootStage = 'after-sources';
     map.addSource('cities', {
       type: 'geojson',
@@ -1033,9 +1111,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const round = { 'line-cap': 'round', 'line-join': 'round' };
     const EMPTY = { type: 'FeatureCollection', features: [] };
     // Yard and depot tracks sit under everything else and only appear once zoomed in.
-    map.addSource('yards', { type: 'geojson', data: EMPTY, tolerance: 0.2 });
-    map.addSource('depots', { type: 'geojson', data: EMPTY });
-    map.addLayer({ id: 'yards', type: 'line', source: 'yards', minzoom: 9.5, layout: round,
+    // (from the tiles they come with the view; as whole files they are fetched by loadYards)
+    whole('yards', { data: EMPTY, tolerance: 0.2 });
+    whole('depots', { data: EMPTY });
+    addMixed('yards', { id: 'yards', type: 'line', minzoom: 9.5, layout: round,
       paint: { 'line-color': col('yard'), 'line-opacity': 0.8, 'line-width': ['interpolate', ['exponential', 1.5], ['zoom'], 9.5, 0.4, 13, 1, 16, 2.2] } });
     // Railway lines that each lie on their own track in one corridor (Japan) carry their place in
     // it (off). Seen from far out they would cover each other, so each is shifted to its side by
@@ -1043,8 +1122,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const slot = ['coalesce', ['get', 'off'], 0];
     const railOff = ['interpolate', ['linear'], ['zoom'], 7, 0, 9, ['*', slot, 1.9], 11, ['*', slot, 3.6], 13, ['*', slot, 5], 14.5, ['*', slot, 5], 16.5, 0];
     // Colours, widths and opacities of the rail layers are set in styleRail().
-    map.addLayer({ id: 'branch', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'branch'], NOT_ABROAD], minzoom: 3.5, layout: round, paint: { 'line-offset': railOff } });
-    map.addLayer({ id: 'main', type: 'line', source: 'conv', filter: ['all', ['==', ['get', 'c'], 'main'], NOT_ABROAD], layout: round, paint: { 'line-offset': railOff } });
+    map.addLayer({ id: 'branch', type: 'line', ...from('conv'), filter: ['all', ['==', ['get', 'c'], 'branch'], NOT_ABROAD], minzoom: 3.5, layout: round, paint: { 'line-offset': railOff } });
+    map.addLayer({ id: 'main', type: 'line', ...from('conv'), filter: ['all', ['==', ['get', 'c'], 'main'], NOT_ABROAD], layout: round, paint: { 'line-offset': railOff } });
     // Rail abroad: one layer per class, and for the high-speed class one per speed band, drawn
     // like the Chinese bands. The other classes take the line's own colour where it has one and
     // are then drawn full; a line without one looks like a conventional line in China.
@@ -1057,18 +1136,18 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const of = kind => [['==', ['get', 'g'], g], ['in', ['get', 'jk'], ['literal', jkOf(g, kind)]]];
       for (const [kind] of FOREIGN[g].rail.filter(r => !FOREIGN[g].fast.includes(r[0]))) {
         abroadPlain.push(`${g}-${kind}`);
-        map.addLayer({ id: `${g}-${kind}`, type: 'line', source: 'conv',
+        map.addLayer({ id: `${g}-${kind}`, type: 'line', ...from('conv', g),
           filter: ['all', ...of(kind)], layout: round,
           paint: { 'line-color': ['coalesce', ['get', 'lc'], col('main')], 'line-width': plainW, 'line-offset': railOff } });
       }
       for (const kind of FOREIGN[g].fast) for (const band of FOREIGN[g].bands[kind]) {
         abroadBand.push(`${g}-${kind}-${band}`);
-        map.addLayer({ id: `${g}-${kind}-${band}`, type: 'line', source: 'conv',
+        map.addLayer({ id: `${g}-${kind}-${band}`, type: 'line', ...from('conv', g),
           filter: ['all', ...of(kind), ['==', ['get', 'c'], band]], layout: round,
           paint: { 'line-color': col(band), 'line-width': lineW(abroadW.fast), 'line-offset': railOff } });
       }
     }
-    map.addLayer({ id: 'build', type: 'line', source: 'build',
+    addMixed('build', { id: 'build', type: 'line',
       paint: { 'line-color': ['case', ['has', 'h'], col('build'), '#b9c6cf'], 'line-width': lineW([0.8, 1.3, 2, 2.8, 4]), 'line-dasharray': [2, 1.6], 'line-opacity': 0.95 } });
     // Urban rail in official line colours on a white casing, the way a metro map draws it. That
     // includes intercity and suburban lines a metro company operates (k = "m"), which are long
@@ -1078,53 +1157,53 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // Lines that share track are drawn side by side: the data gives each a slot (off: -0.5 and 0.5
     // for two lines, -1, 0, 1 for three), which becomes a sideways offset of one line's width.
     const metroOff = ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, ['*', slot, 0.7], 6, ['*', slot, 0.9], 9, ['*', slot, 2.3], 12, ['*', slot, 4.4], 16, ['*', slot, 7.6]];
-    map.addLayer({ id: 'metro-casing', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
+    map.addLayer({ id: 'metro-casing', type: 'line', ...from('metro'), minzoom: 4.5, filter: urban, layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-    map.addLayer({ id: 'metro', type: 'line', source: 'metro', minzoom: 4.5, filter: urban, layout: round,
+    map.addLayer({ id: 'metro', type: 'line', ...from('metro'), minzoom: 4.5, filter: urban, layout: round,
       paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
     // Metros abroad, one layer per class (underground / trams and the rest).
     const abroadMetro = Object.keys(FOREIGN).flatMap(g => FOREIGN[g].metro.map(([kind]) => [`${g}-${kind}`, g, kind]));
     for (const [id, g, kind] of abroadMetro) {
       const filter = ['all', ['==', ['get', 'g'], g], ['!=', ['get', 'k'], 's'], ['==', ['get', 'jk'], kind]];
-      map.addLayer({ id: id + '-casing', type: 'line', source: 'metro', minzoom: 4.5, filter, layout: round,
+      map.addLayer({ id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter, layout: round,
         paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-      map.addLayer({ id, type: 'line', source: 'metro', minzoom: 4.5, filter, layout: round,
+      map.addLayer({ id, type: 'line', ...from('metro', g), minzoom: 4.5, filter, layout: round,
         paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
     }
     // A bureau-operated suburban service (k = "s") shares its track with a national line that keeps
     // its own colour, so it is drawn as one parallel line beside it. The data gives each service a
     // single path with one direction, which keeps the offset on the same side all the way.
     const beside = ['interpolate', ['linear'], ['zoom'], 6, 1.8, 9, 3.2, 12, 5, 16, 8];
-    map.addLayer({ id: 'suburb-casing', type: 'line', source: 'metro', minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
+    map.addLayer({ id: 'suburb-casing', type: 'line', ...from('metro'), minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': beside, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 6, 0.4, 9, 0.9] } });
-    map.addLayer({ id: 'suburb', type: 'line', source: 'metro', minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
+    map.addLayer({ id: 'suburb', type: 'line', ...from('metro'), minzoom: 6, filter: ['==', ['get', 'k'], 's'], layout: round,
       paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': beside } });
-    map.addLayer({ id: 'hsr-glow', type: 'line', source: 'hsr',
+    map.addLayer({ id: 'hsr-glow', type: 'line', ...from('hsr'),
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR,
         'line-width': lineW([3.5, 5.5, 8, 10, 14]), 'line-blur': lineW([2.5, 4, 6, 8, 10]), 'line-opacity': 0.35, 'line-offset': railOff } });
-    for (const id of [...FAST].reverse()) map.addLayer({ id, type: 'line', source: 'hsr', filter: ['==', ['get', 'c'], id], layout: round, paint: { 'line-offset': railOff } });
+    for (const id of [...FAST].reverse()) map.addLayer({ id, type: 'line', ...from('hsr'), filter: ['==', ['get', 'c'], id], layout: round, paint: { 'line-offset': railOff } });
     // An intercity or high-speed line that runs over another line's track: the track keeps its own
     // line and colour, and this one is drawn beside it in its own colour (one path, one direction).
     // offset by one line's width: the two lines touch, and where this one steps aside from its own
     // track the two drawn parts meet instead of leaving a gap
     const besideFast = ['interpolate', ['exponential', 1.5], ['zoom'], 3, 1.15, 6, 1.9, 9, 2.7, 12, 3.6, 16, 5.2];
-    map.addLayer({ id: 'shared', type: 'line', source: 'shared', layout: round, paint: { 'line-color': FAST_COLOR, 'line-offset': besideFast } });
-    map.addLayer({ id: 'hl', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
+    map.addLayer({ id: 'shared', type: 'line', ...from('shared'), layout: round, paint: { 'line-color': FAST_COLOR, 'line-offset': besideFast } });
+    map.addLayer({ id: 'hl', type: 'line', ...from('hsr'), filter: ['==', ['get', 'n'], '\u0000'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95, 'line-offset': railOff } });
-    map.addLayer({ id: 'hl-core', type: 'line', source: 'hsr', filter: ['==', ['get', 'n'], '\u0000'],
+    map.addLayer({ id: 'hl-core', type: 'line', ...from('hsr'), filter: ['==', ['get', 'n'], '\u0000'],
       layout: { 'line-cap': 'round', 'line-join': 'round' },
       paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]), 'line-offset': railOff } });
     // a selected conventional line: the line is near white already, so it is lit as a bright core on a dark casing
-    map.addLayer({ id: 'hl-conv', type: 'line', source: 'conv', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+    addMixed('conv', { id: 'hl-conv', type: 'line', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
       paint: { 'line-color': '#05090c', 'line-width': lineW([2.8, 4, 5.4, 6.8, 9]), 'line-opacity': 0.8, 'line-offset': railOff } });
-    map.addLayer({ id: 'hl-conv-core', type: 'line', source: 'conv', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+    addMixed('conv', { id: 'hl-conv-core', type: 'line', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': lineW([1.3, 2, 3, 4, 5.4]), 'line-offset': railOff } });
     // the selected line stays lit along the stretches where it runs beside another line
-    map.addLayer({ id: 'hl-shared', type: 'line', source: 'shared', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+    map.addLayer({ id: 'hl-shared', type: 'line', ...from('shared'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95, 'line-offset': besideFast } });
-    map.addLayer({ id: 'hl-shared-core', type: 'line', source: 'shared', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+    map.addLayer({ id: 'hl-shared-core', type: 'line', ...from('shared'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
       paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]), 'line-offset': besideFast } });
     map.addSource('route', { type: 'geojson', data: EMPTY });
     map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: round,
@@ -1132,31 +1211,31 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addLayer({ id: 'route', type: 'line', source: 'route', layout: round,
       paint: { 'line-color': '#0a84ff', 'line-width': lineW([2.6, 3.6, 4.6, 5.6, 7.2]) } });
 
-    map.addLayer({ id: 'stations', type: 'circle', source: 'stations', minzoom: 5,
+    addMixed('stations', { id: 'stations', type: 'circle', minzoom: 5,
       filter: ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
       paint: {
         'circle-color': ['case', ['has', 'h'], col('station'), '#c9dbe6'],
         'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, ['case', ['has', 'h'], 1.6, 1], 9, ['case', ['has', 'h'], 3.6, 2.2], 14, ['case', ['has', 'h'], 6, 4]],
         'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 5, 0.6, 12, 1.5],
       } });
-    map.addLayer({ id: 'station-labels', type: 'symbol', source: 'stations', minzoom: 8,
+    addMixed('stations', { id: 'station-labels', type: 'symbol', minzoom: 8,
       filter: ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]],
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 8, 11, 14, 14],
         'text-offset': [0, 0.9], 'text-anchor': 'top', 'text-optional': true, 'symbol-sort-key': ['case', ['has', 'h'], 0, 1] },
       paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.4 } });
     window.__bootStage = 'after-layers';
 
-    map.addLayer({ id: 'depots', type: 'circle', source: 'depots', minzoom: 9.5,
+    addMixed('depots', { id: 'depots', type: 'circle', minzoom: 9.5,
       paint: { 'circle-color': col('yard'), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9.5, 2, 14, 4.5],
         'circle-stroke-color': '#0b1418', 'circle-stroke-width': 1.2 } });
-    map.addLayer({ id: 'depot-labels', type: 'symbol', source: 'depots', minzoom: 10.5,
+    addMixed('depots', { id: 'depot-labels', type: 'symbol', minzoom: 10.5,
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 10.5, 11, 15, 13],
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
       paint: { 'text-color': col('yard'), 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.4 } });
-    map.addLayer({ id: 'metro-stations', type: 'circle', source: 'metro-stations', minzoom: 10,
+    addMixed('metro-stations', { id: 'metro-stations', type: 'circle', minzoom: 10,
       paint: { 'circle-color': '#ffffff', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 13, 3.2, 16, 5.5],
         'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 10, 0.6, 14, 1.6] } });
-    map.addLayer({ id: 'metro-station-labels', type: 'symbol', source: 'metro-stations', minzoom: 12.2,
+    addMixed('metro-stations', { id: 'metro-station-labels', type: 'symbol', minzoom: 12.2,
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 12, 10.5, 16, 13],
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
       paint: { 'text-color': '#eaf4fb', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.3 } });
@@ -1195,25 +1274,32 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const labelOf = k => (KIND_SET[country].find(r => r[0] === k) || [])[1] || '';
     const byName = new Map(lines.map(l => [l.n, l]));
     const cityByName = new Map(metroCities.map(c => [c.n, c]));
-    // The card is about one country at a time: its figures, its lines, its cities.
+    // A country's page is about that country: its figures, its lines, its cities.
     const here = x => abroad(x.g) === country;
-    const citiesHere = () => metroCities.filter(here);
-    const realCitiesHere = () => citiesHere().filter(c => !c.n.endsWith('城际') && !c.n.endsWith('其他'));
-    const metroCountHere = () => citiesHere().reduce((n, c) => n + c.lines.length, 0);
+    const citiesOf = g => metroCities.filter(c => abroad(c.g) === g);
+    const realCitiesOf = g => citiesOf(g).filter(c => !c.n.endsWith('城际') && !c.n.endsWith('其他'));
+    const citiesHere = () => citiesOf(country);
+    const nameOf = g => (FOREIGN[g] ? FOREIGN[g].name : '中国');
     const kmText = v => (v >= 1e4 ? (v / 1e4).toFixed(1) + ' 万公里' : Math.round(v).toLocaleString() + ' 公里');
-    const RAIL_FACTS = { cn: document.getElementById('facts').textContent,
+    const RAIL_FACTS = { cn: FACTS_CN,
       ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, `${kmText(facts[g].km)} · ${FOREIGN[g].fastWord} ${kmText(facts[g].fast_km)}`])) };
+    const metroFacts = g => `地铁 ${realCitiesOf(g).length} 城 · ${citiesOf(g).reduce((n, c) => n + c.lines.length, 0)} 条线路`;
     const renderHead = () => {
-      document.getElementById('title').textContent = (FOREIGN[country] ? FOREIGN[country].name : '中国') + '铁路网';
-      document.getElementById('facts').replaceChildren(RAIL_FACTS[country], document.createElement('br'),
-        `地铁 ${realCitiesHere().length} 城 · ${metroCountHere()} 条线路`);
-      queryEl.placeholder = '车站、线路、城市，如 ' + (FOREIGN[country] ? FOREIGN[country].hint : HINT_CN);
-      if (isPhone()) sheet.layout();        // the header is a line taller than it starts
+      panel.classList.toggle('world', world);
+      document.getElementById('title').textContent = world ? 'Rail Globe' : nameOf(country) + '铁路网';
+      document.getElementById('facts').replaceChildren(RAIL_FACTS[country], document.createElement('br'), metroFacts(country));
+      queryEl.placeholder = '车站、线路、城市，如 ' + (!world && FOREIGN[country] ? FOREIGN[country].hint : HINT_CN);
+      syncRouteTab();
+      paintTabs();
+      if (isPhone()) sheet.layout();        // the header of a country's page is taller than the world's
     };
+    // The quick jumps follow the card: at the world they are the countries (and open them, like
+    // the rows of the list), in a country they are the country and its largest metro cities.
     const renderJumps = () => {
       document.getElementById('jumps').replaceChildren();
+      if (world) { for (const g of everyCountry) addJump(nameOf(g), null, () => setCountry(g, true)); return; }
       if (FOREIGN[country]) addJump(FOREIGN[country].name, FOREIGN[country].bounds); else addJump('中国', CHINA);
-      for (const c of realCitiesHere().slice(0, JUMP_CITIES)) addJump(c.n, [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]]);
+      for (const c of realCitiesOf(country).slice(0, JUMP_CITIES)) addJump(c.n, [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]]);
     };
     const listEl = document.getElementById('lineList');
     const moreEl = document.getElementById('more');
@@ -1239,7 +1325,6 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         return b;
       });
     };
-    rebuildKindButtons();
     const LIMIT = 80;
     const CHEVRON = '<svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M1 1l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     let kind = 'fast';          // which list the lines tab shows
@@ -1310,41 +1395,67 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       document.getElementById('scroll').scrollTop = 0;
     }
     renderList();
-    // ---- the country the card is about ----
-    const countryEl = document.getElementById('country');
-    countryEl.hidden = !Object.keys(FOREIGN).length;
-    for (const b of countryEl.querySelectorAll('button')) if (b.dataset.g !== 'cn' && !FOREIGN[b.dataset.g]) b.remove();
-    countryEl.style.setProperty('--n', countryEl.querySelectorAll('button').length);
+    // ---- the two levels of the card: the world, and the page of a country ----
+    // The rows of the world's list come from the countries the page has; a new country is a new row.
+    const toWorld = document.getElementById('toWorld');
+    document.getElementById('countryList').replaceChildren(...everyCountry.map(g => {
+      // (the row that was used goes out of sight: the focus moves on to the way back)
+      const li = row(`<span class="txt"><b class="nm"></b><small></small><small></small></span>${CHEVRON}`, nameOf(g), () => { setCountry(g, true); toWorld.focus({ preventScroll: true }); });
+      const [rail, metro] = li.querySelectorAll('small');
+      rail.textContent = RAIL_FACTS[g];
+      metro.textContent = metroFacts(g);
+      return li;
+    }));
+    // Opens the page of a country. Coming back to the country that was open last finds its lists
+    // as they were left; another country starts from its first class, with nothing selected.
     function setCountry(g, fly) {
       // The selection goes first, while the lists are still those of the country it is in:
       // clearing it redraws the list, and a class of one country has no list in another.
       if (selMetro) selectMetro(null, null);
       if (selected) select(null);
+      const changed = g !== country || !kindButtons.length;
       country = g;
-      for (const b of countryEl.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.g === g));
-      metroCity = null;
+      world = false;
+      if (fly) touched = g !== 'cn';       // before the header is redrawn: on a phone that resettles the sheet, which reframes an untouched map
+      if (changed) metroCity = null;
       renderHead();
       renderJumps();
-      rebuildKindButtons();
-      setKind(FOREIGN[g] ? FOREIGN[g].rail[0][0] : 'fast');   // a country abroad opens on its first class
-      colourSection(g);
-      if (routeCleanup) routeCleanup();      // drop any Chinese OD/pins/result so it never leaks into Japan
-      syncRouteTab();
+      if (changed) {
+        rebuildKindButtons();
+        setKind(FOREIGN[g] ? FOREIGN[g].rail[0][0] : 'fast');   // a country abroad opens on its first class
+        colourSection(g);
+        if (routeCleanup) routeCleanup();      // drop any Chinese OD/pins/result so it never leaks into Japan
+      }
       relabelLegend();
       applyVisibility();
-      // Route tab is unavailable for Japan: move off it to the lines tab, so switching countries
-      // never lands on a dead tab. The user can still open 路线 and see the empty state.
-      const onRoute = tabButtons.find(b => b.getAttribute('aria-selected') === 'true')?.dataset.tab === 'route';
+      // 路线 is not a tab abroad: a page that was on it opens on the lines instead.
+      const onRoute = shownTab === 'route';
       if (FOREIGN[g] && onRoute) showTab('lines');
       if (fly) {
-        touched = g !== 'cn';
         if (!touched) history.replaceState(null, '', location.pathname + location.search);
         map.fitBounds(FOREIGN[g] ? FOREIGN[g].bounds : CHINA, { padding: padding(), duration: reduced ? 0 : 1800 });
       }
     }
-    for (const b of countryEl.querySelectorAll('button')) b.addEventListener('click', () => setCountry(b.dataset.g, true));
-    // a link that opens on a country abroad starts with that country's card
-    setCountry((startView && Object.keys(FOREIGN).find(g => FOREIGN[g].inside(map.getCenter().lng, map.getCenter().lat))) || 'cn', false);
+    // Back to the list of countries. The map stays where it is; a selected line is let go, since
+    // it belongs to the page that is left.
+    function setWorld() {
+      if (selMetro) selectMetro(null, null);
+      if (selected) select(null);
+      world = true;
+      renderHead();
+      renderJumps();
+    }
+    toWorld.addEventListener('click', () => {
+      setWorld();
+      document.getElementById('countryList').querySelectorAll('button')[everyCountry.indexOf(country)].focus({ preventScroll: true });
+    });
+    // What a line, a station or a city of a country needs before it is shown: that country's page.
+    const enter = g => { if (world || g !== country) setCountry(g, false); };
+    // A link that opens inside a country starts on that country's page; any other start is the
+    // list of countries (with China's lists made ready behind it).
+    const startIn = startView && countryAt(map.getCenter().lng, map.getCenter().lat);
+    setCountry(startIn || 'cn', false);
+    if (!startIn) setWorld();
 
     // ---- colours, widths and opacities of the rail layers ----
     const W = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6] };
@@ -1391,7 +1502,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     function select(name, fly, cls) {
       const of = name && byName.get(name);
-      if (of && abroad(of.g) !== country) setCountry(abroad(of.g), false);
+      if (of) enter(abroad(of.g)); else if (name && world) enter(country);
       selected = name;
       if (name) touched = true;
       if (name) selMetro = null;
@@ -1425,7 +1536,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     const METRO_KIND = { m: '城际 / 市域 · 地铁公司运营', s: '市郊 / 城际列车 · 铁路局运营' };
     function selectMetro(c, l, fly) {
-      if (c && l && abroad(c.g) !== country) setCountry(abroad(c.g), false);
+      if (c && l) enter(abroad(c.g));
       if (selected) select(null);
       selMetro = l ? { ct: c.n, n: l.n } : null;
       styleMetro();
@@ -1448,7 +1559,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     document.getElementById('clearSel').addEventListener('click', clearSelection);
 
     // ---- hover + click on lines ----
-    const PICK = [...FAST, 'shared', 'metro', 'suburb', 'build', 'main', 'branch',
+    const PICK = [...FAST, 'shared', 'metro', 'suburb', ...each('build').map(c => c[0]), 'main', 'branch',
       ...Object.keys(abroadVisible), ...abroadMetro.map(m => m[0] + '-casing')];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
@@ -1498,26 +1609,40 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const everyCity = metroCities.filter(c => !c.n.endsWith('城际'));
     const cityAt = ([x, y]) => everyCity.filter(c => x >= c.bbox[0] && x <= c.bbox[2] && y >= c.bbox[1] && y <= c.bbox[3])
       .sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))[0];
-    for (const f of metroStations.features) {
-      f.properties.m = 1;
-      f.properties.ct = (cityAt(f.geometry.coordinates) || {}).n || '';
-    }
-    const routable = [...stations.features, ...metroStations.features].filter(f => f.properties.g != null);
-    const hubName = new Map(routable.map(f => [f.properties.g, f.properties.n]));
     // ---- search over everything that is loaded ----
     // What the card can show is what can be found: the lines its lists hold, the metro cities
-    // and their lines, every station, every country.
-    const searchData = buildSearchIndex({
-      countries: [{ g: 'cn', name: '中国' }, ...Object.keys(FOREIGN).map(g => ({ g, name: FOREIGN[g].name, kindName: FOREIGN[g].kindName, metro: FOREIGN[g].metro }))],
-      lines: [...[...LISTS.fast, ...LISTS.conv].filter(l => !FOREIGN[l.g]), ...Object.values(ABROAD_RAIL).flatMap(byKind => Object.values(byKind).flat())],
-      cities: metroCities,
-      stations: [...stations.features, ...metroStations.features],
-      colours: Object.fromEntries([...FAST, 'main', 'branch'].map(id => [id, col(id)])),
-    });
-    // the country of the card first, and of several stations of one name the nearest to the view first
+    // and their lines, every station, every country. The stations also feed the route fields.
+    // In tile mode they are not there yet when the map comes up (stationLists() fetches them), so
+    // what is made from them is made here, and made again when they arrive.
+    let routable, hubName, searchData;
+    let stationsAsked = !tiles, stationsIn = !tiles;
+    const whenStations = [];
+    const listStations = () => {
+      for (const f of metroStations.features) {
+        f.properties.m = 1;
+        f.properties.ct = (cityAt(f.geometry.coordinates) || {}).n || '';
+      }
+      routable = [...stations.features, ...metroStations.features].filter(f => f.properties.g != null);
+      hubName = new Map(routable.map(f => [f.properties.g, f.properties.n]));
+      searchData = buildSearchIndex({
+        countries: [{ g: 'cn', name: '中国' }, ...Object.keys(FOREIGN).map(g => ({ g, name: FOREIGN[g].name, kindName: FOREIGN[g].kindName, metro: FOREIGN[g].metro }))],
+        lines: [...[...LISTS.fast, ...LISTS.conv].filter(l => !FOREIGN[l.g]), ...Object.values(ABROAD_RAIL).flatMap(byKind => Object.values(byKind).flat())],
+        cities: metroCities,
+        stations: [...stations.features, ...metroStations.features],
+        colours: Object.fromEntries([...FAST, 'main', 'branch'].map(id => [id, col(id)])),
+      });
+    };
+    listStations();
+    // the country whose page is open first (at the world none is, and each gets a few rows), and
+    // of several stations of one name the nearest to the view first
+    // In tile mode the stations may still be on their way: a search asks for them, and marks its
+    // answer (found.pending) so that "nothing found" is not said too soon.
     const searchAll = (q, options) => {
       const c = map.getCenter();
-      return searchIndex(searchData, q, { country, near: [c.lng, c.lat], ...options });
+      stationLists();
+      const found = searchIndex(searchData, q, { ...(world ? { limit: 6 } : { country }), near: [c.lng, c.lat], ...options });
+      found.pending = !stationsIn;
+      return found;
     };
     const od = { from: null, to: null };
     const pins = { from: null, to: null };
@@ -1661,6 +1786,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: padding(), maxZoom: 11, duration: reduced ? 0 : 1200 });
     }
     function setStop(role, f, keepText) {
+      if (f) enter('cn');           // a route is in China: its page, on the route tab
       od[role] = f ? { n: f.properties.n, g: f.properties.g, at: f.geometry.coordinates } : null;
       if (f) showTab('route');
       if (!keepText) odInput[role].value = f ? f.properties.n : '';
@@ -1698,6 +1824,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       };
       input.addEventListener('input', () => { if (od[role] && input.value.trim() !== od[role].n) setStop(role, null, true); render(); });
       input.addEventListener('focus', render);
+      whenStations.push(() => { if (document.activeElement === input) render(); });
       input.addEventListener('blur', () => setTimeout(() => { list.hidden = true; }, 180));
     }
     document.getElementById('odSwap').addEventListener('click', () => {
@@ -1755,14 +1882,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         setCountry(e.country, true);
         if (isPhone()) sheet.to('mid');
       } else if (e.kind === 'city') {
-        if (e.country !== country) setCountry(e.country, false);
+        enter(e.country);
         const there = FOREIGN[e.country];      // abroad the metro classes are lists of their own: open the one this city is in
         showTab('lines');
         setKind(there ? (there.metro.find(([k]) => e.ref.lines.some(l => l.jk === k)) || there.metro[0])[0] : 'metro');
         openCity(e.ref, true);
         if (isPhone()) sheet.to('mid');
       } else {
-        if (e.country !== country) setCountry(e.country, false);
+        enter(e.country);
         touched = true;
         map.fitBounds([e.at, e.at], { padding: padding(), maxZoom: Math.max(map.getZoom(), e.ref.properties.m ? 14 : 12), duration: reduced ? 0 : 1400 });
         offerStation(e.ref);
@@ -1770,14 +1897,18 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       }
       return true;
     }
-    window.__rail = { search: searchAll, open: openResult };
+    // For the app's native card: the search and the two levels as plain values and calls.
+    // level() is the country whose page is open, or null at the list of countries.
+    window.__rail = { search: searchAll, open: openResult, level: () => (world ? null : country), openCountry: g => setCountry(g, true), openWorld: setWorld,
+      countries: () => everyCountry.map(g => ({ country: g, name: nameOf(g), rail: RAIL_FACTS[g], metro: metroFacts(g), routes: !FOREIGN[g] })) };
     const foundEl = document.getElementById('tab-find');
     const renderFound = () => {
       const q = queryEl.value.trim();
       queryClear.hidden = !queryEl.value;
       setFinding(!!q);
       if (!q) return;
-      const blocks = searchAll(q).map(g => {
+      const found = searchAll(q);
+      const blocks = found.map(g => {
         const box = document.createElement('div');
         box.innerHTML = '<p class="caption"><span></span><span></span></p><ul class="group linelist found"></ul>';
         const [name, count] = box.querySelectorAll('span');
@@ -1797,11 +1928,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         }
         return box;
       });
-      if (!blocks.length) {
-        const none = document.createElement('p');
-        none.className = 'hint';
-        none.textContent = '没有找到。国外的车站和线路用当地文字，如 東京、서울、London；地铁城市和国家用中文。';
-        blocks.push(none);
+      if (found.pending || !blocks.length) {
+        const note = document.createElement('p');
+        note.className = 'hint';
+        note.textContent = found.pending ? '车站名单正在载入…' : '没有找到。国外的车站和线路用当地文字，如 東京、서울、London；地铁城市和国家用中文。';
+        blocks.push(note);
       }
       foundEl.replaceChildren(...blocks);
       document.getElementById('scroll').scrollTop = 0;
@@ -1826,28 +1957,60 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); (rows[i + (e.key === 'ArrowDown' ? 1 : -1)] || (e.key === 'ArrowUp' ? queryEl : rows[i])).focus(); }
     });
     if (queryEl.value.trim()) renderFound();       // typed while the data was still loading
+    // Tile mode: the stations draw from the tiles, and their lists (a megabyte for the four
+    // countries) are only for the search and the route fields. They are fetched when the map has
+    // drawn what is in view, or at once when one of those fields is used, whichever is first.
+    function stationLists() {
+      if (stationsAsked) return;
+      stationsAsked = true;
+      Promise.all(everyCountry.map(g => getJSON(`data/tiles/${g}.stations.json`))).then(lists => {
+        everyCountry.forEach((g, i) => {
+          stations.features = stations.features.concat(listed(lists[i].rail, g === 'cn' ? {} : { g }));
+          metroStations.features = metroStations.features.concat(listed(lists[i].metro, g === 'cn' ? {} : { g, m: 1 }));
+        });
+        stationsIn = true;
+        listStations();
+        if (finding) renderFound();
+        for (const again of whenStations) again();        // the route fields list what was typed meanwhile
+      }).catch(() => { stationsAsked = false; });       // asked again the next time a field is used
+    }
+    map.once('idle', stationLists);
+    for (const field of [queryEl, odInput.from, odInput.to]) field.addEventListener('focus', stationLists);
 
+    // A rendered feature has lost its identity, and its place is only as fine as the tile it was
+    // drawn from (far out, a hundred metres or more). The station it stands for is the nearest
+    // one of that name in the list, within a couple of kilometres.
+    const stationOf = (list, drawn) => {
+      const [x, y] = drawn.geometry.coordinates;
+      let best = drawn, near = 0.02;
+      for (const f of list) {
+        if (f.properties.n !== drawn.properties.n) continue;
+        const d = Math.hypot(f.geometry.coordinates[0] - x, f.geometry.coordinates[1] - y);
+        if (d < near) { best = f; near = d; }
+      }
+      return best;
+    };
     map.on('click', e => {
-      const st = map.getLayer('stations') && map.queryRenderedFeatures([[e.point.x - 7, e.point.y - 7], [e.point.x + 7, e.point.y + 7]], { layers: ['stations'] })[0];
-      if (st) {       // rendered features lose their identity; find the original by name and place
-        const [x, y] = st.geometry.coordinates;
-        offerStation(stations.features.find(f => f.properties.n === st.properties.n && Math.abs(f.geometry.coordinates[0] - x) < 1e-3 && Math.abs(f.geometry.coordinates[1] - y) < 1e-3) || st);
+      const shown = id => each(id).map(c => c[0]).filter(layer => map.getLayoutProperty(layer, 'visibility') !== 'none');
+      const st = shown('stations').length && map.queryRenderedFeatures([[e.point.x - 7, e.point.y - 7], [e.point.x + 7, e.point.y + 7]], { layers: shown('stations') })[0];
+      if (st) {
+        offerStation(stationOf(stations.features, st));
         return;
       }
-      const ms = map.getLayer('metro-stations') && map.getLayoutProperty('metro-stations', 'visibility') !== 'none'
-        && map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: ['metro-stations'] })[0];   // a tight target: the dots are close together and the line between them is clickable too
+      const ms = shown('metro-stations').length
+        && map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: shown('metro-stations') })[0];   // a tight target: the dots are close together and the line between them is clickable too
       if (ms) {
-        const [x, y] = ms.geometry.coordinates;
-        offerStation(metroStations.features.find(f => f.properties.n === ms.properties.n && Math.abs(f.geometry.coordinates[0] - x) < 1e-3 && Math.abs(f.geometry.coordinates[1] - y) < 1e-3) || ms);
+        offerStation(stationOf(metroStations.features, ms));
         return;
       }
       const f = pick(e.point);
-      const city = f && f.layer.source === 'metro' && cityByName.get(f.properties.ct);
+      const of = f && (f.sourceLayer || f.layer.source);       // 'metro', 'conv', ...: the tile layer or the source of its own
+      const city = of === 'metro' && cityByName.get(f.properties.ct);
       const line = city && city.lines.find(l => l.n === f.properties.n);
       if (line) selectMetro(city, line, false);
-      else if (f && f.properties.n && (f.layer.source === 'conv' || ['shared', ...FAST].includes(f.layer.id))) {
-        // every country is on the map: a tap on a line of another one moves the card there first
-        if (abroad(f.properties.g) !== country) setCountry(abroad(f.properties.g), false);
+      else if (f && f.properties.n && (of === 'conv' || ['shared', ...FAST].includes(f.layer.id))) {
+        // every country is on the map: a tap on a line moves the card to its country's page first
+        enter(abroad(f.properties.g));
         select(f.properties.n, false, f.properties.c);
       }
       else if (!f) clearSelection();
@@ -1878,7 +2041,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // JP rail rides the conv source (c = main/branch), so it is lit through hl-conv like China's conv.
     for (const id of ['hl', 'hl-core']) map.setFilter(id, ['all', name, on(FAST)]);
     for (const id of ['hl-shared', 'hl-shared-core']) map.setFilter(id, ['all', name, on([...FAST, 'main', 'branch'])]);
-    for (const id of ['hl-conv', 'hl-conv-core']) map.setFilter(id, ['all', name, ['any', on(['main', 'branch']), ['!', NOT_ABROAD]]]);
+    for (const id of ['hl-conv', 'hl-conv-core']) for (const [layer] of each(id)) map.setFilter(layer, ['all', name, ['any', on(['main', 'branch']), ['!', NOT_ABROAD]]]);
   }
 
   // Yard and depot tracks are large (China's are 11 MB) and show only from zoom 9.5 with their
@@ -1934,12 +2097,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.setFilter('hsr-glow', ['in', ['get', 'c'], ['literal', FAST.filter(id => visible[id])]]);
     // A layer that holds several countries (lines being built, stations) is filtered to the
     // countries whose switch is on, and hidden when none is.
-    const everyCountry = ['cn', ...Object.keys(FOREIGN)];
+    // (In tile mode such a layer is one layer per country, each answering to its own country.)
     const among = (id, countries, also) => {
-      set(id, countries.length > 0);
-      if (!countries.length) return;
-      const where = ['any', ...countries.map(g => (g === 'cn' ? NOT_ABROAD : ['==', ['get', 'g'], g]))];
-      map.setFilter(id, also ? ['all', where, also] : where);
+      for (const [layer, own] of each(id)) {
+        const here = own ? countries.filter(g => g === own) : countries;
+        set(layer, here.length > 0);
+        if (!here.length) continue;
+        const where = ['any', ...here.map(g => (g === 'cn' ? NOT_ABROAD : ['==', ['get', 'g'], g]))];
+        map.setFilter(layer, also ? ['all', where, also] : where);
+      }
     };
     among('build', everyCountry.filter(g => rowOn('build', g) && (g === 'cn' || FOREIGN[g].hasBuild)));
     const withStations = everyCountry.filter(g => rowOn('stations', g));
@@ -1950,7 +2116,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     among('metro-stations', withMetroStations);
     among('metro-station-labels', withMetroStations);
     // Yards and depots have one switch for every country.
-    for (const id of ['yards', 'depots', 'depot-labels']) set(id, visible.yards);
+    for (const id of ['yards', 'depots', 'depot-labels']) for (const [layer] of each(id)) set(layer, visible.yards);
     loadYards();
     relabelLegend();
   }

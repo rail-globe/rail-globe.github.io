@@ -31,7 +31,7 @@
 - 地铁：全国各城市的地铁、轻轨、单轨和磁浮（含港铁、澳门轻轨、台湾的捷运），按线路官方色
 - 城际和市郊按运营方归类：地铁公司运营的城际、市域线归入“地铁 / 市郊”；铁路局运营、借国铁线路跑的市郊列车单列一行，作为细线叠在国铁线路旁，国铁线路本身的归属不变
 - 站场与车辆基地、车站（四个国家都有）、国界
-- 地球和平面两种视图；线路页分铁路和地铁两类，地铁按城市列出，点线路即可在图上高亮；顶部可快速跳到主要城市。四个国家的线路同时画在地球上；卡片顶部在中国、日本、韩国、英国之间切换的是卡片的内容，图层开关和筛选只作用于当前国家，图例只显示这个国家有的时速档
+- 地球和平面两种视图；线路页分铁路和地铁两类，地铁按城市列出，点线路即可在图上高亮；顶部可快速跳到各个国家和主要城市。四个国家的线路同时画在地球上；卡片首页是国家列表，点进一个国家是它自己的页面（线路、图层，中国还有路线），可以返回列表，图层开关和筛选只作用于这个国家，图例只显示这个国家有的时速档
 - 一个搜索框搜车站、线路、城市和国家，四个国家一起搜，结果按国家分组；名字按原文匹配（日本、韩国、英国的站名和线名是当地文字）
 - 两站之间怎么走（仅中国）：点两个车站或输入站名，给出沿真实线路的走法、里程和估算时间。铁路和地铁一起算，相邻的火车站和地铁站之间按步行换乘。不是车次和时刻表
 
@@ -50,8 +50,9 @@
 - 卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics），在线加载，不包含在本仓库中。
 - 标注字形：Open Sans，SIL Open Font License。
 - 地图引擎：[MapLibre GL JS](https://maplibre.org/)。
+- 瓦片读取：[PMTiles](https://github.com/protomaps/PMTiles) 的读取库（`vendor/pmtiles.js`，BSD-3-Clause），随本站发布，不走 CDN。
 
-顶部的营业里程数字来自交通运输部《2025年交通运输行业发展统计公报》，不是从地图数据计算的。
+中国一行的营业里程数字来自交通运输部《2025年交通运输行业发展统计公报》，不是从地图数据计算的。
 
 OSM 快照日期不代表每一条线路都已跟上现实进度。已核实的区段状态记录在 `data/rail_status_overrides.json`，保留来源、核查日期和区段范围，原始 OSM 标签不覆盖。已建成也不等于已经开通载客。
 
@@ -63,9 +64,11 @@ python3 scripts/serve.py
 
 然后打开 http://localhost:8765 。页面源码在 `src/app.html`，修改后运行 `python3 scripts/build.py` 重新生成 `index.html`。
 
+页面按需取线路数据。每个国家的图层预先切成矢量瓦片，存成一个 PMTiles 文件（`data/tiles/<国家>.pmtiles`），页面只取当前画面里的那几块，用的是 HTTP Range 请求（`scripts/serve.py` 和 GitHub Pages 都支持）。线路列表和车站名单是小文件，一次取完；两站寻路的线路网络在第一次算路线时才取。瓦片读不到时（文件缺失，或服务器不支持 Range）页面会在控制台说明，并退回一次加载全部 GeoJSON 的方式；地址加 `?tiles=0` 可以直接用这种方式，`?tiles=1` 相反。`site.json` 的 `tiles` 决定默认用哪一种。
+
 ## 重新生成数据
 
-需要 Python 3、`osmium`、`shapely` 和 `numpy`，以及 Geofabrik 的 `china`、`taiwan`、`japan-latest`、`south-korea-latest`、`united-kingdom` 五份 `.osm.pbf` 文件，放在 `data/raw/` 下。`site.json` 里的 `jp`、`kr`、`uk` 决定页面是否加载这三个国家。
+需要 Python 3、`osmium`、`shapely` 和 `numpy`，以及 Geofabrik 的 `china`、`taiwan`、`japan-latest`、`south-korea-latest`、`united-kingdom` 五份 `.osm.pbf` 文件，放在 `data/raw/` 下。切瓦片还需要 [tippecanoe](https://github.com/felt/tippecanoe)（只在重新生成数据时用，看图不需要）。`site.json` 里的 `jp`、`kr`、`uk` 决定页面是否加载这三个国家。
 
 ```bash
 python3 scripts/build_border.py       # 国界，同时缓存省界（process_osm.py 用它划分地铁所属地区）
@@ -82,6 +85,8 @@ python3 scripts/fetch_design_catalog.py # 显式刷新设计时速参考资料�
 python3 scripts/extract_design_points.py # 区段边界使用同一快照的车站、线路所坐标
 python3 scripts/process_osm.py        # 连续线路几何，再按设计区段着色
 python3 scripts/build_graph.py        # 两站寻路用的线路网络
+python3 scripts/build_tiles.py        # 各国图层切成矢量瓦片 data/tiles/<国家>.pmtiles，并核对最细一级离 GeoJSON 不超过 1 米
+python3 scripts/build_tiles.py jp     # 只重切一个国家（改了哪个国家的数据就重切哪个）
 python3 scripts/build.py              # 生成页面
 python3 scripts/check_layers.py       # 全国核查：重复、断开、急转弯、互相遮挡、偏离轨道
 python3 scripts/audit_rail_data.py    # 原始名称、建设状态、已核实区段和待核查项
@@ -90,4 +95,4 @@ python3 -m unittest discover -s tests # 画法的回归测试
 
 有来源说明是既有线、只是被高铁列车借用的区段，在 `data/rail_design_overrides.json` 里标为 `conventional`，画成普速并保留来源。参考目录随数据保存在仓库，离线重算不依赖实时网站响应。
 
-同样的数据和代码每次生成的结果相同（`process_osm.py` 固定了哈希种子）。
+同样的数据和代码每次生成的结果相同（`process_osm.py` 固定了哈希种子）。瓦片是由 GeoJSON 切出来的显示用文件：各项核查仍在 GeoJSON 上做，改了数据要重切对应国家的瓦片。瓦片切到 13 级，更大的缩放级别由 13 级放大绘制，线形和 GeoJSON 的偏差在 1 米以内，`build_tiles.py` 每次都会量。

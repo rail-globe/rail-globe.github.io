@@ -18,6 +18,9 @@ assert "/*WITH_JP*/true" in page
 page = page.replace("/*WITH_JP*/true", "true" if site.get("jp", False) else "false")
 assert "/*WITH_KR*/true" in page
 page = page.replace("/*WITH_KR*/true", "true" if site.get("kr", False) else "false")
+# Tile mode: the page reads the vector tiles of scripts/build_tiles.py instead of the whole GeoJSON files.
+assert "/*WITH_TILES*/false" in page
+page = page.replace("/*WITH_TILES*/false", "true" if site.get("tiles", False) else "false")
 local = '<!doctype html>\n<html lang="zh-CN">\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n' + page
 (ROOT / "index.html").write_text(local)
 (ROOT / "dist").mkdir(exist_ok=True)
