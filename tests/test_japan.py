@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from process_jp import adopt_unnamed, colour_of, colouring, company, geometry, plain_name, readable_on_dark, shown_name
 from process_jp import KNOWN_LINE_FIRM, merge_short_connectors, jkind, metro_jk, english_part, SHARED_LINE
+from design_speeds import grade
 
 
 def luminance(col):
@@ -37,7 +38,11 @@ class GeneratedJapanDataTest(unittest.TestCase):
         features = [f["properties"] for f in json.loads((root / "data" / "jp_rail.geojson").read_text())["features"]]
         fast = [p for p in features if p["jk"] == "shinkansen" and not p.get("mini")]      # the mini-Shinkansen are outside the band
         self.assertTrue(fast)
-        self.assertEqual({(p["c"], p["d"]) for p in fast}, {("hsr250", 260)})
+        self.assertEqual({(p["c"], p["d"]) for p in fast},
+                         {("hsr250", 260), ("hsr250", 275), ("hsr250", 285), ("hsr300", 300), ("hsr300", 320)})
+        self.assertTrue(all(p["c"] == grade(p["d"]) for p in fast))
+        self.assertEqual({p["d"] for p in fast if p["n"] == "東北新幹線"}, {260, 320})
+        self.assertEqual({p["d"] for p in fast if p["n"] == "北海道新幹線"}, {260})
         self.assertFalse([p["n"] for p in fast if "lc" in p])                    # speed comes before a line colour
         self.assertTrue(all(p.get("ref") for p in fast))
         others = [p for p in features if p["jk"] != "shinkansen" or p.get("mini")]
@@ -46,7 +51,7 @@ class GeneratedJapanDataTest(unittest.TestCase):
         self.assertEqual({(p["n"], p.get("d"), p.get("e")) for p in others if p.get("mini")}, {("山形新幹線", 130, 1), ("秋田新幹線", 130, 1)})   # top speeds
         self.assertNotIn("#c3ccd6", {p.get("lc") for p in features})               # no colour is written for "no colour"
         self.assertTrue(all("lc" in p for p in features if p["n"] in ("山形新幹線", "秋田新幹線")))
-        self.assertEqual(json.loads((root / "data" / "jp_facts.json").read_text())["bands"], ["hsr250"])
+        self.assertEqual(json.loads((root / "data" / "jp_facts.json").read_text())["bands"], ["hsr250", "hsr300"])
         self.assertFalse((root / "data" / "jp_operators.json").exists())
 
     def test_generated_taxonomy_has_no_missing_or_conflicting_classification(self):
@@ -306,7 +311,7 @@ class SharedTrackTest(unittest.TestCase):
         self.assertEqual(lines["JR田沢湖線"]["jk"], "jr")
         self.assertEqual(lines["JR奥羽本線"]["jk"], "jr")
         facts = json.loads((root / "jp_facts.json").read_text())
-        self.assertEqual((facts["fast_km"], facts["bands"]), (2961, ["hsr250"]))
+        self.assertEqual((facts["fast_km"], facts["bands"]), (2961, ["hsr250", "hsr300"]))
         self.assertEqual(lines["山形新幹線"]["ne"], "Yamagata Shinkansen")
         self.assertEqual(lines["秋田新幹線"]["ne"], "Akita Shinkansen")
         self.assertEqual(set(SHARED_LINE), {"山形新幹線", "JR田沢湖線", "秋田新幹線"})

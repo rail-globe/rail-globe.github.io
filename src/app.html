@@ -475,6 +475,37 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // "one|many", chosen by the number it is given as n. The names of places and lines are not
   // here: they are the data's, and shown() further down puts them together.
   const TEXT = {
+    'app.countries': ['国家', 'Countries'],
+    'app.credits': ['数据与许可', 'Data and licences'],
+    'app.layers': ['图层', 'Layers'],
+    'app.route': ['路线', 'Route'],
+    'app.close': ['关闭', 'Close'],
+    'app.cancel': ['取消', 'Cancel'],
+    'app.clear': ['清除', 'Clear'],
+    'app.okay': ['好', 'OK'],
+    'app.retry': ['重试', 'Retry'],
+    'app.loading': ['正在载入线路数据…', 'Loading the lines…'],
+    'app.refused.title': ['没有做成', 'Action unavailable'],
+    'app.refused.detail': ['地图没有接受这一步，请再试一次。', 'The map could not complete this action. Please try again.'],
+    'app.page.title': ['地图初始化失败', 'The map could not start'],
+    'app.page.detail': ['页面启动时出了错，可以重试。', 'Something went wrong while starting the map. Please retry.'],
+    'app.slow.title': ['载入比平时慢', 'Loading is taking longer'],
+    'app.slow.detail': ['可以再等一会儿，地图出现后这一页会自己消失；也可以重试。', 'You can keep waiting, or retry. This message will close when the map is ready.'],
+    'app.gone.title': ['地图被系统关闭', 'The system closed the map'],
+    'app.gone.detail': ['地图重新载入后再次被系统关闭。请关闭其他应用后重试。', 'The system closed the map again after reloading. Close other apps and retry.'],
+    'app.line.show': ['显示整条线路', 'Show the whole line'],
+    'app.stop.start': ['设为出发', 'Start here'],
+    'app.stop.end': ['设为到达', 'End here'],
+    'app.od.swap': ['互换出发和到达', 'Swap start and end'],
+    'app.view.label': ['地图的显示方式', 'Map appearance'],
+    'app.view.projection': ['地图投影', 'Map projection'],
+    'app.view.globe': ['地球', 'Globe'],
+    'app.view.flat': ['平面', 'Flat'],
+    'app.view.whole': ['看全图', 'Show the whole country'],
+    'app.imagery.brightness': ['卫星影像亮度', 'Satellite imagery brightness'],
+    'app.lang.label': ['语言：中文 / English', 'Language: 中文 / English'],
+    'app.credits.maplibre': ['地图绘制：MapLibre GL JS (BSD 3-Clause)', 'Map rendering: MapLibre GL JS (BSD 3-Clause)'],
+    'app.credits.source': ['Rail Globe 的源代码和说明', 'Rail Globe source code and documentation'],
     'doc.title': ['Rail Globe · 铁路网卫星图', 'Rail Globe · railways on a satellite globe'],
     'doc.description': ['铁路、地铁和有轨电车，画在卫星影像的地球上。', 'Railways, metros and trams, drawn on a globe of satellite imagery.'],
     'map.label': ['铁路网卫星地图', 'Satellite map of the railways'],
@@ -541,6 +572,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'facts.lines': ['{name} {lines}', '{name}: {lines}'],
     // a selected line, and the line under the pointer
     'speed.design': ['设计时速', 'design speed'],
+    'speed.standard': ['已建成设计及改造标准', 'completed design / upgrade standard'],
+    'speed.sectionStandards': ['分段已建成设计及改造标准', 'completed design / upgrade standards by section'],
+    'speed.upgrade': ['在建提速至 {speed} km/h', 'upgrade to {speed} km/h under construction'],
+    'speed.buildStandard': ['在建标准 {speed} km/h', 'under construction for {speed} km/h'],
     'speed.top': ['最高时速', 'top speed'],
     'speed.unsure': ['，设计时速待核实', ', design speed to be confirmed'],
     'speed.sections': ['分段设计时速', 'design speed by section'],
@@ -688,6 +723,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // A text that stays on the page is said through say(): the element keeps what it was told and
   // is told again when the language changes. (A text in the markup carries its key itself:
   // data-t for its words, data-th where they hold links, data-ta for attributes.)
+  const appCopy = () => Object.fromEntries(Object.keys(TEXT).filter(k => k.startsWith('app.')).map(k => [k, t(k)]));
+  const sendCopy = () => { if (window.__app) window.__app.post('copy', { language: lang, words: appCopy() }); };
+  sendCopy();
   const said = new Set();
   const say = (el, key, vars) => {
     el.sayKey = key; el.sayVars = vars;
@@ -719,6 +757,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       history.replaceState(null, '', location.pathname + '?' + query + location.hash);
     }
     relabel();
+    sendCopy();
     dispatchEvent(new CustomEvent('rail:language', { detail: lang }));
     if (window.__app) window.__app.post('language', lang);
   };
@@ -961,7 +1000,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     for (const l of lines) {
       const g = home(l.g);
       const what = l.jk ? (cfg[g].kindName || {})[l.jk] || say('rail.of', { country: cfg[g].name }) : l.kind === 'fast' ? say('sub.fast') : say('sub.conv');
-      const speed = l.jk ? l.d : l.kind === 'fast' && l.design && l.design.length
+      const speed = l.jk && l.d ? l.d : l.design && l.design.length && (l.jk || l.kind === 'fast')
         ? (l.design.length > 1 ? say('range', { from: Math.min(...l.design), to: Math.max(...l.design) }) : l.design[0]) : null;
       add('line', g, name(l, g), what + (speed ? ` · ${speed}\u00a0km/h` : ''), l.lc || colours[l.c], l.n, { ref: l, also: forms(l) });
     }
@@ -1169,7 +1208,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     finding = on;
     panel.classList.toggle('finding', on);
     paintTabs();
-    if (isPhone()) sheet.layout();        // the header is shorter while it is only the field
+    if (isPhone() && !window.__app) sheet.layout();        // the header is shorter while it is only the field
   };
   // An empty field gives the card back as it was.
   const endSearch = () => { queryEl.value = ''; queryClear.hidden = true; setFinding(false); };
@@ -1335,7 +1374,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
   // The part of the map that can be seen: on a phone between the row of quick jumps and the sheet
   // (with the credits riding on it), beside the card otherwise.
-  const padding = () => isPhone()
+  let appCovered = { top: 0, left: 0, bottom: 0, right: 0 };
+  const padding = () => window.__app ? Object.fromEntries(Object.entries(appCovered).map(([edge, px]) => [edge, px + 12])) : isPhone()
     ? { top: 64 + safe('Top'), bottom: Math.min(sheet.visible() + 44, Math.round(innerHeight * 0.62)), left: 16, right: 16 }
     : { top: 64, bottom: 40, left: 396 + safe('Left'), right: 60 + safe('Right') };
 
@@ -1476,6 +1516,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // (a room that is a few px other than it was, the header a line taller, is not worth a move of the map)
   // (and not before the next frame: what settled the sheet may be about to show something else)
   sheet.whenSettled(() => {
+    if (window.__app) return; // native cover owns the room, the hidden web sheet cannot reframe it
     const was = framed;
     if (was && isPhone()) requestAnimationFrame(() => {
       const room = roomNow();
@@ -1764,7 +1805,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // shared track they stay so at every zoom; on tracks of their own side
     // by side (rail abroad) they go back onto them between z14.5 and z16.5, where the tracks come
     // apart, unless the data says they share one track (sh: 1).
-    const slot = ['coalesce', ['get', 'off'], 0], oneTrack = ['==', ['get', 'sh'], 1];
+    const slot = ['coalesce', ['get', 'off'], 0], oneTrack = ['coalesce', ['get', 'sh'], 0];
+    const groupSlot = ['coalesce', ['get', 'goff'], 0];
     const host = ['case', ['has', 'lead'], ['==', ['get', 'lead'], 1], ['<', slot, 0]];
     const guestLook = ['all', ['any', ['!=', slot, 0], ['>=', ['coalesce', ['get', 'bn'], 0], 2]], ['!', host]];
     const WIDTH_ZOOMS = [3, 6, 9, 12, 16], LINE = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6], own: [0.9, 1.4, 2.1, 3, 4.4] };
@@ -1787,9 +1829,24 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const beside = ({ guest = false, apart = false } = {}) => {
       if (guest) return curve(GUEST.step);
       const at = z => ['*', slot, stepAt(z)];
-      if (!apart) return curve(GUEST.step.map(([z]) => [z, at(z)]));
+      // Shared services retain their spacing; independent tracks return to their source geometry.
+      // A cross-category displacement is independent even when the internal group shares track.
+      const mixed = (z, separate) => {
+        const step = ['+', ['*', oneTrack, stepAt(z)], ['*', ['-', 1, oneTrack], separate]];
+        return ['-', ['*', slot, step], ['*', groupSlot, ['-', step, separate]]];
+      };
+      if (!apart) {
+        // Keep the established within-category spacing. Only the extra displacement of an
+        // independent neighbouring category fades back onto its physical track.
+        const grouped = (z, separate) => ['case', ['==', ['get', 'ap'], 1], mixed(z, separate),
+          ['-', at(z), ['*', groupSlot, stepAt(z) - separate]]];
+        return curve([[6, at(6)], [9, at(9)], [12, at(12)], [14.5, at(14.5)],
+          [16, grouped(16, +(stepAt(14.5) * 0.25).toFixed(4))], [16.5, grouped(16.5, 0)]]);
+      }
+      // sh fades at the ends of a proven shared track, independently of a slot that may continue
+      // along a neighbouring track. Both transitions remain continuous when zoomed onto the rails.
       return ['interpolate', ['linear'], ['zoom'], 6, at(6), 9, at(9), 12, at(12), 14.5, at(14.5),
-        16, ['case', oneTrack, at(16), ['*', slot, +(stepAt(14.5) * 0.25).toFixed(4)]], 16.5, ['case', oneTrack, at(16.5), 0]];
+        16, mixed(16, +(stepAt(14.5) * 0.25).toFixed(4)), 16.5, mixed(16.5, 0)];
     };
     // the width of a line that may stand in a bundle: the guest's where it is a guest there, its own (stops) where it is alone or the host
     const sideWidth = (own, guest = GUEST.width) => ['interpolate', ['exponential', 1.5], ['zoom'], ...[...new Set([...WIDTH_ZOOMS, ...METRO_STOPS.map(([z]) => z)])].sort((x, y) => x - y)
@@ -1797,7 +1854,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const guestWidth = curve(GUEST.width, ['exponential', 1.5]);
     // the white casing a metro, tram or suburban line has of its own: 1.75 times its width, whatever stands beside it
     const ownCasing = thin => curve(METRO_STOPS.map(([z, v]) => [z, +(1.75 * thin * v).toFixed(3)]), ['exponential', 1.5]);
-    const byCase = (cases, otherwise) => z => ['case', ...cases.flatMap(([cond, values]) => [cond, widthAt(WIDTH_ZOOMS.map((at, i) => [at, values[i]]), z)]), widthAt(WIDTH_ZOOMS.map((at, i) => [at, otherwise[i]]), z)];
+    const byCase = (cases, otherwise) => z => cases.length ? ['case', ...cases.flatMap(([cond, values]) => [cond, widthAt(WIDTH_ZOOMS.map((at, i) => [at, values[i]]), z)]), widthAt(WIDTH_ZOOMS.map((at, i) => [at, otherwise[i]]), z)] : widthAt(WIDTH_ZOOMS.map((at, i) => [at, otherwise[i]]), z);
     // a railway line's own width: in its own colour (abroad) fuller, a main line, a branch; a speed band
     const plainOf = byCase([[['has', 'lc'], LINE.own], [['==', ['get', 'c'], 'main'], LINE.main]], LINE.branch), fastOf = byCase([], LINE.fast);
     const railOff = beside({ apart: true });
@@ -2130,20 +2187,21 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (parts) el.replaceChildren(Object.assign(document.createElement('bdi'), { textContent: parts[1] }), ' ', Object.assign(document.createElement('bdi'), { textContent: parts[2] }));
       else el.textContent = name;
     };
-    const row = (html, name, onClick, current) => {
+    const row = (html, name, onClick, current, id) => {
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = html;
+      if (id) b.dataset.appId = id;
       setName(b.querySelector('.nm'), name);
       if (current) b.setAttribute('aria-current', 'true');
       b.addEventListener('click', onClick);
       li.appendChild(b);
       return li;
     };
-    const cityRow = c => row(`<span class="nm"></span><span class="kmh">${t('n.lines', { n: c.lines.length })}</span>${CHEVRON}`, cityName(c), () => openCity(c, true));
+    const cityRow = c => row(`<span class="nm"></span><span class="kmh">${t('n.lines', { n: c.lines.length })}</span>${CHEVRON}`, cityName(c), () => openCity(c, true), false, 'city:' + c.n);
     const metroRow = (c, l) => row(`<i style="background:${l.col}"></i><span class="nm"></span><span class="kmh">${l.km}\u00a0km</span>`,
-      named(l, abroad(c.g)), () => selectMetro(c, l, true), selMetro && selMetro.ct === c.n && selMetro.n === l.n);
+      named(l, abroad(c.g)), () => selectMetro(c, l, true), selMetro && selMetro.ct === c.n && selMetro.n === l.n, 'metro:' + c.n + '/' + l.n);
     // The lists are for browsing; finding a line by name is the search field's job.
     const renderList = () => {
       const cap = document.getElementById('lineCap'), count = document.getElementById('lineCount');
@@ -2153,8 +2211,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         cap.textContent = FOREIGN[country] ? labelOf(kind) : t(CAPTION[kind]);
         count.textContent = t('n.lines', { n: listed.length });
         total = listed.length;
-        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + '\u00a0km/h' : l.mini ? '—' : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? t('list.sections') : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || t('list.conv')}</span>`,
-          named(l, abroad(l.g)), () => select(l.n, true), selected === l.n));
+        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + '\u00a0km/h' : l.mini ? '—' : l.design?.length > 1 ? t('list.sections') : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? t('list.sections') : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || t('list.conv')}</span>`,
+          named(l, abroad(l.g)), () => select(l.n, true), selected === l.n, 'line:' + l.n));
       } else {
         // a class of urban rail (jk: metro or light rail in China, underground or trams abroad): its cities, or the lines of one city
         const mjk = kind;
@@ -2349,8 +2407,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
           setName(document.getElementById('selName'), l ? named(l, abroad(l.g)) : name);
           const metaEl = document.getElementById('selMeta');
           if (l && FOREIGN[l.g]) {
-            const speed = l.d ? ` · ${t(l.e ? 'speed.top' : 'speed.design')} ${l.d}\u00a0km/h${l.e ? t('speed.unsure') : ''}` : '';
-            metaEl.textContent = ((l.mini && FOREIGN[l.g].miniName) || FOREIGN[l.g].kindName[l.jk] || t('rail.of', { country: FOREIGN[l.g].name })) + speed + (l.o ? ' · ' + l.o : '');
+            const speed = l.d ? ` · ${t(l.e ? 'speed.top' : l.sections ? 'speed.standard' : 'speed.design')} ${l.d}\u00a0km/h${l.e ? t('speed.unsure') : ''}`
+              : l.design?.length ? ` · ${t(l.sections ? 'speed.sectionStandards' : 'speed.sections')} ${l.design.join(' / ')}\u00a0km/h` : '';
+            const ranges = l.sections?.length > 1 ? ' · ' + l.sections.map(s => `${t('range', { from: s.from, to: s.to })} ${s.design}\u00a0km/h`).join(' · ') : '';
+            const upgrades = (l.upgrades || []).map(s => ` · ${t('range', { from: s.from, to: s.to })} ${t('speed.upgrade', { speed: s.design })}`).join('');
+            metaEl.textContent = ((l.mini && FOREIGN[l.g].miniName) || FOREIGN[l.g].kindName[l.jk] || t('rail.of', { country: FOREIGN[l.g].name })) + speed + ranges + upgrades + (l.o ? ' · ' + l.o : '');
           } else {
             const rest = l ? (l.est > 0.02 ? ' · ' + t('speed.someTrack') : l.plain > 0.02 ? ' · ' + t('speed.restConv') : '') : '';
             metaEl.textContent = capital(l && l.design && l.design.length
@@ -2424,6 +2485,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       else if (p.d) meta = t(p.db === 'track' ? 'speed.track' : 'speed.line', { speed: p.d }) + (p.v ? ' · ' + t('speed.runs', { speed: p.v }) : '');
       else if (p.e) meta = t('speed.band', { band: DESIGN_LABEL[p.c] });
       if (p.de) meta += ' · ' + (([from, to]) => (to ? t('range', { from, to }) : from))(p.de.split('~'));
+      if (p.ud) meta += ' · ' + t('speed.upgrade', { speed: p.ud });
+      if (p.c === 'build' && p.d) meta = t('speed.buildStandard', { speed: p.d }) + (p.de ? ' · ' + t('range', { from: p.de.split('~')[0], to: p.de.split('~')[1] }) : '');
       let who = p.o ? `<br><span>${esc(t('tip.operator', { who: p.o }))}</span>` : '';
       const near = id => map.getLayoutProperty(id, 'visibility') !== 'none'
         && map.queryRenderedFeatures([[e.point.x - 9, e.point.y - 9], [e.point.x + 9, e.point.y + 9]], { layers: [id] })[0];
@@ -2459,7 +2522,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // In tile mode they are not there yet when the map comes up (stationLists() fetches them), so
     // what is made from them is made here, and made again when they arrive.
     let routable, hubName, searchData;
-    let stationsAsked = !tiles, stationsIn = !tiles;
+    let stationsAsked = !tiles, stationsIn = !tiles, stationPromise;
     const whenStations = [];
     const listStations = () => {
       for (const f of metroStations.features) {
@@ -2687,7 +2750,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     };
     // clicking a station offers it as origin or destination
     const stationPop = new maplibregl.Popup({ className: 'tip station-pop', closeButton: false, offset: 10, maxWidth: '240px' });
+    let reportStation = null;
     const offerStation = f => {
+      if (reportStation) { reportStation(f); return; }
       const box = document.createElement('div');
       const title = document.createElement('b');
       setName(title, named(f.properties, abroad(f.properties.g)));
@@ -2717,15 +2782,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // openResult acts on what the search returned, given the object or just its id: the card
     // moves to the country of the thing and the map flies to it. The rows of the card call it
     // and the app's native search will, both through window.__rail.
-    function openResult(r) {
+    function openResult(r, fly = true) {
       const e = searchData.byId.get(typeof r === 'string' ? r : r && r.id);
       if (!e) return false;
       endSearch();
       queryEl.blur();
-      if (e.kind === 'line') select(e.ref.n, true);
-      else if (e.kind === 'metro') selectMetro(e.ref[0], e.ref[1], true);
+      if (e.kind === 'line') select(e.ref.n, fly);
+      else if (e.kind === 'metro') selectMetro(e.ref[0], e.ref[1], fly);
       else if (e.kind === 'country') {
-        setCountry(e.country, true);
+        setCountry(e.country, fly);
         if (isPhone()) sheet.to('mid');
       } else if (e.kind === 'city' && !e.ref) {
         // a city without a metro has no list of its own: the card goes to its country, the map
@@ -2734,19 +2799,19 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         touched = true;
         if (isPhone()) sheet.to('peek');
         const [x, y] = e.at, reach = 0.27, wide = reach / Math.cos(y * Math.PI / 180);
-        frame({ bounds: [[x - wide, y - reach], [x + wide, y + reach]] }, 1400);
+        if (fly) frame({ bounds: [[x - wide, y - reach], [x + wide, y + reach]] }, 1400);
       } else if (e.kind === 'city') {
         enter(e.country);
         const classes = land(e.country).metro;      // the classes are lists of their own: open the first this city is in
         showTab('lines');
         setKind((classes.find(([k]) => e.ref.lines.some(l => l.jk === k)) || classes[0])[0]);
-        openCity(e.ref, true);
+        openCity(e.ref, fly);
         if (isPhone()) sheet.to('mid');
       } else {
         enter(e.country);
         touched = true;
         if (isPhone()) sheet.to('peek');
-        frame({ point: e.at, zoom: e.ref.properties.m ? 14 : 12 }, 1400);
+        if (fly) frame({ point: e.at, zoom: e.ref.properties.m ? 14 : 12 }, 1400);
         offerStation(e.ref);
       }
       return true;
@@ -2819,9 +2884,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // countries) are only for the search and the route fields. They are fetched when the map has
     // drawn what is in view, or at once when one of those fields is used, whichever is first.
     function stationLists() {
-      if (stationsAsked) return;
+      if (stationsAsked) return stationPromise;
       stationsAsked = true;
-      Promise.all(everyCountry.map(g => getJSON(`data/tiles/${g}.stations.json`))).then(lists => {
+      stationPromise = Promise.all(everyCountry.map(g => getJSON(`data/tiles/${g}.stations.json`))).then(lists => {
         everyCountry.forEach((g, i) => {
           stations.features = stations.features.concat(listed(lists[i].rail, g === 'cn' ? {} : { g }));
           metroStations.features = metroStations.features.concat(listed(lists[i].metro, g === 'cn' ? {} : { g, m: 1 }));
@@ -2831,6 +2896,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         if (finding) renderFound();
         for (const again of whenStations) again();        // the route fields list what was typed meanwhile
       }).catch(() => { stationsAsked = false; });       // asked again the next time a field is used
+      return stationPromise;
     }
     map.once('idle', stationLists);
     for (const field of [queryEl, odInput.from, odInput.to]) field.addEventListener('focus', stationLists);
@@ -2893,6 +2959,138 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       stationPop.remove();
       tip.remove();
     });
+    // APP-BRIDGE: the native app calls the very same actions and reads the very same words
+    // as this card. Register before after-render, so Release never boots without its contract.
+    if (window.__app) {
+      const app = window.__app;
+      const textAt = selector => (document.querySelector(selector)?.textContent || '').trim();
+      const coloursAt = el => [...new Set((el?.getAttribute('style') || '').match(/#[\da-f]{6}\b|#[\da-f]{3}\b/gi) || [])]
+        .map(c => c.length === 4 ? '#' + [...c.slice(1)].map(x => x + x).join('') : c);
+      const coloursFor = l => l ? (l.grades?.length > 1 ? l.grades.map(col) : [l.col || l.lc || col(l.c || 'main')]) : [];
+      const entryFor = f => searchData.entries.filter(e => e.kind === 'station' && e.ref.properties.n === f.properties.n
+        && abroad(e.ref.properties.g) === abroad(f.properties.g))
+        .map(e => [e, Math.hypot(e.at[0] - f.geometry.coordinates[0], e.at[1] - f.geometry.coordinates[1])])
+        .filter(([, d]) => d < 0.02).sort((a, b) => a[1] - b[1])[0]?.[0];
+      const nativeStation = e => ({ id: e.id, country: e.country, name: e.name, sub: e.sub, routable: !!e.routable,
+        note: e.routable ? null : t(FOREIGN[e.country] ? 'stop.abroad' : 'stop.off', { country: nameOf(e.country) }) });
+      let lastStation = null;
+      const nativeSelection = () => {
+        const id = selected ? 'line:' + selected : selMetro ? 'metro:' + selMetro.ct + '/' + selMetro.n : null;
+        if (!id) return null;
+        const e = searchData.byId.get(id), l = selected ? byName.get(selected) : e?.ref[1];
+        return { id, country, name: textAt('#selName'), text: textAt('#selMeta'), colours: coloursFor(l) };
+      };
+      const stopNamed = role => {
+        const stop = od[role];
+        if (!stop) return null;
+        const e = searchData.entries.find(e => e.kind === 'station' && e.routable && e.ref.properties.g === stop.g);
+        return e ? { id: e.id, name: e.name } : null;
+      };
+      const nativeTrip = () => {
+        if (routeOut.hidden) return null;
+        const steps = []; let before = null;
+        for (const li of document.querySelectorAll('#routeSteps > li')) {
+          if (li.classList.contains('change')) { before = li.textContent.trim(); continue; }
+          steps.push({ name: li.children[1]?.textContent.trim() || '', distance: textAtFrom(li, '.km'),
+            colour: coloursAt(li.querySelector('i'))[0] || col('main'), minor: li.classList.contains('minor'), before });
+          before = null;
+        }
+        return { distance: textAt('#routeKm'), time: textAt('#routeTime'), steps, after: before };
+      };
+      const textAtFrom = (el, selector) => (el.querySelector(selector)?.textContent || '').trim();
+      const nativeJumps = () => [...document.querySelectorAll('#jumps button')].map((b, i) => ({
+        id: world ? 'country:' + everyCountry[i] : i === 0 ? 'country:' + country : 'city:' + realCitiesOf(country)[i - 1].n,
+        name: b.textContent.trim(),
+      }));
+      const nativeState = () => {
+        const credit = document.querySelector('[data-th="credits.data"]');
+        const rows = [...listEl.querySelectorAll('button[data-app-id]')].map(b => {
+          const e = searchData.byId.get(b.dataset.appId);
+          if (!e) throw new Error('list id is absent from search: ' + b.dataset.appId);
+          return { id: e.id, kind: e.kind, name: textAtFrom(b, '.nm'), sub: textAtFrom(b, '.kmh'), colours: coloursAt(b.querySelector('i')) };
+        });
+        const city = metroCity && !RAIL_KINDS.includes(kind) && metroCity.lines.some(l => l.jk === kind)
+          ? { id: 'city:' + metroCity.n, name: cityName(metroCity) } : null;
+        return { language: lang, copy: appCopy(), level: world ? null : country, title: textAt('#title'), hint: queryEl.placeholder,
+          countries: window.__rail.countries(), kinds: kindsOf(country).map(([id, name]) => ({ id, name })), kind,
+          list: { caption: textAt('#lineCap'), count: textAt('#lineCount'), city, rows, note: moreEl.textContent.trim() },
+          layers: Object.entries(rowEls).filter(([, lab]) => !lab.hidden).map(([id, lab]) => {
+            const c = CLASSES.find(c => c.id === id), r = abroadRowList.find(([l]) => l === lab)?.[1];
+            const mark = id === 'border' ? 'border' : ['stations', 'cities'].includes(id) ? 'dot' : id === 'build' ? 'dashed'
+              : c?.spd || r?.band || r?.mini ? 'band' : c?.metro || r?.metro ? 'casing' : 'line';
+            return { id, name: textAtFrom(lab, '.txt b'), sub: textAtFrom(lab, '.txt small'), speed: textAtFrom(lab, '.spd'),
+              colours: coloursAt(lab.querySelector('.sw i')).length ? coloursAt(lab.querySelector('.sw i')) : [col('main')], mark, on: lab.querySelector('input').checked };
+          }),
+          colouring: document.getElementById('ukSec').hidden ? null : { title: textAt('#opTitle'), text: textAt('#opHint') },
+          jumps: nativeJumps(), look: { globe, brightness: +dim.value, least: +dim.min, most: +dim.max, step: +dim.step, note: textAt('#baseNote') },
+          route: { from: stopNamed('from'), to: stopNamed('to'), asks: [t('od.from'), t('od.to')], note: routeNote.textContent.trim(), trip: nativeTrip() },
+          credits: { text: credit.textContent.trim(), links: [...credit.querySelectorAll('a')].map(a => ({ name: a.textContent.trim(), url: a.href }))
+            .concat([{ name: t('app.credits.maplibre'), url: 'https://github.com/maplibre/maplibre-gl-js/blob/main/LICENSE.txt' },
+              { name: t('app.credits.source'), url: 'https://github.com/rail-globe/rail-globe.github.io' }]) },
+          selection: nativeSelection() };
+      };
+      let previous = nativeState();
+      const flush = () => {
+        const next = nativeState(), patch = {};
+        for (const key of Object.keys(next)) if (key !== 'selection' && JSON.stringify(next[key]) !== JSON.stringify(previous[key])) patch[key] = next[key];
+        if (Object.keys(patch).length) app.post('state', patch); // level must precede selection
+        if (JSON.stringify(next.selection) !== JSON.stringify(previous.selection)) app.post('selection', next.selection);
+        previous = next;
+      };
+      // Async route results and map taps update the card outside a native call too.
+      const observer = new MutationObserver(flush);
+      observer.observe(panel, { subtree: true, childList: true, characterData: true, attributes: true });
+      observer.observe(document.getElementById('jumps'), { subtree: true, childList: true });
+      const action = fn => payload => { fn(payload || {}); flush(); return null; };
+      const knownCountry = id => { if (!everyCountry.includes(id)) throw new Error('unknown country: ' + id); };
+      const stationsReady = async () => { if (!stationsIn) await stationLists(); if (!stationsIn) throw new Error('station lists could not be loaded'); };
+      app.on('state', () => nativeState());
+      app.on('search', async ({ text, routable: onlyStops = false }) => {
+        await stationsReady();
+        const groups = searchAll(String(text || ''), onlyStops ? { country: 'cn', countries: ['cn'], kinds: ['station'], routable: true, limit: 40, merge: false } : {})
+          .map(g => ({ ...g, more: g.total > g.results.length ? t('found.more', { n: g.total - g.results.length }) : null }));
+        return { groups, note: groups.length ? '' : t('found.none') };
+      });
+      app.on('setCountry', action(({ id, fly = 'auto' }) => { knownCountry(id); setCountry(id, fly); }));
+      app.on('setWorld', action(setWorld));
+      app.on('setKind', action(({ id }) => { if (!kindsOf(country).some(([k]) => k === id)) throw new Error('unknown class: ' + id); setKind(id); }));
+      app.on('open', async ({ id, fly = true }) => { if (String(id).startsWith('station:')) await stationsReady(); if (!openResult(id, fly)) throw new Error('unknown item: ' + id); flush(); });
+      app.on('closeCity', action(() => { metroCity = null; renderList(); }));
+      app.on('clearSelection', action(clearSelection));
+      app.on('setLayer', action(({ id, on }) => {
+        const lab = rowEls[id]; if (!lab || lab.hidden || typeof on !== 'boolean') throw new Error('unknown layer or value: ' + id);
+        const input = lab.querySelector('input'); input.checked = on; input.dispatchEvent(new Event('change'));
+      }));
+      app.on('setBrightness', action(({ value }) => {
+        if (!Number.isFinite(value)) throw new Error('invalid brightness');
+        dim.value = String(Math.max(+dim.min, Math.min(+dim.max, Math.round(value / +dim.step) * +dim.step))); applyDim();
+      }));
+      app.on('setGlobe', action(({ on }) => { if (typeof on !== 'boolean') throw new Error('invalid projection'); projBtn[on ? 'globe' : 'mercator'].click(); }));
+      app.on('jump', action(({ id }) => { const i = nativeJumps().findIndex(p => p.id === id); if (i < 0) throw new Error('unknown place: ' + id); document.querySelectorAll('#jumps button')[i].click(); }));
+      app.on('setStop', async ({ end, id }) => {
+        if (!['from', 'to'].includes(end)) throw new Error('unknown route end: ' + end);
+        await stationsReady();
+        const e = id == null ? null : searchData.byId.get(id);
+        if (id != null && (!e || e.kind !== 'station' || !e.routable)) throw new Error('station cannot be used for a route: ' + id);
+        setStop(end, e?.ref || null); flush();
+      });
+      app.on('swapStops', action(() => document.getElementById('odSwap').click()));
+      app.on('clearStops', action(() => document.getElementById('odClear').click()));
+      app.on('cover', action(payload => {
+        if (!['top', 'left', 'bottom', 'right'].every(k => Number.isFinite(payload[k]) && payload[k] >= 0)) throw new Error('invalid covered edges');
+        appCovered = Object.fromEntries(['top', 'left', 'bottom', 'right'].map(k => [k, payload[k]]));
+        if (framed) show(framed, 0);
+      }));
+      app.on('setLanguage', action(({ language }) => { if (!LANGS.includes(language)) throw new Error('unknown language: ' + language); setLanguage(language, false); }));
+      reportStation = f => {
+        const e = entryFor(f);
+        if (!e) { if (!stationsIn) stationsReady().then(() => reportStation(f)).catch(err => console.error(err)); return; }
+        lastStation = e.id; flush(); app.post('station', nativeStation(e));
+      };
+      relabelled.push(() => { flush(); if (lastStation && searchData.byId.has(lastStation)) app.post('stationUpdate', nativeStation(searchData.byId.get(lastStation))); });
+      window.__map = map;
+    }
+    // APP-BRIDGE-END
     applyVisibility();
     window.__bootStage = 'after-render';
     document.getElementById('loading').hidden = true;

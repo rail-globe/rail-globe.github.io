@@ -1,1 +1,1 @@
-{"layers":["conv","build","metro","stations","metro-stations","yards","depots"],"bands":[["shinkansen","hsr250"]],"build":15}
+{"layers":["conv","build","metro","stations","metro-stations","yards","depots"],"bands":[["shinkansen","hsr250"],["shinkansen","hsr300"]],"build":15}

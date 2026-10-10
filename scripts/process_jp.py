@@ -12,7 +12,7 @@ own colour. Nothing here touches the Chinese data or scripts/process_osm.py.
 Colours follow the one rule for every country (user, 2026-10-08, after trying company colours and
 line colours for the Shinkansen and dropping both):
 - a high-speed line is drawn in the band of its design speed, the same seven bands as in China
-  (property c = the band, d = the speed): here the Shinkansen, all built for 260 km/h;
+  (property c = the band, d = the speed), including completed infrastructure upgrades;
 - any other railway is drawn in its own line colour where it has one (ラインカラー, set per line or
   service and used on route maps and station signs; property lc), otherwise in the neutral colour
   of conventional lines (no lc). Never in the colour of its company;
@@ -45,7 +45,7 @@ from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import linemerge
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from design_speeds import grade
+from jp_design import annotate_build, apply_design, base_colour
 from names import Names, city_names, name_city
 from side_by_side import abreast, side_by_side
 from yards import write_yards
@@ -84,10 +84,7 @@ NAME_TYPOS = {"R久留里線": "久留里線", "熊本市営田崎線": "熊本�
 # (岡山電気軌道's 東山本線 and 清輝橋線, とさでん交通's 桟橋線) takes its company in front, as the
 # other lines of とさでん交通 have it in OSM.
 SAYS_WHOSE = re.compile(r"電|鉄|軌道|交通|ライトレール")
-# The design speed of the Shinkansen: 「ミニ新幹線を除いて、1964年（昭和39年）に開業した東海道新幹線から
-# 全て設計最高速度260 km/hで建設されている」 (https://ja.wikipedia.org/wiki/新幹線, read 2026-10-08).
-# What each line runs at today (285 to 320 km/h on the older ones) is a running speed, not this.
-SHINKANSEN_DESIGN = (260, "https://ja.wikipedia.org/wiki/新幹線")
+# Current completed design and upgrade standards are recorded in jp_design.py.
 # The two "mini-Shinkansen" run on conventional lines converted to standard gauge: they are of the
 # Shinkansen class (jk shinkansen, as the owner lists them, 2026-10-10) but not in its speed band,
 # since they were not built to its design speed, and no source gives them one. They are marked mini,
@@ -230,8 +227,7 @@ def colouring(name, jk, line_colour):
     its design speed, any other line by its own colour if it has one, and otherwise nothing (the
     page then draws it in the neutral colour of conventional lines)."""
     if jk == "shinkansen" and name not in MINI:
-        speed, source = SHINKANSEN_DESIGN
-        return {"c": grade(speed), "d": speed, "ref": source}
+        return base_colour(name)
     how = {"lc": line_colour} if line_colour else {}
     if name in MINI:                                  # a top speed, not a design speed: no band
         how.update(d=MINI[name]["top"], e=1, ref=MINI[name]["ref"])
@@ -795,6 +791,8 @@ def main():
     rail_feats = side_by_side(rail_feats, skip=lambda props: False, slots_of=abreast, min_run=0.006)
     print(f"japan rail side by side: {whole} features written as {len(rail_feats)}, "
           f"{sum(1 for f in rail_feats if f['properties'].get('off'))} of them moved to a side", flush=True)
+    rail_feats, design_audit = apply_design(rail_feats, lines_json, ex["stations"])
+    print("japan completed design sections:", design_audit, flush=True)
     for name, english in shared_en.items():         # a line drawn on shared track: its relation's English name
         names.en[name] = Counter({english: 1.0})
     for row in lines_json.values():
@@ -901,6 +899,7 @@ def main():
     write("jp_metro.geojson", {"type": "FeatureCollection", "features": metro_feats})
     write("jp_stations.geojson", {"type": "FeatureCollection", "features": stations})
     build_feats = being_built(ways, "jp", plain_name, build_fast=lambda name: "新幹線" in name, names=names)
+    build_feats = annotate_build(build_feats)
     write("jp_build.geojson", {"type": "FeatureCollection", "features": build_feats})
     write("jp_lines.json", sorted(lines_json.values(), key=lambda r: -r["tk"]))
     write("jp_metro_cities.json", sorted(cities.values(), key=lambda c: -c["km"]))
@@ -940,6 +939,7 @@ def main():
                  "rail": sorted(name for name, kinds in rail_line_kinds.items() if len(kinds) > 1),
                  "metro": sorted(f"{city} / {name}" for (city, name), kinds in metro_line_kinds.items() if len(kinds) > 1),
              }}
+    audit["design_sections"] = design_audit
     write("jp_taxonomy_audit.json", audit)
     print(f"jk buckets: { {k: jk_lines.get(k, 0) for k in rail_keys} } metro: {audit['metro']}", flush=True)
     print(f"japan: {len(lines_json)} railway lines, {all_km:.0f} km drawn ({fast_km:.0f} km Shinkansen); "

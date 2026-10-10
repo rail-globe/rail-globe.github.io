@@ -25,7 +25,7 @@
 ## 图上有什么
 
 - 中国：铁路按区段设计时速分 >350、350、300、250、200、160、<160 七档，没有设计时速资料的线路列为普速铁路，未建成线路用虚线
-- 日本：全国铁路和各城市的地铁、单轨、路面电车。新干线全部按 260 km/h 的设计时速归入 250 档；其余线路有自己的线路色就用线路色，没有的用中性浅色。同一走廊里并行的线路按实际位置并排画，放大后回到各自的轨道上；在建的中央新干线等画虚线
+- 日本：全国铁路和各城市的地铁、单轨、路面电车。新干线按已建成的设计及改造标准分段着色，东海道 285、山阳 300、东北宇都宫至盛冈 320 km/h，其余区段和在建提速分别记录。依据与区段保存在 `data/jp_design_standards.json`，设计标准的改造口径见[日本土木学会](https://note.com/jsce/n/n66945fec6082)。山形、秋田保留独立的 130 km/h 图层与线路色。其余铁路有自己的线路色就用线路色，没有的用中性浅色。同一走廊里并行的线路按实际位置并排画，放大后回到各自的轨道上；在建的中央新干线等画虚线
 - 韩国：全国铁路和首尔、釜山、大邱、仁川、大田、光州的地铁与轻轨。京釜、水西平泽高速线按 350 km/h 的设计时速归档；湖南高速线暂按最高运行速度 305 km/h 归入 300 档；中央线、京江线等准高速线路按轨道限速归入 250、200 档。后两类的设计时速待核实，页面上标明
 - 英国：全国铁路(含北爱尔兰)、遗产铁路、伦敦地铁、格拉斯哥地铁、DLR、泰恩威尔地铁和各城市的有轨电车。High Speed 1 归入 300 档(依据是最高运行速度，设计时速待核实)；ScotRail、威尔士交通、Overground、Elizabeth line、Merseyrail 等给各条线路定了颜色的，按线路色；在建的 High Speed 2 画虚线
 - 地铁：全国各城市的地铁、单轨和磁浮(含港铁、澳门轻轨、台湾的捷运)，按线路官方色
@@ -104,7 +104,5 @@ python3 -m unittest discover -s tests # 画法的回归测试
 ## 许可
 
 - **代码、页面和文档**：[PolyForm Noncommercial 1.0.0](LICENSE)。可以用来学习、研究、个人和教学使用，也可以修改和分享；**不能用于商业用途**，除非得到作者的书面授权。需要商用授权，请在本仓库开一个 Issue 联系。
-- **地图数据**（`data/`）：来自 OpenStreetMap 的衍生数据库，按 [ODbL 1.0](LICENSE-DATA.md) 提供，使用时请署名 © OpenStreetMap contributors。
-- 卫星影像（Esri）、`vendor/` 下的第三方文件各按各自的条款，详见 [LICENSE-DATA.md](LICENSE-DATA.md)。
 
-This project's code is licensed under PolyForm Noncommercial 1.0.0 (study, research and personal use are welcome; commercial use needs written permission). The map data is a derived database of OpenStreetMap under the ODbL.
+This project's code is licensed under PolyForm Noncommercial 1.0.0 (study, research and personal use are welcome; commercial use needs written permission).

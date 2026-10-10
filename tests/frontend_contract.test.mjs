@@ -45,7 +45,7 @@ const checks = [
   ['the phone sheet at rest shows the header clear of the home indicator, and at the list its start', /peek: Math\.max\(0, H - head\.offsetHeight - safe\('Bottom'\) - \(world && !finding \? 108 : 0\)\)/],
   ['the level is plain state the app can ask for', /level: \(\) => \(world \? null : country\), openCountry: \(g, fly\) => setCountry\(g, fly === undefined \? 'auto' : !!fly\), openWorld: setWorld,\s+language: \(\) => lang, setLanguage: to => setLanguage\(to, false\),\s+countries: \(\) => everyCountry\.map/],
   // the language, for the app: one call to ask, one to set (not remembered as the visitor's own choice), one event when it changes
-  ['the app asks for the language, sets it, and hears when it changes', page => /relabel\(\);\s+dispatchEvent\(new CustomEvent\('rail:language', \{ detail: lang \}\)\);\s+if \(window\.__app\) window\.__app\.post\('language', lang\);/.test(page)
+  ['the app asks for the language, sets it, and hears when it changes', page => /relabel\(\);\s+sendCopy\(\);\s+dispatchEvent\(new CustomEvent\('rail:language', \{ detail: lang \}\)\);\s+if \(window\.__app\) window\.__app\.post\('language', lang\);/.test(page)
     && /if \(byHand\) \{\s+try \{ localStorage\.setItem\('lang', lang\);/.test(page)],
   ['the thumb reaches a fourth and fifth choice', /nth-of-type\(5\)[^{]*\{ --i: 4; \}/],
   // 6b. one colour rule: the band of the design speed, else the line's own colour, else neutral; never the company's
@@ -77,17 +77,17 @@ const checks = [
     && /map\.setLayoutProperty\(id, 'text-field', namedField\(kind, under, g\)\)/.test(page) && /listStations\(\);\s+nameTheMap\(\);/.test(page)
     && /if \(g\) return as\(howNamed\(g, kind, NAMES\.map\)\);/.test(page)],
   ['the card names lines, cities and stations by the same rule', page => /const cityName = c => named\(c, abroad\(c\.g\), 'city'\);/.test(page)
-    && /addJump\(cityName\(c\), /.test(page) && /, cityName\(c\), \(\) => openCity\(c, true\)\);/.test(page) && /named\(l, abroad\(c\.g\)\), \(\) => selectMetro\(c, l, true\)/.test(page)
-    && /named\(l, abroad\(l\.g\)\), \(\) => select\(l\.n, true\), selected === l\.n\)/.test(page) && /hubName = new Map\(routable\.map\(f => \[f\.properties\.g, named\(f\.properties\)\]\)\);/.test(page)
+    && /addJump\(cityName\(c\), /.test(page) && /, cityName\(c\), \(\) => openCity\(c, true\), false, 'city:' \+ c\.n\);/.test(page) && /named\(l, abroad\(c\.g\)\), \(\) => selectMetro\(c, l, true\)/.test(page)
+    && /named\(l, abroad\(l\.g\)\), \(\) => select\(l\.n, true\), selected === l\.n, 'line:' \+ l\.n\)/.test(page) && /hubName = new Map\(routable\.map\(f => \[f\.properties\.g, named\(f\.properties\)\]\)\);/.test(page)
     && /say: t, name: named,/.test(page) && /nameMetroCities\(metroCities, cities, abroad\);/.test(page)],
   // 6n. the mini-shinkansen (2026-10-10): lines of the fast class in no speed band are listed with it after the others,
-  // with a dash for a speed, drawn in their own colours by a layer of their own that follows the class's switch, said for what they are
+  // with their top speed, drawn in their own colours by a layer and switch of their own, said for what they are
   ['a fast class\'s lines in no band: their own layer, in their own colours, with a row and a switch of their own (2026-10-10, "新加个130km新干线图层吧")', page =>
     /abroadLayers\.push\(\[`\$\{g\}-\$\{kind\}-mini`, g, \['all', \.\.\.of\(kind\), \['!', \['in', \['get', 'c'\], \['literal', FAST\]\]\]\], \['coalesce', \['get', 'lc'\], col\('main'\)\], plainOf\]\);/.test(page)
     && /\.\.\.\(\(minis\[kind\] \|\| \[\]\)\.length \? \[\{ id: `\$\{g\}-\$\{kind\}-mini`, g, rail: kind, mini: minis\[kind\] \}\] : \[\]\)/.test(page)
     && /itsLines\.filter\(l => l\.mini && jkOf\(g, kind\)\.includes\(l\.jk\)\)/.test(page) && !/for \(const \[id, g, kind\] of abroadMini\)/.test(page)
     && /'main', 'branch', \.\.\.abroadMini\.map\(m => m\[0\]\),/.test(page) && /abroadPlain\.push\(`\$\{g\}-\$\{kind\}-mini`\);/.test(page)],
-  ['...listed after the lines built for the speed, a dash for a speed, said as mini-shinkansen; the class\'s whole length in the figures', page =>
+  ['...listed after the lines built for the speed, their top speed shown, said as mini-shinkansen; the class\'s whole length in the figures', page =>
     /\.sort\(\(a, b\) => !!a\.mini - !!b\.mini\)\]\)\)\]\)\);/.test(page) && /\(l\.d \? l\.d \+ '\\u00a0km\/h' : l\.mini \? '—' :/.test(page) && /\(\(l\.mini && FOREIGN\[l\.g\]\.miniName\) \|\|/.test(page)
     && /\(lineOf\(p\)\.mini && there\.miniName\)/.test(page) && /miniName: 'jp\.mini',/.test(page) && /of\[FOREIGN\[g\]\.fast\[0\] \+ '_km'\]\) \|\| of\.fast_km/.test(page)],
   ['the rows are still those of the country of the card', /rowEls\[id\]\.hidden = !id\.startsWith\(country \+ '-'\);/],
@@ -124,7 +124,7 @@ const checks = [
     /const keepView = \(\) => \{\s+if \(!country \|\| lookingAt\(\) !== country\) return;[^\n]*\s+if \(framed && framed\.country === country\) \{ delete leftAt\[country\]; return; \}\s+const c = map\.getCenter\(\);\s+leftAt\[country\] = \{ center: \[c\.lng, c\.lat\], zoom: map\.getZoom\(\), bearing: map\.getBearing\(\), pitch: map\.getPitch\(\) \};/.test(page)
     && /function setWorld\(\) \{\s+keepView\(\);/.test(page) && /\} else if \(go === 'back'\) frame\(\{ camera: leftAt\[g\] \}, 1800\);/.test(page) && /if \(what\.camera\) \{ map\.flyTo\(\{ \.\.\.what\.camera, duration \}\); return; \}/.test(page)],
   ['the reader\'s picks of a country go by the rule; a search result and a page that follows the map do not', page =>
-    /nameOf\(g\), \(\) => \{ setCountry\(g, 'auto'\);/.test(page) && /setCountry\(e\.country, true\);/.test(page) && /const enter = g => \{ if \(world \|\| g !== country\) setCountry\(g, false\); \};/.test(page)
+    /nameOf\(g\), \(\) => \{ setCountry\(g, 'auto'\);/.test(page) && /function openResult\(r, fly = true\)/.test(page) && /setCountry\(e\.country, fly\);/.test(page) && /const enter = g => \{ if \(world \|\| g !== country\) setCountry\(g, false\); \};/.test(page)
     && !/setCountry\([^)]*\)[^\n]*frame\(\{ country/.test(page)],
   ['the back button does not move the map', page => !/function setWorld\(\) \{[^}]*(?:frame|flyTo|jumpTo|fitBounds)/.test(page)],
   ['the selection is cleared before the country changes', /function setCountry\(g, fly\) \{\n\s+const go = [^\n]*\n\s+if \(g !== country \|\| world\) keepView\(\);\n(?:\s+\/\/[^\n]*\n)*\s+if \(selMetro\) selectMetro\(null, null\);\s+if \(selected\) select\(null\);\s+const changed = g !== country \|\| !kindButtons\.length;\s+country = g;/],
@@ -132,7 +132,7 @@ const checks = [
   ['the route fields use the same search, China only', /searchAll\(q, \{ country: 'cn', kinds: \['station'\], countries: \['cn'\], routable: true, limit: 40, merge: false \}\)/],
   ['no second station search', /^(?![\s\S]*routable\.filter\(f => label)/],
   ['search and open are reachable without the card', /window\.__rail = \{ search: searchAll, open: openResult, /],
-  ['a result is acted on by its kind', /function openResult\(r\) \{[\s\S]*?select\(e\.ref\.n, true\);[\s\S]*?selectMetro\(e\.ref\[0\], e\.ref\[1\], true\);[\s\S]*?setCountry\(e\.country, true\);[\s\S]*?openCity\(e\.ref, true\);[\s\S]*?offerStation\(e\.ref\);/],
+  ['a result is acted on by its kind', /function openResult\(r, fly = true\) \{[\s\S]*?select\(e\.ref\.n, fly\);[\s\S]*?selectMetro\(e\.ref\[0\], e\.ref\[1\], fly\);[\s\S]*?setCountry\(e\.country, fly\);[\s\S]*?openCity\(e\.ref, fly\);[\s\S]*?offerStation\(e\.ref\);/],
   ['a station or a city opens its country\'s page', /enter\(e\.country\);[\s\S]*enter\(e\.country\);/],
   ['a metro line opens the list of its own class, in every country', /const its = \(\) => \(classes => classes\.find\(\(\[k\]\) => k === l\.jk\) \|\| classes\[0\]\)\(land\(country\)\.metro\);[^\n]*\n\s+if \(kind !== its\(\)\[0\]\) setKind\(its\(\)\[0\]\);/],
   ['search waits for an input method that is still typing letters', /if \(!\(e\.isComposing && \/\[a-z\]\/i\.test\(e\.data \|\| ''\)\)\) renderFound\(\);[\s\S]{0,120}addEventListener\('compositionend', renderFound\)/],
@@ -169,7 +169,7 @@ const checks = [
   ['what is made from the stations is made again when they arrive', /stationsIn = true;\s+listStations\(\);\s+if \(finding\) renderFound\(\);/],
   ['a search asks for the station lists and says while they are on their way', /stationLists\(\);\s+const found = searchIndex\([\s\S]{0,200}found\.pending = !stationsIn;/],
   ['the results say the stations are loading rather than that nothing was found', /note\.textContent = t\(found\.pending \? 'found\.loading' : 'found\.none'\);/],
-  ['tiles off: the station lists are there from the start', /let stationsAsked = !tiles, stationsIn = !tiles;/],
+  ['tiles off: the station lists are there from the start', /let stationsAsked = !tiles, stationsIn = !tiles, stationPromise;/],
   ['a tapped station is found in the list by name and nearness', /offerStation\(stationOf\(stations\.features, st\)\);[\s\S]*offerStation\(stationOf\(metroStations\.features, ms\)\);/],
   ['a tapped feature is told by its tile layer or its source', /const of = f && \(f\.sourceLayer \|\| f\.layer\.source\);/],
   // 6h. the route network is fetched when a route is first asked for, in both modes
@@ -347,7 +347,7 @@ if (tongue) {
   report('both languages fill in the same things', uneven.length === 0);
   if (uneven.length) console.error('     not the same {things}:', uneven.join(' '));
   // an English text has no Chinese in it, but for the examples of what can be typed and the name of the language itself
-  const mixed = keys.filter(k => han.test(TEXT[k][1]) && !['lang.label'].includes(k));
+  const mixed = keys.filter(k => han.test(TEXT[k][1]) && !['lang.label', 'app.lang.label'].includes(k));
   report('the English is English', mixed.length === 0);
   if (mixed.length) console.error('     Chinese in the English of:', mixed.join(' '));
   // the script outside the table: every key it names is in the table, every key of the table is named
@@ -359,7 +359,10 @@ if (tongue) {
   const single = [...outside.matchAll(/\b(?:t|say)\((?:[^()'"]*, )?'([a-z]+)'/g)].map(m => m[1]);          // t('metro'), say(el, 'loading')
   const config = [...outside.matchAll(/\b(?:name|fastWord): '([a-z.]+)'/g)].map(m => m[1]).concat([...outside.matchAll(/\['(?:subway|urban|hs|semi|main|branch|heritage)', '([a-z.]+)'\]/g)].map(m => m[1]),
     [...outside.matchAll(/\b(?:subway|urban): '([a-z.]+)'/g)].map(m => m[1])).filter(k => k.includes('.') || ['metro', 'cn', 'jp', 'kr', 'uk'].includes(k));
-  const used = new Set([...named, ...inMarkup, ...single, ...config]);
+  // Native UI reads this explicitly exported part of the same table through state.copy.
+  const appExport = /const appCopy = \(\) => Object\.fromEntries\(Object\.keys\(TEXT\)\.filter\(k => k\.startsWith\('app\.'\)\)\.map\(k => \[k, t\(k\)\]\)\);/.test(outside)
+    ? keys.filter(k => k.startsWith('app.')) : [];
+  const used = new Set([...named, ...inMarkup, ...single, ...config, ...appExport]);
   const missing = [...used].filter(k => !(k in TEXT)), idle = keys.filter(k => !used.has(k));
   report('every text the page asks for is in the table', missing.length === 0);
   if (missing.length) console.error('     no entry for:', missing.join(' '));
@@ -749,6 +752,8 @@ if (core) {
       if (op === 'literal') return a[0];
       if (op === 'coalesce') { for (const x of a) { const v = run(x, p, z); if (v != null) return v; } return null; }
       if (op === '*') return a.reduce((t, x) => t * run(x, p, z), 1);
+      if (op === '+') return a.reduce((t, x) => t + run(x, p, z), 0);
+      if (op === '-') return run(a[0], p, z) - run(a[1], p, z);
       if (op === '==') return run(a[0], p, z) === run(a[1], p, z);
       if (op === '!=') return run(a[0], p, z) !== run(a[1], p, z);
       if (op === 'in') return run(a[1], p, z).includes(run(a[0], p, z));
@@ -757,7 +762,11 @@ if (core) {
       if (op === '!') return !run(a[0], p, z);
       if (op === 'all') return a.every(x => run(x, p, z));
       if (op === 'any') return a.some(x => run(x, p, z));
-      if (op === 'case') { for (let i = 0; i < a.length - 1; i += 2) if (run(a[i], p, z)) return run(a[i + 1], p, z); return run(a[a.length - 1], p, z); }
+      if (op === 'case') {
+        if (a.length < 3 || a.length % 2 !== 1) throw new Error('case requires a condition, a result, and a fallback');
+        for (let i = 0; i < a.length - 1; i += 2) if (run(a[i], p, z)) return run(a[i + 1], p, z);
+        return run(a[a.length - 1], p, z);
+      }
       if (op === 'interpolate') {
         const [kind, , ...stops] = a, base = kind[0] === 'exponential' ? kind[1] : 1;
         const pts = []; for (let i = 0; i < stops.length; i += 2) pts.push([stops[i], stops[i + 1]]);
@@ -809,6 +818,24 @@ if (core) {
     const sh = [17, 19].map(z => Math.abs(run(rule.railOff, { off: -0.5, sh: 1 }, z) - run(rule.railOff, { off: 0.5, sh: 1 }, z)));
     report(`rail lines on tracks of their own are back on them by z16.5; on one track (sh) they stay a step apart (${sh.map(d => d.toFixed(1)).join(', ')} px at z17, 19)`,
       run(rule.railOff, { off: 0.5 }, 16.5) === 0 && run(rule.railOff, { off: 0.5 }, 17) === 0 && sh.every(d => Math.abs(d - 8) < 0.01));
+    report('the end of a shared track fades continuously onto its neighbouring track at every zoom',
+      [15, 16, 17, 19].every(z => {
+        const shared = run(rule.railOff, { off: 0.5, sh: 1 }, z), separate = run(rule.railOff, { off: 0.5 }, z);
+        return [0.125, 0.5, 0.875].every(sh => Math.abs(run(rule.railOff, { off: 0.5, sh }, z) - (shared * sh + separate * (1 - sh))) < 1e-9);
+      }));
+    report('cross-category movement fades back onto independent tracks while the within-category pair stays apart',
+      run(rule.beside(), { off: 1, goff: 1.5 }, 12) === 5
+      && [17, 19].every(z => run(rule.beside(), { off: 1, goff: 1.5 }, z) === -4
+        && run(rule.beside(), { off: 2, goff: 1.5 }, z) === 4));
+    report('actual-track metro and rail share the same continuous independent-track fade',
+      [12, 14.5, 15, 16, 16.5, 19].every(z => [0, .25, 1].every(sh =>
+        Math.abs(run(rule.beside(), { off: .5, sh, ap: 1 }, z) - run(rule.railOff, { off: .5, sh }, z)) < 1e-9))
+      && run(rule.beside(), { off: .5, ap: 1 }, 19) === 0
+      && run(rule.beside(), { off: .5, sh: 1, ap: 1 }, 19) === 4);
+    report('actual-track groups retain shared internal spacing and return independent displacement to source',
+      [rule.beside(), rule.railOff].every(expr =>
+        run(expr, { off: 2, goff: 1.5, sh: 1, ap: 1 }, 19) === 4
+        && run(expr, { off: 2, goff: 1.5, ap: 1 }, 19) === 0));
     // present from far out: a bundle is apart at z4 and z6 as the guest is
     report('a bundle is apart from far out, as the guest is (z4, z6)', [4, 6].every(z => Math.abs(Math.abs(run(rule.railOff, { off: -0.5 }, z) - run(rule.railOff, { off: 0.5 }, z)) - run(rule.beside({ guest: true }), {}, z)) < 0.01));
   }

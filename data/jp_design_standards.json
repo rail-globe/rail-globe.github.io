@@ -1,0 +1,124 @@
+{
+  "checked": "2026-10-11",
+  "basis": "Completed design and infrastructure upgrade standards. Local operating restrictions are not design boundaries. Unfinished upgrades are recorded separately.",
+  "sources": {
+    "jsce": {
+      "url": "https://note.com/jsce/n/n66945fec6082",
+      "title": "土木学会 日本インフラの体力診断－新幹線－",
+      "note": "The design maximum has been raised after opening: Tokaido 285, Sanyo 300, part of Tohoku 320; Seibi Shinkansen 260."
+    },
+    "original": {
+      "url": "https://www.jrtt.go.jp/construction/committee/asset/jk23-10-1.pdf",
+      "title": "鉄道・運輸機構 事業評価資料",
+      "note": "Historical design standards: Tokaido 210, Sanyo/Tohoku/Joetsu 260. Original standards do not override completed upgrades."
+    },
+    "seibi": {
+      "url": "https://www.mlit.go.jp/tetudo/tetudo_tk3_000009.html",
+      "title": "国土交通省 整備新幹線の概要",
+      "note": "Seibi plans specify 260 km/h, including Morioka–Aomori and Hokkaido."
+    },
+    "tohoku320": {
+      "url": "https://www.jreast.co.jp/press/2021/morioka/20210301_mr01.pdf",
+      "title": "JR東日本 はやぶさデビュー10周年",
+      "note": "Records completed 320 km/h operation from 2013-03-16 on Utsunomiya–Morioka, defining the section of the upgraded standard corroborated by JSCE."
+    },
+    "joetsu275": {
+      "url": "https://www.jreast.co.jp/press/2022/20220607_ho03.pdf",
+      "title": "JR東日本 上越新幹線の速度向上により所要時間が短縮します",
+      "note": "Omiya–Niigata 275 km/h: ground equipment works include noise barriers and increased catenary tension.",
+      "completion": "https://www.jreast.co.jp/investor/guide/pdf/202303guide1.pdf"
+    },
+    "tohoku_upgrade": {
+      "url": "https://www.jreast.co.jp/company/business_strategy/business/transportation/construction/network/",
+      "title": "JR東日本 輸送改善プロジェクト",
+      "note": "Morioka–Shin-Aomori 260 to 320 km/h upgrade remains a current construction project."
+    },
+    "hokkaido_upgrade": {
+      "url": "https://www.jrhokkaido.co.jp/corporate/shinkansen/stretching.html",
+      "title": "JR北海道 札幌延伸に向けた取り組み",
+      "note": "Shin-Hakodate-Hokuto–Sapporo 320 km/h works are under construction, with the additional works funded by JR Hokkaido."
+    }
+  },
+  "lines": {
+    "東海道新幹線": {
+      "design": 285,
+      "source": "jsce",
+      "from": "東京",
+      "to": "新大阪"
+    },
+    "山陽新幹線": {
+      "design": 300,
+      "source": "jsce",
+      "from": "新大阪",
+      "to": "博多"
+    },
+    "東北新幹線": {
+      "design": 260,
+      "source": "original",
+      "sections": [
+        {
+          "from": "東京",
+          "to": "宇都宮",
+          "design": 260,
+          "source": "original"
+        },
+        {
+          "from": "宇都宮",
+          "to": "盛岡",
+          "design": 320,
+          "source": "jsce",
+          "scope_source": "tohoku320"
+        },
+        {
+          "from": "盛岡",
+          "to": "新青森",
+          "design": 260,
+          "source": "seibi",
+          "upgrade": 320,
+          "upgrade_source": "tohoku_upgrade",
+          "status": "construction"
+        }
+      ]
+    },
+    "上越新幹線": {
+      "design": 275,
+      "source": "joetsu275",
+      "from": "大宮",
+      "to": "新潟",
+      "basis": "completed_upgrade"
+    },
+    "北陸新幹線": {
+      "design": 260,
+      "source": "seibi",
+      "from": "高崎",
+      "to": "敦賀"
+    },
+    "九州新幹線": {
+      "design": 260,
+      "source": "seibi",
+      "from": "博多",
+      "to": "鹿児島中央"
+    },
+    "西九州新幹線": {
+      "design": 260,
+      "source": "seibi",
+      "from": "武雄温泉",
+      "to": "長崎"
+    },
+    "北海道新幹線": {
+      "design": 260,
+      "source": "seibi",
+      "from": "新青森",
+      "to": "新函館北斗",
+      "upgrades": [
+        {
+          "from": "新函館北斗",
+          "to": "札幌",
+          "design": 320,
+          "source": "hokkaido_upgrade",
+          "status": "construction"
+        }
+      ]
+    }
+  }
+}

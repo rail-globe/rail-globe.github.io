@@ -66,13 +66,13 @@ FAST = ["hsr400", "hsr350", "hsr300", "hsr250", "hsr200", "hsr160", "hsrslow"]
 # the page reads from it, and the lowest zoom the page draws a feature of it at. A tile layer has
 # the name of the page's source it stands in for; a country has the layers it has files for.
 LAYERS = {
-    "hsr": dict(cn="rail_hsr", keep="c n d db v e de off", zoom=lambda p: 0),
+    "hsr": dict(cn="rail_hsr", keep="c n d db v e de off sh bn lead", zoom=lambda p: 0),
     # China's branch lines appear at zoom 3.5; the classes abroad have no such rule
-    "conv": dict(cn="rail_conv", abroad="rail", keep="c n g jk mini lc off d e o de",
+    "conv": dict(cn="rail_conv", abroad="rail", keep="c n g jk mini lc off sh bn lead goff d e o de ud ue",
                  zoom=lambda p: 3 if p.get("c") == "branch" and "g" not in p else 0),
-    "shared": dict(cn="rail_shared", keep="c n on d db v e de", zoom=lambda p: 0),
-    "build": dict(cn="rail_build", abroad="build", keep="c n h g", zoom=lambda p: 0),
-    "metro": dict(cn="metro", abroad="metro", keep="n ct col k g jk off", zoom=lambda p: 4),
+    "shared": dict(cn="rail_shared", keep="c n on d db v e de off sh bn lead", zoom=lambda p: 0),
+    "build": dict(cn="rail_build", abroad="build", keep="c n h g d de", zoom=lambda p: 0),
+    "metro": dict(cn="metro", abroad="metro", keep="n ct col k g jk off sh bn lead goff ap", zoom=lambda p: 4),
     # stations on high-speed lines from zoom 5, the others from 8.5; metro stations from 10
     # (a country abroad has one stations file; its metro stations are marked m; t marks a tram stop,
     # which the page's light-rail switch hides with the trams)
