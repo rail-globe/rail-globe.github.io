@@ -12,6 +12,16 @@ Railway stations are linked to railway track and metro stations to metro track; 
 and a metro station next to each other are joined by a walk, which is how a route gets from one
 network to the other. Railway track that a metro company runs its trains on (class "mrail") can be
 boarded at either kind of station.
+A tram is boarded at a stop on its own track: tram track is linked to what lies right by it, and
+a tram stop (property t) to tram track only, not to the metro that runs under its street. From a
+tram stop to the metro stations beside it is a walk.
+A metro station is linked to the lines that stop there (data/raw/routing_stops.pkl, from the stops
+of the lines' route relations: scripts/metro_stops.py), not to a line that runs past it within a
+few hundred metres, and to such a line's track even where it lies further from the dot than the
+usual reach (平安里: the 19号线 platforms are 400 m from it). A line whose relations give no stops
+is linked by distance, and listed. A station that no line stops at, by the relations, is linked
+only to a line whose track runs right through it, unless its name says it is not open: OSM's
+relations miss a stop here and there (陶然桥 on the 14号线), and such a station would be cut off.
 
 Railway track joins wherever two tracks share a point: a train runs through a junction from one
 line onto the next. Metro lines are kept apart: each has its own nodes, also where it shares
@@ -26,6 +36,7 @@ timetable behind them.
 import json
 import math
 import pickle
+import re
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -40,10 +51,15 @@ URBAN = ("metro", "mrail")
 SHAPE_TOL = 0.0004       # degrees (~40 m): how closely a drawn route follows the track
 STATION_R = 0.007        # degrees (~700 m): track this close to a station belongs to it
 METRO_R = 0.003          # the same for a metro station (~300 m): stations and lines are much closer together
+TRAM_R = 0.0008          # and for tram track (~90 m): a stop is on its track, and the next street has another line
+STOP_R = 0.008           # (~800 m) the track of a line that stops at a metro station, by its relations
+THROUGH_R = 0.0006       # (~65 m) a line's track this close runs through the station
+NOT_OPEN = re.compile(r"在建|规划|建设中|未开通|暂未开通|暂缓开通|暫緩開通|预留|預留|緊急|紧急")
 TRANSFER_MIN = 12        # minutes between a railway station hub and one of its tracks; with the walk, this is
                          # what keeps a trip across town on the metro instead of hopping on a train for one stop
 METRO_MIN = 3            # the same at a metro station
 WALK_R = 0.006           # a railway station and a metro station this close are joined by a walk
+TRAM_WALK_R = 0.003      # a tram stop and a metro station this close are joined by a walk
 WALK_DETOUR = 1.4        # walking distance over the straight line
 MAX_LINKS = 12           # tracks linked per station
 
@@ -61,9 +77,15 @@ def km(coords):
 
 ways = pickle.load(open(RAW / "routing_input.pkl", "rb"))   # written locally by process_osm.py
 ways = [w for w in ways if w[2] == "cn" and w[0] != "svc"]           # (class, line, country, coordinates, colour)
+tram_from = len(ways)        # the tracks of the tram lines come last, from here on
 if (RAW / "routing_metro.pkl").exists():
-    for name, colour, tracks in pickle.load(open(RAW / "routing_metro.pkl", "rb")):
+    for name, colour, tracks, tram in pickle.load(open(RAW / "routing_metro.pkl", "rb")):
+        if not tram:
+            tram_from = len(ways) + len(tracks)
         ways += [("metro", name, "cn", co, colour) for co in tracks]
+# the metro lines that stop at each metro station, and the lines that have stops to judge by
+STOPS = pickle.load(open(RAW / "routing_stops.pkl", "rb")) if (RAW / "routing_stops.pkl").exists() else {"lines": [], "dots": {}}
+judged = set(STOPS["lines"])
 stations = json.load(open(OUT / "stations.geojson"))
 metro_stations = json.load(open(OUT / "metro_stations.geojson"))
 # every station with what it may be linked to: (feature, radius, metro?)
@@ -99,18 +121,33 @@ for wi, way in enumerate(ways):
         if cell in st_cells:
             near[cell].append((x, y, wi))
 forced, st_links = set(), []
+passing, by_distance, through = Counter(), Counter(), Counter()     # lines left unlinked as they do not stop there; links made by distance alone
 for f, radius, metro in stops:
     x, y = f["geometry"]["coordinates"]
     cx, cy = int(x // CELL), int(y // CELL)
     cosy = math.cos(math.radians(y))
     best = {}                # way -> (distance, vertex, way)
+    tram_stop = bool(f["properties"].get("t"))
+    stopping = STOPS["dots"].get((f["properties"]["n"], x, y)) if metro and not tram_stop else None
     for dx in (-1, 0, 1):
         for dy in (-1, 0, 1):
             for vx, vy, wi in near.get((cx + dx, cy + dy), ()):
                 if ways[wi][0] != "mrail" and (ways[wi][0] == "metro") != metro:
                     continue
+                if tram_stop and wi < tram_from:
+                    continue
                 d = math.hypot((vx - x) * cosy, vy - y)
-                if d <= radius and (wi not in best or d < best[wi][0]):
+                reach = TRAM_R if wi >= tram_from else radius
+                if stopping is not None and ways[wi][0] == "metro" and wi < tram_from and ways[wi][1] in judged:
+                    if ways[wi][1] in stopping:
+                        reach = STOP_R
+                    elif stopping or d > THROUGH_R or NOT_OPEN.search(f["properties"]["n"]):
+                        if d <= radius:
+                            passing[(f["properties"]["n"], ways[wi][1])] += 1
+                        continue             # the line runs past without stopping here
+                    else:
+                        through[(f["properties"]["n"], ways[wi][1])] += 1
+                if d <= reach and (wi not in best or d < best[wi][0]):
                     best[wi] = (d, (vx, vy), wi)
     # Ways of one line that touch end to end are one track; the station is linked once to each track.
     track = {wi: wi for wi in best}
@@ -131,9 +168,18 @@ for f, radius, metro in stops:
     for wi, hit in best.items():
         if root(wi) not in per_track or hit[0] < per_track[root(wi)][0]:
             per_track[root(wi)] = hit
-    picks = [(node(v, wi), ways[wi][0] in URBAN) for _, v, wi in sorted(per_track.values())[:MAX_LINKS]]
+    # a station's tram links are counted apart: they take no other line's place among its links
+    picks = [(node(v, wi), ways[wi][0] in URBAN) for tram in (False, True)
+             for _, v, wi in sorted(hit for hit in per_track.values() if (hit[2] >= tram_from) == tram)[:MAX_LINKS]]
     forced.update(q for q, _ in picks)
     st_links.append(picks)
+    if metro and not tram_stop:
+        for _, _, wi in per_track.values():
+            if ways[wi][0] == "metro" and wi < tram_from and ways[wi][1] not in judged:
+                by_distance[(f["properties"]["n"], ways[wi][1])] += 1
+print(f"metro stations: {len(passing)} (station, line) pairs left unlinked, as the line passes without stopping; "
+      f"{len(by_distance)} linked by distance alone, the line's relations giving no stops:", sorted(by_distance)[:40])
+print(f"metro stations no line stops at by the relations, linked to the line whose track runs through them: {len(through)}", sorted(through))
 
 # ---- 2. split tracks at junctions ----
 use, ends = Counter(), set()
@@ -227,25 +273,30 @@ for (f, _, metro), picks in zip(stops, st_links):
     for n, urban in picks:           # getting on an urban service is quicker than getting on a train
         E.append((hub, n, metro_transfer if urban else transfer, 0, []))
 # a walk between a railway station and each metro station beside it
-cells = defaultdict(list)
+cells, tram_cells = defaultdict(list), defaultdict(list)
 for f in metro_stations["features"]:
     if "g" in f["properties"]:
         x, y = f["geometry"]["coordinates"]
-        cells[(int(x // CELL), int(y // CELL))].append((x, y, f["properties"]["g"]))
-walks = 0
-for f in stations["features"]:
-    if "g" not in f["properties"]:
-        continue
+        (tram_cells if f["properties"].get("t") else cells)[(int(x // CELL), int(y // CELL))].append((x, y, f["properties"]["g"]))
+
+
+def walks_from(f, among, reach, most):
+    """Walks from a station to the nearest few of the stations in `among` (by cell) within reach."""
     x, y = f["geometry"]["coordinates"]
     cosy = math.cos(math.radians(y))
     close = sorted((math.hypot((mx - x) * cosy, my - y), g) for dx in (-1, 0, 1) for dy in (-1, 0, 1)
-                   for mx, my, g in cells.get((int(x // CELL) + dx, int(y // CELL) + dy), ()))
-    for d, g in close[:3]:
-        if d <= WALK_R:
-            E.append((f["properties"]["g"], g, walk, max(120, round(d * 111320 * WALK_DETOUR)), []))
-            walks += 1
+                   for mx, my, g in among.get((int(x // CELL) + dx, int(y // CELL) + dy), ()))
+    found = [(f["properties"]["g"], g, walk, max(120, round(d * 111320 * WALK_DETOUR)), []) for d, g in close[:most] if d <= reach]
+    E.extend(found)
+    return len(found)
+
+
+walks = sum(walks_from(f, cells, WALK_R, 3) for f in stations["features"] if "g" in f["properties"])
+# and, counted apart from those, to the tram stops beside it; from a tram stop to the metro stations beside it
+tram_walks = sum(walks_from(f, tram_cells, WALK_R, 2) for f in stations["features"] if "g" in f["properties"])
+tram_walks += sum(walks_from(f, cells, TRAM_WALK_R, 2) for f in metro_stations["features"] if f["properties"].get("t") and "g" in f["properties"])
 print(f"{len(node_xy)} nodes, {len(E)} edges, {shape_pts} shape points; on the network: {hubs[False]} of {len(stations['features'])} "
-      f"railway stations, {hubs[True]} of {len(metro_stations['features'])} metro stations, {walks} walks between the two")
+      f"railway stations, {hubs[True]} of {len(metro_stations['features'])} metro stations, {walks} walks between the two, {tram_walks} to and from tram stops")
 
 # ---- 5. write: integer coordinates (1e-5 degrees), shapes as deltas from the edge's first node ----
 q5 = lambda v: round(v * 1e5)

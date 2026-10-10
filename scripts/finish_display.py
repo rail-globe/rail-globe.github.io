@@ -5,29 +5,34 @@ from shapely.geometry import LineString, Point
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 
-from single_track import bridge, curved, one_track, smooth, stitch, unfold
+from single_track import GAP, bridge, curved, one_track, smooth, stitch, unfold
 from metro_bends import repair as repair_bends, junctions
 
 
-def unfolded(parts):
-    """The parts with their turnbacks taken out."""
+def unfolded(parts, gap=GAP):
+    """The parts with their turnbacks taken out. gap: how far apart two stretches of a line still
+    are its two tracks (a tram's are much closer than a metro's two tubes)."""
     # Ten-metre samples and opposing headings find short turnback folds that the
     # coarse reduction misses without cutting ordinary curves or circular lines.
     for iteration in range(3):
-        split = [piece for g in parts for piece in unfold(g, step=0.0001, fine=True)]
+        split = [piece for g in parts for piece in unfold(g, gap=gap, step=0.0001, fine=True)]
         if iteration and len(split) == len(parts):
             break
         previous = sum(g.length for g in parts)
-        parts = stitch(one_track(split), bends=True)
+        parts = stitch(one_track(split, gap=gap), bends=True)
         # Stitching can expose a second fold that was hidden inside the first one.
         if previous - sum(g.length for g in parts) < .00002:
             break
     return parts
 
 
-def finish_metro(features, routing, curve=None, within=None, light=(), light_curve=None, light_within=None, anchors=()):
+def finish_metro(features, routing, curve=None, within=None, light=(), light_curve=None, light_within=None, anchors=(),
+                 gap=GAP, reach=0.0036):
     """light: the (region, name) of the light-rail lines, whose street curves are drawn with
-    light_curve and light_within in place of curve and within."""
+    light_curve and light_within in place of curve and within.
+    gap: how far apart two stretches of one line still are its two tracks; reach: how far the end
+    of a piece is carried on to the side of another piece of its line. Both are a railway's
+    measures as they stand; a tram line is given a street's, where 400 m is across three blocks."""
     source = defaultdict(list)
     for name, colour, tracks in routing:
         source[name].extend([list(map(tuple, co)) for co in tracks])
@@ -39,7 +44,7 @@ def finish_metro(features, routing, curve=None, within=None, light=(), light_cur
         coords=geom['coordinates'] if geom['type']=='MultiLineString' else [geom['coordinates']]
         parts=[LineString(co) for co in coords if len(co)>1]
         before=sum(g.length for g in parts)
-        parts=unfolded(parts)
+        parts=unfolded(parts, gap)
         removed += before-sum(g.length for g in parts)>.0001
         prepared.append(parts)
     physical = junctions([co for tracks in source.values() for co in tracks])
@@ -60,14 +65,14 @@ def finish_metro(features, routing, curve=None, within=None, light=(), light_cur
         for _ in range(3 if tracks else 0):
             bag = {props["n"]: parts}
             joins = bridge(bag, tracks, joined=0.0015, reach=0.03, limit=0.045, project_ends=True)
-            parts = stitch(bag[props["n"]], reach=0.0036, bends=True)
+            parts = stitch(bag[props["n"]], reach=reach, bends=True)
             if not joins:
                 break
             repaired += joins
             # A join restored along the source track can bring a turnback back with it: the way
             # round a terminal loop and back (輕鐵505綫 at 三聖). It is taken out again, and the
             # line is looked at once more for what that leaves apart.
-            parts = unfolded(parts)
+            parts = unfolded(parts, gap)
         if tracks:
             # First restore wrong local detours using this line's source track. Only
             # verified source errors get a separate bounded refit. Sampling is last.

@@ -19,6 +19,9 @@ that most of a company's routes share.
 A railway line is the track that carries its name in OSM, drawn once (scripts/single_track.py).
 A metro or tram line is a route relation (or the relations of one route_master): its track
 seldom carries the line's name (all of Manchester's Metrolink is "Metrolink").
+
+Every name stays the country's own (n); its Chinese and English names go beside it, as nz and ne
+(scripts/names.py), and a metro city's own name as nl.
 """
 import json
 import math
@@ -34,8 +37,9 @@ from shapely.geometry import LineString
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from design_speeds import grade
-from process_jp import CURVE, TOL, adopt_unnamed, bbox_of, being_built, colour_of, geometry, km, readable_on_dark, rounded, runs_of
+from process_jp import CURVE, TOL, adopt_unnamed, bbox_of, being_built, colour_of, geometry, km, readable_on_dark, rounded, runs_of, with_a_line
 from side_by_side import abreast, side_by_side
+from names import Names, city_names, name_city
 from yards import write_yards
 from single_track import join_up, one_track, stitch
 
@@ -92,6 +96,13 @@ def line_of_route(tags, master):
     return network.strip(), re.sub(r"\s+", " ", name).strip(), colour_of(tags.get("colour") or master.get("colour"))
 
 
+def english_of_route(tags, master):
+    """The English name of a metro or tram route relation's line, read as line_of_route reads its name."""
+    if master.get("name"):
+        return {"name:en": master.get("name:en")}
+    return {"name:en": re.split(r":\s", tags.get("name:en") or "")[0]}
+
+
 def run(cfg):
     """Everything for one country, from its extract to its data files. cfg: see Country."""
     # written locally by scripts/extract_osm.py, so loading it is safe here
@@ -99,6 +110,7 @@ def run(cfg):
     ways = {wid: (t, co) for wid, t, co in ex["ways"]}
     length = {wid: km(co) for wid, (t, co) in ways.items()}
     relations = {rid: (t, members) for rid, t, members in ex["relations"]}
+    namer = Names(cfg.code)
 
     # ---------------------------------------------------------------- railways: which line every track belongs to
     running = [wid for wid, (t, co) in ways.items() if t.get("railway") in cfg.rail and not t.get("service") and t.get("usage") not in cfg.skip_usage]
@@ -180,6 +192,8 @@ def run(cfg):
             t = ways[w][0]
             tags_km[tuple(sorted((k, t[k]) for k in cfg.tag_keys if t.get(k)))] += length[w]
         total = sum(length[w] for w in tracks[key])
+        for w in tracks[key]:
+            namer.add(name, ways[w][0], length[w])
         jk = cfg.kind_of(name, tags_km)
         fast = cfg.speed_of(name, jk, tags_km)       # (design speed, only a top speed?, source) of a high-speed line
         simp = rounded(stitch(runs_of([list(g.coords) for g in drawn])), TOL["fast" if fast else "rail"], CURVE["fast" if fast else "rail"], places=5)
@@ -195,13 +209,14 @@ def run(cfg):
                 props["e"] = 1
         elif key in line_colour:
             props["lc"] = line_colour[key]
+        namer.line(props)
         for seg_co in simp:
             rail_feats.append({"type": "Feature", "properties": dict(props), "geometry": geometry([seg_co])})
         row = {"n": name, "g": cfg.code, "jk": jk, "bbox": bbox_of(simp), "tk": round(total), "c": props["c"]}
         for k in ("lc", "d", "e", "ref"):
             if k in props:
                 row[k] = props[k]
-        lines_json.append(row)
+        lines_json.append(namer.copy(row, props))
     # The lines of one corridor each lie on their own track, a few metres apart: each gets its
     # place in the corridor (property off), as in Japan.
     whole = len(rail_feats)
@@ -216,11 +231,12 @@ def run(cfg):
             for kind, ref in members:
                 if kind == "r":
                     master_of[ref] = t
-    routes = defaultdict(lambda: {"ways": set(), "kinds": Counter()})     # (network, line, colour) -> its track
+    routes = defaultdict(lambda: {"ways": set(), "kinds": Counter(), "en": []})     # (network, line, colour) -> its track
     for rid, (t, members) in relations.items():
         if t.get("type") != "route" or t.get("route") not in cfg.urban:
             continue
         line = routes[line_of_route(t, master_of.get(rid, {}))]
+        line["en"].append(english_of_route(t, master_of.get(rid, {})))
         for kind, ref in members:
             if kind == "w" and ref in ways and ways[ref][0].get("railway") in cfg.urban | cfg.rail and not ways[ref][0].get("service"):
                 line["ways"].add(ref)
@@ -249,8 +265,13 @@ def run(cfg):
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
         city = next((c[0] for c in cfg.cities if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), cfg.elsewhere)
         shown = readable_on_dark(col) if col else "#5cc8ff"
-        metro_feats.append({"type": "Feature", "properties": {"r": cfg.code.upper(), "g": cfg.code, "col": shown, "n": name, "ct": city, "jk": jk}, "geometry": geometry(simp)})
-        metro_rows.append((city, {"n": name, "col": shown, "jk": jk, "km": round(sum(km(co) for co in simp)), "bbox": bbox_of(simp)}))
+        for part_name, line in parts:
+            if part_name == name:                    # a line named after its network has no English name of its own here
+                for tags in line["en"]:
+                    namer.add(name, tags)
+        props = namer.line({"r": cfg.code.upper(), "g": cfg.code, "col": shown, "n": name, "ct": city, "jk": jk})
+        metro_feats.append({"type": "Feature", "properties": props, "geometry": geometry(simp)})
+        metro_rows.append((city, namer.copy({"n": name, "col": shown, "jk": jk, "km": round(sum(km(co) for co in simp)), "bbox": bbox_of(simp)}, props)))
     metro_feats = side_by_side(metro_feats)
     urban_km = sum(length[w] for w, (t, co) in ways.items() if t.get("railway") in cfg.urban and not t.get("service"))
     print(f"{cfg.code} metro and tram: {len(metro_rows)} lines; {sum(length[w] for w in covered if ways[w][0].get('railway') in cfg.urban):.0f} "
@@ -261,11 +282,13 @@ def run(cfg):
         c["km"] += row["km"]
         c["bbox"] = [min(c["bbox"][0], row["bbox"][0]), min(c["bbox"][1], row["bbox"][1]), max(c["bbox"][2], row["bbox"][2]), max(c["bbox"][3], row["bbox"][3])]
         c["lines"].append(row)
+    known = city_names(cfg.code)
     for c in cities.values():
         c["lines"].sort(key=lambda r: r["n"])
+        name_city(c, known, cfg.code)
 
     # ---------------------------------------------------------------- lines being built
-    build_feats = being_built(ways, cfg.code, cfg.plain_name, cfg.build_name, cfg.build_fast)
+    build_feats = being_built(ways, cfg.code, cfg.plain_name, cfg.build_name, cfg.build_fast, namer)
 
     # ---------------------------------------------------------------- stations
     seen, stations = set(), []
@@ -282,7 +305,13 @@ def run(cfg):
         props = {"n": name, "g": cfg.code}
         if metro:
             props["m"] = 1
+        namer.station(props, t, (lon, lat))
         stations.append({"type": "Feature", "properties": props, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+    # only the stations a drawn line passes: one on a line that is not drawn is a dot in the middle of nothing
+    every = len(stations)
+    lines_of = lambda feats: [co for f in feats for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]])]
+    stations = with_a_line(stations, lines_of(rail_feats), lines_of(metro_feats))
+    print(f"{cfg.code} stations: {len(stations)} of {every} have a drawn line passing them; the other {every - len(stations)} are not drawn", flush=True)
 
     # ---------------------------------------------------------------- write
     def write(name, obj):

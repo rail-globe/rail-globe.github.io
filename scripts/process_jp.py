@@ -1,6 +1,6 @@
 """Japan: railways and metros from data/raw/extract_jp.pkl, written as layers of their own.
 
-    python3 scripts/extract_osm.py jp     japan-latest.osm.pbf -> data/raw/extract_jp.pkl
+    python3 scripts/extract_osm.py jp     japan-latest.osm.pbf -> data/raw/extract_jp.pkl (with trams and tram stops)
     python3 scripts/process_jp.py         -> data/jp_rail.geojson, jp_metro.geojson, jp_stations.geojson,
                                              jp_lines.json, jp_metro_cities.json, jp_build.geojson,
                                              jp_yards.geojson, jp_depots.geojson
@@ -24,6 +24,11 @@ A line is the track that carries its name in OSM (99% of running track is named,
 operator), drawn once (scripts/single_track.py). Its colour comes from the route relations that
 run on it: one that covers most of the line and lies mostly on that line (a through service or a
 long-distance express does neither).
+
+The street tramways (路面電車: 都電荒川線, 広島電鉄, 長崎電気軌道, ...) are lines of the urban class
+like the light rail, each under the name its track carries (広島電鉄本線, 広島電鉄宇品線: the lines a
+system is made of, not the numbered routes run over them). A station or a stop is drawn only
+where a drawn line passes it (with_a_line).
 """
 import colorsys
 import json
@@ -35,11 +40,13 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from shapely.geometry import LineString, MultiLineString
+from shapely import STRtree
+from shapely.geometry import LineString, MultiLineString, Point
 from shapely.ops import linemerge
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from design_speeds import grade
+from names import Names, city_names, name_city
 from side_by_side import abreast, side_by_side
 from yards import write_yards
 from single_track import curved, join_up, one_track, smooth, stitch
@@ -47,7 +54,7 @@ from single_track import curved, join_up, one_track, smooth, stitch
 ROOT = Path(__file__).resolve().parents[1]
 RAW, OUT = ROOT / "data" / "raw", ROOT / "data"
 SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight", "yard"}
-METRO_RAIL = {"subway", "light_rail", "monorail"}
+METRO_RAIL = {"subway", "light_rail", "monorail", "tram"}
 TOL = {"fast": 0.00008, "rail": 0.00012, "metro": 0.00006, "light": 0.00002}
 CURVE = {"fast": (4, 5, 0.0003), "rail": (5, 4, 0.0003)}
 # The six JR passenger companies and JR Freight: (pattern on the operator tag, name).
@@ -71,8 +78,12 @@ OPERATOR_ALIASES = {"東京急行電鉄": "東急電鉄"}
 # 久留里線 carries no operator on any of its track in OSM; it is a JR East line
 # (https://ja.wikipedia.org/wiki/久留里線: 東日本旅客鉄道（JR東日本）の鉄道路線, read 2026-10-08).
 KNOWN_LINE_FIRM = {"山田線": "JR東日本", "久留里線": "JR東日本"}
-# A line's name mistyped on some of its track.
-NAME_TYPOS = {"R久留里線": "久留里線"}
+# A line's name mistyped on some of its track, or written another way on a few metres of it.
+NAME_TYPOS = {"R久留里線": "久留里線", "熊本市営田崎線": "熊本市電田崎線", "鹿児島市営谷山線": "鹿児島市電谷山線", "鹿児島市営第一期線": "鹿児島市電第一期線"}
+# A tramway's name says whose it is (広島電鉄本線, 函館市電本線, 都電荒川線). One that does not
+# (岡山電気軌道's 東山本線 and 清輝橋線, とさでん交通's 桟橋線) takes its company in front, as the
+# other lines of とさでん交通 have it in OSM.
+SAYS_WHOSE = re.compile(r"電|鉄|軌道|交通|ライトレール")
 # The design speed of the Shinkansen: 「ミニ新幹線を除いて、1964年（昭和39年）に開業した東海道新幹線から
 # 全て設計最高速度260 km/hで建設されている」 (https://ja.wikipedia.org/wiki/新幹線, read 2026-10-08).
 # What each line runs at today (285 to 320 km/h on the older ones) is a running speed, not this.
@@ -81,6 +92,13 @@ SHINKANSEN_DESIGN = (260, "https://ja.wikipedia.org/wiki/新幹線")
 # with the line colours the source in the module docstring gives them (山形新幹線：橙, 秋田新幹線：桃).
 KNOWN_COLOUR = {"山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
 METRO_MIN_KM = 2.0         # shorter "lines" on metro-type track are rides in parks
+TRAM_GAP = 0.00025         # ~27 m: a tramway's own track within this is its second track (a metro's two tubes: single_track.GAP, 66 m)
+# A station is drawn only where a drawn line passes it. One on a line that is not drawn (closed,
+# replaced by buses, a ride, a tramway left out) is a dot in the middle of nothing: the owner saw
+# Tokyo's 都電 stops so, before the tramways were drawn.
+STATION_REACH = 0.006      # ~600 m: a railway station this far from every drawn line is on none of them (as in China)
+STOP_REACH = 0.0025        # ~275 m: a metro station or a tram stop needs a line of the metro layer this near (as in China)
+ON_LINE = 0.001            # ~110 m: ... or a railway right at it (京急蒲田 is tagged as a subway station; 鞍馬's dot is 75 m past the end of its line)
 # Japan rail kind (jk): a Japan-only taxonomy by operator + infrastructure, NOT China's 高铁/普速/地铁
 # and NOT any speed design. Authoritative lists in data/jp_operator_classification_list.json:
 #   shinkansen    route name is a Shinkansen (山形/秋田 excluded, they run on 1066mm conventional track)
@@ -110,9 +128,13 @@ CSS = {"red": "#ff0000", "blue": "#0000ff", "green": "#008000", "yellow": "#ffff
 # Metro lines are listed by city: (name shown, lon, lat, reach in degrees). The cities beside a
 # bigger one come first and reach less far, so that only their own lines are theirs.
 CITIES = [("横滨", 139.622, 35.466, 0.12), ("千叶", 140.113, 35.613, 0.2), ("京都", 135.759, 35.012, 0.17), ("神户", 135.195, 34.690, 0.2),
-          ("北九州", 130.875, 33.883, 0.25), ("东京", 139.767, 35.681, 0.9), ("大阪", 135.502, 34.694, 0.7), ("名古屋", 136.907, 35.170, 0.6),
+          ("北九州", 130.875, 33.883, 0.25), ("宇都宫", 139.90, 36.56, 0.2), ("丰桥", 137.39, 34.76, 0.15),
+          ("东京", 139.767, 35.681, 0.9), ("大阪", 135.502, 34.694, 0.7), ("名古屋", 136.907, 35.170, 0.6),
           ("札幌", 141.351, 43.062, 0.6), ("仙台", 140.882, 38.260, 0.6), ("福冈", 130.401, 33.590, 0.5), ("广岛", 132.459, 34.396, 0.5),
-          ("那霸", 127.681, 26.212, 0.5), ("福井", 136.223, 36.062, 0.4), ("富山", 137.213, 36.701, 0.4)]
+          ("那霸", 127.681, 26.212, 0.5), ("福井", 136.223, 36.062, 0.4), ("富山", 137.213, 36.701, 0.4),
+          # the cities of the tramways
+          ("函馆", 140.73, 41.77, 0.2), ("冈山", 133.92, 34.66, 0.2), ("松山", 132.77, 33.84, 0.2), ("高知", 133.54, 33.56, 0.3),
+          ("熊本", 130.71, 32.80, 0.2), ("长崎", 129.87, 32.75, 0.2), ("鹿儿岛", 130.55, 31.59, 0.25)]
 
 
 def km(co):
@@ -197,7 +219,89 @@ def jkind(name, firm):
 def metro_jk(kinds):
     """Metro infrastructure bucket: underground (subway) vs other urban rail (tram/monorail/AGT).
     light_rail mixes tram and AGT and the metro feature carries no operator, so they are combined."""
-    return "subway" if kinds["subway"] >= kinds["monorail"] + kinds["light_rail"] else "urban"
+    return "subway" if kinds["subway"] >= kinds["monorail"] + kinds["light_rail"] + kinds["tram"] else "urban"
+
+
+def tram_systems(lines, ways, track=()):
+    """Which tramway lines hang together as one system: {line: the lines of its system}. lines:
+    {line: its ways}; ways: {way: (tags, coordinates)}; track: every way of tram track there is,
+    named or not (the lines of a system meet at junctions whose curves carry no name). A system
+    is made of several named lines, some of a few hundred metres (広島電鉄白島線, 札幌市電都心線,
+    長崎's 支線), which belong on the map with the rest of it; a short line on its own is a ride."""
+    every = set(track) | {w for wids in lines.values() for w in wids}
+    at = defaultdict(set)                          # a point of track -> the ways through it
+    for w in every:
+        for pt in ways[w][1]:
+            at[pt].add(w)
+    group = {w: w for w in every}
+
+    def root(w):
+        while group[w] != w:
+            group[w] = group[group[w]]
+            w = group[w]
+        return w
+    for here in at.values():
+        first, *rest = sorted(here)
+        for w in rest:
+            group[root(w)] = root(first)
+    on = defaultdict(set)                          # a network of track -> the lines on it
+    for key, wids in lines.items():
+        for w in wids:
+            on[root(w)].add(key)
+    return {key: set().union(*(on[root(w)] for w in wids)) for key, wids in lines.items()}
+
+
+def terminus_track(line_of, ways, stations, at_station=0.0006, short=0.001):
+    """Siding-tagged track that is a line's way into its terminus: {way: line}. line_of: {way:
+    (layer, company, name)} of the running track; ways: {way: (tags, coordinates)}; stations:
+    (tags, lon, lat) as extracted. A line is drawn to its terminus, and a train's way into its
+    last station is no siding whatever the mappers have tagged it: track of the urban layer that
+    carries the line's own name, leads on from where the line's running track stops, and ends at
+    a station (within at_station) that the running track stops short of (by more than short).
+    北九州高速鉄道小倉線 was drawn 830 m short of 企救丘 without it. A pocket track, a turnback
+    beyond a terminus or a depot lead ends at no station, and is left as it is."""
+    lines = defaultdict(list)
+    for wid, key in line_of.items():
+        if key[0] == "metro":
+            lines[key[2]].append(wid)
+    ends = {name: Counter(pt for w in wids for pt in (ways[w][1][0], ways[w][1][-1])) for name, wids in lines.items()}
+    track = {}
+    found = {}
+    for wid, (t, co) in ways.items():
+        if t.get("service") != "siding" or t.get("railway") not in METRO_RAIL or wid in line_of:
+            continue
+        name = plain_name(t.get("name"), None)
+        if name not in lines:
+            continue
+        for near, far in ((co[0], co[-1]), (co[-1], co[0])):
+            if ends[name][near] != 1:
+                continue                               # not where the line's running track stops
+            if name not in track:
+                track[name] = MultiLineString([ways[w][1] for w in lines[name]])
+            for _, lon, lat in stations:
+                if math.hypot(lon - far[0], lat - far[1]) < at_station and track[name].distance(Point(lon, lat)) > short:
+                    found[wid] = ("metro", None, name)
+    return found
+
+
+def with_a_line(stations, rail, metro):
+    """The stations that a drawn line passes, of station features (property m: a metro station or
+    a tram stop). rail, metro: the drawn lines of the two layers, as coordinate lists. A railway
+    station needs a line of either layer within STATION_REACH; a metro station or a tram stop
+    needs a line of the metro layer within STOP_REACH, or a railway within ON_LINE."""
+    tree = lambda lines: STRtree([LineString(co) for co in lines]) if lines else None
+    rail_tree, metro_tree, any_tree = tree(rail), tree(metro), tree(list(rail) + list(metro))
+    near = lambda t, pt, reach: t is not None and len(t.query(pt, predicate="dwithin", distance=reach)) > 0
+    kept = []
+    for f in stations:
+        pt = Point(f["geometry"]["coordinates"])
+        if f["properties"].get("m"):
+            served = near(metro_tree, pt, STOP_REACH) or near(rail_tree, pt, ON_LINE)
+        else:
+            served = near(any_tree, pt, STATION_REACH)
+        if served:
+            kept.append(f)
+    return kept
 
 
 def plain_name(name, firm=None):
@@ -353,10 +457,11 @@ def adopt_unnamed(line_of, unnamed, ways):
     return left
 
 
-def being_built(ways, code, name_of, build_name=lambda name: name, build_fast=lambda name: False):
+def being_built(ways, code, name_of, build_name=lambda name: name, build_fast=lambda name: False, names=None):
     """The lines under construction of a country, as features of the layer of lines being built
     (drawn dashed): the track being built under one name is one line, drawn once; a line with
-    less than 2 km of it is left out. build_fast says which are high-speed lines (property h)."""
+    less than 2 km of it is left out. build_fast says which are high-speed lines (property h);
+    names (scripts/names.py) gives a line its names beside n."""
     building = defaultdict(list)
     for wid, (t, co) in ways.items():
         if t.get("railway") == "construction" and (t.get("construction") or t.get("construction:railway")) in ("rail", "light_rail", "tram", "subway", None):
@@ -371,6 +476,10 @@ def being_built(ways, code, name_of, build_name=lambda name: name, build_fast=la
             props = {"c": "build", "n": name, "g": code}
             if build_fast(name):
                 props["h"] = 1                       # a high-speed line: drawn in the colour of lines being built
+            if names:
+                for w in wids:
+                    names.add(name, ways[w][0], km(ways[w][1]))
+                names.line(props)
             feats.append({"type": "Feature", "properties": props, "geometry": geometry(simp)})
     return feats
 
@@ -379,11 +488,13 @@ def main():
     # written locally by scripts/extract_osm.py, so loading it is safe here
     ex = pickle.load(open(RAW / "extract_jp.pkl", "rb"))
     ways = {wid: (t, co) for wid, t, co in ex["ways"]}
+    names = Names("jp")                           # names beside n: nz from a sound name:zh, ne from name:en
     length = {wid: km(co) for wid, (t, co) in ways.items()}
 
     # ---------------------------------------------------------------- which line every track belongs to
     line_of = {}                                   # way -> (layer, company, line name)
     unnamed, bare = [], defaultdict(set)           # bare: a line's name without its company -> the lines so named
+    unnamed_tram = []
     says_jr = set()                                # track whose own name begins with JR
     for wid, (t, co) in ways.items():
         kind = t.get("railway")
@@ -393,6 +504,8 @@ def main():
         metro = kind in METRO_RAIL
         name = plain_name(t.get("name"), None if metro else firm)
         name = NAME_TYPOS.get(name, name)
+        if kind == "tram" and name and firm and not SAYS_WHOSE.search(name):
+            name = firm + name
         if unicodedata.normalize("NFKC", t.get("name") or "").startswith("JR"):
             says_jr.add(wid)
         if not metro and name in KNOWN_LINE_FIRM:
@@ -405,6 +518,8 @@ def main():
             bare[name].add(line_of[wid])
         elif kind == "rail":
             unnamed.append(wid)
+        elif kind == "tram":
+            unnamed_tram.append(wid)
     # track of a line that carries no operator belongs to the one company that has a line of that name
     for wid, key in list(line_of.items()):
         if key[0] == "rail" and key[1] is None:
@@ -451,6 +566,17 @@ def main():
     # A tunnel or a bridge named for itself, and track with no name, between two pieces of one
     # line is that line (榛名トンネル on the 上越新幹線): it would otherwise cut the line in two.
     unnamed = adopt_unnamed(line_of, unnamed, ways)
+    into = terminus_track(line_of, ways, ex["stations"])
+    line_of.update(into)
+    print(f"japan: siding-tagged track taken as a line's way into its terminus: {sorted({key[2] for key in into.values()})}, "
+          f"{sum(length[w] for w in into):.1f} km of track", flush=True)
+    # The same for a tramway's track with no name, among the tramways: the curves of a junction in
+    # the street, where the lines of a system meet.
+    tram_of = {wid: key for wid, key in line_of.items() if ways[wid][0].get("railway") == "tram"}
+    left = adopt_unnamed(tram_of, unnamed_tram, ways)
+    line_of.update(tram_of)
+    print(f"japan tramways: {sum(length[w] for w in unnamed_tram) - sum(length[w] for w in left):.1f} km of unnamed track joined to the line it connects, "
+          f"{sum(length[w] for w in left):.1f} km left", flush=True)
     print(f"japan: {len(line_of)} ways on named lines, {sum(length[w] for w in line_of):.0f} km of track; "
           f"{sum(length[w] for w in unnamed):.0f} km of running track left without a line", flush=True)
 
@@ -463,31 +589,42 @@ def main():
     merge_short_connectors(tracks, ways, length, line_of=line_of)
 
     # ---------------------------------------------------------------- the colour of a line
-    services = defaultdict(set)                    # (name without its direction, colour, kind of relation) -> ways on a line here
+    # The tramways came to the map after everything else, and nothing of theirs recolours what
+    # was there: a line that is not a tramway is voted on as it was, by the routes that are not
+    # tram routes and over the track that is not tram track (a tram route runs on from
+    # 広島電鉄本線 over the light rail of 宮島線). A tramway is voted on by every route over all its track.
+    tramway = lambda w: ways[w][0].get("railway") == "tram"
+    tram_line = {key for key, wids in tracks.items() if key[0] == "metro" and 2 * sum(length[w] for w in wids if tramway(w)) > sum(length[w] for w in wids)}
+    services = defaultdict(set)                    # (name without its direction, colour, kind of relation, a tram route?) -> ways on a line here
     for rid, t, members in ex["relations"]:
         col = colour_of(t.get("colour"))
         if t.get("type") != "route" or not col:
             continue
         name = key_of(re.sub(r"\s*[（(\[].*?[)）\]]", "", t.get("name") or ""))
-        services[(name, col, t.get("route") == "railway")].update(ref for kind, ref in members if kind == "w" and ref in line_of)
+        services[(name, col, t.get("route") == "railway", t.get("route") == "tram")].update(ref for kind, ref in members if kind == "w" and ref in line_of)
     votes = defaultdict(Counter)                   # line -> colour -> score
-    for (name, col, infrastructure), ws in services.items():
-        total = sum(length[w] for w in ws)
-        on = Counter()
-        for w in ws:
-            on[line_of[w]] += length[w]
-        for key, part in on.items():
-            cover = part / sum(length[w] for w in tracks[key])
-            mostly = part / total
-            if "新幹線" in key[2] or cover < 0.25 or mostly < 0.25:
-                continue                            # passes through, or runs mostly somewhere else; the Shinkansen go by design speed
-            bare_name = key_of(re.sub(r"^JR", "", key[2]))
-            score = cover * mostly + (0.6 if bare_name in name else 0) + (0.2 if infrastructure else 0)
-            if EXPRESS.search(name):
-                score -= 0.6
-            if cover < 0.5 or mostly < 0.5:
-                score -= 1.0                        # a weak match: only where nothing better says what colour the line has
-            votes[key][col] = max(votes[key].get(col, -9), score)
+    for (name, col, infrastructure, tram_route), ws in services.items():
+        for trams in (False, True):                # first the lines that are not tramways, then the tramways
+            if tram_route and not trams:
+                continue
+            mine = [w for w in ws if trams or not tramway(w)]
+            total = sum(length[w] for w in mine)
+            on = Counter()
+            for w in mine:
+                if (line_of[w] in tram_line) == trams:
+                    on[line_of[w]] += length[w]
+            for key, part in on.items():
+                cover = part / sum(length[w] for w in tracks[key] if trams or not tramway(w))
+                mostly = part / total
+                if "新幹線" in key[2] or cover < 0.25 or mostly < 0.25:
+                    continue                        # passes through, or runs mostly somewhere else; the Shinkansen go by design speed
+                bare_name = key_of(re.sub(r"^JR", "", key[2]))
+                score = cover * mostly + (0.6 if bare_name in name else 0) + (0.2 if infrastructure else 0)
+                if EXPRESS.search(name):
+                    score -= 0.6
+                if cover < 0.5 or mostly < 0.5:
+                    score -= 1.0                    # a weak match: only where nothing better says what colour the line has
+                votes[key][col] = max(votes[key].get(col, -9), score)
     line_colour = {}
     for key in tracks:
         if key[2] in KNOWN_COLOUR:
@@ -515,6 +652,8 @@ def main():
             continue
         tags = [ways[w][0] for w in tracks[key]]
         total = sum(length[w] for w in tracks[key])
+        for w, t in zip(tracks[key], tags):
+            names.add(name, t, length[w])
         # Japan kind is operator + name (jk), never speed. Shinkansen identity is the route name.
         # 山形/秋田 run on converted 1066mm track: explicit exceptions, not a speed guess.
         jk = jkind(name, firm)
@@ -556,36 +695,59 @@ def main():
         if firm:
             row["o"] = firm
         row["tk"] = round(row["tk"])
+        names.line(row)
+    for f in rail_feats:
+        names.line(f["properties"])
 
-    # ---------------------------------------------------------------- metros
-    metro_feats, metro_rows = [], []
-    for key in [k for k in tracks if k[0] == "metro"]:
-        _, firm, name = key
+    # ---------------------------------------------------------------- metros and tramways
+    metro_keys = [k for k in tracks if k[0] == "metro"]
+    is_tram = {key: key in tram_line for key in metro_keys}
+    drawn_metro = {}
+    for key in metro_keys:
         kinds = Counter(ways[w][0].get("railway") for w in tracks[key])
-        light = kinds["light_rail"] > kinds["subway"] + kinds["monorail"]
+        light = kinds["light_rail"] + kinds["tram"] > kinds["subway"] + kinds["monorail"]
         # Metro infrastructure bucket: underground / monorail / light-rail(tram). AGT can't be told
         # from the tag alone (no operator on the metro feature), so light_rail stays the tram bucket.
-        jk = metro_jk(kinds)
         runs = runs_of([ways[w][1] for w in tracks[key]])
-        drawn = stitch(one_track(runs), bends=True)
+        drawn = stitch(one_track(runs, **(dict(gap=TRAM_GAP) if is_tram[key] else {})), bends=True)
         tol = TOL["light" if light else "metro"]
         simp = rounded(drawn, tol, (6, 6, 0.00004) if light else (5, 4, 0.0003), adaptive=True)
-        if not simp or sum(km(co) for co in simp) < METRO_MIN_KM:
+        if simp:
+            drawn_metro[key] = (simp, metro_jk(kinds), sum(km(co) for co in simp))
+            for w in tracks[key]:
+                names.add(key[2], ways[w][0], length[w])
+    # A line of less than METRO_MIN_KM is a ride and is left out, but not a short line of a
+    # tramway system that is longer than that as a whole.
+    system = tram_systems({key: tracks[key] for key in drawn_metro if is_tram[key]}, ways,
+                          [wid for wid, (t, co) in ways.items() if t.get("railway") == "tram"])
+    metro_feats, tram_feats, metro_rows = [], [], []
+    for key in sorted(drawn_metro, key=lambda k: is_tram[k]):          # the tramways after the rest, which keep their order
+        _, firm, name = key
+        simp, jk, line_km = drawn_metro[key]
+        if max(line_km, sum(drawn_metro[k][2] for k in system.get(key, ()))) < METRO_MIN_KM:
             continue
         col = line_colour.get(key) or "#5cc8ff"
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
         city = next((c[0] for c in CITIES if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), "日本其他")
-        metro_feats.append({"type": "Feature", "properties": {"r": "JP", "g": "jp", "col": col, "n": name, "ct": city, "jk": jk}, "geometry": geometry(simp)})
-        metro_rows.append((city, {"n": name, "col": col, "jk": jk, "km": round(sum(km(co) for co in simp)), "bbox": bbox_of(simp)}))
-    metro_feats = side_by_side(metro_feats)
+        (tram_feats if is_tram[key] else metro_feats).append({"type": "Feature", "properties": {"r": "JP", "g": "jp", "col": col, "n": name, "ct": city, "jk": jk}, "geometry": geometry(simp)})
+        metro_rows.append((city, {"n": name, "col": col, "jk": jk, "km": round(line_km), "bbox": bbox_of(simp)}))
+    # A tramway keeps company with tramways only: where one runs in the street over a subway
+    # (札幌市電 over 南北線, 都電 over 副都心線) neither is moved aside for the other, as in China.
+    metro_feats = side_by_side(metro_feats) + side_by_side(tram_feats)
+    for f in metro_feats:
+        names.line(f["properties"])
     cities = {}
     for city, row in metro_rows:
         c = cities.setdefault(city, {"n": city, "km": 0, "bbox": list(row["bbox"]), "lines": []})
         c["km"] += row["km"]
         c["bbox"] = [min(c["bbox"][0], row["bbox"][0]), min(c["bbox"][1], row["bbox"][1]), max(c["bbox"][2], row["bbox"][2]), max(c["bbox"][3], row["bbox"][3])]
         c["lines"].append(row)
+    known = city_names("jp")
     for c in cities.values():
         c["lines"].sort(key=lambda r: r["n"])
+        for row in c["lines"]:
+            names.line(row)
+        name_city(c, known, "jp")
 
     # ---------------------------------------------------------------- stations
     seen, stations = set(), []
@@ -594,6 +756,8 @@ def main():
         kind = t.get("station") or ("subway" if t.get("subway") == "yes" else "light_rail" if t.get("light_rail") == "yes" else "")
         if not name or kind in ("funicular", "preserved", "miniature"):
             continue
+        if t.get("railway") == "tram_stop":
+            continue                                                       # after the stations, below
         metro = kind in METRO_RAIL
         spot = (name, metro, round(lon * 300), round(lat * 300))          # one dot for the platforms of one station
         if spot in seen:
@@ -602,7 +766,23 @@ def main():
         props = {"n": name, "g": "jp"}
         if metro:
             props["m"] = 1
+        names.station(props, t, (lon, lat))
         stations.append({"type": "Feature", "properties": props, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+    # The tram stops, after the stations: a stop that is on the map as a station already (三ノ輪橋 is
+    # mapped as both) gets no second dot.
+    here = {(spot[0], spot[2], spot[3]) for spot in seen}
+    for t, lon, lat in ex["stations"]:
+        name = unicodedata.normalize("NFKC", t.get("name") or "").strip()
+        spot = (name, round(lon * 300), round(lat * 300))
+        if t.get("railway") != "tram_stop" or not name or spot in here:
+            continue
+        here.add(spot)
+        props = names.station({"n": name, "g": "jp", "m": 1, "t": 1}, t, (lon, lat))        # t: a tram stop, hidden with the trams
+        stations.append({"type": "Feature", "properties": props, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+    every = len(stations)
+    lines_of = lambda feats: [co for f in feats for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]])]
+    stations = with_a_line(stations, lines_of(rail_feats), lines_of(metro_feats))
+    print(f"japan stations: {len(stations)} of {every} have a drawn line passing them; the other {every - len(stations)} are not drawn", flush=True)
 
     # ---------------------------------------------------------------- write
     def write(name, obj):
@@ -612,7 +792,7 @@ def main():
     write("jp_rail.geojson", {"type": "FeatureCollection", "features": rail_feats})
     write("jp_metro.geojson", {"type": "FeatureCollection", "features": metro_feats})
     write("jp_stations.geojson", {"type": "FeatureCollection", "features": stations})
-    build_feats = being_built(ways, "jp", plain_name, build_fast=lambda name: "新幹線" in name)
+    build_feats = being_built(ways, "jp", plain_name, build_fast=lambda name: "新幹線" in name, names=names)
     write("jp_build.geojson", {"type": "FeatureCollection", "features": build_feats})
     write("jp_lines.json", sorted(lines_json.values(), key=lambda r: -r["tk"]))
     write("jp_metro_cities.json", sorted(cities.values(), key=lambda c: -c["km"]))

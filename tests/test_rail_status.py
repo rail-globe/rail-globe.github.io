@@ -45,6 +45,23 @@ class RailStatusTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             corrected_tags({"name": "同一条长线路"}, [(100.1, 30.1)], [self.rule(), self.rule("construction")])
 
+    def test_unnamed_track_that_a_source_shows_to_be_a_line_s(self):
+        rule = {"id": "line-to-mine", "ways": [7, 8], "line": "乐德线", "usage": "branch", "status": "rail",
+                "checked": "2026-10-10", "sources": [{"url": "https://example.com"}]}
+        spur = {"railway": "rail", "service": "spur", "usage": "industrial"}
+        fixed, evidence = corrected_tags(spur, [(117.6, 29.0)], [rule], way=7)
+        self.assertEqual((fixed["name"], fixed["usage"], "service" in fixed, evidence), ("乐德线", "branch", False, "line-to-mine"))
+        self.assertEqual(corrected_tags(spur, [(117.6, 29.0)], [rule], way=9), (spur, None))     # another way of the same tags
+        self.assertEqual(corrected_tags(spur, [(117.6, 29.0)], [rule]), (spur, None))
+
+    def test_the_ways_of_the_rules_are_in_the_extract(self):
+        import pickle
+        rules = load_rules(Path(__file__).resolve().parents[1] / "data" / "rail_status_overrides.json")
+        wanted = {w for rule in rules for w in rule.get("ways", ())}
+        if wanted:
+            ways = {wid for wid, t, co in pickle.load(open(Path(__file__).resolve().parents[1] / "data" / "raw" / "extract.pkl", "rb"))["ways"]}
+            self.assertEqual(wanted - ways, set())
+
     def test_missing_evidence_is_rejected(self):
         rule = self.rule()
         rule.pop("sources")

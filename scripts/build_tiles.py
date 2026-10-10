@@ -74,15 +74,22 @@ LAYERS = {
     "build": dict(cn="rail_build", abroad="build", keep="c n h g", zoom=lambda p: 0),
     "metro": dict(cn="metro", abroad="metro", keep="n ct col k g jk off", zoom=lambda p: 4),
     # stations on high-speed lines from zoom 5, the others from 8.5; metro stations from 10
-    # (a country abroad has one stations file; its metro stations are marked m)
-    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n h g",
-                     zoom=lambda p: 5 if p.get("h") else 8),
+    # (a country abroad has one stations file; its metro stations are marked m; t marks a tram stop,
+    # which the page's light-rail switch hides with the trams)
+    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n nz ne h g",
+                     zoom=lambda p: 5 if p.get("h") else 8, label=lambda p: 8 if p.get("h") else 10),
     "metro-stations": dict(cn="metro_stations", abroad="stations", abroad_if=lambda p: bool(p.get("m")),
-                           keep="n g m", zoom=lambda p: 10),
+                           keep="n nz ne g m t", zoom=lambda p: 10, label=lambda p: 12),
     "yards": dict(cn="yards", abroad="yards", keep="", zoom=lambda p: 9),
-    "depots": dict(cn="depots", abroad="depots", keep="n", zoom=lambda p: 9),
+    "depots": dict(cn="depots", abroad="depots", keep="n nz ne", zoom=lambda p: 9, label=lambda p: 10),
 }
 LINE_LAYERS = ["hsr", "conv", "shared", "build", "metro", "yards"]
+# A point's names beside n (nz, ne: scripts/names.py) are what the page writes under its dot, from
+# the zoom its label shows at (label above); below that the point comes without them, which keeps
+# them out of the many tiles of the shallower zooms. A line's names are not in the tiles: the page
+# writes no line names on the map, and takes them from the lists it loads whole (lines.json, the
+# metro cities), by n.
+NAMES = ("nz", "ne")
 
 
 def countries():
@@ -113,12 +120,18 @@ def tippecanoe_input(g):
                 p = {**p, "m": 1}             # the page marks every metro station; in a tile it has to come marked
             if layer not in layers:
                 layers.append(layer)
-            lines.append(json.dumps({
-                "type": "Feature",
-                "tippecanoe": {"layer": layer, "minzoom": spec["zoom"](p)},
-                "properties": {k: p[k] for k in keep if p.get(k) is not None},
-                "geometry": f["geometry"],
-            }, ensure_ascii=False, separators=(",", ":")))
+            props = {k: p[k] for k in keep if p.get(k) is not None}
+            low, label = spec["zoom"](p), spec.get("label", lambda p: 0)(p)
+            parts = [(low, None, props)]
+            if label > low and any(k in props for k in NAMES):
+                parts = [(low, label - 1, {k: v for k, v in props.items() if k not in NAMES}), (label, None, props)]
+            for minzoom, maxzoom, props in parts:
+                lines.append(json.dumps({
+                    "type": "Feature",
+                    "tippecanoe": {"layer": layer, "minzoom": minzoom, **({"maxzoom": maxzoom} if maxzoom is not None else {})},
+                    "properties": props,
+                    "geometry": f["geometry"],
+                }, ensure_ascii=False, separators=(",", ":")))
     return "\n".join(lines) + "\n", layers
 
 
@@ -151,7 +164,8 @@ def beside(g, layers, out):
     stations as plain columns, for the search and the route fields, which list stations that are
     not on the screen (the page draws them from the tiles). A place is kept to 1e-5 degrees, about
     a metre; g is China's number of the station in the route network, h marks a station on a
-    high-speed line."""
+    high-speed line, nz and ne are its names in Chinese and English where it has them (null
+    where not; see scripts/names.py)."""
     def columns(feats):
         cols = {"n": [f["properties"]["n"] for f in feats],
                 "x": [round(f["geometry"]["coordinates"][0] * 1e5) for f in feats],
@@ -160,6 +174,9 @@ def beside(g, layers, out):
             cols["g"] = [f["properties"].get("g") for f in feats]
         if any(f["properties"].get("h") for f in feats):
             cols["h"] = [1 if f["properties"].get("h") else 0 for f in feats]
+        for key in ("nz", "ne"):
+            if any(key in f["properties"] for f in feats):
+                cols[key] = [f["properties"].get(key) for f in feats]
         return cols
     write = lambda name, value: (out / name).write_text(json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n")
     write(f"{g}.json", {

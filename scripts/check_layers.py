@@ -8,8 +8,16 @@ It reads data/*.geojson as written for the map and reports, per line:
   twice    a line drawn twice: two of its own pieces run beside each other
   broken   a line that stops and carries on a short distance further
   hidden   two different lines drawn on top of each other (they should be side by side)
+  stacked  a tram in the street over another line's tunnel: one place on the map, two levels on
+           the ground, so they are drawn as they lie and listed apart from the hidden ones
   astray   a line moved to one side although no other line runs with it there
   sharp    a sudden change of direction: a line must be smooth
+
+With no layer named, or with "depots", it also checks the labels of the yards and depots layer
+(scripts/depots.py): no label away from yard track, one name to a depot, no building or office
+named as a depot, every row of the names table at a depot, and how many metro depots have no name.
+With no layer named, or with "names", it counts the English names beside n (scripts/names.py)
+and finds any that is n itself or has brackets in it.
 
 Every finding comes with a place (#zoom/lat/lon, to paste after http://localhost:8765/).
 The script changes nothing; the exit code is 0 whatever it finds.
@@ -27,6 +35,9 @@ import shapely
 from shapely.geometry import LineString, MultiLineString, Point, shape
 from shapely.ops import linemerge, nearest_points
 from shapely.strtree import STRtree
+
+from metro_classes import is_tram
+from depots import check as depot_check
 
 warnings.filterwarnings("ignore")
 DATA = Path(__file__).resolve().parents[1] / "data"
@@ -266,9 +277,17 @@ def report(layer):
         result['bends'] = bends
         print(f"     bends: {bends['bends']} fixed-distance candidates, {bends['reverse_bends']} near an opposite bend (source review, including light rail)")
         found = hidden(lines, step / 3)
+        # A tram keeps company with trams only (scripts/process_osm.py): where one runs in the street
+        # over a metro's tunnel, neither is moved aside for the other.
+        stacked = [f for f in found if is_tram(f[1][0][1], {}) != is_tram(f[1][1][1], {})]
+        found = [f for f in found if f not in stacked]
         result["hidden"] = [{"km": length, "lines": [list(a), list(b)], "view": here(pt)} for length, (a, b), pt in found]
         print(f"   hidden: {len(found)} pairs of lines drawn on top of each other for more than 1 km")
         for length, (a, b), pt in found[:20]:
+            print(f"      {length:6.1f} km  {a[1]} + {b[1]} ({a[0]})  {here(pt)}")
+        result["stacked"] = [{"km": length, "lines": [list(a), list(b)], "view": here(pt)} for length, (a, b), pt in stacked]
+        print(f"   stacked: {len(stacked)} pairs of a tram and a line under its street in one place for more than 1 km, {sum(f[0] for f in stacked):.0f} km in all")
+        for length, (a, b), pt in stacked[:20]:
             print(f"      {length:6.1f} km  {a[1]} + {b[1]} ({a[0]})  {here(pt)}")
         found = astray(lines, step / 3)
         result["astray"] = [{"km": length, "line": list(key), "view": here(pt)} for length, key, pt in found]
@@ -276,6 +295,25 @@ def report(layer):
         for length, key, pt in found[:15]:
             print(f"      {length:6.1f} km  {key[1]} ({key[0]})  {here(pt)}")
     return result
+
+
+def depots_report():
+    import pickle
+    # written locally by scripts/extract_osm.py, so loading it is safe here
+    found, audit = depot_check("cn", DATA, pickle.load(open(DATA / "raw" / "extract.pkl", "rb")))
+    print("== depots")
+    for bad, text in found:
+        print(("!! " if bad else "   ") + text)
+    return audit
+
+
+def names_report():
+    from names import check as names_check
+    found, audit = names_check("cn", DATA)
+    print("== names")
+    for bad, text in found:
+        print(("!! " if bad else "   ") + text)
+    return audit
 
 
 LAYERS = ["metro", "rail", "suburb", "shared", "construction"]
@@ -286,9 +324,13 @@ if __name__ == "__main__":
     parser.add_argument("--json", type=Path, help="Save every finding, including those beyond the printed examples")
     args = parser.parse_args()
     for layer in args.layers:
-        if layer not in LAYERS:
-            parser.error(f"unknown layer {layer!r}: choose from {', '.join(LAYERS)}")
-    results = {layer: report(layer) for layer in (args.layers or LAYERS)}
+        if layer not in LAYERS + ["depots", "names"]:
+            parser.error(f"unknown layer {layer!r}: choose from {', '.join(LAYERS + ['depots', 'names'])}")
+    results = {layer: report(layer) for layer in (args.layers or LAYERS) if layer not in ("depots", "names")}
+    if not args.layers or "depots" in args.layers:
+        results["depots"] = depots_report()
+    if not args.layers or "names" in args.layers:
+        results["names"] = names_report()
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(results, ensure_ascii=False, indent=2))

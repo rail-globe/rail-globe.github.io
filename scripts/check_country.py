@@ -16,6 +16,11 @@ from pathlib import Path
 from shapely import STRtree
 from shapely.geometry import LineString, Point
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from process_jp import with_a_line
+from depots import check as depot_check
+from names import check as names_check
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA, RAW, OUT = ROOT / "data", ROOT / "data" / "raw", ROOT / "output"
 FAST = ("hsr400", "hsr350", "hsr300", "hsr250", "hsr200", "hsr160", "hsrslow")
@@ -158,8 +163,25 @@ def check(code):
 
     # ---- stations
     say(not stations, f"stations: {len(stations)} ({sum(1 for f in stations if f['properties'].get('m'))} on metros and trams)")
+    # a station with no drawn line passing it is a dot in the middle of nothing (Tokyo's 都電 stops, before the tramways were drawn)
+    served = {id(f) for f in with_a_line(stations, [co for f in rail for co in parts_of(f)], [co for f in metro for co in parts_of(f)])}
+    alone = [f for f in stations if id(f) not in served]
+    say(alone, f"stations with no drawn line passing them: {len(alone)} ({sum(1 for f in alone if f['properties'].get('m'))} of them metro stations or tram stops) "
+        + str([f["properties"]["n"] for f in alone[:8]]))
 
-    report.update({"flags": flags, "breaks": cut, "twice": double, "track_names": odd, "bands": [list(k) for k in bands], "metro_without_colour": sorted(plain)})
+    # ---- the names on the yards and depots layer (scripts/depots.py)
+    found, depot_audit = depot_check(code, DATA, ex)
+    for bad, text in found:
+        say(bad, text)
+
+    # ---- the names beside n: nz and ne (scripts/names.py)
+    found, names_audit = names_check(code, DATA)
+    for bad, text in found:
+        say(bad, text)
+
+    report.update({"flags": flags, "breaks": cut, "twice": double, "track_names": odd, "bands": [list(k) for k in bands], "metro_without_colour": sorted(plain),
+                   "depots": depot_audit, "names": names_audit,
+                   "stations_without_a_line": [{"n": f["properties"]["n"], "at": f["geometry"]["coordinates"], "metro": bool(f["properties"].get("m"))} for f in alone]})
     print(f"   -> {len(flags)} to look at", flush=True)
     return report
 

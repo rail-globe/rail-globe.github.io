@@ -1,5 +1,5 @@
 <title>Rail Globe · 铁路网卫星图</title>
-<meta name="description" content="铁路、地铁和有轨电车，画在卫星影像的地球上。">
+<meta name="description" content="铁路、地铁和有轨电车，画在卫星影像的地球上。" data-ta="content:doc.description">
 <!-- What a phone uses: the colour of its browser bars (the page's ground), and what "add to home
      screen" needs to open the page full screen under its own icon. -->
 <meta name="theme-color" content="#05090c">
@@ -82,8 +82,15 @@ button:active, .gh:active { transform: scale(0.97); }
 .title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; letter-spacing: -0.01em; }
 .facts { margin: 2px 0 0; font-size: 0.75rem; color: var(--label2); font-variant-numeric: tabular-nums; }
+.grp { display: block; }
+.nobr { white-space: nowrap; }          /* a line to each class: as many lines in either language, and no mark between classes */
 .gh { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 5px 10px; border-radius: 999px; background: var(--fill2); color: var(--label); text-decoration: none; font-size: 0.75rem; font-weight: 500; }
 .title-row h1 { flex: 1; min-width: 0; white-space: nowrap; }
+/* The language: 中 / EN, the one in use in white. One touch changes to the other. */
+.lang { flex: none; display: inline-flex; align-items: center; border: 0; margin-left: -6px; padding: 5px 9px; border-radius: 999px; background: var(--fill2); color: var(--label3); font: inherit; font-size: 0.75rem; cursor: pointer; }
+.lang b { font-weight: 500; }
+.lang b + b::before { content: "/"; margin: 0 3px; color: var(--label3); }
+.lang b.on { color: var(--label); }
 .head > .facts { margin-top: -8px; }
 /* The card has two levels: the list of countries, and a country's page with a way back. At the
    list the header is the search field and the site's name; a country's figures and tabs belong to
@@ -176,7 +183,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
    the tabs step aside, and come back when the field is emptied. The field
    itself does not move, and on a phone the results get the room above the keyboard. */
 #panel.finding :is(.title-row, .facts, #tabs) { display: none; }
-.found .kmh { flex: none; max-width: 58%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.found .kmh { flex: none; max-width: 58%; text-align: right; }        /* what a thing is, beside it: on two lines where it is long */
 .found i.plain { background: none; box-shadow: 0 0 0 1.5px var(--label3) inset; }   /* a station, a city or a country has no colour */
 
 /* ---------- lines ---------- */
@@ -187,7 +194,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .linelist button { width: 100%; border: 0; background: transparent; display: flex; align-items: center; gap: 10px; padding: 10px 12px; min-height: 42px; text-align: left; cursor: pointer; }
 .linelist button:active { background: var(--fill2); }       /* the press shows at once, also under a finger */
 .linelist button[aria-current="true"] { background: rgba(10, 132, 255, 0.22); }
-.linelist .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.linelist .nm { flex: 1; min-width: 0; }      /* a name that does not fit wraps; it is never cut short */
+/* A name in two scripts, 上海虹桥(Shanghai Hongqiao) or 서울(首尔), is two pieces (see setName in
+   the script). Where it does not fit on one line it breaks before the bracket; a piece longer
+   than the line by itself breaks between its words, never inside one. */
+.two > bdi { display: inline-block; max-width: 100%; vertical-align: top; }
 .linelist svg { flex: none; color: var(--label3); }
 .linelist .back { color: var(--blue); gap: 4px; }
 .linelist .back svg { color: var(--blue); }
@@ -229,6 +240,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 .maplibregl-ctrl-attrib { background: rgba(28, 28, 30, 0.6) !important; }
 .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner, .maplibregl-ctrl-attrib a { color: var(--label2) !important; font-size: 0.6875rem; }
 .maplibregl-ctrl-attrib-button { filter: invert(1); opacity: 0.75; }
+/* Beside the card the credits stand in the lower left corner of the map that the card leaves
+   free: in line with the quick jumps, so the card hides them at no height. They are a control
+   of their own there (see the script); the one in the right corner, with the scale, is the
+   phone's. The corner ends before the scale begins, so a narrow window wraps the open line
+   rather than run it under the scale. */
+@media not all and (max-width: 720px) {
+  .maplibregl-ctrl-bottom-left { left: calc(var(--card-w) + 14px + env(safe-area-inset-left, 0px)); right: calc(120px + env(safe-area-inset-right, 0px)); }
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib { display: none; }
+}
 .maplibregl-ctrl-scale { background: rgba(28, 28, 30, 0.5); color: var(--label); border-color: var(--label2); font: 0.6875rem var(--font); font-variant-numeric: tabular-nums; }
 #loading { position: fixed; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; font-size: 0.8125rem; color: var(--label2); }
 #loading::before { content: ""; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--label3); border-top-color: var(--label); animation: spin 0.8s linear infinite; }
@@ -260,8 +280,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 @media (max-width: 720px), (pointer: coarse) {
   /* A finger needs about 44px. The controls keep their modest look; where one is smaller than
      that, an unseen margin around it takes the touch as well (never reaching into a neighbour). */
-  .segmented button, .back, .gh, .link, .searchbar .clear, #jumps button { position: relative; }
-  .segmented button::after, .back::after, .gh::after, .link::after, .swap::after, .searchbar .clear::after, #jumps button::after,
+  .segmented button, .back, .gh, .lang, .link, .searchbar .clear, #jumps button { position: relative; }
+  .segmented button::after, .back::after, .gh::after, .lang::after, .link::after, .swap::after, .searchbar .clear::after, #jumps button::after,
   .maplibregl-ctrl-attrib-button::after { content: ""; position: absolute; }
   .segmented button { min-height: 36px; }
   .segmented button::after { inset: -4px 0; }
@@ -271,6 +291,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   .back { min-height: 36px; }
   .back::after { inset: -4px -6px -4px -8px; }
   .gh::after { inset: -8px -4px; }
+  .lang::after { inset: -8px -3px; }
   .link::after { inset: -6px -8px -14px; }
   .swap::after, .searchbar .clear::after { inset: -8px; }
   .maplibregl-ctrl-attrib-button::after { inset: -10px; }
@@ -310,6 +331,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
      are in sight at every height; at its highest that is the corner the quick jumps leave free,
      where there is room for the credits only. */
   .maplibregl-ctrl-bottom-right { will-change: transform; }
+  .maplibregl-ctrl-bottom-left { display: none; }       /* (the desktop's credits; here they ride on the sheet) */
   body[data-sheet="large"] .maplibregl-ctrl-scale { display: none; }
   #loading { top: 30%; }
 }
@@ -327,57 +349,58 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 }
 </style>
 
-<div id="map" role="region" aria-label="铁路网卫星地图"></div>
+<div id="map" role="region" aria-label="铁路网卫星地图" data-ta="aria-label:map.label"></div>
 <div id="safe" aria-hidden="true"></div>
-<div id="loading">正在载入线路数据…</div>
-<nav id="jumps" aria-label="快速定位"></nav>
+<div id="loading" data-t="loading">正在载入线路数据…</div>
+<nav id="jumps" aria-label="快速定位" data-ta="aria-label:jumps.label"></nav>
 
-<aside id="panel" class="world" aria-label="搜索、国家、路线、线路与图层">
+<aside id="panel" class="world" aria-label="搜索、国家、路线、线路与图层" data-ta="aria-label:panel.label">
   <div class="head">
     <div class="grabber" aria-hidden="true"></div>
     <label class="searchbar">
       <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <input id="query" type="search" placeholder="车站、线路、城市，如 上海虹桥" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="搜索车站、线路、城市、国家" aria-controls="tab-find">
-      <button type="button" class="clear" id="queryClear" aria-label="清除搜索" hidden>
+      <input id="query" type="search" placeholder="车站、线路、城市，如 上海虹桥" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="搜索车站、线路、城市、国家" data-ta="aria-label:search.label" aria-controls="tab-find">
+      <button type="button" class="clear" id="queryClear" aria-label="清除搜索" data-ta="aria-label:search.clear" hidden>
         <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="currentColor" opacity="0.55"/><path d="M5.6 5.6l4.8 4.8m0-4.8l-4.8 4.8" stroke="#1c1c1e" stroke-width="1.5" stroke-linecap="round"/></svg>
       </button>
     </label>
     <div class="title-row">
-      <button type="button" class="back" id="toWorld" aria-label="返回国家列表">
-        <svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M7 1L1 7l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>国家</span>
+      <button type="button" class="back" id="toWorld" aria-label="返回国家列表" data-ta="aria-label:back.label">
+        <svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M7 1L1 7l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-t="back">国家</span>
       </button>
       <h1 id="title">Rail Globe</h1>
-      <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星">
+      <a id="ghStar" class="gh" href="https://github.com/rail-globe/rail-globe.github.io" target="_blank" rel="noopener" aria-label="在 GitHub 上给这个项目加星" data-ta="aria-label:star.label">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
         <svg class="star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/></svg>
         <span>Star</span><b id="ghCount" hidden></b>
       </a>
+      <button type="button" class="lang" id="lang" aria-label="语言：中文 / English" data-ta="aria-label:lang.label"><b data-lang="zh">中</b><b data-lang="en">EN</b></button>
     </div>
     <p class="facts" id="facts"></p>
     <div class="segmented" id="tabs" role="tablist" style="--n: 3">
       <span class="thumb"></span>
-      <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route">路线</button>
-      <button type="button" role="tab" data-tab="lines" aria-selected="false" aria-controls="tab-lines">线路</button>
-      <button type="button" role="tab" data-tab="layers" aria-selected="false" aria-controls="tab-layers">图层</button>
+      <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route" data-t="tab.route">路线</button>
+      <button type="button" role="tab" data-tab="lines" aria-selected="false" aria-controls="tab-lines" data-t="tab.lines">线路</button>
+      <button type="button" role="tab" data-tab="layers" aria-selected="false" aria-controls="tab-layers" data-t="tab.layers">图层</button>
     </div>
   </div>
 
   <div class="scroll" id="scroll">
-    <div class="tab" id="tab-find" role="region" aria-label="搜索结果" hidden></div>
-    <div class="tab" id="tab-world" role="region" aria-label="国家">
+    <div class="tab" id="tab-find" role="region" aria-label="搜索结果" data-ta="aria-label:found.label" hidden></div>
+    <div class="tab" id="tab-world" role="region" aria-label="国家" data-ta="aria-label:world.label">
       <ul class="group linelist countries" id="countryList"></ul>
     </div>
     <div class="tab" id="tab-route" role="tabpanel" hidden>
       <div id="routeCn">
         <div>
           <div class="group od">
-            <div class="odrow"><i class="dot from"></i><div class="odf"><input id="odFrom" type="search" placeholder="出发站" autocomplete="off" aria-label="出发站"><ul class="sugg" id="suggFrom" hidden></ul></div></div>
-            <div class="odrow"><i class="dot to"></i><div class="odf"><input id="odTo" type="search" placeholder="到达站" autocomplete="off" aria-label="到达站"><ul class="sugg" id="suggTo" hidden></ul></div></div>
-            <button type="button" class="swap" id="odSwap" aria-label="互换出发和到达">
+            <div class="odrow"><i class="dot from"></i><div class="odf"><input id="odFrom" type="search" placeholder="出发站" autocomplete="off" aria-label="出发站" data-ta="placeholder:od.from aria-label:od.from"><ul class="sugg" id="suggFrom" hidden></ul></div></div>
+            <div class="odrow"><i class="dot to"></i><div class="odf"><input id="odTo" type="search" placeholder="到达站" autocomplete="off" aria-label="到达站" data-ta="placeholder:od.to aria-label:od.to"><ul class="sugg" id="suggTo" hidden></ul></div></div>
+            <button type="button" class="swap" id="odSwap" aria-label="互换出发和到达" data-ta="aria-label:od.swap">
               <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M5 13V3M5 3L2.5 5.5M5 3l2.5 2.5M11 3v10m0 0l-2.5-2.5M11 13l2.5-2.5"/></svg>
             </button>
           </div>
-          <div class="od-actions"><button type="button" class="link" id="odClear">清除</button></div>
+          <div class="od-actions"><button type="button" class="link" id="odClear" data-t="clear">清除</button></div>
         </div>
         <div id="routeOut" hidden>
           <div class="route-sum"><b id="routeKm"></b><span id="routeTime"></span></div>
@@ -389,17 +412,19 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     <div class="tab" id="tab-lines" role="tabpanel" hidden>
       <div id="sel" class="group selcard" hidden>
-        <div class="sel-top"><b id="selName"></b><button type="button" class="link" id="clearSel">清除</button></div>
+        <div class="sel-top"><b id="selName"></b><button type="button" class="link" id="clearSel" data-t="clear">清除</button></div>
         <span id="selMeta"></span>
       </div>
-      <div class="segmented" id="lineKind" role="group" aria-label="线路类别" style="--n: 3">
+      <div class="segmented chips" id="lineKind" role="group" aria-label="线路类别" data-ta="aria-label:kinds.label">
         <span class="thumb"></span>
-        <button type="button" data-kind="fast" aria-pressed="true">高铁</button>
+        <button type="button" data-kind="fast" aria-pressed="true">动车（含高铁）</button>
         <button type="button" data-kind="conv" aria-pressed="false">普速</button>
-        <button type="button" data-kind="metro" aria-pressed="false">地铁</button>
+        <button type="button" data-kind="subway" aria-pressed="false">地铁</button>
+        <button type="button" data-kind="urban" aria-pressed="false">轻轨·电车</button>
+        <button type="button" data-kind="suburban" aria-pressed="false">市郊 / 城际</button>
       </div>
       <div>
-        <p class="caption"><span id="lineCap">高铁与城际线路</span><span id="lineCount"></span></p>
+        <p class="caption"><span id="lineCap">动车线路（含高铁与城际）</span><span id="lineCount"></span></p>
         <ul class="group linelist" id="lineList"></ul>
         <div class="hint" id="more"></div>
       </div>
@@ -407,15 +432,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     <div class="tab" id="tab-layers" role="tabpanel" hidden>
       <div>
-        <p class="caption">线路与设施</p>
+        <p class="caption" data-t="layers.caption">线路与设施</p>
         <div class="group" id="layers"></div>
       </div>
       <div>
-        <p class="caption">视图</p>
-        <div class="segmented" role="group" aria-label="地图投影">
+        <p class="caption" data-t="view.caption">视图</p>
+        <div class="segmented" role="group" aria-label="地图投影" data-ta="aria-label:view.label">
           <span class="thumb"></span>
-          <button type="button" id="projGlobe" aria-pressed="true">地球</button>
-          <button type="button" id="projFlat" aria-pressed="false">平面</button>
+          <button type="button" id="projGlobe" aria-pressed="true" data-t="view.globe">地球</button>
+          <button type="button" id="projFlat" aria-pressed="false" data-t="view.flat">平面</button>
         </div>
       </div>
       <div id="ukSec">
@@ -423,13 +448,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         <p class="hint" id="opHint"></p>
       </div>
       <div>
-        <p class="caption">卫星影像</p>
+        <p class="caption" data-t="imagery.caption">卫星影像</p>
         <div class="group">
-          <label class="row range" for="dim"><span>亮度</span><input type="range" id="dim" min="30" max="100" step="5" value="70"><output id="dimOut" for="dim">70%</output></label>
+          <label class="row range" for="dim"><span data-t="imagery.dim">亮度</span><input type="range" id="dim" min="30" max="100" step="5" value="70"><output id="dimOut" for="dim">70%</output></label>
         </div>
         <p class="hint" id="baseNote">Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。</p>
       </div>
-      <p class="credits">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取（日本、韩国为 2026-10-06，英国为 2026-10-03）；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；高铁里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
+      <p class="credits" data-th="credits.data">线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取（日本、韩国为 2026-10-06，英国为 2026-10-03）；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；动车线路里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。</p>
     </div>
   </div>
 </aside>
@@ -441,6 +466,282 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const col = k => css.getPropertyValue('--' + k).trim();
   const abs = u => new URL(u, document.baseURI).href;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- the two languages ----
+  // Everything the page itself says is in this one table: the Chinese it was written in, and the
+  // English beside it. t() fills in what stands in {braces}. An English text may have two forms,
+  // "one|many", chosen by the number it is given as n. The names of places and lines are not
+  // here: they are the data's, and shown() further down puts them together.
+  const TEXT = {
+    'doc.title': ['Rail Globe · 铁路网卫星图', 'Rail Globe · railways on a satellite globe'],
+    'doc.description': ['铁路、地铁和有轨电车，画在卫星影像的地球上。', 'Railways, metros and trams, drawn on a globe of satellite imagery.'],
+    'map.label': ['铁路网卫星地图', 'Satellite map of the railways'],
+    'loading': ['正在载入线路数据…', 'Loading the lines…'],
+    'loading.failed': ['数据载入失败：{reason}', 'The data could not be loaded: {reason}'],
+    'start.failed': ['初始化失败：{reason}', 'The page could not start: {reason}'],
+    'jumps.label': ['快速定位', 'Quick jumps'],
+    'panel.label': ['搜索、国家、路线、线路与图层', 'Search, countries, route, lines and layers'],
+    'lang.label': ['语言：中文 / English', 'Language: 中文 / English'],
+    'search.placeholder': ['车站、线路、城市，如 {example}', 'Station, line, city: {example}'],
+    'search.label': ['搜索车站、线路、城市、国家', 'Search stations, lines, cities and countries'],
+    'search.clear': ['清除搜索', 'Clear the search'],
+    'search.example': ['上海虹桥', '上海虹桥'],
+    'back': ['国家', 'World'],
+    'back.label': ['返回国家列表', 'Back to the list of countries'],
+    'star.label': ['在 GitHub 上给这个项目加星', 'Star this project on GitHub'],
+    'title.country': ['{country}铁路网', '{country}'],
+    'tab.route': ['路线', 'Route'],
+    'tab.lines': ['线路', 'Lines'],
+    'tab.layers': ['图层', 'Layers'],
+    'found.label': ['搜索结果', 'Search results'],
+    'world.label': ['国家', 'Countries'],
+    // the route
+    'od.from': ['出发站', 'From'],
+    'od.to': ['到达站', 'To'],
+    'od.swap': ['互换出发和到达', 'Swap start and end'],
+    'clear': ['清除', 'Clear'],
+    'route.help': ['在地图上点一个火车站或地铁站，选“设为出发”或“设为到达”，也可以直接输入站名。铁路和地铁可以一起算，相邻的火车站和地铁站之间按步行换乘。仅支持中国境内车站；给出的是沿真实线路的走法和估算时间，不是车次和时刻表。',
+      'Tap a railway or metro station on the map and choose “Start here” or “End here”, or type a station’s name. Railways and metros are taken together, with a walk between a railway station and the metro station beside it. Stations in China only. What you get is a way along the real lines and an estimate of the time, not a train or a timetable.'],
+    'route.same': ['出发和到达是同一个车站。', 'Start and end are the same station.'],
+    'route.working': ['正在计算…', 'Working it out…'],
+    'route.offline': ['线路网络载入失败，请检查网络后重试。', 'The route network could not be loaded. Check the connection and try again.'],
+    'route.none': ['{from} 和 {to} 之间没有连通的线路。例如海南岛、台湾与大陆之间没有轨道相连。', 'No lines join {from} and {to}. Hainan and Taiwan, for one, have no rails to the mainland.'],
+    'route.beside': ['{from} 和 {to} 紧挨着，步行即可。', '{from} and {to} are next to each other: walk.'],
+    'route.walk': ['从 {from} 步行约 {metres} 米到 {to}', 'Walk about {metres} m from {from} to {to}'],
+    'route.change': ['在 {station} 换乘', 'Change at {station}'],
+    'route.km': ['公里', 'km'],
+    'route.time': ['约 {hours} 小时 {minutes} 分', 'about {hours} h {minutes} min'],
+    'route.minutes': ['约 {minutes} 分', 'about {minutes} min'],
+    'route.note': ['走法沿真实线路计算。铁路时间按线路等级估算、不含停站，地铁按平均速度估算；不代表有直达车次。', 'The way follows the real lines. Railway time is estimated from the class of each line, without stops, metro time from an average speed. It does not mean a through train runs.'],
+    'stop.start': ['设为出发', 'Start here'],
+    'stop.end': ['设为到达', 'End here'],
+    'stop.abroad': ['{country}车站暂不支持线路网寻路', 'No routes yet for stations in {country}'],
+    'stop.off': ['路线查询只支持中国境内、已接入线路网的车站', 'Routes are only for stations in China that are on the route network'],
+    // the lines tab
+    'kinds.label': ['线路类别', 'Class of line'],
+    'kind.fast': ['动车（含高铁）', 'EMU lines (incl. high-speed)'],
+    'kind.conv': ['普速', 'Conventional'],
+    'cap.fast': ['动车线路（含高铁与城际）', 'EMU lines, high-speed and intercity included'],
+    'cap.conv': ['普速线路', 'Conventional lines'],
+    'list.cities': ['全部城市', 'All cities'],
+    'list.more': ['另有 {n} 条，可在上方的搜索框里按名字查找', '{n} more: find them by name in the search field above'],
+    'list.none': ['这一类暂无线路', 'No lines of this class yet'],
+    'list.sections': ['分段', 'varies'],
+    'list.conv': ['普速', 'conventional'],
+    'n.lines': ['{n} 条', '{n} line|{n} lines'],
+    'n.linesLong': ['{n} 条线路', '{n} line|{n} lines'],
+    'n.cities': ['{n} 城', '{n} city|{n} cities'],
+    'n.found': ['{n} 条', '{n} found'],
+    'km': ['{n} 公里', '{n} km'],
+    'km.long': ['{wan} 万公里', '{thousands} km'],
+    'facts.metro': ['地铁 {cities} · {lines}', 'Metro: {cities}, {lines}'],
+    'facts.class': ['{name} {cities} {lines}', '{name}: {cities}, {lines}'],
+    'facts.lines': ['{name} {lines}', '{name}: {lines}'],
+    // a selected line, and the line under the pointer
+    'speed.design': ['设计时速', 'design speed'],
+    'speed.top': ['最高时速', 'top speed'],
+    'speed.unsure': ['，设计时速待核实', ', design speed to be confirmed'],
+    'speed.sections': ['分段设计时速', 'design speed by section'],
+    'speed.band': ['{band} km/h 档 · 按轨道限速归档，设计时速待核实', '{band} km/h band · filed by the track’s speed limit, design speed to be confirmed'],
+    'speed.someTrack': ['部分区段按轨道限速归档', 'some sections filed by the track’s speed limit'],
+    'speed.restConv': ['其余区段为普速', 'the rest is conventional'],
+    'speed.class': ['设计时速 {band} km/h', 'Design speed {band} km/h'],
+    'speed.line': ['线下设计 {speed} km/h', 'Line designed for {speed} km/h'],
+    'speed.track': ['轨道设计 {speed} km/h', 'Track designed for {speed} km/h'],
+    'speed.runs': ['参考运行 {speed} km/h', 'runs at about {speed} km/h'],
+    'range': ['{from} 至 {to}', '{from} to {to}'],
+    'rail.of': ['{country}铁路', 'Railway in {country}'],
+    'metro.intercity': ['市郊 / 城际 · 地铁公司运营', 'Suburban & intercity · run by a metro company'],
+    'metro.suburban': ['市郊 / 城际 · 铁路局运营', 'Suburban & intercity · run by a railway bureau'],
+    'tip.buildFast': ['在建高速铁路', 'High-speed line being built'],
+    'tip.build': ['在建铁路', 'Railway being built'],
+    'tip.operator': ['运营：{who}', 'Operator: {who}'],
+    'tip.sharedWith': ['与{line}共用轨道', 'Shares its track with {line}'],
+    'tip.shares': ['共线：{line}', 'On the same track: {line}'],
+    'tip.suburban': ['市郊 / 城际：{line}', 'Suburban & intercity: {line}'],
+    'tip.unnamed': ['未命名线路', 'Unnamed line'],
+    // what the search says of a thing
+    'sub.country': ['国家', 'Country'],
+    'sub.city': ['城市', 'City'],
+    'sub.cityLines': ['{name} · {lines}', '{name} · {lines}'],
+    'sub.fast': ['动车（含高铁）', 'EMU line (incl. high-speed)'],
+    'sub.conv': ['普速铁路', 'Conventional railway'],
+    'sub.station': ['火车站', 'Railway station'],
+    'sub.metroStation': ['地铁站', 'Metro station'],
+    'found.more': ['另有 {n} 条，多输入几个字缩小范围', '{n} more: type a little more to narrow it down'],
+    'found.loading': ['车站名单正在载入…', 'The list of stations is loading…'],
+    'found.none': ['没有找到。试试当地文字的名字，如 東京、서울、London。', 'Nothing found. Try the name in its own writing: 上海虹桥, 東京, 서울, London.'],
+    // the layers tab
+    'layers.caption': ['线路与设施', 'Lines and facilities'],
+    'view.caption': ['视图', 'View'],
+    'view.label': ['地图投影', 'Map projection'],
+    'view.globe': ['地球', 'Globe'],
+    'view.flat': ['平面', 'Flat'],
+    'colours.title': ['{country}线路的颜色', 'Line colours: {country}'],
+    'colours.rule': ['动车组和高速线路按设计时速分档；其余铁路有官方线路色的用线路色，没有的用浅色；地铁、轻轨和有轨电车用官方线路色。不按公司上色。',
+      'EMU and high-speed lines are coloured by the band of their design speed. Any other railway is drawn in its official line colour where it has one, and in a pale colour otherwise. Metros, light rail and trams are drawn in their official line colours. Nothing is coloured by company.'],
+    'imagery.caption': ['卫星影像', 'Satellite imagery'],
+    'imagery.dim': ['亮度', 'Brightness'],
+    'imagery.note': ['Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。', 'Esri World Imagery, fetched as you go. Zoomed in on a station it shows the buildings and the tracks.'],
+    'imagery.offline': ['在线卫星影像加载不了，请检查网络后刷新页面。线路和车站仍可正常查看。', 'The satellite imagery cannot be loaded. Check the connection and reload the page. Lines and stations still show.'],
+    'credits.osm': ['贡献者', 'contributors'],
+    'credits.data': ['线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者（ODbL），Geofabrik 2026-10-05 提取（日本、韩国为 2026-10-06，英国为 2026-10-03）；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>（2026-10-07 核查）。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；动车线路里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery（Esri, Maxar, Earthstar Geographics）。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。',
+      'Lines and stations: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL), Geofabrik extracts of 2026-10-05 (Japan and Korea 2026-10-06, the United Kingdom 2026-10-03). Metro line names and colours are from OSM route relations. Railways are graded section by section by design speed, after <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">China EMU · line data</a> (checked 2026-10-07): the design standard of the line where it is known, of the track otherwise. Design speed and running speed are told apart. A line with no design speed on record is listed as conventional; sections of EMU lines still without one are filed by the track’s speed limit for now. Imagery: Esri World Imagery (Esri, Maxar, Earthstar Geographics). Operating lengths are those of the end of 2025, from the Ministry of Transport’s statistical bulletin for 2025.'],
+    'row.fast': ['动车组线路', 'EMU lines'],
+    'row.fast.note': ['线下设计标准，不代表运行速度', 'Design standard of the line, not running speed'],
+    'row.conv': ['普速铁路', 'Conventional railway'],
+    'row.conv.note': ['没有设计时速资料的其余线路', 'Every other line: no design speed on record'],
+    'row.build': ['在建线路', 'Lines being built'],
+    'row.build.note': ['联调联试按已建成画实线', 'A line on test runs is drawn as built'],
+    'row.yards': ['站场与车辆基地', 'Yards and depots'],
+    'row.yards.note': ['站线、联络线、动车所、车辆段，放大后显示', 'Station tracks, connecting lines and depots, shown when zoomed in'],
+    'row.stations': ['车站', 'Stations'],
+    'row.stations.note': ['白点为按设计时速上色的线路沿线车站', 'White dots are stations on lines coloured by design speed'],
+    'row.cities': ['城市', 'Cities'],
+    'row.border': ['国界', 'National boundary'],
+    'class.metro': ['地铁', 'Metro'],
+    'class.conv': ['普速铁路', 'Conventional railway'],
+    'class.build': ['在建线路', 'Line being built'],
+    // the countries, and what each calls its classes of line
+    'cn': ['中国', 'China'],
+    'cn.fastWord': ['高铁', 'high-speed'],
+    'cn.subway': ['地铁', 'Metro'],
+    'cn.urban': ['轻轨·电车', 'Light rail & trams'],
+    'cn.suburban': ['市郊 / 城际', 'Suburban & intercity'],
+    'cn.subway.caption': ['地铁与市域线路', 'Metro and regional lines'],
+    'cn.urban.caption': ['轻轨、有轨电车与云巴', 'Light rail, trams and SkyShuttle'],
+    'cn.suburban.caption': ['市郊、城际与市域线路', 'Suburban, intercity and regional lines'],
+    'cn.subway.row': ['地铁', 'Metro'],
+    'cn.subway.note': ['全国各城市，含单轨、磁浮和市域线', 'Every city, with monorail, maglev and regional lines'],
+    'cn.urban.row': ['轻轨·电车', 'Light rail & trams'],
+    'cn.urban.note': ['轻轨、有轨电车和云巴', 'Light rail, trams and SkyShuttle'],
+    'cn.suburban.row': ['市郊 / 城际', 'Suburban & intercity'],
+    'cn.suburban.note': ['铁路局或地铁公司运营；借国铁线路的画在线路旁', 'Bureau or metro company; on national lines, drawn beside them'],
+    'jp': ['日本', 'Japan'],
+    'jp.fastWord': ['新干线', 'Shinkansen'],
+    'jp.shinkansen': ['新干线', 'Shinkansen'],
+    'jp.jr': ['JR在来', 'JR lines'],
+    'jp.private_big': ['大手私铁', 'Major private'],
+    'jp.private_local': ['地方私铁·第三セク', 'Local private & third sector'],
+    'jp.unknown': ['其他', 'Other'],
+    'jp.subway': ['地下铁', 'Subway'],
+    'jp.urban': ['城市轨道', 'Urban transit'],
+    'jp.urban.caption': ['城市轨道（路面电车/单轨/新交通）', 'Urban transit (trams, monorails, guideway transit)'],
+    'jp.jr.line': ['JR在来线', 'JR conventional line'],
+    'jp.private_big.line': ['大手私铁', 'Major private railway'],
+    'jp.third_sector.line': ['第三部门铁路', 'Third-sector railway'],
+    'jp.private_local.line': ['地方私铁', 'Local private railway'],
+    'jp.unknown.line': ['其他铁路', 'Other railway'],
+    'kr': ['韩国', 'Korea'],
+    'kr.fastWord': ['高速与准高速', 'high- and semi-high-speed'],
+    'kr.urban': ['轻轨·单轨', 'Light rail & monorail'],
+    'kr.urban.caption': ['轻轨与单轨', 'Light rail and monorail'],
+    'uk': ['英国', 'UK'],
+    'uk.fastWord': ['高速铁路', 'high-speed'],
+    'uk.subway': ['地铁', 'Underground'],
+    'uk.urban': ['轻轨·有轨电车', 'Light rail & trams'],
+    'uk.urban.caption': ['轻轨与有轨电车', 'Light rail and trams'],
+    'rail.hs': ['高速铁路', 'High-speed'],
+    'rail.semi': ['准高速铁路', 'Semi-high-speed'],
+    'rail.main': ['干线铁路', 'Main lines'],
+    'rail.branch': ['支线铁路', 'Branch lines'],
+    'rail.heritage': ['遗产铁路', 'Heritage'],
+    'rail.hs.line': ['高速铁路', 'High-speed railway'],
+    'rail.semi.line': ['准高速铁路', 'Semi-high-speed railway'],
+    'rail.main.line': ['干线铁路', 'Main line'],
+    'rail.branch.line': ['支线铁路', 'Branch line'],
+    'rail.heritage.line': ['遗产铁路', 'Heritage railway'],
+    'metro': ['地铁', 'Metro'],
+  };
+  // Words the data itself uses, which the script looks for and shows to nobody: a list of metro
+  // lines that is no one city's ends in 城际 or 其他, and lines that share a track are listed with 、.
+  /*DATA-WORDS*/
+  const NO_CITY = /(城际|其他)$/, BETWEEN_CITIES = /城际$/, AND = '、';
+  /*DATA-WORDS-END*/
+  const LANGS = ['zh', 'en'];
+  // Which language: the address says (?lang=en), else what was chosen on this device before, else
+  // the browser's own: Chinese for a Chinese browser, English for any other.
+  const langAsked = new URLSearchParams(location.search).get('lang');
+  const langKept = (() => { try { return localStorage.getItem('lang'); } catch (err) { return null; } })();
+  let lang = [langAsked, langKept].find(l => LANGS.includes(l))
+    || (/^zh/i.test((navigator.languages && navigator.languages[0]) || navigator.language || 'zh') ? 'zh' : 'en');
+  const t = (key, vars = {}) => {
+    if (!TEXT[key]) throw new Error('no text for ' + key);
+    let text = TEXT[key][LANGS.indexOf(lang)];
+    if (text.includes('|')) text = text.split('|')[vars.n === 1 ? 0 : 1];         // "{n} line|{n} lines"
+    return text.replace(/\{(\w+)\}/g, (all, name) => (name in vars ? vars[name] : all));
+  };
+  // Numbers and lengths. Chinese counts in 万 from ten thousand on ("16.5 万公里"); English says
+  // the same figure to the same thousand ("165,000 km"). Shorter lengths are whole kilometres in both.
+  const num = v => Math.round(v).toLocaleString('en-US');
+  const capital = text => text.charAt(0).toUpperCase() + text.slice(1);        // a line of words that begins with one of the table's small ones
+  const kmText = v => (v >= 1e4 ? t('km.long', { wan: (v / 1e4).toFixed(1), thousands: num(Math.round(v / 1e3) * 1e3) }) : t('km', { n: num(v) }));
+  // A text that stays on the page is said through say(): the element keeps what it was told and
+  // is told again when the language changes. (A text in the markup carries its key itself:
+  // data-t for its words, data-th where they hold links, data-ta for attributes.)
+  const said = new Set();
+  const say = (el, key, vars) => {
+    el.sayKey = key; el.sayVars = vars;
+    said.add(el);
+    el.textContent = key ? t(key, typeof vars === 'function' ? vars() : vars) : '';
+  };
+  const relabelled = [];       // what else is drawn again in the new language: the head of the card, its lists, its rows
+  const relabel = () => {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.title = t('doc.title');
+    for (const el of document.querySelectorAll('[data-t]')) el.textContent = t(el.dataset.t);
+    for (const el of document.querySelectorAll('[data-th]')) el.innerHTML = t(el.dataset.th);
+    for (const el of document.querySelectorAll('[data-ta]')) for (const [attr, key] of el.dataset.ta.split(' ').map(pair => pair.split(':'))) el.setAttribute(attr, t(key));
+    for (const el of said) if (el.sayKey) say(el, el.sayKey, el.sayVars);
+    for (const b of document.querySelectorAll('#lang b')) b.classList.toggle('on', b.dataset.lang === lang);
+    for (const again of relabelled) again();
+  };
+  // A choice made by hand is remembered on this device and written into the address, so that a
+  // link that is passed on opens in the same language; a language that came from the browser is
+  // not, nor one the app sets (it keeps its own). Once everything is written again the page says
+  // so: the event 'rail:language' on window, and inside the app the message 'language'.
+  const setLanguage = (to, byHand) => {
+    if (!LANGS.includes(to) || to === lang) return;
+    lang = to;
+    if (byHand) {
+      try { localStorage.setItem('lang', lang); } catch (err) { /* no storage: the choice lasts for this visit */ }
+      const query = new URLSearchParams(location.search);
+      query.set('lang', lang);
+      history.replaceState(null, '', location.pathname + '?' + query + location.hash);
+    }
+    relabel();
+    dispatchEvent(new CustomEvent('rail:language', { detail: lang }));
+    if (window.__app) window.__app.post('language', lang);
+  };
+  document.getElementById('lang').addEventListener('click', () => setLanguage(lang === 'zh' ? 'en' : 'zh', true));
+  relabel();
+  // The words of a country's configuration (HOME, FOREIGN) are keys of TEXT. They are read
+  // through t() every time, so that whatever uses them has them in the language of the moment.
+  const worded = c => {
+    const read = v => (Array.isArray(v) ? v.map(read) : typeof v === 'string' ? t(v) : Object.fromEntries(Object.entries(v).map(([k, x]) => [k, read(x)])));
+    for (const field of ['name', 'fastWord', 'caption', 'kindName', 'row']) if (c[field]) { const keys = c[field]; Object.defineProperty(c, field, { get: () => read(keys) }); }
+    for (const field of ['rail', 'metro']) if (c[field]) { const rows = c[field]; Object.defineProperty(c, field, { get: () => rows.map(([kind, key, ...more]) => [kind, t(key), ...more]) }); }
+    return c;
+  };
+  // ---- names from the data ----
+  // A station, a line or a place carries its own name n, in the writing of where it is, and
+  // where the data knows them nz, in simplified Chinese, and ne, in English (a metro city's n is
+  // its Chinese name and nl its own). The name shown is the local one, followed in brackets by
+  // the reader's where the reader does not read the local writing: 上海虹桥(Shanghai Hongqiao),
+  // 서울(首尔), London. Where the data has no name in the reader's language the local one stands
+  // alone (no names are made up). NAMES is the page's choice, for the map and for the card: 'both'
+  // as above, 'local' (the local name alone) or 'reader' (the reader's, where there is one).
+  const NAMES = { map: 'both', card: 'both' };
+  // What a reader reads as it is written: a Chinese reader China's names, and Japan's for its
+  // stations and lines (its cities the card has always named in Chinese, 东京); an English
+  // reader the UK's.
+  const READS = { zh: { cn: 'local', jp: { city: 'reader', other: 'local' } }, en: { uk: 'local' } };
+  const howNamed = (g, kind, choice) => { const r = READS[lang][g]; return !r ? choice : typeof r === 'string' ? r : r[kind] || r.other; };
+  const formsOf = p => (p.nl ? [p.nl, p.n, p.ne] : [p.n, p.nz, p.ne]);          // local, Chinese, English
+  // p: the thing; g: its country; kind: 'city' for a city, else what it is does not matter
+  const named = (p, g = 'cn', kind = 'other', choice = NAMES.card) => {
+    const [local, zh, en] = formsOf(p), reader = lang === 'zh' ? zh : en, how = howNamed(g, kind, choice);
+    return how === 'local' || !reader || reader === local ? local : how === 'reader' ? reader : `${local}(${reader})`;
+  };
   const WITH_UK = /*WITH_UK*/true;      // set from site.json by scripts/build.py
   const WITH_KR = /*WITH_KR*/true;      // South Korea: data/kr_*.json, written by scripts/process_kr.py
   const WITH_JP = /*WITH_JP*/true;      // Japan: data/jp_*.json, written by scripts/process_jp.py
@@ -453,19 +754,39 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const isPhone = () => matchMedia('(max-width: 720px)').matches;
   const byFinger = () => isPhone() || matchMedia('(pointer: coarse)').matches;      // a phone, upright or on its side, or a tablet
 
+  // China's classes of urban rail, said as the countries abroad say theirs (FOREIGN below):
+  // metro lists them as [the class in the data (jk), its name], caption heads their lists. Trams
+  // count as light rail, monorails and maglev as metro (the data decides, scripts/metro_classes.py).
+  // row: the name of a class's row in the layers tab and the line under it. thin: a class drawn
+  // thinner than the others, and over them: where a tram runs above a metro tunnel the metro
+  // shows on either side of it. The suburban and intercity trains are a class too: a railway
+  // bureau's (k = "s" in the data), drawn beside the national line it runs on (the layer
+  // 'suburb', of the class beside), and a metro company's (k = "m"), drawn on its own track;
+  // until the data gives them their class (jk), byK says it from k. linesOnly: a class that is
+  // counted by its lines alone, its trains running between cities.
+  const HOME = worded({ name: 'cn', fastWord: 'cn.fastWord',
+    facts: { km: 165000, fast_km: 50000 },      // operating length at the end of 2025, see the credits
+    metro: [['subway', 'cn.subway'], ['urban', 'cn.urban'], ['suburban', 'cn.suburban']],
+    caption: { subway: 'cn.subway.caption', urban: 'cn.urban.caption', suburban: 'cn.suburban.caption' },
+    row: { subway: ['cn.subway.row', 'cn.subway.note'], urban: ['cn.urban.row', 'cn.urban.note'], suburban: ['cn.suburban.row', 'cn.suburban.note'] },
+    thin: { urban: 0.6 }, byK: { m: 'suburban', s: 'suburban' }, beside: 'suburban', linesOnly: ['suburban'] });
+  // the layer of a class of urban rail, which is also its row and its switch: China's metro keeps the plain name it had
+  const metroId = (g, kind) => (g !== 'cn' ? `${g}-${kind}` : kind === HOME.metro[0][0] ? 'metro' : kind);
   const FAST = ['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow'];
   const DESIGN_LABEL = { hsr400: '>350', hsr350: '350', hsr300: '300', hsr250: '250', hsr200: '200', hsr160: '160', hsrslow: '<160' };
   const CLASSES = [
-    ...FAST.map(id => ({ id, label: '动车组线路', sub: id === 'hsr400' ? '线下设计标准，不代表运行速度' : '', spd: DESIGN_LABEL[id] + ' km/h', src: 'hsr' })),
-    { id: 'unknown', label: '普速铁路', sub: '没有设计时速资料的其余线路', spd: '', src: 'conv' },
-    { id: 'metro', label: '地铁 / 市郊', sub: '全国各城市，含地铁公司运营的城际和市域线', spd: '', src: 'metro' },
-    { id: 'suburb', label: '市郊 / 城际列车', sub: '铁路局运营，借国铁线路运行，画在线路旁', spd: '', src: 'metro' },
-    { id: 'build', label: '在建线路', sub: '联调联试按已建成画实线', spd: '', src: 'build' },
-    { id: 'yards', label: '站场与车辆基地', sub: '站线、联络线、动车所、车辆段，放大后显示', spd: '', src: 'yards' },
-    { id: 'stations', label: '车站', sub: '白点为高铁沿线车站', spd: '', src: 'stations' },
-    { id: 'border', label: '国界', sub: '', spd: '', src: 'border' },
+    // (label and sub are keys of TEXT; the rows of China's urban rail take their words from HOME.row)
+    ...FAST.map(id => ({ id, label: 'row.fast', sub: id === 'hsr400' ? 'row.fast.note' : '', spd: DESIGN_LABEL[id] + ' km/h', src: 'hsr' })),
+    { id: 'unknown', label: 'row.conv', sub: 'row.conv.note', spd: '', src: 'conv' },
+    ...HOME.metro.map(([kind]) => ({ id: metroId('cn', kind), spd: '', src: 'metro', metro: kind })),
+    { id: 'build', label: 'row.build', sub: 'row.build.note', spd: '', src: 'build' },
+    { id: 'yards', label: 'row.yards', sub: 'row.yards.note', spd: '', src: 'yards' },
+    { id: 'stations', label: 'row.stations', sub: 'row.stations.note', spd: '', src: 'stations' },
+    { id: 'cities', label: 'row.cities', sub: '', spd: '', src: 'cities' },
+    { id: 'border', label: 'row.border', sub: '', spd: '', src: 'border' },
   ];
-  const CLASS_NAME = { ...Object.fromEntries(FAST.map(id => [id, '设计时速 ' + DESIGN_LABEL[id] + ' km/h'])), metro: '地铁', main: '普速铁路', branch: '普速铁路', build: '在建线路' };
+  // what a line of a class is called, where nothing more is known of it
+  const className = c => (FAST.includes(c) ? t('speed.class', { band: DESIGN_LABEL[c] }) : c === 'metro' ? t('class.metro') : c === 'build' ? t('class.build') : c === 'main' || c === 'branch' ? t('class.conv') : '');
   const lineW = (a) => ['interpolate', ['exponential', 1.5], ['zoom'], 3, a[0], 6, a[1], 9, a[2], 12, a[3], 16, a[4]];
   const visible = Object.fromEntries(CLASSES.map(c => [c.id, true]));
   visible.main = visible.branch = true;
@@ -478,46 +799,46 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // colour, metros and trams by their official line colour. Never by company. hint: what the search
   // field suggests typing while the card is about that country, in the script its names are in
   // (one short name: the placeholder has to fit a narrow phone).
-  const HINT_CN = '上海虹桥';
   const FOREIGN = {
-    jp: { name: '日本', on: WITH_JP, bounds: [[128.5, 30.8], [146, 45.6]],
+    jp: { name: 'jp', on: WITH_JP, bounds: [[128.5, 30.8], [146, 45.6]],
       // roughly: east of the Korea Strait and the Sea of Japan, down to the Yaeyama islands
       inside: (lng, lat) => lat > 24 && lat < 46 && (lat < 31 ? lng > 123.5 && lng < 132 : lng > 128.6 + (lat - 33) * 0.92 && lng < 147),
-      fast: ['shinkansen'], fastWord: '新干线', fastMin: 15, build: true,
-      rail: [['shinkansen', '新干线'], ['jr', 'JR在来'], ['private_big', '大手私铁'],
-             ['private_local', '地方私铁·第三セク', ['third_sector', 'private_local']], ['unknown', '其他']],
-      metro: [['subway', '地下铁'], ['urban', '城市轨道']],
-      caption: { subway: '地下铁', urban: '城市轨道（路面电车/单轨/新交通）' },
-      kindName: { shinkansen: '新干线', jr: 'JR在来线', private_big: '大手私铁', third_sector: '第三部门铁路', private_local: '地方私铁', unknown: '其他铁路' },
+      fast: ['shinkansen'], fastWord: 'jp.fastWord', fastMin: 15, build: true,
+      rail: [['shinkansen', 'jp.shinkansen'], ['jr', 'jp.jr'], ['private_big', 'jp.private_big'],
+             ['private_local', 'jp.private_local', ['third_sector', 'private_local']], ['unknown', 'jp.unknown']],
+      metro: [['subway', 'jp.subway'], ['urban', 'jp.urban']],
+      caption: { subway: 'jp.subway', urban: 'jp.urban.caption' },
+      kindName: { shinkansen: 'jp.shinkansen', jr: 'jp.jr.line', private_big: 'jp.private_big.line', third_sector: 'jp.third_sector.line', private_local: 'jp.private_local.line', unknown: 'jp.unknown.line' },
       hint: '東京' },
-    kr: { name: '韩国', on: WITH_KR, bounds: [[124.6, 33.1], [130.0, 38.65]],
+    kr: { name: 'kr', on: WITH_KR, bounds: [[124.6, 33.1], [130.0, 38.65]],
       // west of the Korea Strait, where Japan's box begins
       inside: (lng, lat) => lat > 33 && lat < 38.7 && lng > 124.5 && lng < 128.6 + (lat - 33) * 0.92,
-      fast: ['hs', 'semi'], fastWord: '高速与准高速', fastMin: 0, build: true,
-      rail: [['hs', '高速铁路'], ['semi', '准高速铁路'], ['main', '干线铁路'], ['branch', '支线铁路']],
-      metro: [['subway', '地铁'], ['urban', '轻轨·单轨']],
-      caption: { subway: '地铁', urban: '轻轨与单轨' },
-      kindName: { hs: '高速铁路', semi: '准高速铁路', main: '干线铁路', branch: '支线铁路' },
+      fast: ['hs', 'semi'], fastWord: 'kr.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['semi', 'rail.semi'], ['main', 'rail.main'], ['branch', 'rail.branch']],
+      metro: [['subway', 'metro'], ['urban', 'kr.urban']],
+      caption: { subway: 'metro', urban: 'kr.urban.caption' },
+      kindName: { hs: 'rail.hs.line', semi: 'rail.semi.line', main: 'rail.main.line', branch: 'rail.branch.line' },
       hint: '서울' },
-    uk: { name: '英国', on: WITH_UK, bounds: [[-8.2, 49.8], [1.9, 59]],
+    uk: { name: 'uk', on: WITH_UK, bounds: [[-8.2, 49.8], [1.9, 59]],
       inside: (lng, lat) => lat > 49.8 && lat < 61 && lng > -8.7 && lng < 1.9,      // the box around Great Britain and Ireland
-      fast: ['hs'], fastWord: '高速铁路', fastMin: 0, build: true,
-      rail: [['hs', '高速铁路'], ['main', '干线铁路'], ['branch', '支线铁路'], ['heritage', '遗产铁路']],
-      metro: [['subway', '地铁'], ['urban', '轻轨·有轨电车']],
-      caption: { subway: '地铁', urban: '轻轨与有轨电车' },
-      kindName: { hs: '高速铁路', main: '干线铁路', branch: '支线铁路', heritage: '遗产铁路' },
+      fast: ['hs'], fastWord: 'uk.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'uk.subway'], ['urban', 'uk.urban']],
+      caption: { subway: 'uk.subway', urban: 'uk.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
       hint: 'London' },
   };
-  for (const g of Object.keys(FOREIGN)) if (!FOREIGN[g].on) delete FOREIGN[g];
+  for (const g of Object.keys(FOREIGN)) if (FOREIGN[g].on) worded(FOREIGN[g]); else delete FOREIGN[g];
   const abroad = g => (FOREIGN[g] ? g : 'cn');     // the country a feature or a list row belongs to
+  const land = g => FOREIGN[g] || HOME;            // what is configured for a country
   const NOT_ABROAD = ['match', ['coalesce', ['get', 'g'], ''], [...Object.keys(FOREIGN), '-'], false, true];
   const jkOf = (g, kind) => (FOREIGN[g].rail.find(r => r[0] === kind) || [])[2] || [kind];
   const kindOf = l => FOREIGN[l.g].rail.find(r => (r[2] || [r[0]]).includes(l.jk))[0];
   document.getElementById('ukSec').hidden = true;
   function colourSection(g) {
     document.getElementById('ukSec').hidden = !FOREIGN[g];
-    document.getElementById('opTitle').textContent = (FOREIGN[g] ? FOREIGN[g].name : '') + '线路的颜色';
-    document.getElementById('opHint').textContent = '高速线路按设计时速分档；其余铁路有官方线路色的用线路色，没有的用浅色；地铁、轻轨和有轨电车用官方线路色。不按公司上色。';
+    say(document.getElementById('opTitle'), 'colours.title', () => ({ country: land(g).name }));
+    say(document.getElementById('opHint'), 'colours.rule');
   }
   let country = 'cn';   // the country the card is about: its title, figures, lists and quick jumps
   // The card has two levels. At the world it lists the countries; a country's page is entered from
@@ -525,58 +846,94 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // and is left by its way back. Dragging the map changes neither. While the card is at the
   // world, country is the one whose page was open last (its lists stay as they were left).
   let world = true;
-  const FACTS_CN = '16.5 万公里 · 高铁 5.0 万公里';      // operating length at the end of 2025, see the credits
-  // Two rows of the layers tab are the same for every country, lines being built and stations,
-  // but each country has a switch of its own behind them: the row shows, and changes, the switch
-  // of the country the card is about. China's are in visible, like its other classes.
-  const SHARED_ROWS = ['build', 'stations'];
+  // Three rows of the layers tab are the same for every country, lines being built, stations and
+  // the names of the cities, but each country has a switch of its own behind them: the row
+  // shows, and changes, the switch of the country the card is about. China's are in visible,
+  // like its other classes.
+  const SHARED_ROWS = ['build', 'stations', 'cities'];
+  // which of the cities outside the hand-made ones show at a zoom, by their rank (see 'place-labels')
+  const PLACE_RANKS = ['any', ['==', ['get', 'r'], 1], ['all', ['==', ['get', 'r'], 2], ['>=', ['zoom'], 4.6]], ['>=', ['zoom'], 6]];
   const sharedOff = {};          // 'jp-build', 'uk-stations': the row is off for that country abroad
   const rowOn = (id, g) => (g === 'cn' ? visible[id] : !sharedOff[g + '-' + id]);
 
   // ---- search: one function over everything that is loaded ----
-  // Stations, lines, metro cities and countries, of every country, are found by one function that
+  // Stations, lines, cities and countries, of every country, are found by one function that
   // knows nothing of the page: buildSearchIndex() takes the loaded data, searchIndex() returns
   // plain objects { kind, country, name, sub, colour, id } grouped by country. The card's field
   // and the two route fields call it, and the app's native field will; openResult(), further
-  // down, acts on a result. Names abroad are in the local script and are matched as written:
-  // 東京 finds the station in Tokyo, 东京 only the city, which the data names in Chinese.
+  // down, acts on a result. A thing is found by every name it carries, whatever the language of
+  // the page: 東京, 东京 and Tokyo all find the city; the station 東京 is found by the names its
+  // data gives it.
   // The contract test runs the block between the two marks on the data files.
   /*SEARCH-CORE*/
-  // data: countries [{ g, name, kindName, metro }] with the home country first, the lines the
-  // lists show, the metro cities with their lines, every station feature, the class colours.
-  function buildSearchIndex({ countries, lines, cities, stations, colours }) {
+  // data: countries [{ g, name, names (in every language), kindName, metro }] with the home country first, the lines the
+  // lists show, the metro cities with their lines, the cities the map labels ([name, lon, lat,
+  // rank], abroad the country after it, and then the metro list's name for the city where that
+  // is another), every station feature, the class colours, say(key, values): the words for
+  // what a thing is, in the language of the page (the page gives t; the index is made again
+  // when the language changes), and name(thing, country, kind): the name it is shown by (the
+  // page gives named; a thing's own n where none is given).
+  // A metro city takes the names of the city the map labels at its place (서울 and Seoul for the
+  // metro list's 首尔, whose label says m: 首尔) where the data does not name it itself. The page
+  // does this once, as the data comes in; home(g) is the country of a thing.
+  function nameMetroCities(cities, places, home) {
+    const placeOf = new Map(places.map(p => [home(p.g) + '/' + (p.m || p.n), p]));
+    for (const c of cities) {
+      const at = placeOf.get(home(c.g) + '/' + c.n);
+      if (at && !c.nl && !c.ne) Object.assign(c, at.n !== c.n ? { nl: at.n } : {}, at.ne ? { ne: at.ne } : {});
+    }
+  }
+  function buildSearchIndex({ countries, lines, cities, places = [], stations, colours, say, name = p => p.n }) {
     const cfg = Object.fromEntries(countries.map(c => [c.g, c]));
     const home = g => (cfg[g] ? g : countries[0].g);
     const entries = [], byId = new Map();
     const LEVEL = { country: 0, city: 1, line: 2, metro: 2, station: 3 };      // the order of the kinds in a list
-    const add = (kind, country, name, sub, colour, key, more) => {
+    // every name a thing carries, and those of what stands for it, in small letters
+    const forms = (...things) => [...new Set(things.flatMap(p => (p ? [p.n, p.nl, p.nz, p.ne] : [])).filter(Boolean).map(v => v.toLowerCase()))];
+    const add = (kind, country, shown, sub, colour, key, more) => {
       let id = kind + ':' + key;
-      if (!name || (byId.has(id) && kind !== 'station')) return;        // a line, a city or a country is one thing by its name
+      if (!shown || (byId.has(id) && kind !== 'station')) return;        // a line, a city or a country is one thing by its name
       for (let n = 2; byId.has(id); n++) id = `${kind}:${key}#${n}`;     // two stations of one name on one spot stay two
-      const e = { kind, country, name, sub, colour: colour || null, id, text: name.toLowerCase(), ctx: '', level: LEVEL[kind], ...more };
+      const e = { kind, country, name: shown, sub, colour: colour || null, id, text: shown.toLowerCase(), also: [], ctx: '', level: LEVEL[kind], ...more };
       byId.set(id, e);
       entries.push(e);
     };
-    for (const c of countries) add('country', c.g, c.name, '国家', null, c.g);
+    for (const c of countries) add('country', c.g, c.name, say('sub.country'), null, c.g, { also: (c.names || []).map(v => v.toLowerCase()) });
+    // A city with a metro that the map labels too (서울 for the metro list's 首尔, m) is found by
+    // the names of both.
+    const placeOf = new Map(places.map(p => [home(p.g) + '/' + (p.m || p.n), p]));
+    const cityShown = new Map();
     for (const c of cities) {
-      const g = home(c.g), ctx = c.n.toLowerCase();
-      add('city', g, c.n, `地铁 · ${c.lines.length} 条线路`, null, c.n, { ref: c });
+      const g = home(c.g), ctx = c.n.toLowerCase(), shown = name(c, g, 'city');
+      cityShown.set(g + '/' + c.n, shown);
+      // (a city is said to have a metro, unless all it has is of another class: 轻轨 · 2 条线路)
+      const classes = cfg[g].metro || [], has = classes.find(([k]) => c.lines.some(l => l.jk === k));
+      add('city', g, shown, say('sub.cityLines', { name: has && has !== classes[0] ? has[1] : say('metro'), lines: say('n.linesLong', { n: c.lines.length }) }),
+        null, c.n, { ref: c, also: forms(c, placeOf.get(g + '/' + c.n)) });
       for (const l of c.lines) {
-        const word = l.k === 'm' ? '城际·市域' : l.k === 's' ? '市郊列车' : ((cfg[g].metro || []).find(m => m[0] === l.jk) || [])[1] || '地铁';
-        add('metro', g, l.n, `${word} · ${c.n}`, l.col, c.n + '/' + l.n, { ctx, ref: [c, l] });
+        const word = ((cfg[g].metro || []).find(m => m[0] === l.jk) || [])[1] || say('metro');
+        add('metro', g, name(l, g), `${word} · ${shown}`, l.col, c.n + '/' + l.n, { ctx, ref: [c, l], also: forms(l) });
       }
+    }
+    // A city the map labels is a place to go to. One that has a metro is that metro city, once;
+    // the others have no list of their own, only a place (at). The same name may be a city in
+    // two countries (丽水, 白山), so the country is in the key.
+    const withMetro = new Set(cities.map(c => home(c.g) + '/' + c.n));
+    for (const p of places) {
+      const g = home(p.g);
+      if (!withMetro.has(g + '/' + (p.m || p.n))) add('city', g, name(p, g, 'city'), say('sub.city'), null, g + '/' + p.n, { at: p.at, also: forms(p) });
     }
     for (const l of lines) {
       const g = home(l.g);
-      const what = l.jk ? (cfg[g].kindName || {})[l.jk] || cfg[g].name + '铁路' : l.kind === 'fast' ? '高铁' : '普速铁路';
+      const what = l.jk ? (cfg[g].kindName || {})[l.jk] || say('rail.of', { country: cfg[g].name }) : l.kind === 'fast' ? say('sub.fast') : say('sub.conv');
       const speed = l.jk ? l.d : l.kind === 'fast' && l.design && l.design.length
-        ? (l.design.length > 1 ? `${Math.min(...l.design)} 至 ${Math.max(...l.design)}` : l.design[0]) : null;
-      add('line', g, l.n, what + (speed ? ` · ${speed} km/h` : ''), l.lc || colours[l.c], l.n, { ref: l });
+        ? (l.design.length > 1 ? say('range', { from: Math.min(...l.design), to: Math.max(...l.design) }) : l.design[0]) : null;
+      add('line', g, name(l, g), what + (speed ? ` · ${speed} km/h` : ''), l.lc || colours[l.c], l.n, { ref: l, also: forms(l) });
     }
     for (const f of stations) {
       const p = f.properties, g = home(p.g), [x, y] = f.geometry.coordinates;
-      add('station', g, p.n, p.m ? '地铁站' + (p.ct ? ' · ' + p.ct : '') : '火车站', null, `${p.m ? 'm' : 'r'}/${p.n}@${x.toFixed(4)},${y.toFixed(4)}`,
-        { ctx: p.m && p.ct ? p.ct.toLowerCase() : '', at: [x, y], ref: f, routable: g === countries[0].g && p.g != null, level: p.m ? 4 : 3 });
+      add('station', g, name(p, g), p.m ? say('sub.metroStation') + (p.ct ? ' · ' + (cityShown.get(g + '/' + p.ct) || p.ct) : '') : say('sub.station'), null, `${p.m ? 'm' : 'r'}/${p.n}@${x.toFixed(4)},${y.toFixed(4)}`,
+        { ctx: p.m && p.ct ? p.ct.toLowerCase() : '', at: [x, y], ref: f, routable: g === countries[0].g && p.g != null, level: p.m ? 4 : 3, also: forms(p) });
     }
     return { entries, byId, countries: countries.map(c => ({ g: c.g, name: c.name })) };
   }
@@ -594,7 +951,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // the city into the name by two characters or more ("南京奥体中心"): "广州南" is the station,
     // not every station of 广州 that begins with 南.
     const where = (e, w) => {
-      if (e.text.includes(w)) return 2;
+      if (e.text.includes(w) || e.also.some(a => a.includes(w))) return 2;
       if (e.ctx.includes(w)) return 1;
       const i = (e.ctx + e.text).indexOf(w);
       return e.ctx && i >= 0 && i < e.ctx.length && i + w.length - e.ctx.length >= Math.min(2, e.text.length) ? 2 : 0;
@@ -607,8 +964,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const got = words.map(w => where(e, w));
       if (got.includes(0) || !got.includes(2)) continue;
       const label = e.ctx + e.text;
-      const rank = [e.text, label].some(t => t === joined || t === phrase) ? 0
-        : [e.text, label].some(t => t.startsWith(joined) || t.startsWith(phrase)) ? 1 : 2;
+      const rank = [e.text, label, ...e.also].some(t => t === joined || t === phrase) ? 0
+        : [e.text, label, ...e.also].some(t => t.startsWith(joined) || t.startsWith(phrase)) ? 1 : 2;
       if (!hits.has(e.country)) hits.set(e.country, []);
       hits.get(e.country).push({ e, rank, far: far(e) });
     }
@@ -652,18 +1009,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     lab.className = 'row lyr';
     const swatch = c.id === 'yards'
       ? `<i style="height:1.5px;background:${col('yard')}"></i>`
-      : c.id === 'suburb'
+      : c.metro === HOME.beside
       ? `<i style="height:2px;background:${col('main')};box-shadow:0 5px 0 0 #6fb4e8;margin-bottom:5px"></i>`
-      : c.id === 'metro'
-      ? `<i style="height:4px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 1.5px #fff"></i>`
+      : c.metro
+      ? `<i style="height:${Math.round(4 * (HOME.thin[c.metro] || 1))}px;background:linear-gradient(90deg,#e4002b 0 34%,#00a3e0 34% 67%,#84bd00 67%);box-shadow:0 0 0 ${HOME.thin[c.metro] ? 1 : 1.5}px #fff"></i>`
       : c.id === 'border'
       ? `<i style="height:2px;border-radius:0;background:repeating-linear-gradient(90deg,${col('border')} 0 9px,transparent 9px 12px,${col('border')} 12px 14px,transparent 14px 17px);box-shadow:0 0 7px 2px ${col('border-halo')}"></i>`
       : c.id === 'stations'
       ? `<i style="width:9px;height:9px;border-radius:50%;background:${col('station')};box-shadow:0 0 0 2px #0008;margin-left:9px"></i>`
+      : c.id === 'cities'
+      ? `<i style="width:7px;height:7px;border-radius:50%;border:1.5px solid #fff;box-sizing:content-box;margin-left:9px"></i>`
       : c.id === 'build'
         ? `<i style="height:0;border-top:3px dashed ${col('build')};border-radius:0"></i>`
         : `<i style="height:${FAST.includes(c.id) ? 4 : c.id === 'main' ? 2.5 : 1.5}px;background:${col(c.id === 'unknown' ? 'main' : c.id)};${FAST.includes(c.id) ? `box-shadow:0 0 8px ${col(c.id)}` : ''}"></i>`;
-    lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b>${c.label}</b>${c.sub ? `<small>${c.sub}</small>` : ''}</span>${c.spd ? `<span class="spd" id="spd-${c.id}">${c.spd}</span>` : ''}<input type="checkbox" class="switch" id="t-${c.id}" checked>`;
+    lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b></b>${c.sub || c.metro ? '<small></small>' : ''}</span>${c.spd ? `<span class="spd" id="spd-${c.id}">${c.spd}</span>` : ''}<input type="checkbox" class="switch" id="t-${c.id}" checked>`;
     lab.querySelector('input').addEventListener('change', e => {
       if (SHARED_ROWS.includes(c.id) && country !== 'cn') sharedOff[country + '-' + c.id] = !e.target.checked;
       else visible[c.id] = e.target.checked;
@@ -677,34 +1036,48 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // The rows of a country abroad: one per class, and for its high-speed class one per speed band
   // that the country has (the data says which), drawn like the Chinese band rows. They are made
   // when the data has arrived and stay hidden until that country is chosen.
-  const abroadVisible = {};
+  const abroadVisible = {}, abroadRowList = [];
+  // The names of the rows, in the language of the moment: China's from CLASSES (and HOME.row for
+  // its urban rail), a country's own from its configuration.
+  const labelRows = () => {
+    for (const c of CLASSES) {
+      const [label, sub] = c.metro ? HOME.row[c.metro] : [t(c.label), c.sub && t(c.sub)], words = rowEls[c.id].querySelector('.txt');
+      words.querySelector('b').textContent = label;
+      if (sub) words.querySelector('small').textContent = sub;
+    }
+    for (const [lab, r] of abroadRowList) lab.querySelector('b').textContent = (FOREIGN[r.g][r.metro ? 'metro' : 'rail'].find(([kind]) => kind === (r.metro || r.rail)) || [])[1];
+  };
+  labelRows();
+  relabelled.push(labelRows);
   function abroadRows(g, bands) {
     const c = FOREIGN[g];
     c.bands = bands;              // fast class -> the bands it has, fastest first
-    const rows = [...c.rail.flatMap(([kind, label]) => (c.fast.includes(kind)
-        ? bands[kind].map(band => ({ id: `${g}-${kind}-${band}`, label, band }))
-        : [{ id: `${g}-${kind}`, label }])),
-      ...c.metro.map(([kind, label]) => ({ id: `${g}-${kind}`, label, metro: kind }))];
+    const rows = [...c.rail.flatMap(([kind]) => (c.fast.includes(kind)
+        ? bands[kind].map(band => ({ id: `${g}-${kind}-${band}`, g, rail: kind, band }))
+        : [{ id: `${g}-${kind}`, g, rail: kind }])),
+      ...c.metro.map(([kind]) => ({ id: `${g}-${kind}`, g, metro: kind }))];
     for (const r of rows) {
       const lab = document.createElement('label');
       lab.className = 'row lyr';
       const swatch = r.band ? `<i style="height:4px;background:${col(r.band)};box-shadow:0 0 8px ${col(r.band)}"></i>`
         : `<i style="height:1.5px;background:${r.metro === 'subway' ? '#e4002b' : r.metro ? '#84bd00' : col('main')}"></i>`;
-      lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b>${r.label}</b></span>${r.band ? `<span class="spd">${DESIGN_LABEL[r.band]} km/h</span>` : ''}<input type="checkbox" class="switch" id="t-${r.id}" checked>`;
+      lab.innerHTML = `<span class="sw">${swatch}</span><span class="txt"><b></b></span>${r.band ? `<span class="spd">${DESIGN_LABEL[r.band]} km/h</span>` : ''}<input type="checkbox" class="switch" id="t-${r.id}" checked>`;
+      abroadRowList.push([lab, r]);
       lab.querySelector('input').addEventListener('change', e => { abroadVisible[r.id] = e.target.checked; lab.classList.toggle('off', !e.target.checked); applyVisibility(); });
       lab.hidden = true;
       layersEl.appendChild(lab);
       rowEls[r.id] = lab;
       abroadVisible[r.id] = true;
     }
+    labelRows();
   }
   function relabelLegend() {
     // A country abroad has classes of its own: the Chinese rows give way to its rows, and of the
     // speed bands only those it has are shown (they are among its own rows).
     const cn = country === 'cn';
     for (const id of [...FAST, 'unknown']) if (rowEls[id]) rowEls[id].hidden = !cn;
-    const hideAbroad = { metro: true, build: !(FOREIGN[country] && FOREIGN[country].hasBuild), suburb: true, border: true };
-    for (const id of ['metro', 'build', 'suburb', 'border']) if (rowEls[id]) rowEls[id].hidden = !cn && hideAbroad[id];
+    for (const id of [...HOME.metro.map(([kind]) => metroId('cn', kind)), 'border']) rowEls[id].hidden = !cn;
+    rowEls.build.hidden = !cn && !(FOREIGN[country] && FOREIGN[country].hasBuild);
     for (const id of Object.keys(abroadVisible)) rowEls[id].hidden = !id.startsWith(country + '-');
     for (const id of SHARED_ROWS) {       // the shared rows show the switch of this country
       const box = rowEls[id].querySelector('input');
@@ -788,7 +1161,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         document.body.dataset.sheet = at;
         // at its highest the sheet leaves the credits one corner: they fold to their button, as
         // they do when the map is first moved; a tap on it opens them again
-        const credits = at === 'large' && document.querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show');
+        const credits = at === 'large' && document.querySelector('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib.maplibregl-compact-show');
         if (credits) { credits.classList.remove('maplibregl-compact-show'); credits.removeAttribute('open'); }
       }
     };
@@ -1092,14 +1465,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     b.type = 'button';
     b.textContent = label;
     b.addEventListener('click', open || (() => {
-      touched = label !== '中国';
+      touched = what.country !== 'cn';
       if (!touched) history.replaceState(null, '', location.pathname + location.search);
       if (isPhone()) sheet.to('peek');           // first, so that the frame is for the room there will be
       frame(what, 1800);
     }));
     document.getElementById('jumps').appendChild(b);
   };
-  addJump('中国', { country: 'cn' });
+  addJump(HOME.name, { country: 'cn' });
   const JUMP_CITIES = 10;
   const projBtn = { globe: document.getElementById('projGlobe'), mercator: document.getElementById('projFlat') };
   for (const [type, btn] of Object.entries(projBtn)) {
@@ -1113,7 +1486,38 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   if (SHOT) window.__map = map;
   map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-right');
-  map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: '© OpenStreetMap 贡献者' }), 'bottom-right');
+  // The credits (OpenStreetMap, the imagery) are a condition of the data: the map's own control
+  // carries them, open when the page opens. On a phone it rides on the sheet with the scale.
+  // Beside the desktop card a second one stands in the map's lower left corner (the styles show
+  // one or the other): that one folds to its (i) after five seconds with the map, or when the
+  // map is first touched (moved, zoomed, clicked), whichever comes first; a click on the (i)
+  // opens it, and the next touch of the map folds it again. A picture taken of the page (?shot)
+  // has it open: nobody touches that map, and a picture that leaves the page should carry its
+  // credits.
+  // (The control puts its credits in order of length, and the link makes the first the longer:
+  // the whole line is given as one, and the imagery's own credit, being part of it, is not said twice.)
+  const IMAGERY = 'Imagery © Esri, Maxar, Earthstar Geographics';
+  const creditLine = () => `© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> ${t('credits.osm')} | ` + IMAGERY;
+  // (a control keeps the words it was made with: when the language changes both are made
+  // again, each folded if it was)
+  const CORNERS = ['bottom-right', 'bottom-left'], creditOf = corner => document.querySelector(`.maplibregl-ctrl-${corner} .maplibregl-ctrl-attrib`);
+  const fold = el => { el.classList.remove('maplibregl-compact-show'); el.removeAttribute('open'); };
+  let creditControls = [], credits = null;
+  const addCredits = () => {
+    const folded = CORNERS.filter(corner => creditControls.length && !creditOf(corner).classList.contains('maplibregl-compact-show'));
+    for (const control of creditControls) map.removeControl(control);
+    creditControls = CORNERS.map(corner => { const control = new maplibregl.AttributionControl({ compact: true, customAttribution: creditLine() }); map.addControl(control, corner); return control; });
+    credits = creditOf('bottom-left');
+    for (const corner of folded) fold(creditOf(corner));
+  };
+  addCredits();
+  relabelled.push(addCredits);
+  let creditTimer = 0;
+  // (folded is: neither the class nor "open"; the control's own button then opens it)
+  const foldCredits = () => { clearTimeout(creditTimer); fold(credits); };
+  const creditsSeen = () => { if (!SHOT) creditTimer = setTimeout(foldCredits, 5000); };
+  for (const type of ['pointerdown', 'wheel']) map.getCanvasContainer().addEventListener(type, foldCredits, { passive: true });
+  map.on('movestart', e => { if (e.originalEvent) foldCredits(); });        // (the keyboard moves the map too; the page's own flights are not a touch)
 
   // Revalidate so rebuilt data is never read from a stale cache; retries cover a dropped connection.
   const getJSON = (u, tries = 3) => fetch(u, { cache: 'no-cache' })
@@ -1184,7 +1588,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       tiles,
     ]);
   });
-  dataReady.catch(err => { document.getElementById('loading').textContent = '数据载入失败：' + err.message; });
+  dataReady.catch(err => { const note = document.getElementById('loading'); note.removeAttribute('data-t'); say(note, 'loading.failed', { reason: err.message }); });
 
   window.__bootStage = 'script-start';
   map.on('load', async () => {
@@ -1206,9 +1610,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       for (const [id, g] of copies[spec.id]) map.addLayer({ ...spec, id, ...from(name, g || 'cn') });
     };
     // In tile mode the stations of the lists come as columns: name, place, and for China the
-    // number in the route network (g) and the mark of a high-speed station (h). See stationLists().
+    // number in the route network (g) and the mark of a high-speed station (h), and where the
+    // data has them its names in Chinese and English (nz, ne) and the mark of a tram stop (t). See stationLists().
     const listed = (cols, more) => cols.n.map((n, i) => ({ type: 'Feature',
-      properties: { n, ...(cols.g && cols.g[i] != null ? { g: cols.g[i] } : {}), ...(cols.h && cols.h[i] ? { h: 1 } : {}), ...more },
+      properties: { n, ...(cols.g && cols.g[i] != null ? { g: cols.g[i] } : {}), ...(cols.h && cols.h[i] ? { h: 1 } : {}),
+        ...Object.fromEntries(['nz', 'ne', 't'].filter(k => cols[k] && cols[k][i]).map(k => [k, cols[k][i]])), ...more },
       geometry: { type: 'Point', coordinates: [cols.x[i] / 1e5, cols.y[i] / 1e5] } }));
     // A country abroad comes as layers of its own with the same properties, and joins the layers drawn here.
     const facts = {};
@@ -1235,7 +1641,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     map.addSource('esri', {
       type: 'raster', tileSize: 256, maxzoom: 19,
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-      attribution: 'Imagery © Esri, Maxar, Earthstar Geographics',
+      attribution: IMAGERY,
     });
     map.addLayer({ id: 'esri', type: 'raster', source: 'esri', paint: { 'raster-fade-duration': 150 } });
 
@@ -1263,10 +1669,21 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     whole('metro', { data: metro, tolerance: 0.3 });
     whole('metro-stations', { data: metroStations });
     window.__bootStage = 'after-sources';
-    map.addSource('cities', {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: cities.map(([n, x, y, r]) => ({ type: 'Feature', properties: { n, r }, geometry: { type: 'Point', coordinates: [x, y] } })) },
-    });
+    // The cities of data/cities.json (scripts/build_cities.py): { n, at, r }, its names in
+    // Chinese and English where they are other (nz, ne), and abroad its country (g) and the
+    // name of its metro city (m). China's cities of rank 1 and 2 were placed by hand and are
+    // drawn as they always were, by 'city-dots' and 'city-labels' below. The others (China's rank
+    // 3, which is the seat of every other prefecture-level unit, and the cities abroad) are the
+    // source 'places' and one layer, 'place-labels'; k puts them in order, by rank and then as
+    // the file has them, which is by size, and g is the country, whose switch they answer to.
+    const byHand = c => !c.g && c.r < 3;
+    const cityPoints = (list, more) => ({ type: 'FeatureCollection',
+      features: list.map(({ n, nz, ne, r, at }, i) => ({ type: 'Feature', properties: { n, ...(nz ? { nz } : {}), ...(ne ? { ne } : {}), r, ...more(list[i], i) }, geometry: { type: 'Point', coordinates: at } })) });
+    map.addSource('cities', { type: 'geojson', data: cityPoints(cities.filter(byHand), () => ({})) });
+    map.addSource('places', { type: 'geojson', data: cityPoints(cities.filter(c => !byHand(c)), (c, i) => ({ k: c.r * 1000 + i, g: c.g || 'cn', ...(c.side ? { side: c.side } : {}) })) });
+    nameMetroCities(metroCities, cities, abroad);
+    // China's suburban and intercity trains are lists of their own (HOME.byK)
+    for (const c of metroCities) if (!c.g) for (const l of c.lines) if (HOME.byK[l.k]) l.jk = HOME.byK[l.k];
 
     const FAST_COLOR = ['match', ['get', 'c'], ...FAST.flatMap(id => [id, col(id)]), col('main')];
     const round = { 'line-cap': 'round', 'line-join': 'round' };
@@ -1313,24 +1730,32 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // Urban rail in official line colours on a white casing, the way a metro map draws it. That
     // includes intercity and suburban lines a metro company operates (k = "m"), which are long
     // enough to show from further out.
-    const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, 0.4 * k, 6, 0.5 * k, 9, 1.3 * k, 12, 2.6 * k, 16, 4.5 * k];
-    const urban = ['all', NOT_ABROAD, ['!=', ['get', 'k'], 's'], ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]];
+    const metroW = k => ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, +(0.4 * k).toFixed(3), 6, +(0.5 * k).toFixed(3), 9, +(1.3 * k).toFixed(3), 12, +(2.6 * k).toFixed(3), 16, +(4.5 * k).toFixed(3)];
     // Lines that share track are drawn side by side: the data gives each a slot (off: -0.5 and 0.5
     // for two lines, -1, 0, 1 for three), which becomes a sideways offset of one line's width.
     const metroOff = ['interpolate', ['exponential', 1.5], ['zoom'], 4.5, ['*', slot, 0.7], 6, ['*', slot, 0.9], 9, ['*', slot, 2.3], 12, ['*', slot, 4.4], 16, ['*', slot, 7.6]];
-    map.addLayer({ id: 'metro-casing', type: 'line', ...from('metro'), minzoom: 4.5, filter: urban, layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-    map.addLayer({ id: 'metro', type: 'line', ...from('metro'), minzoom: 4.5, filter: urban, layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
-    // Metros abroad, one layer per class (underground / trams and the rest).
-    const abroadMetro = Object.keys(FOREIGN).flatMap(g => FOREIGN[g].metro.map(([kind]) => [`${g}-${kind}`, g, kind]));
-    for (const [id, g, kind] of abroadMetro) {
-      const filter = ['all', ['==', ['get', 'g'], g], ['!=', ['get', 'k'], 's'], ['==', ['get', 'jk'], kind]];
-      map.addLayer({ id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter, layout: round,
-        paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-      map.addLayer({ id, type: 'line', ...from('metro', g), minzoom: 4.5, filter, layout: round,
-        paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(1), 'line-offset': metroOff } });
-    }
+    // One layer per class of urban rail and country (metro and light rail in China, underground
+    // and trams abroad): [the layer, the country, the class, how thin it is drawn].
+    const metroLayers = everyCountry.flatMap(g => land(g).metro.map(([kind]) => [metroId(g, kind), g, kind, (land(g).thin || {})[kind] || 1]));
+    const abroadMetro = metroLayers.filter(m => m[1] !== 'cn');
+    // (China's lines of a metro company that run between cities, k = "m", show from further out;
+    // a line of China's with no class in the data is of the first, as all were before there were
+    // two; a bureau's suburban train, k = "s", is drawn by the layer 'suburb')
+    const classOf = (g, kind) => (g === 'cn'
+      ? ['all', NOT_ABROAD, ['!=', ['get', 'k'], 's'], ['==', ['match', ['get', 'k'], ...Object.entries(HOME.byK).flat(), ['coalesce', ['get', 'jk'], HOME.metro[0][0]]], kind],
+        ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]]
+      : ['all', ['==', ['get', 'g'], g], ['!=', ['get', 'k'], 's'], ['==', ['get', 'jk'], kind]]);
+    const casing = ([id, g, kind, thin]) => map.addLayer({ id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': metroW(1.75 * thin), 'line-offset': metroOff, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
+    const line = ([id, g, kind, thin]) => map.addLayer({ id, type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': metroW(thin), 'line-offset': metroOff } });
+    // China's: every casing under every line, so that a thin line over a wide one leaves the wide
+    // one's colour in sight on both sides (a tram above a metro tunnel: 沈阳, 大连, 香港).
+    const homeMetro = metroLayers.filter(m => m[1] === 'cn');
+    homeMetro.forEach(casing);
+    homeMetro.forEach(line);
+    // Abroad: a class at a time, as before.
+    for (const m of abroadMetro) { casing(m); line(m); }
     // A bureau-operated suburban service (k = "s") shares its track with a national line that keeps
     // its own colour, so it is drawn as one parallel line beside it. The data gives each service a
     // single path with one direction, which keeps the offset on the same side all the way.
@@ -1401,16 +1826,79 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
       paint: { 'text-color': '#eaf4fb', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.3 } });
 
+    // The other cities. Rank 1 shows at every zoom and rank 2 from 4.6, as China's own do; rank 3
+    // from 6, where a province fills the window and its cities have room: smaller and a little
+    // dimmer, so the three ranks read at a glance. Where labels would sit on each other the one
+    // earlier in the order is drawn (k), and this layer lies under the hand-made cities, which
+    // are therefore placed first and keep their places. A dot here is part of its label: Tokyo's
+    // neighbours are not rings without names. The rings are the circle layer's, a clear middle
+    // and a white line, at the sizes its radius passes through (the line would thin if one
+    // picture were scaled).
+    const ring = (radius, line, alpha) => {
+      const px = (Math.ceil(radius + line) + 1) * 4, data = new Uint8ClampedArray(px * px * 4);        // two device px to a CSS px
+      const part = v => Math.max(0, Math.min(1, v * 2 + 0.5));
+      for (let j = 0; j < px; j++) for (let i = 0; i < px; i++) {
+        const d = Math.hypot(i + 0.5 - px / 2, j + 0.5 - px / 2) / 2;
+        data.set([255, 255, 255, Math.round(255 * alpha * part(d - radius) * part(radius + line - d))], (j * px + i) * 4);
+      }
+      return { width: px, height: px, data };
+    };
+    const RINGS = [[0, 2.3], [4.25, 2.75], [5.5, 3.25], [6.75, 3.8]];       // from this zoom, this radius (the circles go from 2 at zoom 3 to 4 at zoom 8)
+    RINGS.forEach(([, radius], i) => map.addImage('ring-' + i, ring(radius, 1.4, 1), { pixelRatio: 2 }));
+    map.addImage('ring-small', ring(2.2, 1.1, 0.85), { pixelRatio: 2 });
+    const ringAt = i => ['case', ['==', ['get', 'r'], 3], 'ring-small', 'ring-' + i];
+    // the sides of its dot a name may stand on: in turn the right, the left, above and below; or
+    // the one side its entry gives. (A side that was used is tried first the next time, so the
+    // order alone would let the way the map got to a view decide which names it shows.)
+    const AROUND = { right: ['left', [0.6, 0]], left: ['right', [-0.6, 0]], above: ['bottom', [0, -0.6]], below: ['top', [0, 0.6]], 'above-left': ['bottom-right', [-0.3, -0.3]] };
+    const sides = first => (first ? AROUND[first] : ['right', 'left', 'above', 'below'].flatMap(side => AROUND[side]));
+    map.addLayer({ id: 'place-labels', type: 'symbol', source: 'places', maxzoom: 9, filter: PLACE_RANKS,
+      layout: { 'icon-image': ['step', ['zoom'], ringAt(0), ...RINGS.slice(1).flatMap(([zoom], i) => [zoom, ringAt(i + 1)])],
+        'text-field': ['get', 'n'], 'text-font': ['sans'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 3, ['match', ['get', 'r'], 1, 12, 2, 11, 9.5], 8, ['match', ['get', 'r'], 3, 13, 16]],
+        // The name stands to the right of its dot, as the hand-made cities' do; where that
+        // place is taken it goes to the left, above or below before it gives way: Glasgow
+        // beside Edinburgh shows at its country's view. A city whose file entry gives a side
+        // stands there (大阪 left, and 京都 above and to the left: 京都 lies just above 大阪, with
+        // 名古屋 to its right). (A name in two scripts, Manchester(曼彻斯特), stays on one line.)
+        'text-variable-anchor-offset': ['match', ['get', 'side'], ...Object.keys(AROUND).flatMap(side => [side, ['literal', sides(side)]]), ['literal', sides()]],
+        'text-justify': 'auto', 'text-max-width': 30,
+        'symbol-sort-key': ['get', 'k'], 'text-letter-spacing': 0.05 },
+      paint: { 'text-color': ['match', ['get', 'r'], 3, '#cbd7e0', '#ffffff'], 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.6 } });
+
     map.addLayer({ id: 'city-dots', type: 'circle', source: 'cities', maxzoom: 9,
       filter: ['any', ['==', ['get', 'r'], 1], ['>=', ['zoom'], 4.6]],
       paint: { 'circle-radius': ['interpolate', ['linear'], ['zoom'], 3, 2, 8, 4], 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 1.4 } });
     map.addLayer({ id: 'city-labels', type: 'symbol', source: 'cities', maxzoom: 9,
       filter: ['any', ['==', ['get', 'r'], 1], ['>=', ['zoom'], 4.6]],
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 3, ['case', ['==', ['get', 'r'], 1], 12, 11], 8, 16],
-        'text-anchor': 'left', 'text-offset': [0.6, 0], 'text-optional': true, 'symbol-sort-key': ['get', 'r'], 'text-letter-spacing': 0.05 },
+        'text-anchor': 'left', 'text-offset': [0.6, 0], 'text-optional': true, 'symbol-sort-key': ['get', 'r'], 'text-letter-spacing': 0.05, 'text-max-width': 30 },
       paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.6 } });
 
-    if (!live) document.getElementById('baseNote').textContent = '在线卫星影像加载不了，请检查网络后刷新页面。线路和车站仍可正常查看。';
+    // The names on the map, made as named() makes them, from a feature's n, nz, ne and its
+    // country g. Under a dot (stations, depots) the reader's name goes on a line of its own, a
+    // little smaller; beside a city's ring it stays on the line. Another language sets these
+    // again: the features stay as they are.
+    const namedField = (kind, under, g) => {
+      const key = lang === 'zh' ? 'nz' : 'ne', n = ['get', 'n'], plain = ['format', n, {}];
+      const as = how => (how === 'local' ? plain : how === 'reader' ? ['format', ['coalesce', ['get', key], n], {}]
+        : ['case', ['all', ['has', key], ['!=', ['get', key], n]], ['format', n, {}, ['concat', under ? '\n(' : '(', ['get', key], ')'], { 'font-scale': under ? 0.86 : 1 }], plain]);
+      if (g) return as(howNamed(g, kind, NAMES.map));
+      const abroadToo = Object.keys(FOREIGN).flatMap(c => [c, as(howNamed(c, kind, NAMES.map))]);
+      return abroadToo.length ? ['match', ['to-string', ['get', 'g']], ...abroadToo, as(howNamed('cn', kind, NAMES.map))] : as(howNamed('cn', kind, NAMES.map));
+    };
+    const NAMED_LAYERS = [['station-labels', 'other', true], ['metro-station-labels', 'other', true], ['depot-labels', 'other', true], ['place-labels', 'city', false], ['city-labels', 'city', false]];
+    // (the reader's name under a dot is given room for two words on its line, Shanghai Hongqiao,
+    // where a Chinese name keeps the width it always had)
+    const nameTheMap = () => {
+      for (const [layer, kind, under] of NAMED_LAYERS) for (const [id, g] of copies[layer] || [[layer, null]]) {
+        map.setLayoutProperty(id, 'text-field', namedField(kind, under, g));
+        if (under) map.setLayoutProperty(id, 'text-max-width', lang === 'zh' ? 10 : 14);
+      }
+    };
+    nameTheMap();
+
+    say(document.getElementById('baseNote'), live ? 'imagery.note' : 'imagery.offline');
 
     const dimOut = document.getElementById('dimOut');
     const applyDim = () => {
@@ -1424,36 +1912,49 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     // ---- line list: railways by line, metros by city ----
     const LISTS = { fast: lines.filter(l => l.kind === 'fast' && l.tk >= 15), conv: lines.filter(l => l.kind !== 'fast') };
-    const CAPTION = { fast: '高铁与城际线路', conv: '普速线路' };
+    const CAPTION = { fast: 'cap.fast', conv: 'cap.conv' };
     // Japan-only taxonomy (jk), not China's 高铁/普速/地铁 and not any speed class. Rail rows carry
     // jk (operator-based); metro rows carry jk (subway vs urban). 地方中小 + 第三セクター share a toggle.
     const ABROAD_RAIL = Object.fromEntries(Object.keys(FOREIGN).map(g => [g, Object.fromEntries(FOREIGN[g].rail.map(([kind]) =>
       [kind, lines.filter(l => l.g === g && jkOf(g, kind).includes(l.jk) && (!FOREIGN[g].fast.includes(kind) || l.tk >= FOREIGN[g].fastMin))]))]));
     const RAIL_KINDS = ['fast', 'conv', ...Object.values(FOREIGN).flatMap(c => c.rail.map(r => r[0]))];
-    const KIND_SET = { cn: [['fast', '高铁'], ['conv', '普速'], ['metro', '地铁']],
-      ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, [...FOREIGN[g].rail, ...FOREIGN[g].metro].map(([id, label]) => [id, label])])) };
-    const labelOf = k => (KIND_SET[country].find(r => r[0] === k) || [])[1] || '';
+    // the classes of a country's lines, each [id, name], in the language of the moment
+    const kindsOf = g => (FOREIGN[g] ? [...FOREIGN[g].rail, ...FOREIGN[g].metro].map(([id, label]) => [id, label]) : [['fast', t('kind.fast')], ['conv', t('kind.conv')], ...HOME.metro]);
+    const labelOf = k => (kindsOf(country).find(r => r[0] === k) || [])[1] || '';
     const byName = new Map(lines.map(l => [l.n, l]));
     // a country is framed by where its lines are: the corners of their boxes (see show())
     const extents = {};
     extentOf = g => extents[g] || (extents[g] = lines.filter(l => abroad(l.g) === g)
       .flatMap(l => [[l.bbox[0], l.bbox[1]], [l.bbox[0], l.bbox[3]], [l.bbox[2], l.bbox[1]], [l.bbox[2], l.bbox[3]]]));
     const cityByName = new Map(metroCities.map(c => [c.n, c]));
+    const cityName = c => named(c, abroad(c.g), 'city');
+    const cityCalled = ct => (cityByName.has(ct) ? cityName(cityByName.get(ct)) : ct);      // a metro city by the name the data keys it by
     // A country's page is about that country: its figures, its lines, its cities.
     const here = x => abroad(x.g) === country;
     const citiesOf = g => metroCities.filter(c => abroad(c.g) === g);
-    const realCitiesOf = g => citiesOf(g).filter(c => !c.n.endsWith('城际') && !c.n.endsWith('其他'));
+    const realCitiesOf = g => citiesOf(g).filter(c => !NO_CITY.test(c.n));
     const citiesHere = () => citiesOf(country);
-    const nameOf = g => (FOREIGN[g] ? FOREIGN[g].name : '中国');
-    const kmText = v => (v >= 1e4 ? (v / 1e4).toFixed(1) + ' 万公里' : Math.round(v).toLocaleString() + ' 公里');
-    const RAIL_FACTS = { cn: FACTS_CN,
-      ...Object.fromEntries(Object.keys(FOREIGN).map(g => [g, `${kmText(facts[g].km)} · ${FOREIGN[g].fastWord} ${kmText(facts[g].fast_km)}`])) };
-    const metroFacts = g => `地铁 ${realCitiesOf(g).length} 城 · ${citiesOf(g).reduce((n, c) => n + c.lines.length, 0)} 条线路`;
+    const nameOf = g => land(g).name;
+    // (two pieces, the whole length and the fast lines' part, that a narrow line breaks between)
+    const railGroups = g => { const of = FOREIGN[g] ? facts[g] : HOME.facts; return [kmText(of.km), `${land(g).fastWord} ${kmText(of.fast_km)}`]; };
+    const railFacts = g => railGroups(g).join(' · ');
+    const railLine = g => railGroups(g).flatMap((text, i) => [...(i ? [' · '] : []), Object.assign(document.createElement('span'), { className: 'nobr', textContent: text })]);
+    // China's two classes are counted apart ("地铁 47 城 368 条 · 轻轨 29 城 74 条"); abroad one figure covers both
+    // (cities as cities are counted, without the lists that are not one, 广东城际; lines all of them, as before)
+    const classFacts = (g, kind, label) => { const has = c => c.lines.some(l => l.jk === kind);
+      const lines = t('n.lines', { n: citiesOf(g).reduce((n, c) => n + c.lines.filter(l => l.jk === kind).length, 0) });
+      return HOME.linesOnly.includes(kind) ? t('facts.lines', { name: label, lines }) : t('facts.class', { name: label, cities: t('n.cities', { n: realCitiesOf(g).filter(has).length }), lines }); };
+    // The classes' figures are a line each: a class's name may hold a dot (轻轨·电车), so no mark
+    // parts them, and the lines are as many in either language (the app gets them as lines too).
+    const metroGroups = g => (FOREIGN[g] ? [t('facts.metro', { cities: t('n.cities', { n: realCitiesOf(g).length }), lines: t('n.linesLong', { n: citiesOf(g).reduce((n, c) => n + c.lines.length, 0) }) })]
+      : HOME.metro.map(([kind, label]) => classFacts(g, kind, label)));
+    const metroFacts = g => metroGroups(g).join('\n');
+    const groupsOf = g => metroGroups(g).map(text => Object.assign(document.createElement('span'), { className: 'grp', textContent: text }));
     const renderHead = () => {
       panel.classList.toggle('world', world);
-      document.getElementById('title').textContent = world ? 'Rail Globe' : nameOf(country) + '铁路网';
-      document.getElementById('facts').replaceChildren(RAIL_FACTS[country], document.createElement('br'), metroFacts(country));
-      queryEl.placeholder = '车站、线路、城市，如 ' + (!world && FOREIGN[country] ? FOREIGN[country].hint : HINT_CN);
+      document.getElementById('title').textContent = world ? 'Rail Globe' : t('title.country', { country: nameOf(country) });
+      document.getElementById('facts').replaceChildren(...railLine(country), document.createElement('br'), ...groupsOf(country));
+      queryEl.placeholder = t('search.placeholder', { example: !world && FOREIGN[country] ? FOREIGN[country].hint : t('search.example') });
       syncRouteTab();
       paintTabs();
       if (isPhone()) sheet.layout();        // the header of a country's page is taller than the world's
@@ -1464,7 +1965,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       document.getElementById('jumps').replaceChildren();
       if (world) { for (const g of everyCountry) addJump(nameOf(g), null, () => setCountry(g, true)); return; }
       addJump(nameOf(country), { country });
-      for (const c of realCitiesOf(country).slice(0, JUMP_CITIES)) addJump(c.n, { bounds: [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]] });
+      for (const c of realCitiesOf(country).slice(0, JUMP_CITIES)) addJump(cityName(c), { bounds: [[c.bbox[0], c.bbox[1]], [c.bbox[2], c.bbox[3]]] });
     };
     const listEl = document.getElementById('lineList');
     const moreEl = document.getElementById('more');
@@ -1472,15 +1973,17 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     let kindButtons = [];
     const rebuildKindButtons = () => {
       kindBar.replaceChildren();
-      const chips = KIND_SET[country].length > 3;
+      // Up to three classes are a segmented control; more are chips, each as wide as its name,
+      // that wrap to a second row: in every country and language alike.
+      const chips = kindsOf(country).length > 3;
       kindBar.classList.toggle('chips', chips);
       if (!chips) {                                  // the segmented control's sliding thumb
         const thumb = document.createElement('span');
         thumb.className = 'thumb';
         kindBar.appendChild(thumb);
-        kindBar.style.setProperty('--n', KIND_SET[country].length);
+        kindBar.style.setProperty('--n', kindsOf(country).length);
       }
-      kindButtons = KIND_SET[country].map(([id, label]) => {
+      kindButtons = kindsOf(country).map(([id, label]) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.dataset.kind = id;
@@ -1495,55 +1998,65 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     let kind = 'fast';          // which list the lines tab shows
     let metroCity = null;       // the city whose lines are listed
     let selMetro = null;        // the selected metro line: { ct, n }
+    // A name in two scripts (서울(首尔)) is set as two pieces, so that a line that cannot hold it
+    // breaks it before the bracket (see .two in the styles); any other name is plain text.
+    const NAME_PARTS = /^(.*[^\s(])(\([^()]+\))$/;
+    const setName = (el, name) => {
+      const parts = NAME_PARTS.exec(name || '');
+      el.classList.toggle('two', !!parts);
+      if (parts) el.replaceChildren(...parts.slice(1).map(text => Object.assign(document.createElement('bdi'), { textContent: text })));
+      else el.textContent = name;
+    };
     const row = (html, name, onClick, current) => {
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
       b.innerHTML = html;
-      b.querySelector('.nm').textContent = name;
+      setName(b.querySelector('.nm'), name);
       if (current) b.setAttribute('aria-current', 'true');
       b.addEventListener('click', onClick);
       li.appendChild(b);
       return li;
     };
-    const cityRow = c => row(`<span class="nm"></span><span class="kmh">${c.lines.length} 条</span>${CHEVRON}`, c.n, () => openCity(c, true));
-    const metroRow = (c, l, withCity) => row(`<i style="background:${l.col}"></i><span class="nm"></span><span class="kmh">${withCity ? c.n : l.km + ' km'}</span>`,
-      l.n, () => selectMetro(c, l, true), selMetro && selMetro.ct === c.n && selMetro.n === l.n);
+    const cityRow = c => row(`<span class="nm"></span><span class="kmh">${t('n.lines', { n: c.lines.length })}</span>${CHEVRON}`, cityName(c), () => openCity(c, true));
+    const metroRow = (c, l) => row(`<i style="background:${l.col}"></i><span class="nm"></span><span class="kmh">${l.km} km</span>`,
+      named(l, abroad(c.g)), () => selectMetro(c, l, true), selMetro && selMetro.ct === c.n && selMetro.n === l.n);
     // The lists are for browsing; finding a line by name is the search field's job.
     const renderList = () => {
       const cap = document.getElementById('lineCap'), count = document.getElementById('lineCount');
       let rows, total;
       if (RAIL_KINDS.includes(kind)) {
         const listed = (FOREIGN[country] ? ABROAD_RAIL[country][kind] : LISTS[kind]).filter(here);
-        cap.textContent = FOREIGN[country] ? labelOf(kind) : CAPTION[kind];
-        count.textContent = listed.length + ' 条';
+        cap.textContent = FOREIGN[country] ? labelOf(kind) : t(CAPTION[kind]);
+        count.textContent = t('n.lines', { n: listed.length });
         total = listed.length;
-        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + ' km/h' : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? '分段' : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || '普速'}</span>`,
-          l.n, () => select(l.n, true), selected === l.n));
+        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + ' km/h' : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? t('list.sections') : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || t('list.conv')}</span>`,
+          named(l, abroad(l.g)), () => select(l.n, true), selected === l.n));
       } else {
-        // metro branch. For Japan the metro kinds split by jk (subway / monorail / tram).
-        const mjk = FOREIGN[country] ? kind : null;
-        const MJK_CAP = FOREIGN[country] ? FOREIGN[country].caption : {};
-        const mCities = citiesHere().map(c => mjk ? { ...c, lines: c.lines.filter(l => l.jk === mjk) } : c)
-          .filter(c => !mjk || c.lines.length);
+        // a class of urban rail (jk: metro or light rail in China, underground or trams abroad): its cities, or the lines of one city
+        const mjk = kind;
+        const mCities = citiesHere().map(c => ({ ...c, lines: c.lines.filter(l => l.jk === mjk) })).filter(c => c.lines.length);
         const mLines = mCities.reduce((n, c) => n + c.lines.length, 0);
-        if (metroCity && (!mjk || metroCity.lines.some(l => l.jk === mjk))) {
-          const mc = mjk ? { ...metroCity, lines: metroCity.lines.filter(l => l.jk === mjk) } : metroCity;
-          cap.textContent = mc.n;
-          count.textContent = `${mc.lines.length} 条 · ${mc.km} km`;
+        if (metroCity && metroCity.lines.some(l => l.jk === mjk)) {
+          const mc = { ...metroCity, lines: metroCity.lines.filter(l => l.jk === mjk) };
+          cap.textContent = cityName(mc);
+          // (the city's own figure when the class is all it has; else what the listed lines come to;
+          // the city opened from a class's list holds that class's lines only, so ask the whole city)
+          const length = mc.lines.length === (cityByName.get(metroCity.n) || metroCity).lines.length ? mc.km : Math.round(mc.lines.reduce((n, l) => n + (l.km || 0), 0));
+          count.textContent = `${t('n.lines', { n: mc.lines.length })} · ${length} km`;
           total = mc.lines.length;
           rows = [row(`<svg viewBox="0 0 8 14" width="7" height="12" aria-hidden="true"><path d="M7 1L1 7l6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nm"></span>`,
-            '全部城市', () => { metroCity = null; renderList(); }), ...mc.lines.map(l => metroRow(mc, l))];
+            t('list.cities'), () => { metroCity = null; renderList(); }), ...mc.lines.map(l => metroRow(mc, l))];
           rows[0].firstChild.classList.add('back');
         } else {
-          cap.textContent = FOREIGN[country] ? MJK_CAP[mjk] : '地铁与市域线路';
-          count.textContent = `${mCities.length} 城 · ${mLines} 条`;
+          cap.textContent = land(country).caption[mjk];
+          count.textContent = `${t('n.cities', { n: mCities.length })} · ${t('n.lines', { n: mLines })}`;
           total = mCities.length;
           rows = mCities.map(cityRow);
         }
       }
       listEl.replaceChildren(...rows);
-      moreEl.textContent = total > LIMIT && rows.length === LIMIT ? `另有 ${total - LIMIT} 条，可在上方的搜索框里按名字查找` : total ? '' : '这一类暂无线路';
+      moreEl.textContent = total > LIMIT && rows.length === LIMIT ? t('list.more', { n: total - LIMIT }) : total ? '' : t('list.none');
     };
     const setKind = k => {
       kind = k;
@@ -1563,14 +2076,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // ---- the two levels of the card: the world, and the page of a country ----
     // The rows of the world's list come from the countries the page has; a new country is a new row.
     const toWorld = document.getElementById('toWorld');
-    document.getElementById('countryList').replaceChildren(...everyCountry.map(g => {
+    const renderCountries = () => document.getElementById('countryList').replaceChildren(...everyCountry.map(g => {
       // (the row that was used goes out of sight: the focus moves on to the way back)
       const li = row(`<span class="txt"><b class="nm"></b><small></small><small></small></span>${CHEVRON}`, nameOf(g), () => { setCountry(g, true); toWorld.focus({ preventScroll: true }); });
       const [rail, metro] = li.querySelectorAll('small');
-      rail.textContent = RAIL_FACTS[g];
-      metro.textContent = metroFacts(g);
+      rail.replaceChildren(...railLine(g));
+      metro.replaceChildren(...groupsOf(g));
       return li;
     }));
+    renderCountries();
     // Opens the page of a country. Coming back to the country that was open last finds its lists
     // as they were left; another country starts from its first class, with nothing selected.
     function setCountry(g, fly) {
@@ -1650,6 +2164,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     // ---- selection: one railway line or one metro line at a time ----
     const selBox = document.getElementById('sel');
+    let tellSelection = () => {};       // writes the selected line's name and what it is, in the language of the moment
     const NO_LINE = ['==', ['get', 'n'], '\u0000'];
     // Metro and suburban layers: the selected line is drawn wider and the others fade; they all
     // fade when a railway line is selected.
@@ -1658,10 +2173,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const fade = !!selected;
       const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
       const width = k => on ? metroW(k).map((v, i) => (i > 3 && i % 2 === 0 ? ['case', on, +(v * 1.7).toFixed(2), v] : v)) : metroW(k);
-      for (const [id, z0] of [['metro', 4.5], ['suburb', 6], ...abroadMetro.map(m => [m[0], 4.5])]) {
-        map.setPaintProperty(id, 'line-width', width(1));
+      for (const [id, z0, thin] of [...metroLayers.map(m => [m[0], 4.5, m[3]]), ['suburb', 6, 1]]) {
+        map.setPaintProperty(id, 'line-width', width(thin));
         map.setPaintProperty(id, 'line-opacity', pick(1, 0.3, 1));
-        map.setPaintProperty(id + '-casing', 'line-width', width(1.75));
+        map.setPaintProperty(id + '-casing', 'line-width', width(1.75 * thin));
         map.setPaintProperty(id + '-casing', 'line-opacity', ['interpolate', ['linear'], ['zoom'], z0, pick(0.7, 0.1, 0.4), 9, pick(1, 0.22, 0.9)]);
       }
     }
@@ -1681,25 +2196,28 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         const c = l ? l.c : cls;
         const want = l ? (FOREIGN[l.g] ? kindOf(l) : l.kind) : FAST.includes(c) ? 'fast' : 'conv';
         if (kind !== want) setKind(want);
-        document.getElementById('selName').textContent = name;
         // est: the share of the line whose band comes from the track's speed tags, with no
         // documented design value yet; plain: the share drawn as conventional
-        const metaEl = document.getElementById('selMeta');
-        if (l && FOREIGN[l.g]) {
-          const speed = l.d ? ` · ${l.e ? '最高时速' : '设计时速'} ${l.d} km/h${l.e ? '，设计时速待核实' : ''}` : '';
-          metaEl.textContent = (FOREIGN[l.g].kindName[l.jk] || FOREIGN[l.g].name + '铁路') + speed + (l.o ? ' · ' + l.o : '');
-        } else {
-          const rest = l ? (l.est > 0.02 ? ' · 部分区段按轨道限速归档' : l.plain > 0.02 ? ' · 其余区段为普速' : '') : '';
-          metaEl.textContent = l && l.design && l.design.length
-            ? `${l.design.length > 1 ? '分段设计时速' : '设计时速'} ${l.design.join(' / ')} km/h${rest}`
-            : l && l.est > 0.5 && DESIGN_LABEL[c] ? `${DESIGN_LABEL[c]} km/h 档 · 按轨道限速归档，设计时速待核实` : CLASS_NAME[c] || '';
-        }
+        tellSelection = () => {
+          setName(document.getElementById('selName'), l ? named(l, abroad(l.g)) : name);
+          const metaEl = document.getElementById('selMeta');
+          if (l && FOREIGN[l.g]) {
+            const speed = l.d ? ` · ${t(l.e ? 'speed.top' : 'speed.design')} ${l.d} km/h${l.e ? t('speed.unsure') : ''}` : '';
+            metaEl.textContent = (FOREIGN[l.g].kindName[l.jk] || t('rail.of', { country: FOREIGN[l.g].name })) + speed + (l.o ? ' · ' + l.o : '');
+          } else {
+            const rest = l ? (l.est > 0.02 ? ' · ' + t('speed.someTrack') : l.plain > 0.02 ? ' · ' + t('speed.restConv') : '') : '';
+            metaEl.textContent = capital(l && l.design && l.design.length
+              ? `${t(l.design.length > 1 ? 'speed.sections' : 'speed.design')} ${l.design.join(' / ')} km/h${rest}`
+              : l && l.est > 0.5 && DESIGN_LABEL[c] ? t('speed.band', { band: DESIGN_LABEL[c] }) : className(c));
+          }
+        };
+        tellSelection();
         if (isPhone() && fly) sheet.to('peek');        // first, so that the frame is for the room there will be
         if (fly && l) frame({ bounds: [[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], maxZoom: 10 }, 1200);
       }
       renderList();
     }
-    const METRO_KIND = { m: '城际 / 市域 · 地铁公司运营', s: '市郊 / 城际列车 · 铁路局运营' };
+    const METRO_KIND = { m: 'metro.intercity', s: 'metro.suburban' };
     function selectMetro(c, l, fly) {
       if (c && l) enter(abroad(c.g));
       if (selected) select(null);
@@ -1710,11 +2228,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (l) {
         touched = true;
         showTab('lines');
-        const want = FOREIGN[country] ? l.jk : 'metro';      // abroad the metro classes are lists of their own
-        if (kind !== want) setKind(want);
+        const its = () => (classes => classes.find(([k]) => k === l.jk) || classes[0])(land(country).metro);      // the classes are lists of their own
+        if (kind !== its()[0]) setKind(its()[0]);
         metroCity = c;
-        document.getElementById('selName').textContent = l.n;
-        document.getElementById('selMeta').textContent = `${METRO_KIND[l.k] || '地铁'} · ${c.n} · ${l.km} km`;
+        tellSelection = () => {
+          setName(document.getElementById('selName'), named(l, abroad(c.g)));
+          document.getElementById('selMeta').textContent = `${METRO_KIND[l.k] ? t(METRO_KIND[l.k]) : its()[1]} · ${cityName(c)} · ${l.km} km`;
+        };
+        tellSelection();
         if (isPhone() && fly) sheet.to('peek');
         if (fly) frame({ bounds: [[l.bbox[0], l.bbox[1]], [l.bbox[2], l.bbox[3]]], maxZoom: 13 }, 1200);
       }
@@ -1724,7 +2245,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     document.getElementById('clearSel').addEventListener('click', clearSelection);
 
     // ---- hover + click on lines ----
-    const PICK = [...FAST, 'shared', 'metro', 'suburb', ...each('build').map(c => c[0]), 'main', 'branch',
+    // (a thin class lies over the others: it is taken first)
+    const homeMetroIds = HOME.metro.map(([kind]) => metroId('cn', kind));
+    const PICK = [...FAST, 'shared', ...[...homeMetroIds].reverse(), 'suburb', ...each('build').map(c => c[0]), 'main', 'branch',
       ...Object.keys(abroadVisible), ...abroadMetro.map(m => m[0] + '-casing')];
     const tip = new maplibregl.Popup({ className: 'tip', closeButton: false, closeOnClick: false, offset: 12, maxWidth: '260px' });
     const pick = pt => {
@@ -1739,30 +2262,33 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       map.getCanvas().style.cursor = f ? 'pointer' : '';
       if (!f) { tip.remove(); return; }
       const p = f.properties;
-      let meta = f.layer.id === 'suburb' ? '市郊 / 城际列车 · 铁路局运营' : f.layer.id === 'metro' ? (p.k === 'm' ? '城际 / 市域 · 地铁公司运营' : `地铁 · ${p.ct}`) : CLASS_NAME[p.c] || '';
-      if (p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
+      const itsClass = homeMetroIds.indexOf(f.layer.id);
+      let meta = f.layer.id === 'suburb' ? t('metro.suburban') : itsClass >= 0 ? (p.k === 'm' ? t('metro.intercity') : `${HOME.metro[itsClass][1]} · ${cityCalled(p.ct)}`) : className(p.c);
+      if (p.c === 'build') meta = t(p.h ? 'tip.buildFast' : 'tip.build');
       const there = FOREIGN[p.g];
-      if (there) meta = there.kindName[p.jk] || (there.caption[p.jk] ? `${there.caption[p.jk]} · ${p.ct}` : there.name + '铁路');
-      if (there && p.c === 'build') meta = p.h ? '在建高速铁路' : '在建铁路';
-      if (p.d && there) meta += ` · ${p.e ? '最高时速' : '设计时速'} ${p.d} km/h${p.e ? '，设计时速待核实' : ''}`;
-      else if (p.d) meta = `${p.db === 'track' ? '轨道' : '线下'}设计 ${p.d} km/h${p.v ? ` · 参考运行 ${p.v} km/h` : ''}`;
-      else if (p.e) meta = `${DESIGN_LABEL[p.c]} km/h 档 · 按轨道限速归档，设计时速待核实`;
-      if (p.de) meta += ` · ${p.de.replace('~', ' 至 ')}`;
-      let who = p.o ? `<br><span>运营：${esc(p.o)}</span>` : '';
+      if (there) meta = there.kindName[p.jk] || (there.caption[p.jk] ? `${there.caption[p.jk]} · ${cityCalled(p.ct)}` : t('rail.of', { country: there.name }));
+      if (there && p.c === 'build') meta = t(p.h ? 'tip.buildFast' : 'tip.build');
+      if (p.d && there) meta += ` · ${t(p.e ? 'speed.top' : 'speed.design')} ${p.d} km/h${p.e ? t('speed.unsure') : ''}`;
+      else if (p.d) meta = t(p.db === 'track' ? 'speed.track' : 'speed.line', { speed: p.d }) + (p.v ? ' · ' + t('speed.runs', { speed: p.v }) : '');
+      else if (p.e) meta = t('speed.band', { band: DESIGN_LABEL[p.c] });
+      if (p.de) meta += ' · ' + (([from, to]) => (to ? t('range', { from, to }) : from))(p.de.split('~'));
+      let who = p.o ? `<br><span>${esc(t('tip.operator', { who: p.o }))}</span>` : '';
       const near = id => map.getLayoutProperty(id, 'visibility') !== 'none'
         && map.queryRenderedFeatures([[e.point.x - 9, e.point.y - 9], [e.point.x + 9, e.point.y + 9]], { layers: [id] })[0];
       // two lines on one track: each names the other
-      if (f.layer.id === 'shared') who += `<br><span>与${esc(p.on)}共用轨道</span>`;
+      if (f.layer.id === 'shared') who += `<br><span>${esc(t('tip.sharedWith', { line: p.on }))}</span>`;
       else if (FAST.includes(f.layer.id) || f.layer.id === 'main' || f.layer.id === 'branch') {
         const sh = near('shared');
-        if (sh && sh.properties.on.split('、').includes(p.n)) who += `<br><span>共线：${esc(sh.properties.n)}</span>`;
+        if (sh && sh.properties.on.split(AND).includes(p.n)) who += `<br><span>${esc(t('tip.shares', { line: named(sh.properties) }))}</span>`;
       }
       // a suburban service runs beside this line: name it under the line it shares
       if (f.layer.id !== 'suburb') {
         const sv = near('suburb');
-        if (sv && sv.properties.n) who += `<br><span>市郊 / 城际列车：${esc(sv.properties.n)}</span>`;
+        if (sv && sv.properties.n) who += `<br><span>${esc(t('tip.suburban', { line: named(sv.properties) }))}</span>`;
       }
-      tip.setLngLat(e.lngLat).setHTML(`<b>${esc(p.n || '未命名线路')}</b><span>${esc(meta)}</span>${who}`).addTo(map);
+      const called = p.n ? named(p, abroad(p.g)) : t('tip.unnamed'), parts = NAME_PARTS.exec(called);
+      const name = parts ? `<b class="two"><bdi>${esc(parts[1])}</bdi><bdi>${esc(parts[2])}</bdi></b>` : `<b>${esc(called)}</b>`;
+      tip.setLngLat(e.lngLat).setHTML(`${name}<span>${esc(meta)}</span>${who}`).addTo(map);
     });
     map.getCanvas().addEventListener('mouseleave', () => tip.remove());
 
@@ -1771,12 +2297,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // nodes, track edges with line, class and length, one hub per station linked to each track that
     // calls there, and a walk between a railway station and the metro stations beside it.
     // a metro station is listed with its city: the smallest city outline that contains it
-    const everyCity = metroCities.filter(c => !c.n.endsWith('城际'));
+    const everyCity = metroCities.filter(c => !BETWEEN_CITIES.test(c.n));
     const cityAt = ([x, y]) => everyCity.filter(c => x >= c.bbox[0] && x <= c.bbox[2] && y >= c.bbox[1] && y <= c.bbox[3])
       .sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))[0];
     // ---- search over everything that is loaded ----
     // What the card can show is what can be found: the lines its lists hold, the metro cities
-    // and their lines, every station, every country. The stations also feed the route fields.
+    // and their lines, the cities the map labels, every station, every country. The stations
+    // also feed the route fields.
     // In tile mode they are not there yet when the map comes up (stationLists() fetches them), so
     // what is made from them is made here, and made again when they arrive.
     let routable, hubName, searchData;
@@ -1788,11 +2315,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         f.properties.ct = (cityAt(f.geometry.coordinates) || {}).n || '';
       }
       routable = [...stations.features, ...metroStations.features].filter(f => f.properties.g != null);
-      hubName = new Map(routable.map(f => [f.properties.g, f.properties.n]));
+      hubName = new Map(routable.map(f => [f.properties.g, named(f.properties)]));
       searchData = buildSearchIndex({
-        countries: [{ g: 'cn', name: '中国' }, ...Object.keys(FOREIGN).map(g => ({ g, name: FOREIGN[g].name, kindName: FOREIGN[g].kindName, metro: FOREIGN[g].metro }))],
+        say: t, name: named,
+        countries: [{ g: 'cn', name: HOME.name, names: TEXT.cn, metro: HOME.metro }, ...Object.keys(FOREIGN).map(g => ({ g, name: FOREIGN[g].name, names: TEXT[g], kindName: FOREIGN[g].kindName, metro: FOREIGN[g].metro }))],
         lines: [...[...LISTS.fast, ...LISTS.conv].filter(l => !FOREIGN[l.g]), ...Object.values(ABROAD_RAIL).flatMap(byKind => Object.values(byKind).flat())],
         cities: metroCities,
+        places: cities,
         stations: [...stations.features, ...metroStations.features],
         colours: Object.fromEntries([...FAST, 'main', 'branch'].map(id => [id, col(id)])),
       });
@@ -1813,7 +2342,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const pins = { from: null, to: null };
     const odInput = { from: document.getElementById('odFrom'), to: document.getElementById('odTo') };
     const routeOut = document.getElementById('routeOut'), routeNote = document.getElementById('routeNote');
-    const NOTE = routeNote.textContent;
+    say(routeNote, 'route.help');
     let network = null;
     const loadNetwork = () => network || (network = getJSON('data/graph.json').then(g => {
       const N = g.nodes.length / 2, M = g.edges.length / 5;
@@ -1879,22 +2408,22 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     async function showRoute() {
       const seq = ++routeSeq, from = od.from, to = od.to;
       clearRoute();
-      routeNote.textContent = NOTE;
+      say(routeNote, 'route.help');
       if (!from || !to) return;
-      if (from.g === to.g) { routeNote.textContent = '出发和到达是同一个车站。'; return; }
-      routeNote.textContent = '正在计算…';
+      if (from.g === to.g) { say(routeNote, 'route.same'); return; }
+      say(routeNote, 'route.working');
       let G;
-      try { G = await loadNetwork(); } catch (err) { network = null; if (seq === routeSeq) routeNote.textContent = '线路网络载入失败，请检查网络后重试。'; return; }
+      try { G = await loadNetwork(); } catch (err) { network = null; if (seq === routeSeq) say(routeNote, 'route.offline'); return; }
       if (seq !== routeSeq) return;
       const res = fastest(G, from.g, to.g);
-      if (!res) { routeNote.textContent = `${from.n} 和 ${to.n} 之间没有连通的线路。例如海南岛、台湾与大陆之间没有轨道相连。`; return; }
+      if (!res) { say(routeNote, 'route.none', () => ({ from: named(from), to: named(to) })); return; }
       if (!res.path.some(([, , e]) => !'xyw'.includes(G.g.lines[G.g.edges[e * 5 + 2]][1]))) {
-        routeNote.textContent = `${from.n} 和 ${to.n} 紧挨着，步行即可。`;
+        say(routeNote, 'route.beside', () => ({ from: named(from), to: named(to) }));
         return;
       }
       const g = G.g, coords = [], raw = [];
       const hubCost = { x: g.transferMin, y: g.metroMin };
-      const walkText = w => `从 ${w.from} 步行约 ${Math.max(100, Math.round(w.m / 50) * 50)} 米到 ${w.to}`;
+      const walkText = w => t('route.walk', { from: w.from, to: w.to, metres: Math.max(100, Math.round(w.m / 50) * 50) });
       let metres = 0, change = null, walk = null;
       for (const [a, b, e] of res.path) {
         const [name, cls, , tint] = g.lines[g.edges[e * 5 + 2]], m = g.edges[e * 5 + 3];
@@ -1905,7 +2434,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         if (cls in hubCost) {         // through a station hub: a change of line unless it is an end of the trip
           const hub = a >= g.hubStart ? a : b;
           if (walk) change = walkText(walk);
-          else if (hub !== from.g && hub !== to.g) change = `在 ${hubName.get(hub)} 换乘`;
+          else if (hub !== from.g && hub !== to.g) change = t('route.change', { station: hubName.get(hub) });
           walk = null;
           continue;
         }
@@ -1934,17 +2463,17 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const ends = [res.path[0], res.path[res.path.length - 1]].reduce((t, [, , e]) => t + (hubCost[g.lines[g.edges[e * 5 + 2]][1]] || 0), 0);
       const mins = Math.max(1, Math.round(res.minutes - ends));
       const note = text => { const c = document.createElement('li'); c.className = 'change'; c.textContent = text; return c; };
-      document.getElementById('routeKm').innerHTML = `${Math.round(metres / 1000).toLocaleString()}<small>公里</small>`;
-      document.getElementById('routeTime').textContent = `约 ${mins >= 60 ? Math.floor(mins / 60) + ' 小时 ' : ''}${mins % 60} 分`;
+      document.getElementById('routeKm').innerHTML = `${num(metres / 1000)}<small>${t('route.km')}</small>`;
+      document.getElementById('routeTime').textContent = mins >= 60 ? t('route.time', { hours: Math.floor(mins / 60), minutes: mins % 60 }) : t('route.minutes', { minutes: mins });
       document.getElementById('routeSteps').replaceChildren(...shown.flatMap(st => {
         const li = document.createElement('li');
         li.innerHTML = `<i style="background:${st.tint || col(st.cls)}"></i><span></span><span class="km">${Math.max(1, Math.round(st.m / 1000))} km</span>`;
-        li.children[1].textContent = st.name;
+        li.children[1].textContent = named(byName.get(st.name) || { n: st.name });
         if (minor(st)) li.className = 'minor';
         return st.change ? [note(st.change), li] : [li];
       }), ...(lastWalk ? [note(lastWalk)] : []));
       routeOut.hidden = false;
-      routeNote.textContent = '走法沿真实线路计算。铁路时间按线路等级估算、不含停站，地铁按平均速度估算；不代表有直达车次。';
+      say(routeNote, 'route.note');
       const xs = coords.map(c => c[0]), ys = coords.map(c => c[1]);
       touched = true;
       if (isPhone()) sheet.to('mid');
@@ -1952,14 +2481,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     function setStop(role, f, keepText) {
       if (f) enter('cn');           // a route is in China: its page, on the route tab
-      od[role] = f ? { n: f.properties.n, g: f.properties.g, at: f.geometry.coordinates } : null;
+      od[role] = f ? { ...f.properties, at: f.geometry.coordinates } : null;
       if (f) showTab('route');
-      if (!keepText) odInput[role].value = f ? f.properties.n : '';
+      if (!keepText) odInput[role].value = f ? named(od[role]) : '';
       if (pins[role]) { pins[role].remove(); pins[role] = null; }
       if (f) {
         const el = document.createElement('div');
         el.className = 'pin ' + role;
-        el.setAttribute('aria-label', role === 'from' ? '出发站' : '到达站');
+        el.setAttribute('aria-label', t(role === 'from' ? 'od.from' : 'od.to'));
         pins[role] = new maplibregl.Marker({ element: el }).setLngLat(f.geometry.coordinates).addTo(map);
         loadNetwork().catch(() => { network = null; });
       }
@@ -1970,7 +2499,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const input = odInput[role], list = document.getElementById(role === 'from' ? 'suggFrom' : 'suggTo');
       const render = () => {
         const q = input.value.trim();
-        if (!q || (od[role] && od[role].n === q)) { list.hidden = true; return; }
+        if (!q || (od[role] && named(od[role]) === q)) { list.hidden = true; return; }
         // The search of the card's field, kept to the stations in China a route can start from.
         // "奥体中心" exists in sixteen cities: the city can be typed with the name ("南京 奥体中心",
         // "南京奥体中心"), the list scrolls, and among equal matches the ones nearest the map come first.
@@ -1979,15 +2508,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         list.replaceChildren(...hits.map(f => {
           const li = document.createElement('li'), b = document.createElement('button');
           b.type = 'button';
-          b.textContent = f.properties.n;
-          if (f.properties.m) b.insertAdjacentHTML('beforeend', `<small>地铁${f.properties.ct ? ' · ' + esc(f.properties.ct) : ''}</small>`);
+          b.textContent = named(f.properties);
+          if (f.properties.m) b.insertAdjacentHTML('beforeend', `<small>${t('metro')}${f.properties.ct ? ' · ' + esc(cityCalled(f.properties.ct)) : ''}</small>`);
           b.addEventListener('click', () => { list.hidden = true; setStop(role, f); });
           li.appendChild(b);
           return li;
         }));
         list.hidden = !hits.length;
       };
-      input.addEventListener('input', () => { if (od[role] && input.value.trim() !== od[role].n) setStop(role, null, true); render(); });
+      input.addEventListener('input', () => { if (od[role] && input.value.trim() !== named(od[role])) setStop(role, null, true); render(); });
       input.addEventListener('focus', render);
       whenStations.push(() => { if (document.activeElement === input) render(); });
       input.addEventListener('blur', () => setTimeout(() => { list.hidden = true; }, 180));
@@ -2002,23 +2531,23 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     routeCleanup = () => {
       setStop('from', null);
       setStop('to', null);
-      routeNote.textContent = NOTE;
+      say(routeNote, 'route.help');
     };
     // clicking a station offers it as origin or destination
     const stationPop = new maplibregl.Popup({ className: 'tip station-pop', closeButton: false, offset: 10, maxWidth: '240px' });
     const offerStation = f => {
       const box = document.createElement('div');
       const title = document.createElement('b');
-      title.textContent = f.properties.n;
+      setName(title, named(f.properties, abroad(f.properties.g)));
       box.appendChild(title);
       if (f.properties.g == null || FOREIGN[f.properties.g]) {
         const none = document.createElement('span');
-        none.textContent = FOREIGN[f.properties.g] ? FOREIGN[f.properties.g].name + '车站暂不支持线路网寻路' : '路线查询只支持中国境内、已接入线路网的车站';
+        none.textContent = FOREIGN[f.properties.g] ? t('stop.abroad', { country: FOREIGN[f.properties.g].name }) : t('stop.off');
         box.appendChild(none);
       } else {
         const row = document.createElement('div');
         row.className = 'pop-actions';
-        for (const [role, label] of [['from', '设为出发'], ['to', '设为到达']]) {
+        for (const [role, label] of [['from', t('stop.start')], ['to', t('stop.end')]]) {
           const b = document.createElement('button');
           b.type = 'button';
           b.innerHTML = `<i class="dot ${role}"></i>`;
@@ -2041,16 +2570,24 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (!e) return false;
       endSearch();
       queryEl.blur();
-      if (e.kind === 'line') select(e.name, true);
+      if (e.kind === 'line') select(e.ref.n, true);
       else if (e.kind === 'metro') selectMetro(e.ref[0], e.ref[1], true);
       else if (e.kind === 'country') {
         setCountry(e.country, true);
         if (isPhone()) sheet.to('mid');
+      } else if (e.kind === 'city' && !e.ref) {
+        // a city without a metro has no list of its own: the card goes to its country, the map
+        // to the city and what is round it, some 30 km each way
+        enter(e.country);
+        touched = true;
+        if (isPhone()) sheet.to('peek');
+        const [x, y] = e.at, reach = 0.27, wide = reach / Math.cos(y * Math.PI / 180);
+        frame({ bounds: [[x - wide, y - reach], [x + wide, y + reach]] }, 1400);
       } else if (e.kind === 'city') {
         enter(e.country);
-        const there = FOREIGN[e.country];      // abroad the metro classes are lists of their own: open the one this city is in
+        const classes = land(e.country).metro;      // the classes are lists of their own: open the first this city is in
         showTab('lines');
-        setKind(there ? (there.metro.find(([k]) => e.ref.lines.some(l => l.jk === k)) || there.metro[0])[0] : 'metro');
+        setKind((classes.find(([k]) => e.ref.lines.some(l => l.jk === k)) || classes[0])[0]);
         openCity(e.ref, true);
         if (isPhone()) sheet.to('mid');
       } else {
@@ -2064,8 +2601,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     // For the app's native card: the search and the two levels as plain values and calls.
     // level() is the country whose page is open, or null at the list of countries.
+    // language() is 'zh' or 'en', setLanguage() changes it; every text handed over is in it.
     window.__rail = { search: searchAll, open: openResult, level: () => (world ? null : country), openCountry: g => setCountry(g, true), openWorld: setWorld,
-      countries: () => everyCountry.map(g => ({ country: g, name: nameOf(g), rail: RAIL_FACTS[g], metro: metroFacts(g), routes: !FOREIGN[g] })) };
+      language: () => lang, setLanguage: to => setLanguage(to, false),
+      countries: () => everyCountry.map(g => ({ country: g, name: nameOf(g), rail: railFacts(g), metro: metroFacts(g), routes: !FOREIGN[g] })) };
     const foundEl = document.getElementById('tab-find');
     const renderFound = () => {
       const q = queryEl.value.trim();
@@ -2078,7 +2617,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         box.innerHTML = '<p class="caption"><span></span><span></span></p><ul class="group linelist found"></ul>';
         const [name, count] = box.querySelectorAll('span');
         name.textContent = g.name;
-        count.textContent = g.total + ' 条';
+        count.textContent = t('n.found', { n: g.total });
         box.querySelector('ul').append(...g.results.map(r => {
           const li = row('<i></i><span class="nm"></span><span class="kmh"></span>', r.name, () => openResult(r));
           if (r.colour) li.querySelector('i').style.background = r.colour; else li.querySelector('i').className = 'plain';
@@ -2088,7 +2627,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         if (g.total > g.results.length) {
           const more = document.createElement('p');
           more.className = 'hint';
-          more.textContent = `另有 ${g.total - g.results.length} 条，多输入几个字缩小范围`;
+          more.textContent = t('found.more', { n: g.total - g.results.length });
           box.appendChild(more);
         }
         return box;
@@ -2096,7 +2635,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (found.pending || !blocks.length) {
         const note = document.createElement('p');
         note.className = 'hint';
-        note.textContent = found.pending ? '车站名单正在载入…' : '没有找到。国外的车站和线路用当地文字，如 東京、서울、London；地铁城市和国家用中文。';
+        note.textContent = t(found.pending ? 'found.loading' : 'found.none');
         blocks.push(note);
       }
       foundEl.replaceChildren(...blocks);
@@ -2181,9 +2720,29 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       else if (!f) clearSelection();
     });
 
+    // In another language everything that was written is written again: the head of the card,
+    // the quick jumps, the countries, the classes and their list, what is said of a selected
+    // line, a route that is shown, what was found, and the words the search gives its results.
+    relabelled.push(() => {
+      renderHead();
+      renderJumps();
+      renderCountries();
+      rebuildKindButtons();
+      setKind(kind);
+      relabelLegend();
+      if (selected || selMetro) tellSelection();
+      listStations();
+      nameTheMap();
+      for (const role of ['from', 'to']) if (od[role]) odInput[role].value = named(od[role]);
+      if (od.from && od.to) showRoute();
+      if (queryEl.value.trim()) renderFound();
+      stationPop.remove();
+      tip.remove();
+    });
     applyVisibility();
     window.__bootStage = 'after-render';
     document.getElementById('loading').hidden = true;
+    creditsSeen();             // five seconds from the moment the map is there to be looked at
     // Yards and depots are fetched when they can first be seen (see loadYards); a picture of the
     // canvas has no later moment, so screenshot mode takes every country's at once.
     map.on('moveend', () => loadYards());
@@ -2192,7 +2751,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // The message first, then the stack: Safari's stack is code positions only, with no reason in it.
     const reason = String((e && e.message) || e), stack = String((e && e.stack) || '');
     window.__bootError = stack.includes(reason) ? stack.slice(stack.indexOf(reason)) : reason + (stack ? '\n' + stack : '');
-    document.getElementById('loading').textContent = '初始化失败：' + window.__bootError;
+    (note => { note.removeAttribute('data-t'); say(note, 'start.failed', { reason: window.__bootError }); })(document.getElementById('loading'));
     console.error('boot error', e);
   }
   });
@@ -2253,8 +2812,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       set(id, abroadVisible[id]);
       if (map.getLayer(id + '-casing')) set(id + '-casing', abroadVisible[id]);
     }
-    for (const id of ['metro-casing', 'metro']) set(id, visible.metro);
-    for (const id of ['suburb-casing', 'suburb']) set(id, visible.suburb);
+    for (const [kind] of HOME.metro) for (const id of [metroId('cn', kind), metroId('cn', kind) + '-casing']) set(id, visible[metroId('cn', kind)]);
+    for (const id of ['suburb-casing', 'suburb']) set(id, visible[metroId('cn', HOME.beside)]);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
     set('hsr-glow', FAST.some(id => visible[id]));
     set('shared', [...FAST, 'main', 'branch'].some(id => visible[id]));
@@ -2276,10 +2835,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const withStations = everyCountry.filter(g => rowOn('stations', g));
     among('stations', withStations, ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]]);
     among('station-labels', withStations, ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]]);
-    // metro stations go with the metro switch in China, with the stations switch abroad
-    const withMetroStations = everyCountry.filter(g => (g === 'cn' ? visible.metro : rowOn('stations', g)));
-    among('metro-stations', withMetroStations);
-    among('metro-station-labels', withMetroStations);
+    // Metro stations go with the stations switch abroad. In China they go with their lines: a
+    // tram stop (t in the data) with the light rail, every other with the metro.
+    const [metroOn, tramsOn] = HOME.metro.map(([kind]) => visible[metroId('cn', kind)]);
+    const withMetroStations = everyCountry.filter(g => (g === 'cn' ? metroOn || tramsOn : rowOn('stations', g)));
+    const theirLines = ['any', ['!', NOT_ABROAD], ['case', ['has', 't'], tramsOn, metroOn]];
+    among('metro-stations', withMetroStations, theirLines);
+    among('metro-station-labels', withMetroStations, theirLines);
+    // The names of the cities, with their dots: China's hand-made ones are two layers of their
+    // own, the rest of China's and every other country's share one, filtered to the countries
+    // whose switch is on.
+    const withCities = everyCountry.filter(g => rowOn('cities', g));
+    for (const id of ['city-dots', 'city-labels']) set(id, withCities.includes('cn'));
+    set('place-labels', withCities.length > 0);
+    if (withCities.length) map.setFilter('place-labels', ['all', ['in', ['get', 'g'], ['literal', withCities]], PLACE_RANKS]);
     // Yards and depots have one switch for every country.
     for (const id of ['yards', 'depots', 'depot-labels']) for (const [layer] of each(id)) set(layer, visible.yards);
     loadYards();

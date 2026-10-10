@@ -1,0 +1,8 @@
+[
+  {"line": "苏州轨道交通7号线", "station": "中央公园", "at": [120.65616, 31.31593], "source": "https://zh.wikipedia.org/wiki/苏州轨道交通7号线",
+   "says": "the station list of Line 7 has 中央公园, with a change to Line 1 (read 2026-10-10); OSM's Line 7 relations have no stop there"},
+  {"line": "苏州轨道交通7号线", "station": "黄天荡", "at": [120.66031, 31.29893], "source": "https://zh.wikipedia.org/wiki/苏州轨道交通7号线",
+   "says": "the station list of Line 7 has 黄天荡, with a change to Line 5 (read 2026-10-10); OSM's Line 7 relations have no stop there"},
+  {"line": "苏州轨道交通3号线", "station": "唯亭", "at": [120.78483, 31.36645], "source": "https://zh.wikipedia.org/wiki/苏州轨道交通3号线",
+   "says": "唯亭 is the eastern terminus of Line 3, which runs on as Line 11 (read 2026-10-10); OSM's Line 3 relations have no stop there"}
+]

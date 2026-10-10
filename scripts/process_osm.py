@@ -40,7 +40,12 @@ Who operates an intercity or suburban line decides where it is shown:
     as one parallel line beside the national line, so each service is reduced to a single path
     (one of the two tracks of a double line) with one consistent direction; the sideways offset
     then always falls on the same side.
-Metro, light rail, monorail and maglev lines are taken for the whole country.
+Metro, light rail, tram, monorail and maglev lines are taken for the whole country. Each is of
+one of three classes (property jk: subway, urban or suburban, scripts/metro_classes.py), as the lines abroad have classes.
+Every line, station, depot and metro city also has its English name beside n where OSM gives one
+(property ne, scripts/names.py); n, the Chinese name, stays the key everything is found by.
+A tram line is a route=tram relation: track that is named as a tram line but is in no relation is
+not drawn (a system that has closed, a resort's or a works' own line).
 UK lines carry their main passenger operator (property o).
 """
 import heapq
@@ -65,6 +70,10 @@ from rail_classes import grade_votes, principal_class
 from rail_status import corrected_tags, load_rules
 from side_by_side import side_by_side
 from metro_fit import fit as metro_fit, summary as metro_fit_summary
+from metro_classes import TRAM_WORD, is_tram, kind_of, tram_key, tram_name
+from names import Names, city_names, english, name_city
+from metro_stops import lines_at, overrides as stop_overrides, stops_of
+from yards import write_depots
 from along import FINE, TRACK, TRACK_MIN, exactly, meeting, settled
 
 # The grouping below walks sets of names and coordinates. Python seeds their order afresh on every
@@ -89,19 +98,29 @@ TOL = {"hsr350": 0.00012, "hsr250": 0.00012, "hsr200": 0.0001,
 CURVE = {"hsr350": (4, 5, 0.0003), "hsr250": (4, 5, 0.0003), "hsr200": (4, 5, 0.0003), "metro": (10, 4, 0.0003), "light": (10, 6, 0.00004),
          "main": (8, 3, 0.0006), "branch": (8, 3, 0.0006), "build": (8, 3, 0.0006)}
 SKIP_USAGE = {"industrial", "military", "tourism", "test", "freight;industrial"}
-METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
+METRO_RAIL = {"subway", "light_rail", "monorail", "maglev", "tram"}      # a tram is light rail that runs in the street
 METRO_DEFAULT = "#5cc8ff"
-# Not metro: trams, airport people movers, theme-park and company-campus lines.
-NOT_METRO = re.compile(r"有轨|华为|比亚迪|世界之窗|旅客捷运|旅客捷運|旅客自动|APM T\d|APM$|People Mover|旅游|观光|文旅|小火车|绿博园|云轨"
+# Not metro: airport people movers, theme-park and company-campus lines, sightseeing lines.
+NOT_METRO = re.compile(r"华为|比亚迪|世界之窗|旅客捷运|旅客捷運|旅客自动|APM T\d|APM$|People Mover|旅游|观光|文旅|小火车|绿博园|云轨"
                        r"|车辆段|联络线|付线|直通|贯通|直达|^TSB$|^[上下]行线$|自动旅客|机场捷运")   # through-running services are trains, not lines
 # Route relations whose own name is only a direction ("A→B"): English name -> line name.
 METRO_ALIAS = {"Changsha Maglev Express": "长沙磁浮快线"}
 # The city a metro line belongs to, read off its name ("武汉地铁2号线", "宁波市轨道交通6号线").
-METRO_CITY = re.compile(r"^(.{2,5}?)市?(?:地铁|地鐵|轨道交通|軌道交通|捷運|機場捷運|輕軌|磁浮|市域|市郊|云巴)")
-CITY_OF = {"港鐵": "香港", "輕鐵": "香港"}                  # systems named without their city
+METRO_CITY = re.compile(r"^(.{2,5}?)市?(?:地铁|地鐵|轨道交通|軌道交通|捷運|機場捷運|輕軌|磁浮|市域|市郊|云巴|现代有轨|有轨|電車)")
+# Systems named without their city. The tram systems among them are named after a district or a
+# new town: 松江 is a district of Shanghai, 光谷 the East Lake zone of Wuhan; 文山州's line is
+# listed under 文山 and the 武夷 line (南平市站 to 武夷山) under 南平, the city it is in.
+CITY_OF = {"港鐵": "香港", "輕鐵": "香港", "松江有轨电车": "上海", "光谷有轨电车": "武汉", "文山州": "文山", "武夷有轨电车": "南平"}
 INTERCITY_GROUP = {"44": "广东城际"}                        # metro-run intercity lines of a province, listed together
 CITY_MERGE_DEG = 0.45                                      # a one-line "city" this close to a bigger one is part of it
-METRO_SYSTEM = re.compile(r"地铁|地鐵|轨道交通|軌道交通|捷運|輕軌|轻轨|輕鐵|港鐵|市域|市郊|磁浮|云巴")
+METRO_SYSTEM = re.compile(r"地铁|地鐵|轨道交通|軌道交通|捷運|輕軌|轻轨|輕鐵|港鐵|市域|市郊|磁浮|云巴|有轨|電車")
+TRAM_MIN_KM = 2.0     # a shorter tram "line" is a ride or a depot shuttle (前门大街's 铛铛车 is 0.7 km), as abroad
+# A tram's two tracks lie side by side in one street, and what is 60 m away is another street: the
+# far side of a terminal loop (香港電車 at 北角 turns round one block), which a railway's measure
+# (single_track.GAP, 66 m: the two tubes of a metro) takes for the line's second track.
+TRAM_GAP = 0.00025    # ~27 m: a tram line's own track within this is its other track
+TRAM_NEAR = 0.00008   # ~9 m: and within this it is the same place on the line
+STOP_REACH = 0.0003   # ~33 m: a tram stop this close to a light-rail line's track is a stop of that line
 CN_DIGIT = {c: i for i, c in enumerate("零一二三四五六七八九")}
 # Greater Bay Area intercity network: lines named 城际 plus branches that carry another name,
 # and lines mostly used by the intercity train services (route relations of the 城际 operators).
@@ -138,14 +157,6 @@ STUB_DEG = 0.05     # ~5 km: a piece of a fast line this short and this far from
 GENERIC = re.compile(r"联络|疏解|外绕|走行|动车所|动车段|出入|存车|牵出|渡线|站线|^[上下]行|^正线|^客车|^货车|机务|折返|环线$|^专用线$|^支线$")
 MPH = 1.609344
 YARD_SERVICE = {"yard", "siding", "crossover"}      # station and depot tracks; industrial spurs are left out
-# What names a depot or a yard among named railway land. The first list missed whole kinds of them
-# (a reader of the map pointed out metro depots without names): 动车运用所, 综合基地 and other
-# names ending in 基地, 定修段, 折返所, 存车场, and the Hong Kong, Macao and Taiwan forms 車廠, 機廠,
-# 機務段. A base for laying track or casting beams is a building site, not a depot.
-DEPOT_NAME = re.compile(r"动车所|动车段|车辆段|机务段|编组站|车辆基地|停车场|客技站|整备|折返段|车辆厂|机车厂|检修"
-                        r"|运用所|定修段|折返所|存车场|车厂|車廠|机厂|機廠|機務段|車輛段|車輛基地"
-                        r"|(?<!铺轨)(?<!长轨)(?<!焊轨)(?<!制梁)(?<!物流)(?<!培训)基地$"
-                        r"|[Dd]epot|TMD|T&RSMD|TRSMD|Sidings|Yard|Works|Carriage|Traincare|Maintenance", re.I)
 # UK passenger operators: (pattern on the route's operator tag, brand, colour for dark imagery, weight).
 # A line is coloured by the operator whose services cover most of its track; open-access, sleeper and
 # cross-country operators run over other companies' main lines, so they count for less.
@@ -308,7 +319,7 @@ def same_way(chains):
     return [done[i] for i in range(len(chains))]
 
 
-def single_path(groups, gap=0.0018, near=0.0003, keep=0.012, one_way=True):
+def single_path(groups, gap=0.0018, near=0.0003, keep=0.012, one_way=True, lead=False):
     """One track's worth of a line drawn beside another, every piece running the same way.
 
     groups: the ways of each route relation, most important first; a double line has a relation
@@ -320,6 +331,9 @@ def single_path(groups, gap=0.0018, near=0.0003, keep=0.012, one_way=True):
     directions on separate alignments for more than `keep`), when it closes a hole between two
     loose ends of the path, or when it carries the path on past a loose end.
     With one_way=False a single group holds both tracks, and each run of track is taken in turn.
+    With lead, a piece that starts from a loose end of the path is kept however near it stays: the
+    other half of a tram's terminal loop, 60 m across, or the curve by which a branch reaches the
+    line at a junction in the street, neither of which ever gets `gap` away.
     """
     if not one_way:
         merged = linemerge(MultiLineString([co for lines in groups for co in lines]))
@@ -359,7 +373,7 @@ def single_path(groups, gap=0.0018, near=0.0003, keep=0.012, one_way=True):
             far = sum(pieces[i].difference(wide).length for i in ids)
             ends = [Point(k) for k, v in at.items() if len(v) == 1 and v[0] in ids]
             met = {i for e in ends for i, q in loose if e.distance(q) < 4 * near}
-            if far > keep or len(met) >= 2 or (met and far > 0):
+            if far > keep or len(met) >= 2 or (met and (far > 0 or lead)):
                 chains += [pieces[i] for i in ids]
     return same_way(chains) if chains else []
 
@@ -460,7 +474,6 @@ def write(name, feats):
 ex = pickle.load(open(RAW / "extract.pkl", "rb"))
 ways = [(wid, t, co, "cn") for wid, t, co in ex["ways"]]
 stations_raw = [(t, lon, lat, "cn") for t, lon, lat in ex["stations"]]
-places_raw = [(kind, t, lon, lat, "cn") for kind, t, lon, lat in ex.get("places", [])]
 # The United Kingdom is not processed here any more: like Japan it has a script and layers of its
 # own (scripts/process_uk.py), and site.json's "uk" only tells the page to load them. The UK
 # branches further down get no input and do nothing; they are what the with-uk branch used.
@@ -468,13 +481,12 @@ WITH_UK = False
 uk = {"ways": [], "stations": [], "relations": [], "places": []}
 ways += [(wid, t, co, "uk") for wid, t, co in uk["ways"]]
 stations_raw += [(t, lon, lat, "uk") for t, lon, lat in uk["stations"]]
-places_raw += [(kind, t, lon, lat, "uk") for kind, t, lon, lat in uk.get("places", [])]
 
 # Keep the source cache intact. Corrections feed both the drawn layers and routing input.
 status_rules = load_rules(OUT / "rail_status_overrides.json")
 status_matches, status_changes, corrected_ways = Counter(), [], []
 for wid, t, co, country in ways:
-    fixed, evidence = corrected_tags(t, co, status_rules) if country == "cn" else (t, None)
+    fixed, evidence = corrected_tags(t, co, status_rules, wid) if country == "cn" else (t, None)
     if evidence:
         status_matches[evidence] += 1
         if fixed != t:
@@ -568,6 +580,11 @@ def cn_number(s):
     return (CN_DIGIT[tens] if tens else 1) * 10 + (CN_DIGIT[ones] if ones else 0)
 
 
+def arabic(line):
+    """'五号线' -> '5号线'."""
+    return re.sub(r"([一二三四五六七八九十]+)(?=号线)", lambda g: str(cn_number(g.group(1))), line)
+
+
 def metro_line_name(m, t):
     """'广州地铁3号线' from master/route tags; the network disambiguates 'Line 3' of different cities."""
     alias = METRO_ALIAS.get(m.get("name:en") or t.get("name:en"))
@@ -576,14 +593,14 @@ def metro_line_name(m, t):
     net = zh(m.get("network") or t.get("network") or "")
     cands = [c for c in (m.get("name:zh"), m.get("name"), t.get("name:zh"), t.get("name")) if c and zh(c) != net]
     raw = next((c for c in cands if re.search(r"[一-鿿]", c)), None) or next(iter(cands), "")
-    line = re.sub(r"^(地铁|轻轨|磁悬浮)(?=.)", "", zh(raw))
+    line = re.sub(r"^(地铁|轻轨|磁悬浮|有轨(?!电车))(?=.)", "", zh(raw))
     line = re.sub(r"(普通車|直達車|-?[上下]行)$", "", line)
     ref = (m.get("ref") or t.get("ref") or "").strip()
     if ref.isdigit() and re.match(rf"{ref}\s", raw.strip()):
         line = ref               # "2 白云北路 - 中兴路": a number followed by the termini
     if not re.search(r"[一-鿿]", line) and not line.isdigit():
         return ""                # "A>B" in Latin letters only: not a line name
-    line = re.sub(r"([一二三四五六七八九十]+)(?=号线)", lambda g: str(cn_number(g.group(1))), line)
+    line = arabic(line)
     if line[-1].isdigit():
         line += "号线"
     if not net or net in line or line.startswith(net[:2]):
@@ -594,8 +611,42 @@ def metro_line_name(m, t):
     return line if METRO_SYSTEM.search(line) else net + line
 
 
+# A tram line is its route relation, as a metro line is, but its relation is often named for the
+# system only, in English, or not at all, so its name can need its number, its track's name or its
+# operator's city (metro_classes.tram_name). Routes with a name of their own are named first: one
+# without is the same line where it comes to the same name (嘉兴's "line 1", on track named
+# 嘉兴有轨电车1号线, is 嘉兴有轨电车T1线).
+street_track = {wid: (t, co) for wid, t, co, country in ways if t.get("railway") in ("tram", "light_rail")}
+tram_named = {}      # route relation -> the name of its tram line
+for with_name in (True, False):
+    for rid, t, members in ex["relations"]:
+        if t.get("type") != "route" or t.get("route") not in METRO_RAIL:
+            continue
+        m = masters.get(rid, {})
+        own, net = metro_line_name(m, t), zh(m.get("network") or t.get("network") or "")
+        if bool(own) != with_name or not (t.get("route") == "tram" or TRAM_WORD.search(own + net)):
+            continue
+        on_track = Counter()
+        for mtype, ref in members:
+            if mtype == "w" and ref in street_track:
+                on_track[zh(name_of(street_track[ref][0]))] += km(street_track[ref][1])
+        name = arabic(tram_name(own, (m.get("ref") or t.get("ref") or "").strip(), on_track, net,
+                                zh(t.get("operator") or m.get("operator") or "")))
+        if not own:
+            name = next((n for n in tram_named.values() if tram_key(n) == tram_key(name)), name)
+        tram_named[rid] = name
+
 way_metro = {}       # way id -> (line name, colour)
 metro_rels = []      # (line name, colour, way ids in order): one per route relation, i.e. per direction or service pattern
+route_en = defaultdict(Counter)      # line or service name as the relations give it -> their English names
+rels_of_line = defaultdict(list)     # line name as the relations give it -> its route relations, whose stops are its stations
+
+
+def english_of_route(m, t):
+    """The English name of a route relation's line: its route_master's where the line is named
+    after that, otherwise the route's own without its termini ("Line 3: A → B")."""
+    return {"name:en": m.get("name:en") if m.get("name") else re.split(r":\s", t.get("name:en") or "")[0]}
+
 way_suburb = {}      # national-rail way id -> (suburban service name, colour); bureau-operated
 suburb_rels = defaultdict(list)   # service name -> [(colour, ordered way ids)], one entry per route relation
 way_metro_op = {}    # national-rail way id -> colour; used by trains a metro company operates
@@ -610,7 +661,7 @@ for rid, t, members in ex["relations"]:
         if nm:
             rail_rels.append((nm, [ref for mtype, ref in members if mtype == "w"]))
     elif t.get("route") in METRO_RAIL:
-        info = (metro_line_name(m, t), colour_of(m, t))
+        info = (tram_named[rid] if rid in tram_named else metro_line_name(m, t), colour_of(m, t))
         if NOT_METRO.search(info[0] or ""):
             continue             # its track is claimed by the real line's own relation instead
         for mtype, ref in members:
@@ -618,6 +669,8 @@ for rid, t, members in ex["relations"]:
                 way_metro.setdefault(ref, info)
         if info[0]:
             metro_rels.append((info[0], info[1], [ref for mtype, ref in members if mtype == "w"]))
+            rels_of_line[info[0]].append(rid)
+            route_en[info[0]][english(english_of_route(m, t))] += 1
     elif t.get("route") == "train":
         net = " ".join(filter(None, (m.get("network"), t.get("network"), t.get("operator"), m.get("name"), t.get("name"))))
         if IC_NETWORK.search(net):
@@ -630,6 +683,7 @@ for rid, t, members in ex["relations"]:
         elif SUBURBAN.search(" ".join(filter(None, (m.get("network"), t.get("network"), m.get("name"), t.get("name"))))):
             info = (zh(m.get("name:zh") or m.get("name") or t.get("name:zh") or t.get("name")), colour_of(m, t))
             suburb_rels[info[0]].append((info[1], [ref for mtype, ref in members if mtype == "w"]))
+            route_en[info[0]][english({"name:en": m.get("name:en") or t.get("name:en")})] += 1
             for mtype, ref in members:
                 if mtype == "w":
                     way_suburb.setdefault(ref, info)
@@ -660,13 +714,15 @@ for rid, t, members in uk["relations"]:
 
 # ---------------------------------------------------------------- split ways into rail / metro / build / yards
 rail, build, metro_ways, yard_tracks, suburb_ways = [], [], [], [], []
+rail_names, metro_names = Names("cn"), Names("cn")      # the English names behind each drawn name
+tram_yards = []      # depot and siding track of the trams. Kept apart: railway lines are carried across yard track where they are interrupted (drawn_once), and never across a tram depot
 for wid, t, co, country in ways:
     r = t.get("railway")
     # Track tagged as siding or yard that a metro line's route relation runs over is running track
     # all the same: the platform tracks of a station (Sunny Bay), the way into a terminus (Hong Kong).
     if (r == "rail" or r in METRO_RAIL) and t.get("service") and not (r in METRO_RAIL and wid in way_metro):
         if t["service"] in YARD_SERVICE:
-            yard_tracks.append(co)
+            (tram_yards if r == "tram" else yard_tracks).append(co)
         if r == "rail" and country == "cn" and wid in way_suburb:
             suburb_ways.append((wid, co))     # platform loops the service actually runs through
     elif r in METRO_RAIL or (r == "rail" and wid in way_metro and country == "cn"):
@@ -681,7 +737,7 @@ for wid, t, co, country in ways:
         if country == "cn" and wid in way_suburb:
             suburb_ways.append((wid, co))     # the track stays a rail line; the service is drawn on top
         sp = speed_of(t)
-        rail.append({"id": wid, "n": name_of(t, country), "sp": sp, "g": country, "co": co, "km": km(co),
+        rail.append({"id": wid, "n": name_of(t, country), "en": t.get("name:en"), "sp": sp, "g": country, "co": co, "km": km(co),
                      "ops": uk_way_ops.get(wid) if country == "uk" else None,
                      "fast": sp >= 200 if sp else t.get("highspeed") == "yes",
                      "conv": "main" if t.get("usage") == "main" else "branch",
@@ -689,6 +745,7 @@ for wid, t, co, country in ways:
     elif r == "construction" and (t.get("construction") == "rail" or t.get("construction:railway") == "rail") and not t.get("service"):
         sp = speed_of(t)
         build.append((name_of(t, country), t.get("highspeed") == "yes" or bool(sp and sp >= 200), co))
+        rail_names.add(name_of(t, country), t, km(co))
 print(f"rail ways: {len(rail)}, under construction: {len(build)}, metro ways: {len(metro_ways)}, yard tracks: {len(yard_tracks)}")
 
 # ---------------------------------------------------------------- group tracks into lines
@@ -801,6 +858,9 @@ for w in rail:
             changed[f"{own} -> {w['c']}"] += w["km"]
     else:
         w["c"] = own
+for w in rail:
+    if w.get("n"):
+        rail_names.add(w["n"], {"name:en": w["en"]}, w["km"])
 print("Bay Area intercity lines:", sorted(line_name[k] for k in ic_keys))
 print("classes:", dict(Counter((w["g"], w["c"]) for w in rail)))
 print("track km whose own tags differ from their line's class:", {k: round(v) for k, v in changed.most_common()})
@@ -985,6 +1045,8 @@ for key, cls, on, lines, one in shared:
             xs, ys = [p[0] for line in out for p in line], [p[1] for line in out for p in line]
             li["bbox"] = [min(li["bbox"][0], min(xs)), min(li["bbox"][1], min(ys)), max(li["bbox"][2], max(xs)), max(li["bbox"][3], max(ys))]
 for bucket in ("hsr", "conv", "build", "shared"):
+    for f in feats[bucket]:
+        rail_names.line(f["properties"])
     write(f"rail_{bucket}.geojson", feats[bucket])
 
 # ---------------------------------------------------------------- metro lines
@@ -1031,7 +1093,12 @@ for nm, d in raw.items():
 # Track in no relation (a newly opened stretch, a turnback) follows the line it carries the name of or
 # is attached to: the same line at both ends, or a longer piece hanging off one line. What is left
 # under a name of its own is a line without a relation yet; unnamed leftovers are not drawn.
+# A tram line and a metro line never have track in common, so each kind is matched among its own:
+# a province's metro "1号线" and its tram "1号线" are then not taken for one another. Tram track that
+# is in no relation and carries no line's name is not followed any further: outside the systems
+# that run, it is a works' test loop, a resort's ride or a system that has closed.
 known = {re.sub(r"\s+", "", nm): nm for nm in raw}
+tram_lines = set(tram_named.values())
 loose = defaultdict(list)
 for wid, t, co in metro_ways:
     if wid in in_rel:
@@ -1039,13 +1106,14 @@ for wid, t, co in metro_ways:
     own, reg = zh(t.get("name:zh") or t.get("name") or ""), region_of(*co[0])
     nm = known.get(own)
     if nm is None and len(own) >= 3:
-        full = {v for k, v in known.items() if k.endswith(own) and line_regs[v].get(reg)}
+        street = t.get("railway") == "tram" or bool(TRAM_WORD.search(own))
+        full = {v for k, v in known.items() if k.endswith(own) and line_regs[v].get(reg) and (v in tram_lines) == street}
         nm = next(iter(full)) if len(full) == 1 else None
     if nm:
         raw[nm]["extra"].append(co)
         touch[co[0]].add(nm)
         touch[co[-1]].add(nm)
-    elif reg:
+    elif reg and t.get("railway") != "tram":
         loose[(reg, own)].append(co)
 adopted_metro = 0
 # A named stretch that is attached to one line only is a part of that line under another spelling
@@ -1138,7 +1206,8 @@ for key in [k for k in loose if k[1] and loose[k]] if rel_tree is not None else 
                 pt = g.interpolate(k * 0.001)
                 total += 1
                 for nm in {rel_owner[int(j)] for j in rel_tree.query(pt, predicate="dwithin", distance=0.0006)}:
-                    along[nm] += 1
+                    if (nm in tram_lines) == bool(TRAM_WORD.search(key[1])):      # a tram in the street is not the other track of the metro under it
+                        along[nm] += 1
         best = along.most_common(2)
         if best and best[0][1] >= 0.6 * total and (len(best) == 1 or best[1][1] < 0.3 * total):
             raw[best[0][0]]["extra"] += [loose[key][i] for i in ids]
@@ -1169,50 +1238,78 @@ def final_name(nm, reg):
 
 
 metro_lines = {}     # (province, name) -> {"col", "groups": track of each relation, longest first, "bag": track of no known order}
+final_of = {}        # line name as the relations give it -> the line's name on the map
 for nm, d in raw.items():
     regs = Counter({r: n for r, n in line_regs[nm].items() if r})
     if not regs:
         continue
     reg = regs.most_common(1)[0][0]
     line = metro_lines.setdefault((reg, final_name(nm, reg)), {"col": Counter(), "groups": [], "bag": []})
+    final_of[nm] = final_name(nm, reg)
+    for en, n in route_en[nm].items():
+        metro_names.add(final_name(nm, reg), {"name:en": en}, n)
     line["col"].update(d["col"])
     line["groups"] += [[metro_co[w] for w in ws] for ws in d["rels"]]
     line["bag"] += d["extra"]
     for ws in d["rels"]:
         for w in ws:
             line.setdefault("track", Counter())[w in metro_light] += km(metro_co[w])
-for (reg, own), cos in loose.items():       # a named line with no relation yet, in the default colour
-    if own and not NOT_METRO.search(own) and sum(km(c) for c in cos) >= 3:
+for (reg, own), cos in loose.items():       # a named line with no relation yet, in the default colour (not a tram line: see the top)
+    if own and not NOT_METRO.search(own) and not TRAM_WORD.search(own) and sum(km(c) for c in cos) >= 3:
         metro_lines.setdefault((reg, final_name(own, reg)), {"col": Counter(), "groups": [], "bag": []})["bag"] += cos
 
-metro_feats, metro_km, metro_geoms = [], Counter(), []
-metro_routing = []       # (line name, colour, tracks) for scripts/build_graph.py: every track of the line
+metro_feats, metro_km, metro_geoms, tram_geoms = [], Counter(), [], []
+metro_routing = []       # (line name, colour, tracks, a tram line?) for scripts/build_graph.py: every track of the line
 paths = {}               # line -> the line as continuous pieces
 loop_report = []
-metro_anchors = [(x,y) for _,x,y in ex['stations']]
+# The stations on a line tell a branch from a turning loop. A tram line's are its stops; the other
+# lines keep to the stations, so that a tram stop in the street above changes nothing of theirs.
+metro_anchors = [(x, y) for t, x, y in ex["stations"] if t.get("railway") != "tram_stop"]
+tram_anchors = [(x, y) for _, x, y in ex["stations"]]
+track_tag = {tuple(co): t.get("railway") for wid, t, co in metro_ways}
+too_short = []
 for key, line in metro_lines.items():
     reg, nm = key
     line["colour"] = line["col"].most_common(1)[0][0] if line["col"] else METRO_DEFAULT
     line["light"] = line.get("track", Counter())[True] > line.get("track", Counter())[False]
     every = line["every"] = [co for g in line["groups"] for co in g] + line["bag"]
+    on = Counter()                              # km of the line's track by what it is tagged as
+    for co in dict.fromkeys(map(tuple, every)):
+        on[track_tag.get(co)] += km(co)
+    line["jk"], line["tram"], line["on"] = kind_of(nm, on), is_tram(nm, on), on
     runs = runs_of(every)
-    metro_geoms += runs
-    metro_km[reg] += sum(km(list(g.coords)) for g in runs)
-    metro_routing.append((nm, line["colour"], list({tuple(co): co for co in every}.values())))
     groups = sorted(line["groups"], key=lambda g: -sum(km(co) for co in g))
-    display_bag = []
+    display_bag, loops = [], []
     for co in line['bag']:
-        kept, record = trim_unowned_loop(co, metro_anchors)
+        kept, record = trim_unowned_loop(co, tram_anchors if line["tram"] else metro_anchors)
         display_bag.append(kept)
         if record:
-            loop_report.append(dict(record, line=nm, kind='unowned_stationless_terminal_loop'))
+            loops.append(dict(record, line=nm, kind='unowned_stationless_terminal_loop'))
+    street = dict(near=TRAM_NEAR, lead=True) if line["tram"] else {}
     if groups:
-        pieces = single_path(groups + ([display_bag] if display_bag else []), keep=0.004)      # a metro branch can be half a kilometre long
+        pieces = single_path(groups + ([display_bag] if display_bag else []), keep=0.004, **street)      # a metro branch can be half a kilometre long
     else:
         pieces = runs_of(display_bag) if display_bag else runs
     # one_track() takes out what is still there twice (a relation that lists both tracks, a line known
     # only by its track); stitch() joins what belongs together.
-    paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track([g for g in pieces if g.length > 0]), bends=True)]
+    once = one_track([g for g in pieces if g.length > 0], **(dict(gap=TRAM_GAP) if line["tram"] else {}))
+    path = [g.simplify(0.00002, preserve_topology=False) for g in stitch(once, bends=True)]
+    if line["tram"] and sum(km(list(g.coords)) for g in path) <= TRAM_MIN_KM:
+        too_short.append(key)
+        continue
+    paths[key] = path
+    loop_report += loops
+    (tram_geoms if line["tram"] else metro_geoms).extend(runs)
+    metro_km[reg] += sum(km(list(g.coords)) for g in runs)
+    metro_routing.append((nm, line["colour"], list({tuple(co): co for co in every}.values()), line["tram"]))
+for key in too_short:
+    del metro_lines[key]
+print(f"tram lines of {TRAM_MIN_KM:g} km or less, not drawn:", [key[1] for key in too_short])
+# What each line's class was read from, to look through for a line that is in the wrong one.
+(audit_dir / "metro-classes.json").write_text(json.dumps(
+    [{"line": key[1], "region": key[0], "class": line["jk"], "tram": line["tram"], "street_scale": line["light"],
+      "track_km": {str(k): round(v, 1) for k, v in line["on"].most_common()}} for key, line in metro_lines.items()], ensure_ascii=False, indent=1))
+print("urban lines:", sorted(key[1] for key, line in metro_lines.items() if line["jk"] == "urban"), flush=True)
 print(f"metro lines as continuous paths: {len(paths)} lines, {sum(g.length for v in paths.values() for g in v) * 100:.0f} (degrees x 100)", flush=True)
 
 # Lines moved here from the rail classes (run by a metro company) are known by their track only.
@@ -1222,18 +1319,23 @@ for nm, col, co in moved:
     majority[nm][region_of(*co[0]) or "00"] += len(co)
 for (nm, col), cos in moved_tracks.items():
     key = (majority[nm].most_common(1)[0][0], nm)
+    for en, n in rail_names.en.get(nm, {}).items():             # a line moved here from the railways: its track's English name
+        metro_names.add(nm, {"name:en": en}, n)
     runs = runs_of(cos)
     metro_km[key[0]] += sum(km(list(g.coords)) for g in runs)
     metro_geoms += runs
-    metro_lines[key] = {"colour": col or METRO_DEFAULT, "kind": "m", "every": cos}
+    metro_lines[key] = {"colour": col or METRO_DEFAULT, "kind": "m", "every": cos, "jk": kind_of(nm, {"rail": 1}, "m"), "tram": False}
     paths[key] = [g.simplify(0.00002, preserve_topology=False) for g in stitch(one_track(runs), bends=True)]
 metro_paths = paths          # each line's own track, as one path: what the drawing is measured against below
 
 # Lines in each other's company. Longest lines first: each line is laid along the lines already
 # there wherever it runs with one of them, and is its own reference everywhere else.
+# A tram keeps company with trams only. It shares its track with other tram routes; a metro
+# under its street is another line on another level, however close on the map (香港電車 runs
+# over 港島綫 for kilometres), and neither is laid along the other or moved aside for it.
 by_reg = defaultdict(list)
 for key in paths:
-    by_reg[key[0]].append(key)
+    by_reg[(key[0], metro_lines[key]["tram"])].append(key)
 solo = defaultdict(list)         # line -> pieces it has to itself
 shared = defaultdict(list)       # (lines) -> pieces they are drawn side by side on
 for reg, keys in by_reg.items():
@@ -1362,6 +1464,7 @@ def metro_props(key):
     props = {"r": key[0], "col": metro_lines[key]["colour"], "n": key[1]}
     if metro_lines[key].get("kind"):
         props["k"] = metro_lines[key]["kind"]
+    props["jk"] = metro_lines[key]["jk"]
     return props
 
 
@@ -1430,7 +1533,9 @@ for name, rels in suburb_rels.items():
     if not reg:
         continue
     suburb_names.append(name)
-    metro_feats.append({"type": "Feature", "properties": {"r": reg[0][0], "col": readable_on_dark(col) or METRO_DEFAULT, "n": name, "k": "s"},
+    for en, n in route_en[name].items():
+        metro_names.add(name, {"name:en": en}, n)
+    metro_feats.append({"type": "Feature", "properties": {"r": reg[0][0], "col": readable_on_dark(col) or METRO_DEFAULT, "n": name, "k": "s", "jk": kind_of(name, {"rail": 1}, "s")},
                         "geometry": geometry(out)})
 # ---------------------------------------------------------------- one metro line, one continuous line
 # A line is written as several features: its own track, and one for every stretch it shares with a
@@ -1486,9 +1591,21 @@ for f in metro_feats:
     if lines:
         f["geometry"] = geometry(lines)
 
-bend_report = finish_metro(metro_feats, metro_routing + [(nm, col, cos) for (nm, col), cos in moved_tracks.items()], curve=CURVE["metro"], within=TOL["metro"],
-             light={key for key, line in metro_lines.items() if line.get("light")}, light_curve=CURVE["light"], light_within=TOL["light"],
-             anchors=metro_anchors)
+def of_tram(f):
+    """Is this feature a tram line's?"""
+    return metro_lines.get((f["properties"].get("r"), f["properties"].get("n")), {}).get("tram", False)
+
+
+# The trams and the rest are finished apart, each against its own track and its own stations:
+# what is held as a junction of the one is no junction of the other.
+bend_report = []
+for trams in (False, True):
+    feats = [f for f in metro_feats if of_tram(f) == trams]
+    routing = [r[:3] for r in metro_routing if r[3] == trams] + ([] if trams else [(nm, col, cos) for (nm, col), cos in moved_tracks.items()])
+    if feats:
+        bend_report += finish_metro(feats, routing, curve=CURVE["metro"], within=TOL["metro"],
+                                    light={key for key, line in metro_lines.items() if line.get("light")}, light_curve=CURVE["light"], light_within=TOL["light"],
+                                    anchors=tram_anchors if trams else metro_anchors, **(dict(gap=TRAM_GAP, reach=4 * TRACK) if trams else {}))
 bend_report += loop_report
 bend_file = ROOT / 'output' / 'geometry' / 'metro-bend-repairs.json'
 bend_file.parent.mkdir(parents=True, exist_ok=True)
@@ -1537,6 +1654,13 @@ def nearest_city(at, cities, skip=None, limit=None):
     return best[1] if best and (limit is None or best[0] < limit) else None
 
 
+# A tram system named with its city in front of its district (广州黄埔有轨电车, 苏州高新有轨电车,
+# 南京河西有轨电车) is listed under the city.
+named = {f["properties"]["ct"] for f in metro_feats if f["properties"]["ct"]}
+for f in metro_feats:
+    ct = f["properties"]["ct"]
+    if ct and of_tram(f):
+        f["properties"]["ct"] = max((c for c in named if c != ct and ct.startswith(c)), key=len, default=ct)
 # A name that is not a city (高雄環狀, 大王山, 坪山: one line each) joins the city it lies in; a line
 # with no city in its name goes to the nearest one.
 cities = city_table()
@@ -1552,11 +1676,13 @@ for f in metro_feats:
 city_list = defaultdict(lambda: {"km": 0.0, "bbox": [180, 90, -180, -90], "lines": {}})
 grow = lambda box, other: [min(box[0], other[0]), min(box[1], other[1]), max(box[2], other[2]), max(box[3], other[3])]
 for f in metro_feats:
+    metro_names.line(f["properties"])
     pr, c = f["properties"], city_list[f["properties"]["ct"]]
     if not f.pop("also", False):        # shared track counts once towards the city's total
         c["km"] += f["km"]
     c["bbox"] = grow(c["bbox"], f["box"])
-    line = c["lines"].setdefault(pr.get("n", ""), {"n": pr.get("n", ""), "col": pr["col"], "km": 0.0, "bbox": f["box"], **({"k": pr["k"]} if pr.get("k") else {})})
+    line = c["lines"].setdefault(pr.get("n", ""), {"n": pr.get("n", ""), "col": pr["col"], "km": 0.0, "bbox": f["box"], **({"k": pr["k"]} if pr.get("k") else {}), "jk": pr["jk"],
+                                                   **({"ne": pr["ne"]} if pr.get("ne") else {})})
     line["km"] += f["km"]               # a line has one piece per stretch it shares, plus its own track
     line["bbox"] = grow(line["bbox"], f["box"])
     for extra in ("km", "box", "at"):
@@ -1570,19 +1696,22 @@ def line_order(d):
     return (bool(d.get("k")), 0 if num else 1, int(num.group(1)) if num else 0, d["n"])
 
 
+known_cities = city_names("cn")
 (OUT / "metro_cities.json").write_text(json.dumps(
-    [{"n": k, "km": round(c["km"]), "bbox": [round(v, 3) for v in c["bbox"]], "lines": sorted(c["lines"], key=line_order)}
+    [name_city({"n": k, "km": round(c["km"]), "bbox": [round(v, 3) for v in c["bbox"]], "lines": sorted(c["lines"], key=line_order)}, known_cities, "cn")
      for k, c in sorted(city_list.items(), key=lambda kv: -kv[1]["km"])], ensure_ascii=False, separators=(",", ":")))
 print("metro cities:", {k: f"{len(c['lines'])} lines {c['km']:.0f} km" for k, c in sorted(city_list.items(), key=lambda kv: -kv[1]["km"])})
 # Lines drawn along one path are moved apart there, and only there: a line that runs alone stays
 # on its track. A line becomes a few features, one per slot (see scripts/side_by_side.py).
+# A tram and a metro under its street are not on one path (see above): each kind is moved apart
+# among its own. The trams are written last, and so drawn over the tunnels beneath them.
 metro_lines_drawn = len(metro_feats)
-metro_feats = side_by_side(metro_feats)
+metro_feats = side_by_side([f for f in metro_feats if not of_tram(f)]) + side_by_side([f for f in metro_feats if of_tram(f)])
 print(f"metro lines side by side: {metro_lines_drawn} lines written as {len(metro_feats)} features, "
       f"{sum(1 for f in metro_feats if f['properties'].get('off'))} of them moved to a side")
 write("metro.geojson", metro_feats)
-with open(RAW / "routing_metro.pkl", "wb") as f:
-    pickle.dump(metro_routing, f, protocol=pickle.HIGHEST_PROTOCOL)
+with open(RAW / "routing_metro.pkl", "wb") as f:      # the trams after the rest, which then keep their numbers in the network
+    pickle.dump(sorted(metro_routing, key=lambda r: r[3]), f, protocol=pickle.HIGHEST_PROTOCOL)
 print("bureau-operated suburban services:", sorted(suburb_names))
 print("metro lines per region:", dict(Counter(r for r, _ in {(f["properties"]["r"], f["properties"].get("n")) for f in metro_feats})),
       "| track km:", {k: round(v) for k, v in metro_km.items()},
@@ -1590,22 +1719,13 @@ print("metro lines per region:", dict(Counter(r for r, _ in {(f["properties"]["r
 
 # ---------------------------------------------------------------- yards and depots
 yard_simp, yard_parts = merge_simplify(yard_tracks, 0.00004, single=False)
+tram_simp, tram_parts = merge_simplify(tram_yards, 0.00004, single=False) if tram_yards else ([], [])
 CHUNK = 400      # a few large MultiLineStrings tile and render faster than one huge feature
-write("yards.geojson", [{"type": "Feature", "properties": {}, "geometry": geometry(yard_simp[i:i + CHUNK])}
-                        for i in range(0, len(yard_simp), CHUNK)])
-print(f"yard and siding track: {sum(km(list(g.coords)) for g in yard_parts):.0f} km")
-yard_tree = STRtree(yard_parts)
-depots, seen_depot = [], set()
-for kind, t, lon, lat, country in places_raw:
-    nm = name_of(t, country)
-    if not nm or (kind == "land" and not DEPOT_NAME.search(nm)):
-        continue
-    k = (nm, round(lon, 2), round(lat, 2))
-    if k in seen_depot or not len(yard_tree.query(Point(lon, lat), predicate="dwithin", distance=0.01)):
-        continue
-    seen_depot.add(k)
-    depots.append({"type": "Feature", "properties": {"n": nm}, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
-write("depots.geojson", depots)
+write("yards.geojson", [{"type": "Feature", "properties": {}, "geometry": geometry(simp[i:i + CHUNK])}
+                        for simp in (yard_simp, tram_simp) for i in range(0, len(simp), CHUNK)])        # the trams' depots after the rest
+print(f"yard and siding track: {sum(km(list(g.coords)) for g in yard_parts):.0f} km, and {sum(km(list(g.coords)) for g in tram_parts):.0f} km in tram depots")
+# Which name labels which depot is decided in scripts/depots.py, for every country alike.
+write_depots("cn", yard_simp + tram_simp, ex.get("named"), "depots.geojson")
 
 # ---------------------------------------------------------------- stations
 rail_tree, fast_tree, metro_tree = STRtree(all_geoms), STRtree(fast_geoms), STRtree(metro_geoms)
@@ -1613,7 +1733,7 @@ st_feats, metro_st, seen, seen_metro = [], [], set(), set()
 dropped = 0
 for t, lon, lat, country in stations_raw:
     nm = name_of(t, country)
-    if not nm:
+    if not nm or t.get("railway") == "tram_stop":
         continue
     pt = Point(lon, lat)
     is_metro = t.get("station") in METRO_RAIL | {"funicular", "tram"} or t.get("subway") == "yes" or t.get("light_rail") == "yes"
@@ -1623,7 +1743,7 @@ for t, lon, lat, country in stations_raw:
             k = (nm, round(lon / 0.006), round(lat / 0.006))   # one dot per interchange
             if k not in seen_metro:
                 seen_metro.add(k)
-                metro_st.append({"type": "Feature", "properties": {"n": nm}, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+                metro_st.append({"type": "Feature", "properties": metro_names.station({"n": nm}, t, (lon, lat)), "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
         continue
     k = (nm, round(lon, 2), round(lat, 2))
     if k in seen:
@@ -1635,7 +1755,40 @@ for t, lon, lat, country in stations_raw:
     props = {"n": nm}
     if len(fast_tree.query(pt, predicate="dwithin", distance=0.004)):
         props["h"] = 1
+    rail_names.station(props, t, (lon, lat))
     st_feats.append({"type": "Feature", "properties": props, "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+# The stops of the tram lines: what is mapped as a tram stop, or as a light-rail station (南京, 广州,
+# 深圳), on a tram line's track. They are taken after the stations and apart from them: a stop in
+# the street is another place than the station under it, so it gets a dot of its own unless one
+# of its name is right there. Marked t; scripts/build_graph.py links such a stop to tram track only.
+tram_tree, dots, stops = STRtree(tram_geoms) if tram_geoms else None, defaultdict(list), defaultdict(list)
+for f in metro_st:
+    dots[f["properties"]["n"]].append(f["geometry"]["coordinates"])
+for t, lon, lat, country in stations_raw if tram_tree is not None else []:
+    nm = name_of(t, country)
+    if not nm or not (t.get("railway") == "tram_stop" or t.get("station") in ("light_rail", "tram") or t.get("light_rail") == "yes"):
+        continue
+    if any(math.hypot(lon - x, lat - y) < 0.0006 for x, y in dots[nm]) or any(math.hypot(lon - x, lat - y) < 0.003 for x, y in stops[nm]):
+        continue                      # on the map already; or the other platform of a stop that is
+    if len(tram_tree.query(Point(lon, lat), predicate="dwithin", distance=STOP_REACH)):
+        stops[nm].append((lon, lat))
+        metro_st.append({"type": "Feature", "properties": metro_names.station({"n": nm, "t": 1}, t, (lon, lat)), "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]}})
+print(f"stops of the tram lines: {sum(len(v) for v in stops.values())}")
+# The metro lines that stop at each metro station, from the stops of the lines' route relations
+# (scripts/metro_stops.py): scripts/build_graph.py links a station to these lines only, not to a
+# line that passes under it without stopping.
+stop_lists = stops_of([rid for rids in rels_of_line.values() for rid in rids], ex.get("stops") or {"routes": {}, "nodes": {}, "platforms": {}, "areas": {}})
+line_stops = defaultdict(list)
+for nm, rids in rels_of_line.items():
+    if nm in final_of:
+        for rid in rids:
+            line_stops[final_of[nm]] += stop_lists[rid]
+dots = [(f["properties"]["n"], *f["geometry"]["coordinates"]) for f in metro_st if not f["properties"].get("t")]
+at_dot = lines_at(dots, {k: v for k, v in line_stops.items() if v}, stop_overrides())
+with open(RAW / "routing_stops.pkl", "wb") as f:
+    pickle.dump({"lines": sorted(k for k, v in line_stops.items() if v), "dots": {tuple(d): lines for d, lines in zip(dots, at_dot)}}, f, protocol=pickle.HIGHEST_PROTOCOL)
+print(f"metro stations by the stops of their lines: {sum(1 for x in at_dot if x)} of {len(dots)} have lines that stop there; "
+      f"{sum(1 for v in line_stops.values() if v)} lines with stops, {sum(1 for k in final_of.values() if not line_stops.get(k))} without")
 write("stations.geojson", st_feats)
 write("metro_stations.geojson", metro_st)
 print(f"stations on fast lines: {sum(1 for f in st_feats if f['properties'].get('h'))}; dropped (no drawn line nearby): {dropped}")
@@ -1643,7 +1796,7 @@ print(f"stations on fast lines: {sum(1 for f in st_feats if f['properties'].get(
 lines = []
 for d in line_info.values():
     cls, (length, sp) = max(d.pop("by").items(), key=lambda kv: kv[1][0])
-    lines.append({**d, "c": cls, "s": sp, "bbox": [round(v, 3) for v in d["bbox"]], "tk": round(d["tk"])})
+    lines.append(rail_names.line({**d, "c": cls, "s": sp, "bbox": [round(v, 3) for v in d["bbox"]], "tk": round(d["tk"])}))
 lines.sort(key=lambda d: -d["tk"])
 (OUT / "lines.json").write_text(json.dumps(lines, ensure_ascii=False, separators=(",", ":")))
 print("listed lines:", len(lines), dict(Counter((d["g"], d["c"]) for d in lines)))
