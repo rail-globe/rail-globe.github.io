@@ -88,9 +88,56 @@ SAYS_WHOSE = re.compile(r"電|鉄|軌道|交通|ライトレール")
 # 全て設計最高速度260 km/hで建設されている」 (https://ja.wikipedia.org/wiki/新幹線, read 2026-10-08).
 # What each line runs at today (285 to 320 km/h on the older ones) is a running speed, not this.
 SHINKANSEN_DESIGN = (260, "https://ja.wikipedia.org/wiki/新幹線")
-# The two "mini-Shinkansen" run on converted conventional track at 130 km/h: conventional lines,
-# with the line colours the source in the module docstring gives them (山形新幹線：橙, 秋田新幹線：桃).
+# The two "mini-Shinkansen" run on conventional lines converted to standard gauge: they are of the
+# Shinkansen class (jk shinkansen, as the owner lists them, 2026-10-10) but not in its speed band,
+# since they were not built to its design speed, and no source gives them one. They are marked mini,
+# keep the line colours the source in the module docstring gives them (山形新幹線：橙, 秋田新幹線：桃),
+# count in no band figure, and carry their top speed as a top speed (d with e, as every speed that
+# is not a design speed): the infobox of each (read 2026-10-10) gives 最高速度
+# 「130 km/h（東京駅 - 大宮駅間・福島駅 - 新庄駅間）」 and 「130 km/h（盛岡駅 - 秋田駅間）」.
+# The termini are the line's two ends, which a check holds the drawing to.
+# 秋田新幹線 reverses at 大曲 (盛岡 - 大曲 on the 田沢湖線, 大曲 - 秋田 on the 奥羽本線): a drawn end there is no fault.
+MINI = {"山形新幹線": dict(top=130, ref="https://ja.wikipedia.org/wiki/山形新幹線", ends=("福島", "新庄"), via=()),
+        "秋田新幹線": dict(top=130, ref="https://ja.wikipedia.org/wiki/秋田新幹線", ends=("盛岡", "秋田"), via=("大曲",))}
 KNOWN_COLOUR = {"山形新幹線": "#ff9a3d", "秋田新幹線": "#ff8fb3"}
+# Two lines on one track, where OSM names the track for only one of them: each is drawn there, side
+# by side, as lines that share track are everywhere on the map. The track is the running track of
+# the line's route relation (route=railway) that either line has; the line keeps the English name
+# of its relation.
+# - 山形新幹線 runs on the 奥羽本線 from 福島 to 新庄, converted to standard gauge for it, and the
+#   奥羽本線's own trains still run there (its local trains are called 山形線): 「奥羽本線の福島駅 -
+#   新庄駅間の軌間（線路幅）を1435 mmの標準軌に改軌して」, 148.6 km (https://ja.wikipedia.org/wiki/山形新幹線,
+#   read 2026-10-10). OSM names that track 奥羽本線; relation 5361845 is the line.
+# - 田沢湖線 is the track of the 秋田新幹線 from 盛岡 to 大曲, and its own trains run there; OSM names
+#   that track 秋田新幹線 (JR田沢湖線;秋田新幹線); relation 1934364 is the line.
+# - 秋田新幹線 runs on the 奥羽本線 from 大曲 to 秋田 (「大曲駅から秋田駅までは奥羽本線を走行する」,
+#   盛岡 - 秋田 127.3 km: https://ja.wikipedia.org/wiki/秋田新幹線, read 2026-10-10). Most of its
+#   track there OSM names 秋田新幹線, but 4 km by 四ツ小屋 it names 奥羽本線, and the line had a gap
+#   there; relation 5361971 is the line, and also has the 東北新幹線's track into 盛岡, its terminus.
+#
+# The line takes the relation's track that OSM puts on the lines the rule names, or on any other
+# line that is not a Shinkansen and joins that track (山形新幹線 by 羽前千歳 runs on track OSM gives
+# the 仙山線; the relation's piece of the 東北新幹線 by 那須塩原 joins nothing of it). A
+# mini-Shinkansen is its relation's track and what joins it: a piece OSM names for it that touches
+# none of that goes to the line the rule names first (山形's 3 km of narrow-gauge track beside its
+# own between 山形 and 羽前千歳, "JR奥羽本線・山形新幹線", is the 奥羽本線's).
+SHARED_LINE = {"山形新幹線": dict(relation=5361845, on=("JR奥羽本線",)),
+               "JR田沢湖線": dict(relation=1934364, on=("秋田新幹線",)),
+               "秋田新幹線": dict(relation=5361971, on=("JR奥羽本線", "東北新幹線"))}
+
+
+def parts_of(f):
+    g = f["geometry"]
+    return g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]
+
+
+def english_part(english, name):
+    """A track's English name where it names two lines ("JR Tazawako Line; Akita Shinkansen"): the
+    part for this line, the Shinkansen's for a Shinkansen, the other for the other."""
+    parts = [p.strip() for p in re.split(r"[;；]", english or "") if p.strip()]
+    if len(parts) < 2:
+        return english
+    return next((p for p in parts if ("Shinkansen" in p) == ("新幹線" in name)), parts[0])
 METRO_MIN_KM = 2.0         # shorter "lines" on metro-type track are rides in parks
 TRAM_GAP = 0.00025         # ~27 m: a tramway's own track within this is its second track (a metro's two tubes: single_track.GAP, 66 m)
 # A station is drawn only where a drawn line passes it. One on a line that is not drawn (closed,
@@ -101,7 +148,7 @@ STOP_REACH = 0.0025        # ~275 m: a metro station or a tram stop needs a line
 ON_LINE = 0.001            # ~110 m: ... or a railway right at it (京急蒲田 is tagged as a subway station; 鞍馬's dot is 75 m past the end of its line)
 # Japan rail kind (jk): a Japan-only taxonomy by operator + infrastructure, NOT China's 高铁/普速/地铁
 # and NOT any speed design. Authoritative lists in data/jp_operator_classification_list.json:
-#   shinkansen    route name is a Shinkansen (山形/秋田 excluded, they run on 1066mm conventional track)
+#   shinkansen    route name is a Shinkansen, 山形 and 秋田 too (MINI: marked mini, not in the speed band)
 #   jr            the six JR passenger companies + JR Freight (JR グループ在来線)
 #   private_big   大手民鉄 16 社 (minority: 東京地下鉄 is on the metro layer)
 #   private_local 地方中小民鉄 + 第三セクター (41 社)
@@ -182,10 +229,13 @@ def colouring(name, jk, line_colour):
     """The properties that colour a railway line, by the one rule: a high-speed line by the band of
     its design speed, any other line by its own colour if it has one, and otherwise nothing (the
     page then draws it in the neutral colour of conventional lines)."""
-    if jk == "shinkansen":
+    if jk == "shinkansen" and name not in MINI:
         speed, source = SHINKANSEN_DESIGN
         return {"c": grade(speed), "d": speed, "ref": source}
-    return {"lc": line_colour} if line_colour else {}
+    how = {"lc": line_colour} if line_colour else {}
+    if name in MINI:                                  # a top speed, not a design speed: no band
+        how.update(d=MINI[name]["top"], e=1, ref=MINI[name]["ref"])
+    return how
 
 
 def jkind(name, firm):
@@ -193,9 +243,8 @@ def jkind(name, firm):
     shinkansen / jr / private_big / third_sector / private_local / unknown.
     The line's `firm` is its grouped company (operator-less ways already merged into a same-named
     line). No operator -> unknown (counted in the audit, never dumped, never hidden)."""
-    sh = "新幹線" in (name or "") and name not in {"山形新幹線", "秋田新幹線"}
-    if sh:
-        return "shinkansen"
+    if "新幹線" in (name or ""):
+        return "shinkansen"                          # the mini-Shinkansen too (MINI), outside the speed band
     if firm in JR_FIRMS:
         return "jr"
     if (name or "").startswith("JR"):
@@ -587,6 +636,52 @@ def main():
     # A short piece named slightly differently from the line it bridges (千駄ケ谷) is folded into
     # that parent, not drawn on its own. See merge_short_connectors for the strict topology rule.
     merge_short_connectors(tracks, ways, length, line_of=line_of)
+    # Lines that share their track with another (SHARED_LINE) are on it too. That track is drawn
+    # for them once the other lines are drawn and joined up, which it then changes in nothing.
+    route = {rid: (t, members) for rid, t, members in ex["relations"]}
+    shared_en, shared_track, shared_ways = {}, {}, {}
+    for name, rule in SHARED_LINE.items():
+        on = [k for o in rule["on"] for k in tracks if k[0] == "rail" and k[2] == o]
+        if not on:
+            continue
+        key = next((k for k in tracks if k[0] == "rail" and k[2] == name), ("rail", on[0][1], name))
+        t, members = route.get(rule["relation"], ({}, []))
+        member = {ref for kind, ref in members if kind == "w"}
+        mine = {ref for ref in member if line_of.get(ref) in on}
+        # and the relation's track on any other line that is no Shinkansen, where it joins that
+        other = {ref for ref in member if ref in line_of and line_of[ref] not in on and line_of[ref] != key
+                 and line_of[ref][0] == "rail" and "新幹線" not in line_of[ref][2]}
+        reach = {c for w in mine | {w for w in tracks.get(key, []) if w in member} for c in ways[w][1]}
+        while True:
+            more = {w for w in other - mine if any(c in reach for c in ways[w][1])}
+            if not more:
+                break
+            mine |= more
+            reach.update(c for w in more for c in ways[w][1])
+        mine = sorted(mine)
+        if name in MINI:                                          # the line is its relation's track and what joins it
+            kept = {w for w in tracks.get(key, []) if w in member}
+            nodes = {c for w in kept | set(mine) for c in ways[w][1]}
+            rest = [w for w in tracks.get(key, []) if w not in kept]
+            while True:
+                more = [w for w in rest if ways[w][1][0] in nodes or ways[w][1][-1] in nodes]
+                if not more:
+                    break
+                kept.update(more)
+                nodes.update(c for w in more for c in ways[w][1])
+                rest = [w for w in rest if w not in kept]
+            stray = rest
+            tracks[key] = [w for w in tracks.get(key, []) if w in kept]
+            tracks[on[0]] = list(tracks[on[0]]) + stray
+            for w in stray:
+                line_of[w] = on[0]
+            if stray:
+                print(f"japan: {sum(length[w] for w in stray):.1f} km of track named for {name} outside its relation go to {on[0][2]}", flush=True)
+        shared_ways[key] = mine                                   # the other line keeps its drawing as it is
+        shared_track[name] = sum(length[w] for w in mine)
+        if t.get("name:en"):
+            shared_en[name] = t["name:en"] if name.startswith("JR") else re.sub(r"^JR\s+", "", t["name:en"])
+        print(f"japan: {name} drawn on {shared_track[name]:.1f} km of track it shares with {'、'.join(rule['on'])} (relation {rule['relation']})", flush=True)
 
     # ---------------------------------------------------------------- the colour of a line
     # The tramways came to the map after everything else, and nothing of theirs recolours what
@@ -642,6 +737,15 @@ def main():
         runs = runs_of([ways[w][1] for w in tracks[key]])
         once[key] = [runs, one_track(runs, keep=0.05, apart=0.004, apart_min=0.01)]
     closed = join_up(list(once.values()))
+    shared_drawn = 0.0                                 # km drawn for lines on another's track (SHARED_LINE)
+    for key, extra in shared_ways.items():
+        if key not in once:
+            rail_keys.append(key)
+            once[key] = [[], []]
+        tracks[key] = list(tracks.get(key, [])) + extra
+        drawn = one_track(runs_of([ways[w][1] for w in extra]), keep=0.05, apart=0.004, apart_min=0.01)
+        once[key][1] = list(once[key][1]) + drawn
+        shared_drawn += sum(km(list(g.coords)) for g in drawn)
     print(f"japan rail drawn once: {sum(g.length for r, _ in once.values() for g in r) * 100:.0f} -> "
           f"{sum(g.length for _, d in once.values() for g in d) * 100:.0f} (degrees x 100); gaps closed at junctions: {closed}", flush=True)
     rail_feats, lines_json, plain_km = [], {}, Counter()
@@ -653,9 +757,9 @@ def main():
         tags = [ways[w][0] for w in tracks[key]]
         total = sum(length[w] for w in tracks[key])
         for w, t in zip(tracks[key], tags):
-            names.add(name, t, length[w])
+            names.add(name, {**t, "name:en": english_part(t.get("name:en"), name)}, length[w])
         # Japan kind is operator + name (jk), never speed. Shinkansen identity is the route name.
-        # 山形/秋田 run on converted 1066mm track: explicit exceptions, not a speed guess.
+        # 山形/秋田 run on conventional lines converted to standard gauge: Shinkansen class, no design speed (MINI).
         jk = jkind(name, firm)
         # c is only the internal line width (main/branch); the UI never shows a speed class for Japan.
         cls = "main" if sum(length[w] for w, t in zip(tracks[key], tags) if t.get("usage") == "main") >= 0.5 * total else "branch"
@@ -664,6 +768,8 @@ def main():
         if not simp:
             continue
         props = {"c": cls, "n": shown, "g": "jp", "jk": jk}
+        if name in MINI:
+            props["mini"] = 1
         if firm:
             props["o"] = firm
         how = colouring(name, jk, line_colour.get(key))
@@ -672,7 +778,7 @@ def main():
             plain_km[jk] += total
         for seg_co in simp:
             rail_feats.append({"type": "Feature", "properties": dict(props), "geometry": geometry([seg_co])})
-        row = lines_json.setdefault(shown, {"n": shown, "g": "jp", "jk": jk, "bbox": bbox_of(simp), "tk": 0, "c": cls, "_firms": Counter()})
+        row = lines_json.setdefault(shown, {"n": shown, "g": "jp", "jk": jk, **({"mini": 1} if name in MINI else {}), "bbox": bbox_of(simp), "tk": 0, "c": cls, "_firms": Counter()})
         box = bbox_of(simp)
         row["bbox"] = [min(row["bbox"][0], box[0]), min(row["bbox"][1], box[1]), max(row["bbox"][2], box[2]), max(row["bbox"][3], box[3])]
         row["tk"] += total
@@ -689,6 +795,8 @@ def main():
     rail_feats = side_by_side(rail_feats, skip=lambda props: False, slots_of=abreast, min_run=0.006)
     print(f"japan rail side by side: {whole} features written as {len(rail_feats)}, "
           f"{sum(1 for f in rail_feats if f['properties'].get('off'))} of them moved to a side", flush=True)
+    for name, english in shared_en.items():         # a line drawn on shared track: its relation's English name
+        names.en[name] = Counter({english: 1.0})
     for row in lines_json.values():
         row.pop("_sec_seen", None)
         firm = row.pop("_firms").most_common(1)[0][0]
@@ -799,16 +907,20 @@ def main():
     print("japan rail without a colour of its own, track km by kind:", {k: round(v) for k, v in plain_km.most_common()}, flush=True)
     def feat_km(f):
         return sum(km(co) for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]))
-    fast_km = sum(feat_km(f) for f in rail_feats if f["properties"].get("jk") == "shinkansen")
-    all_km = sum(feat_km(f) for f in rail_feats)
-    write("jp_facts.json", {"km": round(all_km), "fast_km": round(fast_km), "bands": sorted({f["properties"]["c"] for f in rail_feats if "d" in f["properties"]})})
+    fast_km = sum(feat_km(f) for f in rail_feats if f["properties"].get("jk") == "shinkansen" and not f["properties"].get("mini"))      # the 250 band
+    class_km = sum(feat_km(f) for f in rail_feats if f["properties"].get("jk") == "shinkansen")          # the Shinkansen class, the mini-Shinkansen with it
+    # A line drawn on another's track (SHARED_LINE) adds nothing to the country's length there.
+    all_km = sum(feat_km(f) for f in rail_feats) - shared_drawn
+    write("jp_facts.json", {"km": round(all_km), "fast_km": round(fast_km),
+                            "bands": sorted({f["properties"]["c"] for f in rail_feats if "d" in f["properties"] and not f["properties"].get("mini")}),
+                            "shinkansen_km": round(class_km)})
     # Japan taxonomy audit: per-bucket line + km counts. Operator-less fragments land in "unknown"
     # on purpose (not noise-deleted, not dumped into private); see data/jp_taxonomy_audit.json.
     rail_keys = ("shinkansen", "jr", "private_big", "third_sector", "private_local", "unknown")
     jk_lines = Counter(r["jk"] for r in lines_json.values())
     jk_km = defaultdict(float)
     for r in lines_json.values():
-        jk_km[r["jk"]] += r["tk"]
+        jk_km[r["jk"]] += r["tk"] - shared_track.get(r["n"], 0)      # shared track is counted with the line OSM names it for
     metro_feat = Counter(f["properties"].get("jk") for f in metro_feats)
     metro_line = Counter(r["jk"] for _, r in metro_rows)
     rail_line_kinds = defaultdict(set)

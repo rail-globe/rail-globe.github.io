@@ -68,7 +68,7 @@ FAST = ["hsr400", "hsr350", "hsr300", "hsr250", "hsr200", "hsr160", "hsrslow"]
 LAYERS = {
     "hsr": dict(cn="rail_hsr", keep="c n d db v e de off", zoom=lambda p: 0),
     # China's branch lines appear at zoom 3.5; the classes abroad have no such rule
-    "conv": dict(cn="rail_conv", abroad="rail", keep="c n g jk lc off d e o de",
+    "conv": dict(cn="rail_conv", abroad="rail", keep="c n g jk mini lc off d e o de",
                  zoom=lambda p: 3 if p.get("c") == "branch" and "g" not in p else 0),
     "shared": dict(cn="rail_shared", keep="c n on d db v e de", zoom=lambda p: 0),
     "build": dict(cn="rail_build", abroad="build", keep="c n h g", zoom=lambda p: 0),

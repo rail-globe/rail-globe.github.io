@@ -41,9 +41,9 @@ const checks = [
   ['at the list the header has no figures, tabs or way back', /#panel\.world :is\(\.back, \.facts, #tabs\) \{ display: none; \}/],
   ['a line, a station or a city is shown on its country\'s page', /const enter = g => \{ if \(world \|\| g !== country\) setCountry\(g, false\); \};/],
   ['a stop of a route opens China\'s page', /if \(f\) enter\('cn'\);/],
-  ['at the list the quick jumps are the countries', /if \(world\) \{ for \(const g of everyCountry\) addJump\(nameOf\(g\), null, \(\) => setCountry\(g, true\)\); return; \}/],
+  ['at the list the quick jumps are the countries', /if \(world\) \{ for \(const g of everyCountry\) addJump\(nameOf\(g\), null, \(\) => setCountry\(g, 'auto'\)\); return; \}/],
   ['the phone sheet at rest shows the header clear of the home indicator, and at the list its start', /peek: Math\.max\(0, H - head\.offsetHeight - safe\('Bottom'\) - \(world && !finding \? 108 : 0\)\)/],
-  ['the level is plain state the app can ask for', /level: \(\) => \(world \? null : country\), openCountry: g => setCountry\(g, true\), openWorld: setWorld,\s+language: \(\) => lang, setLanguage: to => setLanguage\(to, false\),\s+countries: \(\) => everyCountry\.map/],
+  ['the level is plain state the app can ask for', /level: \(\) => \(world \? null : country\), openCountry: \(g, fly\) => setCountry\(g, fly === undefined \? 'auto' : !!fly\), openWorld: setWorld,\s+language: \(\) => lang, setLanguage: to => setLanguage\(to, false\),\s+countries: \(\) => everyCountry\.map/],
   // the language, for the app: one call to ask, one to set (not remembered as the visitor's own choice), one event when it changes
   ['the app asks for the language, sets it, and hears when it changes', page => /relabel\(\);\s+dispatchEvent\(new CustomEvent\('rail:language', \{ detail: lang \}\)\);\s+if \(window\.__app\) window\.__app\.post\('language', lang\);/.test(page)
     && /if \(byHand\) \{\s+try \{ localStorage\.setItem\('lang', lang\);/.test(page)],
@@ -51,8 +51,8 @@ const checks = [
   // 6b. one colour rule: the band of the design speed, else the line's own colour, else neutral; never the company's
   ['a row per speed band the country has', /bands\[kind\]\.map\(band => \(\{ id: `\$\{g\}-\$\{kind\}-\$\{band\}`, g, rail: kind, band \}\)\)/],
   ['the bands come from the data', /FAST\.filter\(band => rail\.features\.some\(f => f\.properties\.c === band && jkOf\(g, kind\)\.includes\(f\.properties\.jk\)\)\)/],
-  ['a layer per band, in the band colour', /'line-color': col\(band\), 'line-width': lineW\(abroadW\.fast\)/],
-  ['other lines: own colour, else neutral', /'line-color': \['coalesce', \['get', 'lc'\], col\('main'\)\]/],
+  ['a layer per band, in the band colour', /abroadLayers\.push\(\[`\$\{g\}-\$\{kind\}-\$\{band\}`, g, \[[^\n]*\], col\(band\), fastOf\]\);/],
+  ['other lines: own colour, else neutral', /\['coalesce', \['get', 'lc'\], col\('main'\)\], plainOf\]\);/],
   ['colour note says no company colours', /不按公司上色/],
   ['no company list, no operator colours', /^(?![\s\S]*opList)(?![\s\S]*OP_COLOR)(?![\s\S]*_operators)/],
   // 6c. every country is on the map all the time; the country of the card only decides whose
@@ -80,6 +80,16 @@ const checks = [
     && /addJump\(cityName\(c\), /.test(page) && /, cityName\(c\), \(\) => openCity\(c, true\)\);/.test(page) && /named\(l, abroad\(c\.g\)\), \(\) => selectMetro\(c, l, true\)/.test(page)
     && /named\(l, abroad\(l\.g\)\), \(\) => select\(l\.n, true\), selected === l\.n\)/.test(page) && /hubName = new Map\(routable\.map\(f => \[f\.properties\.g, named\(f\.properties\)\]\)\);/.test(page)
     && /say: t, name: named,/.test(page) && /nameMetroCities\(metroCities, cities, abroad\);/.test(page)],
+  // 6n. the mini-shinkansen (2026-10-10): lines of the fast class in no speed band are listed with it after the others,
+  // with a dash for a speed, drawn in their own colours by a layer of their own that follows the class's switch, said for what they are
+  ['a fast class\'s lines in no band: their own layer, in their own colours, with a row and a switch of their own (2026-10-10, "新加个130km新干线图层吧")', page =>
+    /abroadLayers\.push\(\[`\$\{g\}-\$\{kind\}-mini`, g, \['all', \.\.\.of\(kind\), \['!', \['in', \['get', 'c'\], \['literal', FAST\]\]\]\], \['coalesce', \['get', 'lc'\], col\('main'\)\], plainOf\]\);/.test(page)
+    && /\.\.\.\(\(minis\[kind\] \|\| \[\]\)\.length \? \[\{ id: `\$\{g\}-\$\{kind\}-mini`, g, rail: kind, mini: minis\[kind\] \}\] : \[\]\)/.test(page)
+    && /itsLines\.filter\(l => l\.mini && jkOf\(g, kind\)\.includes\(l\.jk\)\)/.test(page) && !/for \(const \[id, g, kind\] of abroadMini\)/.test(page)
+    && /'main', 'branch', \.\.\.abroadMini\.map\(m => m\[0\]\),/.test(page) && /abroadPlain\.push\(`\$\{g\}-\$\{kind\}-mini`\);/.test(page)],
+  ['...listed after the lines built for the speed, a dash for a speed, said as mini-shinkansen; the class\'s whole length in the figures', page =>
+    /\.sort\(\(a, b\) => !!a\.mini - !!b\.mini\)\]\)\)\]\)\);/.test(page) && /\(l\.d \? l\.d \+ '\\u00a0km\/h' : l\.mini \? '—' :/.test(page) && /\(\(l\.mini && FOREIGN\[l\.g\]\.miniName\) \|\|/.test(page)
+    && /\(lineOf\(p\)\.mini && there\.miniName\)/.test(page) && /miniName: 'jp\.mini',/.test(page) && /of\[FOREIGN\[g\]\.fast\[0\] \+ '_km'\]\) \|\| of\.fast_km/.test(page)],
   ['the rows are still those of the country of the card', /rowEls\[id\]\.hidden = !id\.startsWith\(country \+ '-'\);/],
   ['a selection dims the lines abroad too', /for \(const id of abroadBand\) map\.setPaintProperty\(id, 'line-opacity', sel \? 0\.4 : 1\);/],
   ['a tap on a line moves the card to its country\'s page', /enter\(abroad\(f\.properties\.g\)\);\s+select\(f\.properties\.n, false, f\.properties\.c\);/],
@@ -105,7 +115,19 @@ const checks = [
   ['the header steps aside while something is typed', /#panel\.finding :is\(\.title-row, \.facts, #tabs\) \{ display: none; \}/],
   ['showing a tab ends a search', /if \(finding\) endSearch\(\); else paintTabs\(\);/],
   ['what the lists hold is what is found, each line once', /lines: \[\.\.\.\[\.\.\.LISTS\.fast, \.\.\.LISTS\.conv\]\.filter\(l => !FOREIGN\[l\.g\]\), \.\.\.Object\.values\(ABROAD_RAIL\)/],
-  ['the selection is cleared before the country changes', /function setCountry\(g, fly\) \{\n(?:\s+\/\/[^\n]*\n)*\s+if \(selMetro\) selectMetro\(null, null\);\s+if \(selected\) select\(null\);\s+const changed = g !== country \|\| !kindButtons\.length;\s+country = g;/],
+  // 6m. a country picked keeps the reader's view (2026-10-10, "人们刚开始去看某个地方的铁路，会放大到那个地方，但是如果切换国家之后，视角就变了"):
+  // the map stays where it shows that country, goes back to where the reader left it, or to its overview; picked again, its overview
+  ['what the map shows is the country under the middle of the free part of the map', /const lookingAt = \(\) => \{ const pad = padding\(\), room = roomNow\(\), p = map\.unproject\(\[pad\.left \+ room\[0\] \/ 2, pad\.top \+ room\[1\] \/ 2\]\); return countryAt\(p\.lng, p\.lat\); \};/],
+  ['a country picked: its page picked again is its overview; shown already, the map stays; left before, back there; else its overview',
+    /const go = fly === 'auto' \? \(!world && g === country \? 'overview' : lookingAt\(\) === g \? null : leftAt\[g\] \? 'back' : 'overview'\) : fly \? 'overview' : null;/],
+  ['the view is kept when a country is left while the map shows it, and not at its overview', page =>
+    /const keepView = \(\) => \{\s+if \(!country \|\| lookingAt\(\) !== country\) return;[^\n]*\s+if \(framed && framed\.country === country\) \{ delete leftAt\[country\]; return; \}\s+const c = map\.getCenter\(\);\s+leftAt\[country\] = \{ center: \[c\.lng, c\.lat\], zoom: map\.getZoom\(\), bearing: map\.getBearing\(\), pitch: map\.getPitch\(\) \};/.test(page)
+    && /function setWorld\(\) \{\s+keepView\(\);/.test(page) && /\} else if \(go === 'back'\) frame\(\{ camera: leftAt\[g\] \}, 1800\);/.test(page) && /if \(what\.camera\) \{ map\.flyTo\(\{ \.\.\.what\.camera, duration \}\); return; \}/.test(page)],
+  ['the reader\'s picks of a country go by the rule; a search result and a page that follows the map do not', page =>
+    /nameOf\(g\), \(\) => \{ setCountry\(g, 'auto'\);/.test(page) && /setCountry\(e\.country, true\);/.test(page) && /const enter = g => \{ if \(world \|\| g !== country\) setCountry\(g, false\); \};/.test(page)
+    && !/setCountry\([^)]*\)[^\n]*frame\(\{ country/.test(page)],
+  ['the back button does not move the map', page => !/function setWorld\(\) \{[^}]*(?:frame|flyTo|jumpTo|fitBounds)/.test(page)],
+  ['the selection is cleared before the country changes', /function setCountry\(g, fly\) \{\n\s+const go = [^\n]*\n\s+if \(g !== country \|\| world\) keepView\(\);\n(?:\s+\/\/[^\n]*\n)*\s+if \(selMetro\) selectMetro\(null, null\);\s+if \(selected\) select\(null\);\s+const changed = g !== country \|\| !kindButtons\.length;\s+country = g;/],
   ['the card searches every country, the open one first', /const found = searchIndex\(searchData, q, \{ \.\.\.\(world \? \{ limit: 6 \} : \{ country \}\), near: \[c\.lng, c\.lat\], \.\.\.options \}\);/],
   ['the route fields use the same search, China only', /searchAll\(q, \{ country: 'cn', kinds: \['station'\], countries: \['cn'\], routable: true, limit: 40, merge: false \}\)/],
   ['no second station search', /^(?![\s\S]*routable\.filter\(f => label)/],
@@ -164,7 +186,7 @@ const checks = [
     const styles = page.slice(page.indexOf('/* Layout: a satellite globe'), page.indexOf('<div id="map"'));
     const off = [...styles.matchAll(/([^{}\n]*maplibregl-ctrl-(?:attrib|bottom-left)[^{}]*)\{[^}]*(?:display: none|visibility: hidden|opacity: 0;)[^}]*\}/g)].map(m => m[1].trim());
     return JSON.stringify(off) === JSON.stringify(['.maplibregl-ctrl-bottom-right .maplibregl-ctrl-attrib', '.maplibregl-ctrl-bottom-left'])
-      && /@media not all and \(max-width: 720px\) \{\s+\.maplibregl-ctrl-bottom-left \{[^}]*\}\s+\.maplibregl-ctrl-bottom-right \.maplibregl-ctrl-attrib \{ display: none; \}\s+\}/.test(styles)
+      && /@media not all and \(max-width: 720px\) \{[^@]*?\.maplibregl-ctrl-bottom-left \{[^}]*\}[^@]*?\.maplibregl-ctrl-bottom-right \.maplibregl-ctrl-attrib \{ display: none; \}\s+\}/.test(styles)
       && /@media \(max-width: 720px\) \{[\s\S]*\n  \.maplibregl-ctrl-bottom-left \{ display: none; \}/.test(styles);
   }],
   ['the words of the credits, with the link to the licence, in both controls', page =>
@@ -174,7 +196,11 @@ const checks = [
     && /creditControls = CORNERS\.map\(corner => \{ const control = new maplibregl\.AttributionControl\(\{ compact: true, customAttribution: creditLine\(\) \}\); map\.addControl\(control, corner\); return control; \}\);/.test(page)
     && /\n\s+attribution: IMAGERY,/.test(page)],
   ['the credits are made again in the language of the moment, each folded if it was', /const folded = CORNERS\.filter\(corner => creditControls\.length && !creditOf\(corner\)\.classList\.contains\('maplibregl-compact-show'\)\);\s+for \(const control of creditControls\) map\.removeControl\(control\);[\s\S]{0,400}for \(const corner of folded\) fold\(creditOf\(corner\)\);\s+\};\s+addCredits\(\);\s+relabelled\.push\(addCredits\);/],
-  ['beside the card the credits stand clear of it and end before the scale', /\.maplibregl-ctrl-bottom-left \{ left: calc\(var\(--card-w\) \+ 14px \+ env\(safe-area-inset-left, 0px\)\); right: calc\(120px \+ env\(safe-area-inset-right, 0px\)\); \}/],
+  // 2026-10-10, "这没有完全到左下角啊": the window's own corner, 12 px in, under the card, which ends 56 px above the foot
+  ['on a wide screen the credits stand in the window\'s lower left corner, under the card, and end before the scale', page =>
+    /\.maplibregl-ctrl-bottom-left \{ left: env\(safe-area-inset-left, 0px\); right: calc\(120px \+ env\(safe-area-inset-right, 0px\)\); \}/.test(page)
+    && /\.maplibregl-ctrl-bottom-left \.maplibregl-ctrl\.maplibregl-ctrl-attrib \{ margin: 0 0 12px 12px; \}/.test(page)
+    && /@media not all and \(max-width: 720px\) \{\s+#panel \{ max-height: calc\(100% - 68px - env\(safe-area-inset-bottom, 0px\) - var\(--kb, 0px\)\); \}/.test(page)],
   ['they are open when the page opens and fold after five seconds with the map or at its first touch; the (i) opens them', page =>
     /credits = creditOf\('bottom-left'\);/.test(page)
     && /const fold = el => \{ el\.classList\.remove\('maplibregl-compact-show'\); el\.removeAttribute\('open'\); \};/.test(page)
@@ -243,13 +269,13 @@ const checks = [
     && /'text-variable-anchor-offset': \['match', \['get', 'side'\], \.\.\.Object\.keys\(AROUND\)\.flatMap\(side => \[side, \['literal', sides\(side\)\]\]\), \['literal', sides\(\)\]\],/.test(page)
     && /\.\.\.\(c\.side \? \{ side: c\.side \} : \{\}\)/.test(page) && !/id: 'city-labels'[\s\S]{0,700}text-variable-anchor/.test(page)],
   // a name in two scripts breaks before its bracket, wherever a name is shown
-  ['a name in two scripts is two pieces: it breaks before the bracket, a piece between its words', page => /const NAME_PARTS = \/\^\(\.\*\[\^\\s\(\]\)\(\\\(\[\^\(\)\]\+\\\)\)\$\/;/.test(page)
+  ['a name in two scripts is two pieces: it breaks before the bracket, a piece between its words', page => /const NAME_PARTS = \/\^\(\.\*\\S\) \(\\\(\[\^\(\)\]\+\\\)\)\$\/;/.test(page)
     && /\.two > bdi \{ display: inline-block; max-width: 100%; vertical-align: top; \}/.test(page)],
   // a label that names something is never cut short (2026-10-10, "换英文之后ui界面要适配一下"): names wrap
   ['no name is cut short with an ellipsis', page => !/text-overflow: ellipsis/.test(page) && /\.linelist \.nm \{ flex: 1; min-width: 0; \}/.test(page)],
   ['list rows, search rows, the selected line and the popups set their names so', page =>
     /setName\(b\.querySelector\('\.nm'\), name\);/.test(page) && (page.match(/setName\(document\.getElementById\('selName'\), /g) || []).length === 2
-    && /setName\(title, named\(f\.properties, abroad\(f\.properties\.g\)\)\);/.test(page) && /`<b class="two"><bdi>\$\{esc\(parts\[1\]\)\}<\/bdi><bdi>\$\{esc\(parts\[2\]\)\}<\/bdi><\/b>`/.test(page)
+    && /setName\(title, named\(f\.properties, abroad\(f\.properties\.g\)\)\);/.test(page) && /`<b class="two"><bdi>\$\{esc\(parts\[1\]\)\}<\/bdi> <bdi>\$\{esc\(parts\[2\]\)\}<\/bdi><\/b>`/.test(page)
     && !/getElementById\('selName'\)\.textContent = /.test(page)],
   // a labelled city that has no metro is a place to go to
   ['a city without a metro opens its country\'s page and the map shows the city and what is round it', /\} else if \(e\.kind === 'city' && !e\.ref\) \{[\s\S]{0,260}enter\(e\.country\);[\s\S]{0,200}frame\(\{ bounds: \[\[x - wide, y - reach\], \[x \+ wide, y \+ reach\]\] \}, 1400\);/],
@@ -269,9 +295,9 @@ const checks = [
     && /for \(const c of metroCities\) if \(!c\.g\) for \(const l of c\.lines\) if \(HOME\.byK\[l\.k\]\) l\.jk = HOME\.byK\[l\.k\];/.test(page)
     && /for \(const id of \['suburb-casing', 'suburb'\]\) set\(id, visible\[metroId\('cn', HOME\.beside\)\]\);/.test(page) && !/'row\.suburb'/.test(page)],
   ['light rail is drawn thinner and over the metro, every casing under every line', page =>
-    /thin: \{ urban: 0\.6 \}/.test(page) && /homeMetro\.forEach\(casing\);\s+homeMetro\.forEach\(line\);/.test(page) && /'line-width': metroW\(1\.75 \* thin\)/.test(page) && /'line-width': metroW\(thin\)/.test(page)],
+    /thin: \{ urban: 0\.6 \}/.test(page) && /homeMetro\.forEach\(casing\);\s+homeMetro\.forEach\(line\);/.test(page) && /'line-width': ownCasing\(thin\), 'line-offset': beside\(\)/.test(page) && /'line-width': sideWidth\(METRO_STOPS\.map\(\(\[z, v\]\) => \[z, thin \* v\]\)\)/.test(page)],
   ['a button for each class on China\'s lines tab', page => /const kindsOf = g => \(FOREIGN\[g\] \? \[\.\.\.FOREIGN\[g\]\.rail, \.\.\.FOREIGN\[g\]\.metro\]\.map\(\(\[id, label\]\) => \[id, label\]\) : \[\['fast', t\('kind\.fast'\)\], \['conv', t\('kind\.conv'\)\], \.\.\.HOME\.metro\]\);/.test(page)
-    && /<button type="button" data-kind="subway" aria-pressed="false">地铁<\/button>\s+<button type="button" data-kind="urban" aria-pressed="false">轻轨·电车<\/button>\s+<button type="button" data-kind="suburban" aria-pressed="false">市郊 \/ 城际<\/button>/.test(page)],
+    && /<button type="button" data-kind="subway" aria-pressed="false">地铁<\/button>\s+<button type="button" data-kind="urban" aria-pressed="false">轻轨·电车<\/button>\s+<button type="button" data-kind="suburban" aria-pressed="false">市郊·城际<\/button>/.test(page)],
   ['a class lists its own lines, by city, in every country', page => /const mCities = citiesHere\(\)\.map\(c => \(\{ \.\.\.c, lines: c\.lines\.filter\(l => l\.jk === mjk\) \}\)\)\.filter\(c => c\.lines\.length\);/.test(page)
     && /cap\.textContent = land\(country\)\.caption\[mjk\];/.test(page) && !/FOREIGN\[country\] \? kind : null/.test(page)],
   ['a row of the layers tab for each class, each with its own switch', page =>
@@ -321,7 +347,7 @@ if (tongue) {
   report('both languages fill in the same things', uneven.length === 0);
   if (uneven.length) console.error('     not the same {things}:', uneven.join(' '));
   // an English text has no Chinese in it, but for the examples of what can be typed and the name of the language itself
-  const mixed = keys.filter(k => han.test(TEXT[k][1]) && !['search.example', 'found.none', 'lang.label'].includes(k));
+  const mixed = keys.filter(k => han.test(TEXT[k][1]) && !['lang.label'].includes(k));
   report('the English is English', mixed.length === 0);
   if (mixed.length) console.error('     Chinese in the English of:', mixed.join(' '));
   // the script outside the table: every key it names is in the table, every key of the table is named
@@ -340,7 +366,7 @@ if (tongue) {
   report('every entry of the table is asked for', idle.length === 0);
   if (idle.length) console.error('     never used:', idle.join(' '));
   // no words are written anywhere else in the script: only the data's own words, which are looked for and not shown
-  const code = outside.replace(/\/\*DATA-WORDS\*\/[\s\S]*?\/\*DATA-WORDS-END\*\//, '').split('\n').map(line => line.replace(/^\s*\/\/.*$|\s\/\/ .*$/, '')).filter(line => !/^\s*(\/?\*|hint: ')/.test(line));
+  const code = outside.replace(/\/\*DATA-WORDS\*\/[\s\S]*?\/\*DATA-WORDS-END\*\//, '').replace(/\/\*FOLD\*\/[\s\S]*?\/\*FOLD-END\*\//, '').split('\n').map(line => line.replace(/^\s*\/\/.*$|\s\/\/ .*$/, '')).filter(line => !/^\s*(\/?\*|hint: ')/.test(line));
   const stray = code.filter(line => han.test(line));
   report('no Chinese is written in the script outside the table', stray.length === 0);
   if (stray.length) console.error('     ' + stray.slice(0, 8).map(line => line.trim().slice(0, 120)).join('\n     '));
@@ -367,12 +393,45 @@ if (tongue) {
   tongue.speak('en');
   const en = cases(), choices = ['local', 'reader'].map(choice => tongue.named(hongqiao, 'cn', 'other', choice));
   tongue.speak('zh');
-  report('names in Chinese: China, Japan\'s stations as written, Japan\'s cities in Chinese, 서울(首尔), London(伦敦)',
-    same2(zh, ['上海虹桥', '東京', '东京', '서울(首尔)', 'London(伦敦)', 'さいたま新都心', '서울(首尔)', '东京', '台北']));
-  report('names in English: 上海虹桥(Shanghai Hongqiao), 東京(Tokyo), 서울(Seoul), London, and the local name alone where there is no English one',
-    same2(en, ['上海虹桥(Shanghai Hongqiao)', '東京(Tokyo)', '東京(Tokyo)', '서울(Seoul)', 'London', 'さいたま新都心', '서울(Seoul)', '東京(Tokyo)', '台北']));
+  report('names in Chinese: China, Japan\'s stations as written, Japan\'s cities in Chinese, 서울 (首尔), London (伦敦)',
+    same2(zh, ['上海虹桥', '東京', '东京', '서울 (首尔)', 'London (伦敦)', 'さいたま新都心', '서울 (首尔)', '东京', '台北']));
+  report('names in English: 上海虹桥 (Shanghai Hongqiao), 東京 (Tokyo), 서울 (Seoul), London, and the local name alone where there is no English one',
+    same2(en, ['上海虹桥 (Shanghai Hongqiao)', '東京 (Tokyo)', '東京 (Tokyo)', '서울 (Seoul)', 'London', 'さいたま新都心', '서울 (Seoul)', '東京 (Tokyo)', '台北']));
+  // a space before the bracket (2026-10-10, "括号应该和前面的本名有个空格"), and every bracket half-width,
+  // the data's own too, for the eye only: the name in the data is its key and stays
+  const own = { n: '三林南（在建）', ne: 'Sanlin South' };
+  const ownZh = tongue.named(own);
+  tongue.speak('en');
+  const ownEn = tongue.named(own);
+  tongue.speak('zh');
+  report('a bracket the data\'s name has itself is shown half-width, where it is; the name itself is not changed',
+    ownZh === '三林南(在建)' && ownEn === '三林南(在建) (Sanlin South)' && own.n === '三林南（在建）');
+  // a number and its unit are not parted at the end of a line: 350 km/h, 16.5 万公里
+  tongue.speak('en');
+  const units = [tongue.t('speed.line', { speed: 350 }), tongue.t('km', { n: '4,715' })];
+  tongue.speak('zh');
+  units.push(tongue.t('km.long', { wan: '16.5' }));
+  report('a number and its unit stay on one line', JSON.stringify(units) === JSON.stringify(['Line designed for 350\u00a0km/h', '4,715\u00a0km', '16.5\u00a0万公里'])
+    && !/\$\{[^}]+\} km(?:\/h)?[`<]/.test(html));
   report('the page\'s choice is one line, and the other two choices give the local or the reader\'s name alone',
     /\n  const NAMES = \{ map: 'both', card: 'both' \};\n/.test(html) && same2(choices, ['上海虹桥', 'Shanghai Hongqiao']));
+}
+
+// ---- the page's script compiles: a name declared twice in one scope stops the whole page ----
+{
+  const script = [...readFileSync(join(root, 'index.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].pop()[1];
+  let error = null;
+  try { new Function(script); } catch (err) { error = err; }
+  report('the page\'s script compiles', !error);
+  if (error) console.error('     ', error.message);
+}
+
+// ---- every bracket the page writes is half-width (2026-10-10, "括号都用半角的"): its table, its markup, its notes ----
+{
+  const written = html.replace(/\n\s*const halfWidth = [^\n]*\n/, '\n').replace(/\n\s*const halfWidthOf = [^\n]*\n/, '\n');
+  const wide = [...written.matchAll(/[^\n]{0,20}[（）【】〈〉][^\n]{0,20}/g)].map(m => m[0]);
+  report('no full-width bracket in the page, but in the two lines that turn the data\'s into half-width ones', wide.length === 0);
+  if (wide.length) console.error('     full-width:', wide.slice(0, 6).join(' | '));
 }
 
 // ---- the search, run: the block of the page between the two marks holds the two functions ----
@@ -421,19 +480,19 @@ if (core) {
   report('search: a result is a plain object with six fields',
     jing.every(g => g.results.every(r => same(Object.keys(r), ['kind', 'country', 'name', 'sub', 'colour', 'id']) && typeof r.id === 'string')));
   const line = find('京沪高速', { country: 'cn' })[0].results[0];
-  report('search: a line says what it is and has its colour', line.kind === 'line' && line.sub === '动车（含高铁） · 350 km/h' && line.colour === '#c995dd');
+  report('search: a line says what it is and has its colour', line.kind === 'line' && line.sub === '动车(含高铁) · 350\u00a0km/h' && line.colour === '#c995dd');
   report('search: a conventional line has no speed', find('京沪线')[0].results[0].sub === '普速铁路');
   const yamanote = find('山手', { country: 'cn' })[0].results[0];
   report('search: a line abroad carries its class and its own colour', yamanote.country === 'jp' && yamanote.sub === 'JR在来线' && yamanote.colour === '#9acd32');
-  report('search: a high-speed line abroad carries its band colour and speed', (r => r.sub === '新干线 · 260 km/h' && r.colour === '#2787d5')(find('新幹線')[0].results[0]));
+  report('search: a high-speed line abroad carries its band colour and speed', (r => r.sub === '新干线 · 260\u00a0km/h' && r.colour === '#2787d5')(find('新幹線')[0].results[0]));
   const ginza = find('銀座')[0].results[0];
   report('search: a metro line names its city and has its colour', ginza.kind === 'metro' && ginza.sub === '地下铁 · 东京' && ginza.colour === '#ff9500');
   report('search: a country is found by its name', (r => r.kind === 'country' && r.id === 'country:jp')(find('日本')[0].results[0]));
   report('search: exact names first, then cities before lines before stations',
     same(names(find('北京', { country: 'cn' })[0]), ['北京', '北京地铁1号线', '北京南', '北京东']));
   report('search: Latin names whatever the case', same(names(find('central', { country: 'uk' })[0]), ['Central line', 'Central Wales Line']) && names(find('CENTRAL LINE')[0])[0] === 'Central line');
-  report('search: names are matched as written, 东京 the city and 東京 the station',
-    same(find('东京').flatMap(g => g.results.map(r => r.kind)), ['city']) && same(find('東京').flatMap(g => g.results.map(r => r.kind)), ['station']));
+  report('search: the forms of a character are one (2026-10-10): 东京 and 東京 find both the city and the station, what was typed exactly first',
+    same(find('东京').flatMap(g => g.results.map(r => r.kind)), ['city', 'station']) && same(find('東京').flatMap(g => g.results.map(r => r.kind)), ['station', 'city']));
   report('search: city and station name together, with or without a space',
     same(find('南京 奥体中心')[0].results.map(r => r.sub), ['地铁站 · 南京']) && same(find('南京奥体中心')[0].results.map(r => r.sub), ['地铁站 · 南京']));
   report('search: a city alone does not list its stations', !names(find('南京')[0]).includes('奥体中心'));
@@ -476,12 +535,12 @@ if (core) {
     && same(city('baoding').map(r => r.name), ['保定']));
   report('search: a labelled city that has a metro is the metro city, once', same(city('南京').map(r => r.sub), ['地铁 · 1 条线路']) && same(city('首尔').map(r => [r.country, r.sub, r.id]), [['kr', '地铁 · 1 条线路', 'city:首尔']]));
   report('search: a city named in two scripts is found by either, also when the metro list has only one of them',
-    same(city('首尔').map(r => r.name), ['서울(首尔)']) && same(city('서울').map(r => r.name), ['서울(首尔)']) && !!labelled.byId.get(city('서울')[0].id).ref
-    && same(city('春川').map(r => [r.name, r.sub]), [['춘천(春川)', '城市']]) && same(city('춘천').map(r => r.name), ['춘천(春川)'])
-    && same(searchIndex(labelled, '首尔 지하철').flatMap(g => g.results).filter(r => r.kind === 'metro').map(r => r.sub), ['地铁 · 서울(首尔)'])
-    && same(city('seoul').map(r => r.name), ['서울(首尔)']) && same(citiesHere[1].nl, '서울') && !('nl' in citiesHere[0]) && citiesHere[0].ne === 'Nanjing');
+    same(city('首尔').map(r => r.name), ['서울 (首尔)']) && same(city('서울').map(r => r.name), ['서울 (首尔)']) && !!labelled.byId.get(city('서울')[0].id).ref
+    && same(city('春川').map(r => [r.name, r.sub]), [['춘천 (春川)', '城市']]) && same(city('춘천').map(r => r.name), ['춘천 (春川)'])
+    && same(searchIndex(labelled, '首尔 지하철').flatMap(g => g.results).filter(r => r.kind === 'metro').map(r => r.sub), ['地铁 · 서울 (首尔)'])
+    && same(city('seoul').map(r => r.name), ['서울 (首尔)']) && same(citiesHere[1].nl, '서울') && !('nl' in citiesHere[0]) && citiesHere[0].ne === 'Nanjing');
   report('search: a name that is a city in two countries is found in both, each in its country',
-    same(city('丽水', { country: 'cn' }).map(r => [r.country, r.name]), [['cn', '丽水'], ['kr', '여수(丽水)']]) && new Set(city('丽水').map(r => r.id)).size === 2 && labelled.byId.get(city('丽水', { country: 'kr' })[0].id).at[0] === 127.66);
+    same(city('丽水', { country: 'cn' }).map(r => [r.country, r.name]), [['cn', '丽水'], ['kr', '여수 (丽水)']]) && new Set(city('丽水').map(r => r.id)).size === 2 && labelled.byId.get(city('丽水', { country: 'kr' })[0].id).at[0] === 127.66);
   // in English the same things are shown by their English names, and found by every name
   if (tongue) {
     tongue.speak('en');
@@ -489,7 +548,7 @@ if (core) {
       cities: citiesHere, places: placesHere });
     const cityEn = q => searchIndex(english, q).flatMap(g => g.results).filter(r => r.kind === 'city').map(r => r.name);
     report('search in English: the names in English, every name finds',
-      same(cityEn('Seoul'), ['서울(Seoul)']) && same(cityEn('首尔'), ['서울(Seoul)']) && same(cityEn('서울'), ['서울(Seoul)']) && same(cityEn('南京'), ['南京(Nanjing)']) && same(cityEn('nanjing'), ['南京(Nanjing)']));
+      same(cityEn('Seoul'), ['서울 (Seoul)']) && same(cityEn('首尔'), ['서울 (Seoul)']) && same(cityEn('서울'), ['서울 (Seoul)']) && same(cityEn('南京'), ['南京 (Nanjing)']) && same(cityEn('nanjing'), ['南京 (Nanjing)']));
     tongue.speak('zh');
   }
   report('search: a result is still a plain object with six fields', city('丽水').every(r => same(Object.keys(r), ['kind', 'country', 'name', 'sub', 'colour', 'id'])));
@@ -543,14 +602,33 @@ if (core) {
     report('search on the data: a label in two scripts and its metro city are one entry, under the label', strays.length === 0);
     if (strays.length) console.error('     not one:', strays.map(c => c.n).join(' '));
     if (abroad.includes('kr')) report('search on the data: 首尔 and 서울 both find the city, with its metro lines',
-      ['首尔', '서울'].every(q => (r => r.length === 1 && r[0].name === '서울(首尔)' && r[0].sub.startsWith('地铁'))(cityRows(q, 'kr'))));
-    if (abroad.includes('uk')) report('search on the data: 伦敦 and London both find the city', ['伦敦', 'London', 'london'].every(q => cityRows(q, 'uk').some(r => r.name === 'London(伦敦)')));
-    // what the field suggests typing must be findable in that country
-    const hints = { cn: (TEXT['search.example'] || [])[0], ...Object.fromEntries(abroad.map(g => [g, (html.match(new RegExp(`\\n    ${g}: \\{[\\s\\S]*?hint: '([^']+)'`)) || [])[1]])) };
-    for (const [g, hint] of Object.entries(hints)) {
-      report(`search on the data: the examples for ${g} (${hint}) are found there`,
-        !!hint && hint.split('、').every(word => searchIndex(real, word, { country: g, countries: [g] }).length === 1));
+      ['首尔', '서울'].every(q => (r => r.length === 1 && r[0].name === '서울 (首尔)' && r[0].sub.startsWith('地铁'))(cityRows(q, 'kr'))));
+    if (abroad.includes('uk')) report('search on the data: 伦敦 and London both find the city', ['伦敦', 'London', 'london'].every(q => cityRows(q, 'uk').some(r => r.name === 'London (伦敦)')));
+    // the forms of a character are one (2026-10-10, "山形新干线" typed for 山形新幹線): Japanese and traditional forms
+    // are found by the simplified ones and the other way round; the name as typed stays first
+    const rowsOf = (q, g) => searchIndex(real, q, { country: g, countries: [g], limit: 60 }).flatMap(group => group.results);
+    if (abroad.includes('jp')) {
+      report('search on the data: 山形新干线 finds 山形新幹線', rowsOf('山形新干线', 'jp').some(r => r.kind === 'line' && r.name.startsWith('山形新幹線')));
+      report('search on the data: 东京 finds the city and the station 東京', (r => r[0].kind === 'city' && r[0].name === '东京' && r.some(x => x.kind === 'station' && x.name.startsWith('東京')))(rowsOf('东京', 'jp')));
+      report('search on the data: 广岛 finds 広島', rowsOf('广岛', 'jp').some(r => r.kind === 'station' && r.name.startsWith('広島')));
+      const osaka = cities.find(c => c.n === '大阪' && c.g === 'jp').lines.filter(l => l.jk === 'subway').map(l => l.n);
+      const found = rowsOf('大阪地铁', 'jp').filter(r => r.kind === 'metro').map(r => real.byId.get(r.id).ref[1].n);
+      report(`search on the data: 大阪地铁 finds Osaka's ${osaka.length} metro lines`, osaka.length > 5 && osaka.every(n => found.includes(n)));
+      report('search on the data: a city name alone does not bring up its metro lines by the metro word', !rowsOf('大阪', 'jp').some(r => r.kind === 'metro' && !/大阪/.test(r.name)));
     }
+    const iron = searchIndex(real, '铁');
+    report(`search on the data: 铁 alone: ${iron.map(g => g.country + ' ' + g.total).join(', ')}; the rows stay within the cap`,
+      iron.length > 0 && iron.every(g => g.results.length <= 12) && (r => r[0].results.length <= 12 && r.slice(1).every(g => g.results.length <= 6))(searchIndex(real, '铁', { country: 'cn' })));
+    // what the field suggests typing must be findable in that country
+    // (in both languages: an English reader is offered Shanghai Hongqiao, Tokyo, Seoul, London)
+    const hints = [['cn', 'search.example'], ...abroad.map(g => [g, (html.match(new RegExp(`\\n    ${g}: \\{[\\s\\S]*?hint: '([^']+)'`)) || [])[1]])];
+    for (const [g, key] of hints) for (const hint of TEXT[key] || [undefined]) {
+      report(`search on the data: the example for ${g} (${hint}) is found there`,
+        !!hint && searchIndex(real, hint, { country: g, countries: [g] }).length === 1);
+    }
+    // and the names the empty search offers are found too
+    const offered = ((TEXT['found.none'] || [])[1] || '').replace(/^[^:]*: |^Nothing found\. Try a name such as /, '').replace(/\.$/, '').split(/, | or /);
+    report(`search on the data: the names the English empty search offers are found (${offered.join(' | ')})`, offered.length === 4 && offered.every(q => searchIndex(real, q).length > 0));
   }
 }
 // ---- China's classes of urban rail on the data: each line is in one list, each feature on one layer ----
@@ -595,6 +673,144 @@ if (core) {
     const off = feats.filter(f => drawnBy(f.properties).includes('suburban'));
     report(`the layers: every feature of China's metro is drawn by one class's layers; the switch of the suburban and intercity trains takes ${off.length} features, of exactly the 16 lines`,
       feats.every(f => drawnBy(f.properties).length === 1) && [...new Set(off.map(f => f.properties.n))].sort().join() === trains.join());
+  }
+}
+// ---- the map's labels: the style has no replace, so the page swaps the data's full-width brackets in its own expression;
+// worked out here as the map would ----
+{
+  const code = (html.match(/\n\s*let swaps = 0;[^\n]*\n\s*const swap = [\s\S]*?\n\s*const halfWidthOf = [^\n]*\n/) || [''])[0];
+  report('the map\'s labels turn the data\'s brackets half-width, by an expression of the style', !!code);
+  if (code) {
+    const halfWidthOf = new Function(code + '\nreturn halfWidthOf;')();
+    const run = (e, p, scope = {}) => {
+      if (!Array.isArray(e)) return e;
+      const [op, ...a] = e;
+      if (op === 'get') return p[a[0]] ?? null;
+      if (op === 'let') { const inner = { ...scope }; for (let i = 0; i < a.length - 1; i += 2) inner[a[i]] = run(a[i + 1], p, scope); return run(a[a.length - 1], p, inner); }
+      if (op === 'var') return scope[a[0]];
+      if (op === 'index-of') return String(run(a[1], p, scope)).indexOf(run(a[0], p, scope));
+      if (op === 'slice') { const v = String(run(a[0], p, scope)); return a.length > 2 ? v.slice(run(a[1], p, scope), run(a[2], p, scope)) : v.slice(run(a[1], p, scope)); }
+      if (op === 'concat') return a.map(x => run(x, p, scope)).join('');
+      if (op === '+') return a.reduce((t, x) => t + run(x, p, scope), 0);
+      if (op === '>=') return run(a[0], p, scope) >= run(a[1], p, scope);
+      if (op === 'case') { for (let i = 0; i < a.length - 1; i += 2) if (run(a[i], p, scope)) return run(a[i + 1], p, scope); return run(a[a.length - 1], p, scope); }
+      if (op === 'coalesce') { for (const x of a) { const v = run(x, p, scope); if (v != null) return v; } return null; }
+      throw new Error('no ' + op);
+    };
+    const cases = { '三林南（在建）': '三林南(在建)', '上環（西港城）總站': '上環(西港城)總站', 'A（1）B（2）': 'A(1)B(2)', '上海虹桥': '上海虹桥' };
+    report('...and each of the data\'s names comes out half-width, up to two brackets of each kind', Object.entries(cases).every(([n, want]) => run(halfWidthOf(['get', 'n']), { n }) === want));
+  }
+}
+// ---- a line picked on the map is named from the lists (2026-10-10: a Korean line showed no Chinese name):
+// the tiles carry a line's own name only, the lists carry the others ----
+{
+  const code = (html.match(/\n\s*const cityByName = new Map[^\n]*\n[\s\S]*?\n\s*const lineOf = [^\n]*\n/) || [''])[0];
+  report('a line on the map is named by the list that holds it', !!code && /const called = p\.n \? named\(lineOf\(p\), abroad\(p\.g\)\) : t\('tip\.unnamed'\)/.test(html)
+    && /tip\.shares', \{ line: named\(lineOf\(sh\.properties\)\) \}/.test(html) && /tip\.suburban', \{ line: named\(lineOf\(sv\.properties\)\) \}/.test(html)
+    && /p\.on\.split\(AND\)\.map\(n => named\(lineOf\(\{ n, g: p\.g \}\)\)\)\.join\(t\('list\.and'\)\)/.test(html)
+    && /named\(railByKey\.get\('cn\/' \+ st\.name\) \|\| metroByName\.get\(st\.name\) \|\| \{ n: st\.name \}\)/.test(html) && !/named\((?:p|sh\.properties|sv\.properties)\)/.test(html));
+  if (code && tongue) {
+    const abroad = g => (['jp', 'kr', 'uk'].includes(g) ? g : 'cn');
+    const lines = [{ n: '경부고속선', g: 'kr', nz: '京釜高速线', ne: 'Gyeongbu HSL' }, { n: '京沪高铁', g: 'cn', ne: 'Beijing–Shanghai HSR' }];
+    const metroCities = [{ n: '首尔', g: 'kr', lines: [{ n: '서울 지하철 2호선', nz: '首尔地铁2号线', ne: 'Seoul Subway Line 2' }] }, { n: '上海', lines: [{ n: '上海地铁2号线', ne: 'Shanghai Metro Line 2' }] }];
+    const lineOf = new Function('lines', 'metroCities', 'abroad', code + '\nreturn lineOf;')(lines, metroCities, abroad);
+    const say = (p, g) => tongue.named(lineOf(p), g);
+    const zh = [say({ n: '경부고속선', g: 'kr', c: 'hsr300' }, 'kr'), say({ n: '서울 지하철 2호선', g: 'kr', ct: '首尔' }, 'kr'), say({ n: '京沪高铁', c: 'hsr350' }, 'cn'), say({ n: '남부내륙선', g: 'kr', c: 'build' }, 'kr')];
+    tongue.speak('en');
+    const en = [say({ n: '경부고속선', g: 'kr' }, 'kr'), say({ n: '京沪高铁' }, 'cn'), say({ n: '上海地铁2号线', ct: '上海' }, 'cn')];
+    tongue.speak('zh');
+    report('a line feature with only its own name gets its Chinese and English names from the list; one in no list keeps its own',
+      JSON.stringify(zh) === JSON.stringify(['경부고속선 (京釜高速线)', '서울 지하철 2호선 (首尔地铁2号线)', '京沪高铁', '남부내륙선'])
+      && JSON.stringify(en) === JSON.stringify(['경부고속선 (Gyeongbu HSL)', '京沪高铁 (Beijing–Shanghai HSR)', '上海地铁2号线 (Shanghai Metro Line 2)']));
+  }
+}
+// ---- lines side by side (2026-10-10, "都要follow 中国平行线的画法，如北京市郊"): China's suburban guest is the drawing
+// for all. Every offset of the page is made by beside(); for each country and class, a line beside another stands
+// as far from it and is as wide as the suburban guest beside its national line, at z6, 9, 12 and 15 ----
+{
+  const offsets = [...html.matchAll(/'line-offset': ([^,}]+?)\s*[,}]/g)].map(m => m[1].trim());
+  const made = new Set([...html.matchAll(/const (\w+) = beside\(/g)].map(m => m[1]));
+  const strays = offsets.filter(o => !o.startsWith('beside(') && !made.has(o));
+  report(`every line offset of the page (${offsets.length}) is made by the one drawing, beside()`, offsets.length > 15 && strays.length === 0);
+  if (strays.length) console.error('     not by beside():', strays.join(' | '));
+  report('the suburban guest is drawn by the guest drawing, the high-speed guest too',
+    /const besideHost = beside\(\{ guest: true \}\);/.test(html) && /'line-width': guestWidth, 'line-offset': besideHost/.test(html) && /'line-width': ownCasing\(1\), 'line-offset': besideHost/.test(html)
+    && /const besideFast = beside\(\{ guest: true \}\);/.test(html) && /set\('shared', FAST_COLOR, guestWidth,/.test(html));
+  const code = (html.match(/\n\s*const slot = \['coalesce', \['get', 'off'\], 0\][^\n]*\n[\s\S]*?\n\s*const railOff = beside\(\{ apart: true \}\);\n/) || [''])[0];
+  report('the drawing is one block of the page', !!code);
+  if (code) {
+    const rule = new Function('FAST', code + '\nreturn { beside, sideWidth, guestWidth, ownCasing, plainOf, fastOf, METRO_STOPS, GUEST, LINE, railOff };')(['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow']);
+    const run = (e, p, z) => {
+      if (!Array.isArray(e)) return e;
+      const [op, ...a] = e;
+      if (op === 'zoom') return z;
+      if (op === 'get') return p[a[0]] ?? null;
+      if (op === 'has') return a[0] in p;
+      if (op === 'literal') return a[0];
+      if (op === 'coalesce') { for (const x of a) { const v = run(x, p, z); if (v != null) return v; } return null; }
+      if (op === '*') return a.reduce((t, x) => t * run(x, p, z), 1);
+      if (op === '==') return run(a[0], p, z) === run(a[1], p, z);
+      if (op === '!=') return run(a[0], p, z) !== run(a[1], p, z);
+      if (op === 'in') return run(a[1], p, z).includes(run(a[0], p, z));
+      if (op === '<') return run(a[0], p, z) < run(a[1], p, z);
+      if (op === '>=') return run(a[0], p, z) >= run(a[1], p, z);
+      if (op === '!') return !run(a[0], p, z);
+      if (op === 'all') return a.every(x => run(x, p, z));
+      if (op === 'any') return a.some(x => run(x, p, z));
+      if (op === 'case') { for (let i = 0; i < a.length - 1; i += 2) if (run(a[i], p, z)) return run(a[i + 1], p, z); return run(a[a.length - 1], p, z); }
+      if (op === 'interpolate') {
+        const [kind, , ...stops] = a, base = kind[0] === 'exponential' ? kind[1] : 1;
+        const pts = []; for (let i = 0; i < stops.length; i += 2) pts.push([stops[i], stops[i + 1]]);
+        if (z <= pts[0][0]) return run(pts[0][1], p, z);
+        if (z >= pts[pts.length - 1][0]) return run(pts[pts.length - 1][1], p, z);
+        const i = pts.findIndex(([at]) => at > z) - 1, [[z0, e0], [z1, e1]] = [pts[i], pts[i + 1]];
+        const k = base === 1 ? (z - z0) / (z1 - z0) : (base ** (z - z0) - 1) / (base ** (z1 - z0) - 1);
+        return run(e0, p, z) + (run(e1, p, z) - run(e0, p, z)) * k;
+      }
+      throw new Error('no ' + op);
+    };
+    const zooms = [6, 9, 12, 15];
+    // the reference: the suburban guest beside its national line
+    const ref = zooms.map(z => [+run(rule.beside({ guest: true }), {}, z).toFixed(2), +run(rule.guestWidth, {}, z).toFixed(2)]);
+    // a pair of a bundle: one step apart (from one to the other), each the guest's width
+    // (the second line of the pair is the guest: its width; the first, of the lowest slot, is the host)
+    const pairOf = (offset, width, a, b, at = zooms) => at.map(z => [+Math.abs(run(offset, a, z) - run(offset, b, z)).toFixed(2), +run(width, b, z).toFixed(2)]);
+    // (lines on tracks of their own are on their way back onto them from z14.5: they are compared up to there)
+    const apartZooms = [6, 9, 12, 14.5], refApart = apartZooms.map(z => [+run(rule.beside({ guest: true }), {}, z).toFixed(2), +run(rule.guestWidth, {}, z).toFixed(2)]);
+    const tramStops = rule.METRO_STOPS.map(([z, v]) => [z, 0.6 * v]), metroStops = rule.METRO_STOPS;
+    const cases = {
+      'China high-speed guest': zooms.map(z => [+run(rule.beside({ guest: true }), {}, z).toFixed(2), +run(rule.guestWidth, {}, z).toFixed(2)]),
+      'Japan own-colour pair (山形 / 奥羽)': pairOf(rule.railOff, rule.sideWidth(rule.plainOf), { off: -0.5, c: 'main', lc: '#ee7b28', sh: 1 }, { off: 0.5, c: 'main', lc: '#ff9a3d', sh: 1 }),
+      'UK pair in a speed band (tracks of their own)': pairOf(rule.railOff, rule.sideWidth(rule.fastOf), { off: -0.5, c: 'hsr300' }, { off: 0.5, c: 'hsr300' }, apartZooms),
+      'Korea main-line pair (tracks of their own)': pairOf(rule.railOff, rule.sideWidth(rule.plainOf), { off: -0.5, c: 'main' }, { off: 0.5, c: 'main' }, apartZooms),
+      'tram pair': pairOf(rule.beside(), rule.sideWidth(tramStops), { off: -0.5 }, { off: 0.5 }),
+      'metro pair': pairOf(rule.beside(), rule.sideWidth(metroStops), { off: -0.5 }, { off: 0.5 }),
+    };
+    const off = Object.entries(cases).filter(([name, v]) => v.some(([d, w], i) => { const r = /their own/.test(name) ? refApart : ref; return Math.abs(d - r[i][0]) > 0.1 || Math.abs(w - r[i][1]) > 0.1; }));
+    report(`every country and class stands and is drawn as the suburban guest at z6, 9, 12 and 15 (${JSON.stringify(ref)} px: step, width)`, off.length === 0);
+    if (off.length) console.error('     not as the guest:', JSON.stringify(Object.fromEntries(off)));
+    // the host of a bundle, the line of the lowest slot, keeps its own look, as the national line at 沙河 does:
+    // its own width; the data's lead mark where it has one, else a negative slot (right for a pair)
+    const ownAt12 = +run(rule.sideWidth(rule.plainOf), { c: 'main', lc: '#ee7b28' }, 12).toFixed(2);
+    report(`the host of a bundle keeps its own look (${ownAt12} px at z12), its guests the guest's; the data's lead mark decides where it is given`,
+      +run(rule.sideWidth(rule.plainOf), { off: -0.5, c: 'main', lc: '#ee7b28' }, 12).toFixed(2) === ownAt12
+      && +run(rule.sideWidth(rule.plainOf), { off: 0.5, c: 'main', lc: '#ff9a3d' }, 12).toFixed(2) === 2.6
+      && +run(rule.sideWidth(rule.plainOf), { off: -1, lead: 0, bn: 3, c: 'main', lc: '#ee7b28' }, 12).toFixed(2) === 2.6
+      && +run(rule.sideWidth(rule.plainOf), { off: 0, lead: 0, bn: 3, c: 'main', lc: '#ee7b28' }, 12).toFixed(2) === 2.6
+      && +run(rule.sideWidth(rule.plainOf), { off: 1, lead: 1, bn: 3, c: 'main', lc: '#ee7b28' }, 12).toFixed(2) === ownAt12);
+    // a line alone keeps its own width (a tram stays thinner, a speed band wider)
+    report('a line alone keeps its own width', +run(rule.sideWidth(tramStops), {}, 12).toFixed(2) === 1.56 && +run(rule.sideWidth(rule.fastOf), { c: 'hsr300' }, 12).toFixed(2) === 3.4);
+    // nothing is added under a line for standing beside another ("我觉得不一定非要加白边吧"): no casing on rail
+    // lines or China's high-speed guest; a metro, tram or suburban line keeps exactly its own casing, a neighbour or not
+    report('no casing is added to a line for standing beside another; a cased line keeps exactly its own',
+      !/of abroadLayers\) map\.addLayer\(\{ id: id \+ '-casing'/.test(html) && !/'shared-casing'/.test(html) && !('casing' in rule.GUEST)
+      && [9, 12].every(z => run(rule.ownCasing(0.6), { off: 0.5 }, z) === run(rule.ownCasing(0.6), {}, z)));
+    // on tracks of their own, back onto them by 16.5; on one track (sh), one step apart at every zoom
+    const sh = [17, 19].map(z => Math.abs(run(rule.railOff, { off: -0.5, sh: 1 }, z) - run(rule.railOff, { off: 0.5, sh: 1 }, z)));
+    report(`rail lines on tracks of their own are back on them by z16.5; on one track (sh) they stay a step apart (${sh.map(d => d.toFixed(1)).join(', ')} px at z17, 19)`,
+      run(rule.railOff, { off: 0.5 }, 16.5) === 0 && run(rule.railOff, { off: 0.5 }, 17) === 0 && sh.every(d => Math.abs(d - 8) < 0.01));
+    // present from far out: a bundle is apart at z4 and z6 as the guest is
+    report('a bundle is apart from far out, as the guest is (z4, z6)', [4, 6].every(z => Math.abs(Math.abs(run(rule.railOff, { off: -0.5 }, z) - run(rule.railOff, { off: 0.5 }, z)) - run(rule.beside({ guest: true }), {}, z)) < 0.01));
   }
 }
 process.exit(failed ? 1 : 0);

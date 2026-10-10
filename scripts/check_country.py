@@ -15,15 +15,17 @@ from pathlib import Path
 
 from shapely import STRtree
 from shapely.geometry import LineString, Point
+from shapely.ops import linemerge, unary_union
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from process_jp import with_a_line
+from process_jp import MINI, with_a_line
 from depots import check as depot_check
 from names import check as names_check
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA, RAW, OUT = ROOT / "data", ROOT / "data" / "raw", ROOT / "output"
 FAST = ("hsr400", "hsr350", "hsr300", "hsr250", "hsr200", "hsr160", "hsrslow")
+MINI_LINES = {"jp": 2}       # Japan's mini-Shinkansen, 山形 and 秋田: in the Shinkansen class, outside its speed band
 FILES = ("rail.geojson", "metro.geojson", "stations.geojson", "lines.json", "metro_cities.json", "facts.json", "yards.geojson", "depots.geojson")
 NEAR, FAR = 0.0003, 0.02          # ends closer than about 30 m are joined; a break is a gap of up to about 2 km
 # names that say which track, not which line
@@ -140,15 +142,45 @@ def check(code):
     say(sum(l["tk"] for l in other) > 0.01 * sum(l["tk"] for l in lines), f"lines of no known class: {len(other)}, {sum(l['tk'] for l in other)} km of track")
 
     # ---- colours
-    fast = [f["properties"] for f in rail if "d" in f["properties"]]
+    fast = [f["properties"] for f in rail if "d" in f["properties"] and not f["properties"].get("mini")]       # the bands; a mini-Shinkansen's is a top speed
     bands = Counter((p["n"], p["c"], p["d"], "top speed, to verify" if p.get("e") else "design speed", (p.get("ref") or "no source")[:60]) for p in fast)
     bad = [k for k in bands if k[1] not in FAST or (k[4] == "no source" and k[3] == "design speed")]
     say(bad, f"lines coloured by speed: {len({k[0] for k in bands})}; bands {sorted({k[1] for k in bands})}; " + ("without a source: " + str(bad) if bad else "each has a source or is marked to verify"))
     for k in sorted(bands, key=lambda k: -k[2]):
         print(f"        {k[0]}: {k[2]} km/h -> {k[1]} ({k[3]}; {k[4]})", flush=True)
     say(sorted(facts.get("bands", [])) != sorted({k[1] for k in bands}), f"bands the card is told of: {facts.get('bands')}")
-    clash = [p["n"] for p in fast if "lc" in p]
+    clash = [p["n"] for p in fast if "lc" in p and not p.get("mini")]
     say(clash, f"fast lines that also carry a line colour (speed must win): {len(clash)}")
+    # Japan's mini-Shinkansen: of the Shinkansen class, outside its speed band (process_jp.MINI)
+    if code in MINI_LINES:
+        sh = [l for l in lines if l["jk"] == "shinkansen"]
+        mini = sorted(l["n"] for l in sh if l.get("mini"))
+        band_km = sum(km(co) for f in rail if f["properties"].get("jk") == "shinkansen" and not f["properties"].get("mini") for co in parts_of(f))
+        speeded = sorted({f["properties"]["n"] for f in rail if f["properties"].get("mini") and "d" in f["properties"] and not f["properties"].get("e")})
+        say(len(mini) != MINI_LINES[code] or abs(band_km - facts.get("fast_km", 0)) > 1 or speeded,
+            f"Shinkansen class: {len(sh)} lines, {len(mini)} of them mini-Shinkansen {mini} (expected {MINI_LINES[code]}), none with a design speed "
+            f"{'' if not speeded else speeded}; the speed band {band_km:.0f} km (the card says {facts.get('fast_km')}), the class {facts.get('shinkansen_km')} km")
+        tops = sorted({(f["properties"]["n"], f["properties"].get("d"), f["properties"].get("e"), f["properties"].get("ref")) for f in rail if f["properties"].get("mini")})
+        say(any(d is None or not e or not ref for _, d, e, ref in tops), f"mini-Shinkansen top speeds (d with e, not a band): {tops}")
+        # each is one path from one terminus to the other: no gap, nothing beyond either end
+        dots = defaultdict(list)
+        for f in stations:
+            dots[f["properties"]["n"]].append(Point(f["geometry"]["coordinates"]))
+        for name, rule in MINI.items():
+            pieces = unary_union([LineString(co) for f in rail if f["properties"]["n"] == name for co in parts_of(f) if len(co) > 1])
+            merged = linemerge(pieces) if not pieces.is_empty else pieces
+            lines_ = [g for g in getattr(merged, "geoms", [merged]) if not g.is_empty]
+            joined = unary_union([g.buffer(0.00015) for g in lines_])          # pieces less than about 30 m apart are one
+            groups = len(getattr(joined, "geoms", [joined]))
+            path = unary_union(lines_)
+            ends = [Point(c) for g in lines_ for c in (g.coords[0], g.coords[-1])]
+            loose = [e for e in ends if sum(1 for h in lines_ if h.distance(e) < 0.00015) == 1]       # an end that meets no other piece
+            termini = {t: min((p.distance(path) for p in dots.get(t, [])), default=1) * 111320 for t in rule["ends"]}
+            far = [(round(e.x, 4), round(e.y, 4)) for e in loose if min((e.distance(p) for t in rule["ends"] + rule["via"] for p in dots.get(t, [])), default=1) * 111320 > 500]
+            length = sum(km(list(g.coords)) for g in lines_)
+            say(groups != 1 or max(termini.values()) > 300 or far,
+                f"{name}: {length:.1f} km drawn, {groups} connected piece(s); its termini " + ", ".join(f"{t} {m:.0f} m" for t, m in termini.items())
+                + f" from the line; ends away from the termini{' and ' + '、'.join(rule['via']) if rule['via'] else ''}: {far}")
     own = Counter()
     for f in rail:
         if "lc" in f["properties"]:

@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from process_jp import adopt_unnamed, colour_of, colouring, company, geometry, plain_name, readable_on_dark, shown_name
-from process_jp import KNOWN_LINE_FIRM, merge_short_connectors, jkind, metro_jk
+from process_jp import KNOWN_LINE_FIRM, merge_short_connectors, jkind, metro_jk, english_part, SHARED_LINE
 
 
 def luminance(col):
@@ -35,14 +35,15 @@ class GeneratedJapanDataTest(unittest.TestCase):
         # a high-speed line by the band of its design speed, any other by its own colour or none
         root = Path(__file__).resolve().parents[1]
         features = [f["properties"] for f in json.loads((root / "data" / "jp_rail.geojson").read_text())["features"]]
-        fast = [p for p in features if p["jk"] == "shinkansen"]
+        fast = [p for p in features if p["jk"] == "shinkansen" and not p.get("mini")]      # the mini-Shinkansen are outside the band
         self.assertTrue(fast)
         self.assertEqual({(p["c"], p["d"]) for p in fast}, {("hsr250", 260)})
         self.assertFalse([p["n"] for p in fast if "lc" in p])                    # speed comes before a line colour
         self.assertTrue(all(p.get("ref") for p in fast))
-        others = [p for p in features if p["jk"] != "shinkansen"]
+        others = [p for p in features if p["jk"] != "shinkansen" or p.get("mini")]
         self.assertEqual({p["c"] for p in others}, {"main", "branch"})
-        self.assertFalse([p["n"] for p in others if "d" in p])
+        self.assertFalse([p["n"] for p in others if "d" in p and not p.get("mini")])
+        self.assertEqual({(p["n"], p.get("d"), p.get("e")) for p in others if p.get("mini")}, {("山形新幹線", 130, 1), ("秋田新幹線", 130, 1)})   # top speeds
         self.assertNotIn("#c3ccd6", {p.get("lc") for p in features})               # no colour is written for "no colour"
         self.assertTrue(all("lc" in p for p in features if p["n"] in ("山形新幹線", "秋田新幹線")))
         self.assertEqual(json.loads((root / "data" / "jp_facts.json").read_text())["bands"], ["hsr250"])
@@ -79,7 +80,8 @@ class JapanTest(unittest.TestCase):
     def test_another_line_takes_its_own_colour_or_none(self):
         self.assertEqual(colouring("JR山手線", "jr", "#9acd32"), {"lc": "#9acd32"})
         self.assertEqual(colouring("JR函館本線", "jr", None), {})               # never its company's
-        self.assertEqual(colouring("山形新幹線", "jr", "#ff9a3d"), {"lc": "#ff9a3d"})   # runs on conventional track
+        self.assertEqual(colouring("山形新幹線", "shinkansen", "#ff9a3d"),
+                         {"lc": "#ff9a3d", "d": 130, "e": 1, "ref": "https://ja.wikipedia.org/wiki/山形新幹線"})   # its colour and a top speed, no band
 
     def test_a_tracks_name_is_reduced_to_the_name_of_its_line(self):
         self.assertEqual(plain_name("JR東北本線"), "東北本線")
@@ -239,8 +241,8 @@ class JapanKindTest(unittest.TestCase):
 
     def test_shinkansen_is_by_name_not_speed(self):
         self.assertEqual(jkind("東北新幹線", "JR東日本"), "shinkansen")
-        self.assertEqual(jkind("秋田新幹線", "JR東日本"), "jr")       # 1066mm conventional, not design-speed
-        self.assertEqual(jkind("山形新幹線", "JR東日本"), "jr")
+        self.assertEqual(jkind("秋田新幹線", "JR東日本"), "shinkansen")       # of the class, outside its speed band (MINI)
+        self.assertEqual(jkind("山形新幹線", "JR東日本"), "shinkansen")
 
     def test_jr_companies_are_jr(self):
         for firm in ("JR北海道", "JR東日本", "JR東海", "JR西日本", "JR四国", "JR九州", "JR貨物"):
@@ -275,6 +277,39 @@ class JapanKindTest(unittest.TestCase):
         line = Counter(r["jk"] for r in rows)
         self.assertEqual(sum(line.values()), len(rows))
         self.assertEqual(line["subway"], 1)
+
+
+class SharedTrackTest(unittest.TestCase):
+    def test_the_english_name_of_a_track_that_names_two_lines(self):
+        self.assertEqual(english_part("JR Tazawako Line; Akita Shinkansen", "秋田新幹線"), "Akita Shinkansen")
+        self.assertEqual(english_part("JR Tazawako Line; Akita Shinkansen", "JR田沢湖線"), "JR Tazawako Line")
+        self.assertEqual(english_part("JR Ou Main Line", "JR奥羽本線"), "JR Ou Main Line")
+        self.assertIsNone(english_part(None, "JR奥羽本線"))
+
+    def test_the_mini_shinkansen_are_drawn_on_the_lines_they_share(self):
+        root = Path(__file__).resolve().parents[1] / "data"
+        rail = json.loads((root / "jp_rail.geojson").read_text())["features"]
+        lines = {r["n"]: r for r in json.loads((root / "jp_lines.json").read_text())}
+        def drawn_km(name):
+            import math
+            parts = lambda f: f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]
+            return sum(math.hypot((b[0] - a[0]) * math.cos(math.radians(a[1])), b[1] - a[1]) * 111.32
+                       for f in rail if f["properties"]["n"] == name for co in parts(f) for a, b in zip(co, co[1:]))
+        self.assertGreater(drawn_km("山形新幹線"), 140)            # 福島 to 新庄, 148.6 km
+        self.assertGreater(drawn_km("JR田沢湖線"), 70)              # 盛岡 to 大曲, beside the 秋田新幹線
+        self.assertGreater(drawn_km("JR奥羽本線"), 490)             # which keeps its own drawing
+        for name in ("山形新幹線", "秋田新幹線"):
+            self.assertEqual((lines[name]["jk"], lines[name].get("mini"), lines[name]["c"]), ("shinkansen", 1, "main"), name)   # the class, not the band
+            self.assertEqual((lines[name]["d"], lines[name]["e"]), (130, 1), name)        # a top speed, to verify
+            self.assertNotIn("hsr", lines[name]["c"])
+        self.assertEqual(sorted(n for n, r in lines.items() if r["jk"] == "shinkansen" and r.get("mini")), ["山形新幹線", "秋田新幹線"])
+        self.assertEqual(lines["JR田沢湖線"]["jk"], "jr")
+        self.assertEqual(lines["JR奥羽本線"]["jk"], "jr")
+        facts = json.loads((root / "jp_facts.json").read_text())
+        self.assertEqual((facts["fast_km"], facts["bands"]), (2961, ["hsr250"]))
+        self.assertEqual(lines["山形新幹線"]["ne"], "Yamagata Shinkansen")
+        self.assertEqual(lines["秋田新幹線"]["ne"], "Akita Shinkansen")
+        self.assertEqual(set(SHARED_LINE), {"山形新幹線", "JR田沢湖線", "秋田新幹線"})
 
 
 if __name__ == "__main__":

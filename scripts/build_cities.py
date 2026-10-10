@@ -5,7 +5,7 @@
 
 An entry is one line: {"n": the place's own name, "at": [lon, lat], "r": rank}, and where known
 "nz", its name in simplified Chinese, and "ne", in English (the page puts the names together by
-the reader's language: 서울(首尔), 서울(Seoul)). Outside China it also has "g", the country, and
+the reader's language: 서울 (首尔), 서울 (Seoul)). Outside China it also has "g", the country, and
 "m", the name the country's metro list has for the city; and "side" ("left", "above", "below" or
 "above-left") where its name is to stand on that side of its dot, not on the right or wherever
 there is room (see the table of Japan). The page shows rank 1 at every zoom and
