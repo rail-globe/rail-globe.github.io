@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css?v=20261013-7">
+<link rel="stylesheet" href="src/trains.css?v=20261013-11">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-7"></script>
+<script type="module" src="src/trains.mjs?v=20261013-11"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -2011,27 +2011,28 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // track the two drawn parts meet instead of leaving a gap
     const besideFast = beside({ guest: true });
     map.addLayer({ id: 'shared', type: 'line', ...from('shared'), layout: round, paint: { 'line-color': FAST_COLOR, 'line-offset': besideFast } });
-    map.addLayer({ id: 'hl', type: 'line', ...from('hsr'), filter: ['==', ['get', 'n'], '\u0000'],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95, 'line-offset': railOff } });
-    map.addLayer({ id: 'hl-core', type: 'line', ...from('hsr'), filter: ['==', ['get', 'n'], '\u0000'],
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]), 'line-offset': railOff } });
-    // a selected conventional line: the line is near white already, so it is lit as a bright core on a dark casing
-    addMixed('conv', { id: 'hl-conv', type: 'line', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
-      paint: { 'line-color': '#05090c', 'line-width': lineW([2.8, 4, 5.4, 6.8, 9]), 'line-opacity': 0.8, 'line-offset': railOff } });
+    // What is chosen is lit one way everywhere, a line, a found route and a train's route alike
+    // (owner, 2026-10-13: no white edge, bolder): the line as the map draws it, bolder, while every
+    // other line is dimmed (styleRail, styleMetro). A railway line has no casing and gets none; a
+    // line of the urban layers is drawn on a white casing and keeps it (BOLD_CASING, and see
+    // styleMetro for a chosen one).
+    const BOLD = lineW([2.2, 3.2, 4.4, 5.4, 7]), BOLD_CASING = lineW([3.4, 4.8, 6.4, 7.8, 10]);
+    const OWN_COLOR = ['case', ['in', ['get', 'c'], ['literal', FAST]], FAST_COLOR,
+      ['coalesce', ['get', 'lc'], ['match', ['get', 'c'], 'branch', col('branch'), col('main')]]];
+    map.addLayer({ id: 'hl-core', type: 'line', ...from('hsr'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
+      paint: { 'line-color': FAST_COLOR, 'line-width': BOLD, 'line-offset': railOff } });
+    // (a conventional line, and a line abroad, which is of the same source: a line in its own colour or of a speed band)
     addMixed('conv', { id: 'hl-conv-core', type: 'line', filter: ['==', ['get', 'n'], '\u0000'], layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': lineW([1.3, 2, 3, 4, 5.4]), 'line-offset': railOff } });
+      paint: { 'line-color': OWN_COLOR, 'line-width': BOLD, 'line-offset': railOff } });
     // the selected line stays lit along the stretches where it runs beside another line
-    map.addLayer({ id: 'hl-shared', type: 'line', ...from('shared'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': lineW([2.2, 3.2, 4.4, 5.4, 7]), 'line-opacity': 0.95, 'line-offset': besideFast } });
     map.addLayer({ id: 'hl-shared-core', type: 'line', ...from('shared'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
-      paint: { 'line-color': FAST_COLOR, 'line-width': lineW([1, 1.6, 2.4, 3.2, 4.6]), 'line-offset': besideFast } });
+      paint: { 'line-color': FAST_COLOR, 'line-width': BOLD, 'line-offset': besideFast } });
+    // a found route: in strokes, each in the colour of the line it runs along there (showRoute)
     map.addSource('route', { type: 'geojson', data: EMPTY });
-    map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': lineW([4.6, 6, 7.5, 9, 11]), 'line-opacity': 0.95 } });
+    map.addLayer({ id: 'route-casing', type: 'line', source: 'route', filter: ['==', ['get', 'cased'], 1], layout: round,
+      paint: { 'line-color': '#ffffff', 'line-width': BOLD_CASING } });
     map.addLayer({ id: 'route', type: 'line', source: 'route', layout: round,
-      paint: { 'line-color': '#0a84ff', 'line-width': lineW([2.6, 3.6, 4.6, 5.6, 7.2]) } });
+      paint: { 'line-color': ['coalesce', ['get', 'color'], col('main')], 'line-width': BOLD } });
 
     addMixed('stations', { id: 'stations', type: 'circle', minzoom: 5,
       filter: ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
@@ -2416,8 +2417,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const ZS = [3, 6, 9, 12, 16];
     const widthFor = cls => ['interpolate', ['exponential', 1.5], ['zoom'], ...ZS.flatMap((z, i) => [z, W[cls][i]])];
     let trainLit = false;                // a train's route is lit (src/trains.mjs, 'rail:dim'): every line dims, as for a selection
+    let routeLit = false;                // and so is a found route (showRoute)
     function styleRail() {
-      const sel = !!selected || !!selMetro || trainLit;      // any selection, railway or metro, dims every other line
+      const sel = !!selected || !!selMetro || trainLit || routeLit;      // any selection, railway or metro, dims every other line
       const set = (id, color, width, opacity) => {
         map.setPaintProperty(id, 'line-color', color);
         map.setPaintProperty(id, 'line-width', width);
@@ -2446,7 +2448,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // fade when a railway line is selected.
     function styleMetro() {
       const on = selMetro && ['all', ['==', ['get', 'n'], selMetro.n], ['==', ['get', 'ct'], selMetro.ct]];
-      const fade = !!selected || trainLit;
+      const fade = !!selected || trainLit || routeLit;
       const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
       // (a line in a bundle is drawn as the guest is, see GUEST; the selected one wider)
       const lit = expr => (on ? [...expr.slice(0, 3), ...expr.slice(3).map((v, i) => (i % 2 ? ['case', on, ['*', 1.7, v], v] : v))] : expr);
@@ -2704,9 +2706,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // nothing: the drawing is no better than that, and of two lines side by side (the 京沪线 and
     // the 沪宁城际线 for hours) the path keeps the one it is on. A train that is no fast train
     // (opts.slow) is offered no line built for fast trains alone. A stretch with no line near it
-    // says nothing of itself. Gives the lines in order (rows) and the path cut where the line changes
-    // (parts: its coordinates, the line's colour, and whether it is lit as a fast line or as a
-    // conventional one), so that the train's route can be drawn as chosen lines are.
+    // says nothing of itself. Gives the lines in order (rows) and the path cut where its colour on the
+    // map changes (parts: coordinates and colour), so that the train's route is drawn in the colours
+    // of the lines it runs along.
     const RAILWAY = new Set(['hsr350', 'hsr250', 'hsr200', 'main', 'branch', 'mrail']);
     const DEDICATED = new Set(['hsr350', 'hsr250']);
     const GRID = 0.05, STEP_M = 1000, NEAR_M = 400, SAME_M = 150, CHANGE = 3, OFF = 4.5;      // (costs in hundreds of metres)
@@ -2726,8 +2728,122 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       }
       return cells;
     })());
+    // The fast lines as drawn, by name, in pieces: the class (colour) of each piece and its own
+    // line. Fetched once, when a train's route is first asked for; with the whole layers loaded
+    // it is the same file.
+    const SECTION_M = 600;
+    let sections = null;
+    const boxOf = (pts, dx, dy) => {
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const [x, y] of pts) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
+      return [x0 - dx, y0 - dy, x1 + dx, y1 + dy];
+    };
+    const fastSections = () => sections || (sections = getJSON('data/rail_hsr.geojson').then(data => {
+      const byName = new Map();
+      let id = 0;
+      for (const f of data.features) {
+        const { n, c } = f.properties;
+        if (!n || !FAST.includes(c)) continue;
+        if (!byName.has(n)) byName.set(n, []);
+        for (const pts of f.geometry.type === 'MultiLineString' ? f.geometry.coordinates : [f.geometry.coordinates]) {
+          if (pts.length > 1) byName.get(n).push({ id: 's' + id++, colour: col(c), pts, box: boxOf(pts, 0.008, 0.006) });
+        }
+      }
+      return byName;
+    }).catch(() => { sections = null; return new Map(); }));
+    const sampled = path => {                        // a point every STEP_M along a path: [x, y, the vertex that follows it]
+      const samples = [];
+      let left = 0;
+      for (let i = 1; i < path.length; i++) {
+        const [ax, ay] = path[i - 1], [bx, by] = path[i], k = Math.cos(ay * Math.PI / 180);
+        const len = Math.hypot((bx - ax) * k, by - ay) * 111320;
+        let at = left;                 // (how far into this piece the next sample falls)
+        for (; at < len; at += STEP_M) samples.push([ax + (bx - ax) * at / len, ay + (by - ay) * at / len, i]);
+        left = at - len;
+      }
+      return samples;
+    };
+    async function strokesOn(G, path, samples, lineOf, edgesOf, ptsOf) {
+      // A path is drawn on the map's own lines, not as it came (a train's route is the timetable's
+      // drawing, a found route the network's, simplified): every sample of it (sampled, below), which
+      // has its line (lineOf), is moved onto a track of that line, and between two samples the track
+      // itself is followed. Gives the strokes to draw, one for each stretch of one colour.
+      // The tracks of a fast line are its pieces as drawn (the colour of a piece is the design
+      // speed of its section, which the network does not know: the 达成线 is of the 200 class there
+      // and drawn green, for 160); a fast line with no piece near is drawn as a conventional line
+      // there. The tracks of the other lines are the network's (within 40 m of the drawn line).
+      // A sample keeps the track of the one before while that is nearly as near as any, and else
+      // takes one that meets it end to end if there is one: a double line is two tracks, and the
+      // route should not hop between them.
+      const drawn = await fastSections(), g = G.g, M = 111320;
+      const place = (pts, x, y, k) => {              // the nearest point of a polyline: [metres, segment, share of it, point]
+        let best = [Infinity, 1, 0, pts[0]];
+        for (let i = 1; i < pts.length; i++) {
+          const ax = (pts[i - 1][0] - x) * k, ay = pts[i - 1][1] - y, dx = (pts[i][0] - pts[i - 1][0]) * k, dy = pts[i][1] - pts[i - 1][1];
+          const len = dx * dx + dy * dy, t = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0, d = Math.hypot(ax + t * dx, ay + t * dy);
+          if (d < best[0]) best = [d, i, t, [pts[i - 1][0] + t * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + t * dy]];
+        }
+        return [best[0] * M, best[1], best[2], best[3]];
+      };
+      const tracksAt = (i, li) => {                  // the tracks a sample of that line may lie on
+        const [x, y] = samples[i], [name, cls, , tint] = g.lines[li], k = Math.cos(y * Math.PI / 180), out = [];
+        if (!tint && cls !== 'main' && cls !== 'branch') {
+          for (const piece of drawn.get(name) || []) {
+            if (x < piece.box[0] || y < piece.box[1] || x > piece.box[2] || y > piece.box[3]) continue;
+            const at = place(piece.pts, x, y, k);
+            if (at[0] <= SECTION_M) out.push({ id: piece.id, pts: piece.pts, colour: piece.colour, at });
+          }
+          if (out.length) return out;
+        }
+        // (a line with a colour of its own is of the urban layers, drawn on a white casing: its stroke keeps the casing)
+        const colour = tint ? tint + '|cased' : col(cls === 'branch' ? 'branch' : 'main');
+        for (const e of edgesOf(i, li)) out.push({ id: e, pts: ptsOf(e), colour, at: place(ptsOf(e), x, y, k) });
+        return out;
+      };
+      const same = (a, b) => Math.abs(a[0] - b[0]) < 2e-6 && Math.abs(a[1] - b[1]) < 2e-6;
+      const meets = (a, b) => [0, a.length - 1].flatMap(i => [0, b.length - 1].map(j => [i, j])).find(([i, j]) => same(a[i], b[j]));
+      const along = (pts, from, to) => {             // the polyline between two places on it, in either direction
+        const forward = from[1] < to[1] || (from[1] === to[1] && from[2] <= to[2]);
+        return [from[3], ...(forward ? pts.slice(from[1], to[1]) : pts.slice(to[1], from[1]).reverse()), to[3]];
+      };
+      const toEnd = (pts, from, end) => [from[3], ...(end ? pts.slice(from[1]) : pts.slice(0, from[1]).reverse())];
+      const fromEnd = (pts, end, to) => [...(end ? pts.slice(to[1]).reverse() : pts.slice(0, to[1])), to[3]];
+      const lengthOf = pts => pts.reduce((sum, c, i) => (i ? sum + Math.hypot((c[0] - pts[i - 1][0]) * Math.cos(c[1] * Math.PI / 180), c[1] - pts[i - 1][1]) * M : 0), 0);
+      const coords = [], mark = new Array(samples.length), tints = new Array(samples.length);
+      let before = null;
+      for (let i = 0; i < samples.length; i++) {
+        const options = lineOf[i] < 0 ? [] : tracksAt(i, lineOf[i]), nearest = options.reduce((a, b) => (b.at[0] < a.at[0] ? b : a), options[0]);
+        const close = options.filter(o => o.at[0] <= nearest.at[0] + 20);
+        const track = !nearest ? null : (before && close.find(o => o.id === before.id)) || (before && close.find(o => meets(before.pts, o.pts))) || nearest;
+        let hop;
+        if (!track || !before) hop = i ? [...path.slice(samples[i - 1][2], samples[i][2]), track ? track.at[3] : samples[i].slice(0, 2)] : [track ? track.at[3] : samples[0].slice(0, 2)];
+        else if (track.id === before.id) hop = along(track.pts, before.at, track.at).slice(1);
+        else {
+          const joint = meets(before.pts, track.pts);
+          hop = joint ? [...toEnd(before.pts, before.at, joint[0] ? 1 : 0), ...fromEnd(track.pts, joint[1] ? 1 : 0, track.at)].slice(1) : [track.at[3]];
+        }
+        if (track && before && lengthOf([coords[coords.length - 1], ...hop]) > 2.5 * STEP_M + 200) hop = [track.at[3]];     // (the long way round: straight across)
+        coords.push(...hop);
+        mark[i] = coords.length - 1;
+        tints[i] = track ? track.colour : col('main');
+        before = track;
+      }
+      for (let i = 1, since = 0; i <= tints.length; i++) {          // a colour for a sample or two is the next section's edge: the colour before it
+        if (i < tints.length && tints[i] === tints[since]) continue;
+        if (i - since < 3 && since > 0) tints.fill(tints[since - 1], since, i);
+        since = i;
+      }
+      const strokes = [];
+      for (let i = 1, since = 0; i <= tints.length; i++) {
+        if (i < tints.length && tints[i] === tints[since]) continue;
+        const [colour, cased] = tints[since].split('|');
+        strokes.push({ colour, cased: !!cased, coords: coords.slice(mark[since], (i < tints.length ? mark[i] : coords.length - 1) + 1) });
+        since = i;
+      }
+      return { strokes, tints };
+    }
     async function linesAlong(path, opts = {}) {
-      if (!path || path.length < 2) return [];
+      if (!path || path.length < 2) return { rows: [], parts: [] };
       const G = await loadNetwork(), g = G.g, cells = gridOf(G), shapes = new Map();
       const M = 111320, metresTo = (pts, x, y, k) => {       // from a point to a polyline; k: the cosine of the latitude
         let best = Infinity;
@@ -2738,20 +2854,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         }
         return best * M;
       };
-      const samples = [];
-      let left = 0;
-      for (let i = 1; i < path.length; i++) {
-        const [ax, ay] = path[i - 1], [bx, by] = path[i], k = Math.cos(ay * Math.PI / 180);
-        const len = Math.hypot((bx - ax) * k, by - ay) * M;
-        let at = left;                 // (how far into this piece the next sample falls)
-        for (; at < len; at += STEP_M) samples.push([ax + (bx - ax) * at / len, ay + (by - ay) * at / len, i]);    // (and the vertex that follows it)
-        left = at - len;
-      }
+      const samples = sampled(path);
       // per sample: the lines near it and their price; then the cheapest line for every sample
       let costs = new Map([[-1, 0]]);
-      const back = [];
+      const back = [], edgesBy = [];
       for (const [x, y] of samples) {
-        const k = Math.cos(y * Math.PI / 180), near = new Map(), tried = new Set();
+        const k = Math.cos(y * Math.PI / 180), near = new Map(), tried = new Set(), edges = new Map();
         for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
           for (const e of cells.get(cellKey(x + dx * GRID, y + dy * GRID)) || []) {
             if (tried.has(e)) continue;
@@ -2765,7 +2873,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
             const li = g.edges[e * 5 + 2];
             if (opts.slow && DEDICATED.has(g.lines[li][1])) continue;
             const d = metresTo(pts, x, y, k);
-            if (d <= NEAR_M && d < (near.get(li) ?? Infinity)) near.set(li, d);
+            if (d > NEAR_M) continue;
+            if (d < (near.get(li) ?? Infinity)) near.set(li, d);
+            if (!edges.has(li)) edges.set(li, []);
+            edges.get(li).push(e);
           }
         }
         near.set(-1, OFF * 100);
@@ -2779,6 +2890,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         }
         costs = next;
         back.push(from);
+        edgesBy.push(edges);
       }
       const taken = new Array(samples.length);
       let li = [...costs].reduce((a, b) => (b[1] < a[1] ? b : a))[0];
@@ -2800,21 +2912,24 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       }
       if (!parts.length) return { rows: [], parts: [] };
       parts[parts.length - 1].to = samples.length - 1;
-      const stretch = (part, next) => {            // the path itself from the part's first sample to the next part's
-        const from = samples[part.from], upTo = next ? samples[next.from] : null;
-        return [from.slice(0, 2), ...path.slice(from[2], upTo ? upTo[2] : path.length), ...(upTo ? [upTo.slice(0, 2)] : [])];
-      };
+      const lineOf = new Array(samples.length).fill(-1);
+      for (const part of parts) lineOf.fill(part.li, part.from, part.to + 1);
+      const { strokes, tints } = await strokesOn(G, path, samples, lineOf, (i, li) => edgesBy[i].get(li) || [], e => shapes.get(e).pts);
       const metres = samples.length * STEP_M, minM = Math.min(10000, Math.max(2000, metres * 0.005));
       const length = part => (part.to - part.from + 1) * STEP_M;
-      const shownParts = parts.map((part, i) => {
-        const [name, cls, , tint] = g.lines[part.li];
-        return { name: named(railByKey.get('cn/' + name) || metroByName.get(name) || { n: name }), colour: tint || col(cls),
-          fast: cls !== 'main' && cls !== 'branch', km: Math.max(1, Math.round(length(part) / 1000)),
-          minor: cls !== 'mrail' && length(part) < minM && parts.some(o => length(o) >= minM), coords: stretch(part, parts[i + 1]) };
-      });
-      return { rows: shownParts.map(({ coords, fast, ...row }) => row), parts: shownParts.map(({ coords, colour, fast }) => ({ coords, colour, fast })) };
+      const most = part => {                         // the colour most of a line's stretch has
+        const count = new Map();
+        for (let i = part.from; i <= part.to; i++) count.set(tints[i], (count.get(tints[i]) || 0) + 1);
+        return [...count].reduce((a, b) => (b[1] > a[1] ? b : a))[0].split('|')[0];
+      };
+      return { rows: parts.map(part => {
+        const [name, cls] = g.lines[part.li];
+        return { name: named(railByKey.get('cn/' + name) || metroByName.get(name) || { n: name }), colour: most(part),
+          km: Math.max(1, Math.round(length(part) / 1000)), minor: cls !== 'mrail' && length(part) < minM && parts.some(o => length(o) >= minM) };
+      }), parts: strokes };
     }
-    const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; };
+    const lightRoute = on => { if (on !== routeLit) { routeLit = on; styleMetro(); styleRail(); } };
+    const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; lightRoute(false); };
     let routeSeq = 0;         // every call is a new query; an older one that is still waiting gives up
     async function showRoute() {
       const seq = ++routeSeq, from = od.from, to = od.to;
@@ -2832,7 +2947,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         say(routeNote, 'route.beside', () => ({ from: named(from), to: named(to) }));
         return;
       }
-      const g = G.g, coords = [], raw = [];
+      const g = G.g, coords = [], raw = [], spans = [];
       const hubCost = { x: g.transferMin, y: g.metroMin };
       const walkText = w => t('route.walk', { from: w.from, to: w.to, metres: Math.max(100, Math.round(w.m / 50) * 50) });
       let metres = 0, change = null, walk = null;
@@ -2850,6 +2965,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
           continue;
         }
         const pts = edgeCoords(G, e, a);
+        spans.push([coords.length, e]);            // (from this vertex on the route runs on this piece of track)
         coords.push(...(coords.length ? pts.slice(1) : pts));
         metres += m;
         raw.push({ name, cls, m, change, tint });
@@ -2869,7 +2985,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const shown = steps.filter(st => st.name);
       const minM = Math.min(10000, Math.max(2000, metres * 0.005));
       const minor = st => st.cls !== 'metro' && st.cls !== 'mrail' && st.m < minM && shown.some(o => o.m >= minM);
+      // drawn as a chosen line is: on the map's own lines, in their colours (strokesOn); plain until that is worked out
       map.getSource('route').setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } });
+      lightRoute(true);
+      const samples = sampled(coords), pieceAt = samples.map(sample => spans.filter(span => span[0] < sample[2]).pop()[1]);
+      strokesOn(G, coords, samples, pieceAt.map(e => g.edges[e * 5 + 2]), i => [pieceAt[i]], e => edgeCoords(G, e, g.edges[e * 5])).then(({ strokes }) => {
+        if (seq !== routeSeq) return;
+        map.getSource('route').setData({ type: 'FeatureCollection', features: strokes.map(stroke => (
+          { type: 'Feature', properties: { color: stroke.colour, cased: stroke.cased ? 1 : 0 }, geometry: { type: 'LineString', coordinates: stroke.coords } })) });
+      }).catch(() => {});
       // getting on at the start and off at the end is not part of the journey time
       const ends = [res.path[0], res.path[res.path.length - 1]].reduce((t, [, , e]) => t + (hubCost[g.lines[g.edges[e * 5 + 2]][1]] || 0), 0);
       const mins = Math.max(1, Math.round(res.minutes - ends));
@@ -3312,13 +3436,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // The selected line is lit only where its class is switched on: the highlight layers read the same
   // sources as the class layers, so they take the class switches as part of their filter.
   function applyHighlight() {
-    if (!map.getLayer('hl-conv')) return;
+    if (!map.getLayer('hl-conv-core')) return;
     const name = ['==', ['get', 'n'], selected || '\u0000'];
     const on = ids => ['in', ['get', 'c'], ['literal', ids.filter(id => visible[id])]];
     // JP rail rides the conv source (c = main/branch), so it is lit through hl-conv like China's conv.
-    for (const id of ['hl', 'hl-core']) map.setFilter(id, ['all', name, on(FAST)]);
-    for (const id of ['hl-shared', 'hl-shared-core']) map.setFilter(id, ['all', name, on([...FAST, 'main', 'branch'])]);
-    for (const id of ['hl-conv', 'hl-conv-core']) for (const [layer] of each(id)) map.setFilter(layer, ['all', name, ['any', on(['main', 'branch']), ['!', NOT_ABROAD]]]);
+    map.setFilter('hl-core', ['all', name, on(FAST)]);
+    map.setFilter('hl-shared-core', ['all', name, on([...FAST, 'main', 'branch'])]);
+    for (const [layer] of each('hl-conv-core')) map.setFilter(layer, ['all', name, ['any', on(['main', 'branch']), ['!', NOT_ABROAD]]]);
   }
 
   // Yard and depot tracks are large (China's are 11 MB) and show only from zoom 9.5 with their

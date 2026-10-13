@@ -107,13 +107,13 @@ function draw() {
   const selected = state.selected;
   if (selected) {
     const raw = shapeFor(selected.trip), path = selected.trip.renderable && raw ? state.engine.tripPath(selected.trip,raw) : [];
-    // Once the page has said which lines the path runs along (renderDetail), the route is drawn in those
-    // stretches, each lit as its line is when chosen; until then, and where it cannot say, as one plain line.
+    // Once the page has said which lines the path runs along (renderDetail), the route is drawn in stretches,
+    // each in its line's colour there; until then as one plain line.
     const parts = state.routeParts?.key === selected.key && state.routeParts.parts.length ? state.routeParts.parts : null;
     const signature = `${selected.key}/${Boolean(raw)}/${state.visible}/${Boolean(parts)}`;
     if (state.routeSignature !== signature) {
       state.routeSignature = signature;
-      const lines = parts ? parts.map(part => ({ type: 'Feature', properties: { color: part.colour, fast: part.fast ? 1 : 0 }, geometry: { type: 'LineString', coordinates: part.coords } }))
+      const lines = parts ? parts.map(part => ({ type: 'Feature', properties: { color: part.colour, cased: part.cased ? 1 : 0 }, geometry: { type: 'LineString', coordinates: part.coords } }))
         : [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: path } }];
       map.getSource('cn-train-route').setData(fc(state.visible && path.length > 1 ? lines : []));
     }
@@ -350,15 +350,14 @@ function setupMap(rail) {
   mapInstalled=true;
   const map=rail.map;
   map.addSource('cn-train-route',{type:'geojson',data:fc([])});
-  // A train's route is lit as a chosen line is (src/app.html, the layers hl and hl-conv), stretch by stretch: a fast
-  // line in its own colour on a white casing, a conventional line as a white core on a dark casing; the same widths.
-  // A stretch that names no line, and the whole route before its lines are known, is lit as a conventional line.
-  const fast=['==',['get','fast'],1], round={'line-cap':'round','line-join':'round'};
-  const routeW=(lit,plain)=>['interpolate',['exponential',1.5],['zoom'],...[3,6,9,12,16].flatMap((zoom,i)=>[zoom,['case',fast,lit[i],plain[i]]])];
-  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['case',fast,'#ffffff','#05090c'],
-    'line-width':routeW([2.2,3.2,4.4,5.4,7],[2.8,4,5.4,6.8,9]),'line-opacity':['case',fast,.95,.8]}});
-  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['case',fast,['get','color'],'#ffffff'],
-    'line-width':routeW([1,1.6,2.4,3.2,4.6],[1.3,2,3,4,5.4])}});
+  // A train's route is drawn bold in the colours of the lines it runs along, as the map colours them there, with
+  // no casing of its own (owner, 2026-10-13: no white edge, bolder): the other lines are dimmed meanwhile, which sets it off.
+  // Before the page has said which lines those are, and where it cannot say, it is the colour of a conventional line.
+  // The widths are the page's for anything chosen (BOLD and BOLD_CASING in src/app.html). A stretch on a line the map draws on a
+  // white casing (an intercity line a metro company runs) keeps the casing.
+  const round={'line-cap':'round','line-join':'round'}, bold=(...w)=>['interpolate',['exponential',1.5],['zoom'],3,w[0],6,w[1],9,w[2],12,w[3],16,w[4]];
+  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',filter:['==',['get','cased'],1],layout:round,paint:{'line-color':'#ffffff','line-width':bold(3.4,4.8,6.4,7.8,10)}});
+  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['coalesce',['get','color'],'#d7ecff'],'line-width':bold(2.2,3.2,4.4,5.4,7)}});
   map.addSource('cn-trains',{type:'geojson',data:fc([])});
   // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them.
   for (const [name,spec] of Object.entries(MARKERS)) if (!map.hasImage(name)) map.addImage(name,markerImage(spec),{sdf:true,pixelRatio:2});

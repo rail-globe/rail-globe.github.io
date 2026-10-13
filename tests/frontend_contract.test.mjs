@@ -162,7 +162,7 @@ const checks = [
   ['the border is one whole file in both modes', /getJSON\('data\/border\.geojson'\), whole\('data\/metro\.geojson'\)/],
   ['a layer of a country abroad reads that country', /\.\.\.from\('conv', g\),[\s\S]*\.\.\.from\('metro', g\),/],
   ['a layer that mixed countries is one per country in tile mode', /copies\[spec\.id\] = tiles \? everyCountry\.filter\(g => has\(name, g\)\)\.map\(g => \[g === 'cn' \? spec\.id : spec\.id \+ '@' \+ g, g\]\) : \[\[spec\.id, null\]\];/],
-  ['the mixed layers', page => ['yards', 'build', 'hl-conv', 'hl-conv-core', 'stations', 'station-labels', 'depots', 'depot-labels', 'metro-stations', 'metro-station-labels'].every(id => new RegExp(`addMixed\\('[a-z-]+', \\{ id: '${id}',`).test(page))],
+  ['the mixed layers', page => ['yards', 'build', 'hl-conv-core', 'stations', 'station-labels', 'depots', 'depot-labels', 'metro-stations', 'metro-station-labels'].every(id => new RegExp(`addMixed\\('[a-z-]+', \\{ id: '${id}',`).test(page))],
   ['each country\'s layer answers to its own switch', /const here = own \? countries\.filter\(g => g === own\) : countries;/],
   ['tiles on: speed bands and lines being built from the note beside the tiles', /FAST\.filter\(band => tiles\[g\]\.bands\.some\(\(\[jk, c\]\) => c === band && jkOf\(g, kind\)\.includes\(jk\)\)\)[\s\S]{0,400}/],
   ['tiles on: the station lists come as columns, once the map is up or a field needs them', /Promise\.all\(everyCountry\.map\(g => getJSON\(`data\/tiles\/\$\{g\}\.stations\.json`\)\)\)[\s\S]{0,900}map\.once\('idle', stationLists\);\s+for \(const field of \[queryEl, odInput\.from, odInput\.to\]\) field\.addEventListener\('focus', stationLists\);/],
@@ -733,7 +733,7 @@ if (core) {
   const offsets = [...html.matchAll(/'line-offset': ([^,}]+?)\s*[,}]/g)].map(m => m[1].trim());
   const made = new Set([...html.matchAll(/const (\w+) = beside\(/g)].map(m => m[1]));
   const strays = offsets.filter(o => !o.startsWith('beside(') && !made.has(o));
-  report(`every line offset of the page (${offsets.length}) is made by the one drawing, beside()`, offsets.length > 15 && strays.length === 0);
+  report(`every line offset of the page (${offsets.length}) is made by the one drawing, beside()`, offsets.length > 12 && strays.length === 0);      // (13 since 2026-10-13: what is chosen is lit without a casing, three layers fewer)
   if (strays.length) console.error('     not by beside():', strays.join(' | '));
   report('the suburban guest is drawn by the guest drawing, the high-speed guest too',
     /const besideHost = beside\(\{ guest: true \}\);/.test(html) && /'line-width': guestWidth, 'line-offset': besideHost/.test(html) && /'line-width': ownCasing\(1\), 'line-offset': besideHost/.test(html)
