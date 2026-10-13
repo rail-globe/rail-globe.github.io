@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css">
+<link rel="stylesheet" href="src/trains.css?v=20261013-2">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-pr1"></script>
+<script type="module" src="src/trains.mjs?v=20261013-2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -635,6 +635,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'found.none': ['没有找到。试试当地文字的名字，如 東京、서울、London。', 'Nothing found. Try a name such as Shanghai Hongqiao, Tokyo, Seoul or London.'],
     // the layers tab
     'layers.caption': ['线路与设施', 'Lines and facilities'],
+    'layers.trains': ['列车', 'Trains'],
+    'layers.trains.sub': ['按时刻表估算的位置', 'Positions estimated from the timetable'],
     'view.caption': ['视图', 'View'],
     'view.label': ['地图投影', 'Map projection'],
     'view.globe': ['地球', 'Globe'],
@@ -1134,6 +1136,23 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     layersEl.appendChild(lab);
     rowEls[c.id] = lab;
   }
+  // The trains (src/trains.mjs) are a layer of the map as well: their switch is here too, and it
+  // and the one on their own tab say the same. Turned on here, the timetable is fetched as it is
+  // when their tab is first opened; the row is off until there are trains to show.
+  const trainRow = document.createElement('label');
+  trainRow.className = 'row lyr off';
+  trainRow.innerHTML = `<span class="sw"><i style="width:9px;height:9px;border-radius:50%;background:#f8cf85;box-shadow:0 0 0 2px #0008;margin-left:9px"></i></span><span class="txt"><b></b><small></small></span><input type="checkbox" class="switch" id="t-trains">`;
+  trainRow.querySelector('input').addEventListener('change', e => {
+    trainRow.classList.toggle('off', !e.target.checked);
+    dispatchEvent(new CustomEvent('rail:trains', { detail: { visible: e.target.checked } }));
+  });
+  addEventListener('rail:trains-state', e => {
+    const box = trainRow.querySelector('input');
+    box.checked = !!(e.detail && e.detail.visible);
+    trainRow.classList.toggle('off', !box.checked);
+  });
+  layersEl.appendChild(trainRow);
+  rowEls.trains = trainRow;
   // The rows of a country abroad: one per class, and for its high-speed class one per speed band
   // that the country has (the data says which), drawn like the Chinese band rows. They are made
   // when the data has arrived and stay hidden until that country is chosen.
@@ -1146,6 +1165,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       words.querySelector('b').textContent = label;
       if (sub) words.querySelector('small').textContent = sub;
     }
+    trainRow.querySelector('b').textContent = t('layers.trains');
+    trainRow.querySelector('small').textContent = t('layers.trains.sub');
     for (const [lab, r] of abroadRowList) {
       lab.querySelector('b').textContent = (FOREIGN[r.g][r.metro ? 'metro' : 'rail'].find(([kind]) => kind === (r.metro || r.rail)) || [])[1];
       if (r.mini) lab.querySelector('small').textContent = FOREIGN[r.g].miniNote || '';
@@ -1187,6 +1208,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     for (const id of [...FAST, 'unknown']) if (rowEls[id]) rowEls[id].hidden = !cn;
     for (const id of [...HOME.metro.map(([kind]) => metroId('cn', kind)), 'border']) rowEls[id].hidden = !cn;
     rowEls.build.hidden = !cn && !(FOREIGN[country] && FOREIGN[country].hasBuild);
+    rowEls.trains.hidden = !cn || !!window.__app;         // (the trains are China's, and not in the app)
     for (const id of Object.keys(abroadVisible)) rowEls[id].hidden = !id.startsWith(country + '-');
     for (const id of SHARED_ROWS) {       // the shared rows show the switch of this country
       const box = rowEls[id].querySelector('input');

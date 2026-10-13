@@ -11,8 +11,8 @@
 .train-count { margin: 10px 0 4px; align-items: baseline; }
 .train-count strong { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
 .train-count > span { font-size: 0.75rem; color: var(--label2); }
-.train-toggle { margin-left: auto; font-size: 0.75rem; color: var(--label2); white-space: nowrap; align-self: center; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
-.train-toggle input, .train-small-controls input { accent-color: var(--blue); vertical-align: middle; margin: 0 5px 0 0; }
+/* (the two switches are the page's own, as in the list of layers: the words, then the switch) */
+.train-toggle { margin-left: auto; font-size: 0.75rem; color: var(--label2); white-space: nowrap; align-self: center; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; cursor: pointer; }
 .train-muted { margin: 6px 0 0; color: var(--label2); font-size: 0.75rem; line-height: 1.5; }
 .train-disclosure { margin: 10px 0 0; padding-top: 8px; border-top: 0.5px solid var(--sep); color: var(--label2); font-size: 0.75rem; line-height: 1.5; }
 .train-controls { display: grid; gap: 8px; }
@@ -25,7 +25,7 @@
 .train-filters button { flex: none; padding: 5px 11px; border: 0; background: var(--fill2); color: var(--label); border-radius: 999px; font-size: 0.75rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
 .train-filters button[aria-pressed="true"] { font-weight: 600; background: rgba(99, 99, 102, 0.9); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.08) inset; }
 .train-small-controls { font-size: 0.75rem; color: var(--label2); margin: 0 4px; }
-.train-small-controls label { display: inline-flex; align-items: center; cursor: pointer; }
+.train-small-controls label { display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; cursor: pointer; }
 .train-small-controls .link { font-size: 0.8125rem; color: var(--blue); }
 .train-time-panel { padding: 12px 14px; background: var(--fill2); border-radius: 20px; display: grid; gap: 8px; font-size: 0.8125rem; }
 .train-time-panel input { width: 100%; box-sizing: border-box; border: 0; border-radius: 12px; background: var(--fill); color: var(--label); padding: 8px 10px; }

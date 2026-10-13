@@ -347,12 +347,32 @@ async function loadData() {
   } finally { state.loading = false; }
 }
 
+// The trains have a switch on their own tab and one among the map's layers (src/app.html):
+// either sets this, and both are told. From the layers the timetable is fetched as on a first
+// visit to the tab. The layers' switch is on only while there are trains to show.
+let announced = null;
+function announce() {
+  const visible = Boolean(state.visible && inChina() && (state.engine || state.loading));
+  if (visible === announced) return;
+  announced = visible;
+  dispatchEvent(new CustomEvent('rail:trains-state', { detail: { visible } }));
+}
+function setVisible(visible, load) {
+  state.visible = visible; state.routeSignature = '';
+  if ($('trainsVisible')) $('trainsVisible').checked = visible;
+  if (!visible) state.following = false;
+  if (visible && load && inChina()) {
+    if (!mapInstalled) setupMap(state.rail);
+    if (!state.engine && !state.loading && !state.error) loadData();
+  }
+  syncView(); update(true); announce();
+}
 function bindControls() {
 
 $('trainQuery').addEventListener('input',event=>{state.query=event.target.value.trim();state.limit=40;renderList();});
 $('trainQuery').addEventListener('focus',()=>{if(matchMedia('(max-width:720px)').matches)state.rail?.sheet.to('large');});
 $('trainTypes').addEventListener('click',event=>{const button=event.target.closest('button[data-type]');if(!button)return;state.type=button.dataset.type;state.limit=40;for(const b of $('trainTypes').querySelectorAll('button'))b.setAttribute('aria-pressed',String(b===button));update(true);});
-$('trainsVisible').addEventListener('change',event=>{state.visible=event.target.checked;state.routeSignature='';if(!state.visible)state.following=false;syncView();update(true);});
+$('trainsVisible').addEventListener('change',event=>setVisible(event.target.checked,false));
 $('trainInView').addEventListener('change',event=>{state.inView=event.target.checked;state.limit=40;renderList();});
 $('trainList').addEventListener('click',event=>{const button=event.target.closest('button[data-train]'), instance=button && state.listInstances?.get(button.dataset.train);if(instance)choose(instance);});
 $('trainMore').addEventListener('click',()=>{state.limit+=40;renderList();});
@@ -410,9 +430,11 @@ function boot(rail) {
   badge.innerHTML = '<i></i><span></span>'; document.body.append(badge);
   bindControls(); relabel(); syncView();
   window.addEventListener('rail:view', syncView);
+  window.addEventListener('rail:view', announce);
+  window.addEventListener('rail:trains', event => setVisible(Boolean(event.detail?.visible), true));
   window.addEventListener('rail:language', relabel);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) update(true); });
-  const timer = setInterval(() => { if (!document.hidden && inChina()) update(); }, 1000);
+  const timer = setInterval(() => { announce(); if (!document.hidden && inChina()) update(); }, 1000);     // (the layers' switch follows within a second)
   rail.map.on('remove', () => { clearInterval(timer); window.removeEventListener('rail:view', syncView); window.removeEventListener('rail:language', relabel); });
   // Diagnostics for tests and debugging; this is not a live-position API.
   window.__chinaTrains = {
