@@ -73,7 +73,7 @@ from metro_fit import fit as metro_fit, summary as metro_fit_summary
 from metro_classes import TRAM_WORD, is_tram, kind_of, tram_key, tram_name
 from names import Names, city_names, english, name_city
 from metro_stops import lines_at, overrides as stop_overrides, stops_of
-from yards import write_depots
+from yards import worth_drawing, write_depots
 from along import FINE, TRACK, TRACK_MIN, exactly, meeting, settled
 
 # The grouping below walks sets of names and coordinates. Python seeds their order afresh on every
@@ -1724,6 +1724,12 @@ print("metro lines per region:", dict(Counter(r for r, _ in {(f["properties"]["r
 # ---------------------------------------------------------------- yards and depots
 yard_simp, yard_parts = merge_simplify(yard_tracks, 0.00004, single=False)
 tram_simp, tram_parts = merge_simplify(tram_yards, 0.00004, single=False) if tram_yards else ([], [])
+# Yard track that only runs along a drawn line (crossovers, passing loops, a second track) is not drawn: scripts/yards.py.
+stays = worth_drawing("cn", yard_simp + tram_simp, ex.get("named"))      # against the files written above
+for simp, kept in ((yard_simp, stays[:len(yard_simp)]), (tram_simp, stays[len(yard_simp):])):
+    print(f"yard track that only runs along a drawn line, not drawn: {len(simp) - sum(kept)} of {len(simp)} runs, "
+          f"{sum(km(co) for co, keep in zip(simp, kept) if not keep):.0f} km")
+    simp[:] = [co for co, keep in zip(simp, kept) if keep]
 CHUNK = 400      # a few large MultiLineStrings tile and render faster than one huge feature
 write("yards.geojson", [{"type": "Feature", "properties": {}, "geometry": geometry(simp[i:i + CHUNK])}
                         for simp in (yard_simp, tram_simp) for i in range(0, len(simp), CHUNK)])        # the trams' depots after the rest
