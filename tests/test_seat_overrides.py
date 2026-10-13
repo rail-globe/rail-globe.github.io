@@ -149,6 +149,24 @@ class Seats(unittest.TestCase):
             S.corridors("cn", [line("别的线", track(0))], listed({"旁线": [{"at": at(0, 2000), "seat": -1}]}))
 
 
+class Spine(unittest.TestCase):
+    def test_a_spine_runs_through_a_line_that_forks_round_a_station(self):
+        # two tracks part for a kilometre in the middle: no single piece of the line runs from end to end
+        pieces = [line("主线", track(0, 0, 4000), c="hsr350"), line("主线", [at(0, 4000), at(-30, 4300), at(-30, 4700), at(0, 5000)], c="hsr350"),
+                  line("主线", [at(0, 4000), at(30, 4300), at(30, 4700), at(0, 5000)], c="hsr350"), line("主线", track(0, 5000, 10000), c="hsr350")]
+        corridor = S.corridors("cn", pieces, listed({"旁线": [{"at": at(0, 2000), "seat": -1}]}))[0]
+        self.assertAlmostEqual(corridor.spine.length, 10000, delta=120)
+
+    def test_a_spine_that_stops_short_of_its_corridor_is_an_error(self):
+        with self.assertRaises(ValueError):
+            S.corridors("cn", [line("主线", track(0, 0, 6000), c="hsr350")], listed({"旁线": [{"at": at(0, 2000), "seat": -1}]}))
+
+    def test_the_stretch_drawn_along_another_line_is_not_taken_for_the_spine(self):
+        far = line("主线", track(500, 0, 10000), c="hsr350", zf=1)
+        corridor = S.corridors("cn", [SPINE, far], listed({"旁线": [{"at": at(0, 2000), "seat": -1}]}))[0]
+        self.assertLess(abs(corridor.spine.coords[0][0] - corridor.xy(at(0, 0))[0]), 5)
+
+
 class TheList(unittest.TestCase):
     def test_every_corridor_listed_names_lines_and_places(self):
         rows = json.loads(S.FILE.read_text(encoding="utf-8"))["corridors"]

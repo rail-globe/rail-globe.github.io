@@ -24,6 +24,7 @@ urban line carries the move as goff, which the page takes off again when zoomed 
 service (k: "s") is drawn one step to the right of its path where the data says nothing; here it
 gets a seat (off) of its own.
 """
+import heapq
 import json
 import math
 from pathlib import Path
@@ -35,6 +36,8 @@ ROOT = Path(__file__).resolve().parents[1]
 FILE = ROOT / "data" / "seat_overrides.json"
 M = 111320.0            # metres in a degree of latitude
 GRAIN = 25.0            # metres: a line is cut no finer than this
+JOIN = 15.0             # metres: pieces of a spine this close meet
+SPINE_END = 300.0       # metres: a spine must reach this near the places its corridor is listed from and to
 LOOSE = 2.5             # once in a corridor a line stays in it while it is within this many times the reach
 MEET = 3.0              # metres: a track that ends this close to another piece runs into it
 BLEND = 1500.0          # metres: over this length a line comes off its own track onto the spine's path, zoomed out
@@ -46,12 +49,11 @@ class Corridor:
     def __init__(self, row, spine_paths):
         self.name = row["name"]
         self.cos = math.cos(math.radians((row["from"][1] + row["to"][1]) / 2))
-        joined = unary_union([LineString([self.xy(p) for p in co]) for co in spine_paths if len(co) > 1])
-        merged = linemerge(joined) if joined.geom_type == "MultiLineString" else joined
         a, b = Point(self.xy(row["from"])), Point(self.xy(row["to"]))
-        part = min(getattr(merged, "geoms", [merged]), key=lambda g: g.distance(a) + g.distance(b))
-        sa, sb = part.project(a), part.project(b)
-        self.spine = substring(part, sa, sb)                    # runs from "from" to "to" either way
+        self.spine = through([LineString([self.xy(p) for p in co]) for co in spine_paths if len(co) > 1], a, b)
+        off = max(Point(self.spine.coords[0]).distance(a), Point(self.spine.coords[-1]).distance(b))
+        if off > SPINE_END:
+            raise ValueError(f"seat override {row['name']!r}: {row['spine']} does not run from 'from' to 'to' (an end is {off:.0f} m away)")
         self.reach, self.ramp = row["reach_m"], row["ramp_m"]
         self.seats = {line: sorted(((self.spine.project(Point(self.xy(step["at"]))), step["seat"]) for step in steps), key=lambda step: step[0])
                       for line, steps in row["seats"].items()}
@@ -92,6 +94,69 @@ class Corridor:
         return (s, dot > 0) if abs(dot) > (0.5 if loose else 0.7) else None      # a line that crosses is not in the corridor
 
 
+def through(paths, a, b):
+    """The way along a line from a to b: one path through its pieces, however the line is cut up.
+    A line is not one string of track: it forks where its two tracks part round a station, and
+    is cut where its design speed changes. The longest piece alone can stop short of the place a
+    corridor is listed to begin at (京雄城际线 at 大兴机场: the seats of the 大兴机场线 began 7.7 km
+    late, 2026-10-13). Pieces within JOIN metres of each other are taken to meet."""
+    near = a.buffer(a.distance(b) * 0.6 + 3000).union(b.buffer(a.distance(b) * 0.6 + 3000)).envelope
+    noded = unary_union([g for g in paths if g.intersects(near)])
+    pieces = [g for g in getattr(noded, "geoms", [noded]) if g.geom_type == "LineString" and g.length > 0]
+    if not pieces:
+        raise ValueError("no track of the spine near its corridor")
+    start, goal = (min(range(len(pieces)), key=lambda i: pieces[i].distance(p)) for p in (a, b))
+    ta, tb = pieces[start].project(a), pieces[goal].project(b)
+    if start == goal:
+        return substring(pieces[start], ta, tb)
+    ends = [(g.coords[0], g.coords[-1]) for g in pieces]
+    key = lambda p: (round(p[0] / JOIN), round(p[1] / JOIN))
+    at = {}
+    for i, (p, q) in enumerate(ends):
+        at.setdefault(key(p), []).append((i, 0))
+        at.setdefault(key(q), []).append((i, 1))
+
+    def meeting(p):                     # the piece ends at this place, and in the cells round it
+        kx, ky = key(p)
+        return [hit for dx in (-1, 0, 1) for dy in (-1, 0, 1) for hit in at.get((kx + dx, ky + dy), ())]
+    best = {(start, 0): ta, (start, 1): pieces[start].length - ta}      # (piece, the end reached) -> metres
+    came, heap, done = {}, [(d, k) for k, d in best.items()], set()
+    heapq.heapify(heap)
+    found = None
+    while heap:
+        d, (i, side) = heapq.heappop(heap)
+        if (i, side) in done:
+            continue
+        done.add((i, side))
+        for j, other in meeting(ends[i][side]):
+            if j == i:
+                continue
+            if j == goal:
+                total = d + (tb if other == 0 else pieces[goal].length - tb)
+                if found is None or total < found[0]:
+                    found = (total, (i, side), other)
+                continue
+            step = d + pieces[j].length
+            far = (j, 1 - other)
+            if step < best.get(far, math.inf):
+                best[far], came[far] = step, (i, side)
+                heapq.heappush(heap, (step, far))
+    if found is None:
+        raise ValueError("the spine's track does not join up between 'from' and 'to'")
+    _, last, entered = found
+    chain = []
+    while last in came:
+        i, side = last
+        chain.append(list(pieces[i].coords) if side == 1 else list(pieces[i].coords)[::-1])
+        last = came[last]
+    first = substring(pieces[start], ta, 0 if last[1] == 0 else pieces[start].length)
+    tail = substring(pieces[goal], 0 if entered == 0 else pieces[goal].length, tb)
+    coords = list(first.coords)
+    for part in chain[::-1] + [list(tail.coords)]:
+        coords += part[1:] if coords and part and math.hypot(part[0][0] - coords[-1][0], part[0][1] - coords[-1][1]) < 1e-6 else part
+    return LineString(coords)
+
+
 def corridors(country, features, path=FILE):
     """The corridors listed for a country, with their spines taken from the features given."""
     if not path.exists():
@@ -103,7 +168,7 @@ def corridors(country, features, path=FILE):
             raise ValueError(f"seat override {row.get('name')!r} lacks {missing}")
         if row["country"] != country:
             continue
-        paths = [co for f in features if f["properties"].get("n") == row["spine"]
+        paths = [co for f in features if f["properties"].get("n") == row["spine"] and not f["properties"].get("zf")
                  for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]])]
         if not paths:
             raise ValueError(f"seat override {row['name']!r}: no line named {row['spine']}")
