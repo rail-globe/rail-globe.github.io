@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css?v=20261013-11">
+<link rel="stylesheet" href="src/trains.css?v=20261013-14">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-11"></script>
+<script type="module" src="src/trains.mjs?v=20261013-14"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -2027,12 +2027,26 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // the selected line stays lit along the stretches where it runs beside another line
     map.addLayer({ id: 'hl-shared-core', type: 'line', ...from('shared'), filter: ['==', ['get', 'n'], '\u0000'], layout: round,
       paint: { 'line-color': FAST_COLOR, 'line-width': BOLD, 'line-offset': besideFast } });
-    // a found route: in strokes, each in the colour of the line it runs along there (showRoute)
+    // A found route and a train's route (src/trains.mjs) are lit in strokes (strokesOn): each is a
+    // part of a line as drawn and has that line's properties, so it is drawn as its line is, bold:
+    // a railway by its class or own colour, at its place beside the lines it runs with; an urban
+    // line in its colour on its casing; a stretch on no drawn line plain.
+    const strokeLayers = source => {
+      const of = kind => ['==', ['get', 'kind'], kind], base = { type: 'line', source, layout: round };
+      const urban = ['coalesce', ['get', 'col'], col('metro')];
+      return [
+        { ...base, id: source + '-metro-casing', filter: of('metro'), paint: { 'line-color': '#ffffff', 'line-width': BOLD_CASING, 'line-offset': beside() } },
+        { ...base, id: source + '-guest-casing', filter: of('guest'), paint: { 'line-color': '#ffffff', 'line-width': BOLD_CASING, 'line-offset': besideHost } },
+        { ...base, id: source + '-rail', filter: of('rail'), paint: { 'line-color': OWN_COLOR, 'line-width': BOLD, 'line-offset': railOff } },
+        { ...base, id: source + '-metro', filter: of('metro'), paint: { 'line-color': urban, 'line-width': BOLD, 'line-offset': beside() } },
+        { ...base, id: source + '-guest', filter: of('guest'), paint: { 'line-color': urban, 'line-width': BOLD, 'line-offset': besideHost } },
+        { ...base, id: source + '-plain', filter: ['!', ['in', ['get', 'kind'], ['literal', ['rail', 'metro', 'guest']]]],
+          paint: { 'line-color': ['coalesce', ['get', 'color'], col('main')], 'line-width': BOLD } },
+      ];
+    };
     map.addSource('route', { type: 'geojson', data: EMPTY });
-    map.addLayer({ id: 'route-casing', type: 'line', source: 'route', filter: ['==', ['get', 'cased'], 1], layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': BOLD_CASING } });
-    map.addLayer({ id: 'route', type: 'line', source: 'route', layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'color'], col('main')], 'line-width': BOLD } });
+    for (const layer of strokeLayers('route')) map.addLayer(layer);
+    litLayers = strokeLayers;
 
     addMixed('stations', { id: 'stations', type: 'circle', minzoom: 5,
       filter: ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
@@ -2706,9 +2720,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // nothing: the drawing is no better than that, and of two lines side by side (the 京沪线 and
     // the 沪宁城际线 for hours) the path keeps the one it is on. A train that is no fast train
     // (opts.slow) is offered no line built for fast trains alone. A stretch with no line near it
-    // says nothing of itself. Gives the lines in order (rows) and the path cut where its colour on the
-    // map changes (parts: coordinates and colour), so that the train's route is drawn in the colours
-    // of the lines it runs along.
+    // says nothing of itself. Gives the lines in order (rows) and the strokes that light the route on
+    // the map's own lines (parts: see strokesOn).
     const RAILWAY = new Set(['hsr350', 'hsr250', 'hsr200', 'main', 'branch', 'mrail']);
     const DEDICATED = new Set(['hsr350', 'hsr250']);
     const GRID = 0.05, STEP_M = 1000, NEAR_M = 400, SAME_M = 150, CHANGE = 3, OFF = 4.5;      // (costs in hundreds of metres)
@@ -2728,29 +2741,30 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       }
       return cells;
     })());
-    // The fast lines as drawn, by name, in pieces: the class (colour) of each piece and its own
-    // line. Fetched once, when a train's route is first asked for; with the whole layers loaded
-    // it is the same file.
-    const SECTION_M = 600;
-    let sections = null;
+    // The lines as the map draws them, in pieces, by layer and name: a piece is one line of a
+    // feature, with the feature's properties (its colour or class, and its place among lines
+    // side by side). Fetched when a route is first lit that needs the layer; with the whole
+    // layers loaded they are the same files.
+    const DRAWN = { hsr: 'data/rail_hsr.geojson', conv: 'data/rail_conv.geojson', metro: 'data/metro.geojson' };
+    const SECTION_M = 600, drawnLayers = {};
     const boxOf = (pts, dx, dy) => {
       let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
       for (const [x, y] of pts) { x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); }
       return [x0 - dx, y0 - dy, x1 + dx, y1 + dy];
     };
-    const fastSections = () => sections || (sections = getJSON('data/rail_hsr.geojson').then(data => {
+    const drawnPieces = layer => drawnLayers[layer] || (drawnLayers[layer] = getJSON(DRAWN[layer]).then(data => {
       const byName = new Map();
       let id = 0;
       for (const f of data.features) {
-        const { n, c } = f.properties;
-        if (!n || !FAST.includes(c)) continue;
-        if (!byName.has(n)) byName.set(n, []);
+        const props = f.properties;
+        if (!props.n) continue;
+        if (!byName.has(props.n)) byName.set(props.n, []);
         for (const pts of f.geometry.type === 'MultiLineString' ? f.geometry.coordinates : [f.geometry.coordinates]) {
-          if (pts.length > 1) byName.get(n).push({ id: 's' + id++, colour: col(c), pts, box: boxOf(pts, 0.008, 0.006) });
+          if (pts.length > 1) byName.get(props.n).push({ id: layer + id++, layer, props, pts, box: boxOf(pts, 0.008, 0.006) });
         }
       }
       return byName;
-    }).catch(() => { sections = null; return new Map(); }));
+    }).catch(() => { delete drawnLayers[layer]; return new Map(); }));
     const sampled = path => {                        // a point every STEP_M along a path: [x, y, the vertex that follows it]
       const samples = [];
       let left = 0;
@@ -2763,19 +2777,23 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       }
       return samples;
     };
+    // A path is lit on the map's own lines, not as it came (a train's route is the timetable's
+    // drawing, a found route the network's, simplified): every sample of it (sampled, above), which
+    // has its line (lineOf), is moved onto a piece of that line as the map draws it, and between
+    // two samples the piece itself is followed. What comes back are strokes, each a part of one
+    // piece, written the way the piece is and with the piece's properties, so that a stroke is
+    // drawn where its line is, in its colour and at its place beside the lines it runs with
+    // (strokeLayers). A line can be drawn as a fast line here and as a conventional one there
+    // (the 京广线, cyan where it was rebuilt for 200), so a railway's pieces are looked for in both
+    // layers. Where a line has no piece near, the network's own track is taken, plain.
+    // A sample keeps the piece of the one before while that is nearly as near as any, and else
+    // takes one that meets it end to end if there is one.
     async function strokesOn(G, path, samples, lineOf, edgesOf, ptsOf) {
-      // A path is drawn on the map's own lines, not as it came (a train's route is the timetable's
-      // drawing, a found route the network's, simplified): every sample of it (sampled, below), which
-      // has its line (lineOf), is moved onto a track of that line, and between two samples the track
-      // itself is followed. Gives the strokes to draw, one for each stretch of one colour.
-      // The tracks of a fast line are its pieces as drawn (the colour of a piece is the design
-      // speed of its section, which the network does not know: the 达成线 is of the 200 class there
-      // and drawn green, for 160); a fast line with no piece near is drawn as a conventional line
-      // there. The tracks of the other lines are the network's (within 40 m of the drawn line).
-      // A sample keeps the track of the one before while that is nearly as near as any, and else
-      // takes one that meets it end to end if there is one: a double line is two tracks, and the
-      // route should not hop between them.
-      const drawn = await fastSections(), g = G.g, M = 111320;
+      const g = G.g, M = 111320;
+      const urban = li => !!g.lines[li][3] || g.lines[li][1] === 'metro' || g.lines[li][1] === 'mrail';
+      const lines = [...new Set(lineOf.filter(li => li >= 0))], none = new Map();
+      const [hsr, conv, metro] = await Promise.all([lines.some(li => !urban(li)) ? drawnPieces('hsr') : none,
+        lines.some(li => !urban(li)) ? drawnPieces('conv') : none, lines.some(urban) ? drawnPieces('metro') : none]);
       const place = (pts, x, y, k) => {              // the nearest point of a polyline: [metres, segment, share of it, point]
         let best = [Infinity, 1, 0, pts[0]];
         for (let i = 1; i < pts.length; i++) {
@@ -2785,61 +2803,59 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         }
         return [best[0] * M, best[1], best[2], best[3]];
       };
-      const tracksAt = (i, li) => {                  // the tracks a sample of that line may lie on
+      const colourOf = piece => (piece.layer === 'metro' ? piece.props.col || col('metro')
+        : FAST.includes(piece.props.c) ? col(piece.props.c) : piece.props.lc || col(piece.props.c === 'branch' ? 'branch' : 'main'));
+      const tracksAt = (i, li) => {                  // the pieces a sample of that line may lie on
         const [x, y] = samples[i], [name, cls, , tint] = g.lines[li], k = Math.cos(y * Math.PI / 180), out = [];
-        if (!tint && cls !== 'main' && cls !== 'branch') {
-          for (const piece of drawn.get(name) || []) {
-            if (x < piece.box[0] || y < piece.box[1] || x > piece.box[2] || y > piece.box[3]) continue;
-            const at = place(piece.pts, x, y, k);
-            if (at[0] <= SECTION_M) out.push({ id: piece.id, pts: piece.pts, colour: piece.colour, at });
-          }
-          if (out.length) return out;
+        for (const pool of urban(li) ? [metro] : [hsr, conv]) for (const piece of pool.get(name) || []) {
+          if (x < piece.box[0] || y < piece.box[1] || x > piece.box[2] || y > piece.box[3]) continue;
+          const at = place(piece.pts, x, y, k);
+          if (at[0] <= SECTION_M) out.push({ id: piece.id, pts: piece.pts, colour: colourOf(piece), at,
+            props: { ...piece.props, kind: piece.layer !== 'metro' ? 'rail' : piece.props.k === 's' ? 'guest' : 'metro' } });
         }
-        // (a line with a colour of its own is of the urban layers, drawn on a white casing: its stroke keeps the casing)
-        const colour = tint ? tint + '|cased' : col(cls === 'branch' ? 'branch' : 'main');
-        for (const e of edgesOf(i, li)) out.push({ id: e, pts: ptsOf(e), colour, at: place(ptsOf(e), x, y, k) });
+        if (out.length) return out;
+        const colour = tint || col(cls === 'branch' ? 'branch' : 'main');
+        for (const e of edgesOf(i, li)) out.push({ id: e, pts: ptsOf(e), colour, at: place(ptsOf(e), x, y, k), props: { kind: 'plain', color: colour } });
         return out;
       };
       const same = (a, b) => Math.abs(a[0] - b[0]) < 2e-6 && Math.abs(a[1] - b[1]) < 2e-6;
       const meets = (a, b) => [0, a.length - 1].flatMap(i => [0, b.length - 1].map(j => [i, j])).find(([i, j]) => same(a[i], b[j]));
-      const along = (pts, from, to) => {             // the polyline between two places on it, in either direction
-        const forward = from[1] < to[1] || (from[1] === to[1] && from[2] <= to[2]);
-        return [from[3], ...(forward ? pts.slice(from[1], to[1]) : pts.slice(to[1], from[1]).reverse()), to[3]];
-      };
-      const toEnd = (pts, from, end) => [from[3], ...(end ? pts.slice(from[1]) : pts.slice(0, from[1]).reverse())];
-      const fromEnd = (pts, end, to) => [...(end ? pts.slice(to[1]).reverse() : pts.slice(0, to[1])), to[3]];
+      const where = at => at[1] - 1 + at[2];         // how far along its piece a place is, in segments
+      const endOf = (pts, last) => (last ? [0, pts.length - 1, 1, pts[pts.length - 1]] : [0, 1, 0, pts[0]]);
+      const along = (pts, from, to) => [from[3], ...pts.slice(from[1], to[1]), to[3]];       // (from before to)
       const lengthOf = pts => pts.reduce((sum, c, i) => (i ? sum + Math.hypot((c[0] - pts[i - 1][0]) * Math.cos(c[1] * Math.PI / 180), c[1] - pts[i - 1][1]) * M : 0), 0);
-      const coords = [], mark = new Array(samples.length), tints = new Array(samples.length);
-      let before = null;
+      const strokes = [], tints = new Array(samples.length);
+      let run = null, loose = null;                  // the piece being followed, from where to where; a stretch on no piece
+      const reach = at => { if (where(at) < where(run.lo)) run.lo = at; if (where(at) > where(run.hi)) run.hi = at; run.last = at; };
+      const end = () => {
+        if (!run) return;
+        const coords = along(run.track.pts, run.lo, run.hi);
+        if (lengthOf(coords) > 0) strokes.push({ coords, props: run.track.props });
+        run = null;
+      };
       for (let i = 0; i < samples.length; i++) {
         const options = lineOf[i] < 0 ? [] : tracksAt(i, lineOf[i]), nearest = options.reduce((a, b) => (b.at[0] < a.at[0] ? b : a), options[0]);
         const close = options.filter(o => o.at[0] <= nearest.at[0] + 20);
-        const track = !nearest ? null : (before && close.find(o => o.id === before.id)) || (before && close.find(o => meets(before.pts, o.pts))) || nearest;
-        let hop;
-        if (!track || !before) hop = i ? [...path.slice(samples[i - 1][2], samples[i][2]), track ? track.at[3] : samples[i].slice(0, 2)] : [track ? track.at[3] : samples[0].slice(0, 2)];
-        else if (track.id === before.id) hop = along(track.pts, before.at, track.at).slice(1);
-        else {
-          const joint = meets(before.pts, track.pts);
-          hop = joint ? [...toEnd(before.pts, before.at, joint[0] ? 1 : 0), ...fromEnd(track.pts, joint[1] ? 1 : 0, track.at)].slice(1) : [track.at[3]];
-        }
-        if (track && before && lengthOf([coords[coords.length - 1], ...hop]) > 2.5 * STEP_M + 200) hop = [track.at[3]];     // (the long way round: straight across)
-        coords.push(...hop);
-        mark[i] = coords.length - 1;
+        const track = !nearest ? null : (run && close.find(o => o.id === run.track.id)) || (run && close.find(o => meets(run.track.pts, o.pts))) || nearest;
         tints[i] = track ? track.colour : col('main');
-        before = track;
+        if (!track) {                                // on no line: the path as it came, plain
+          if (run) { loose = [run.last[3]]; end(); }
+          loose = [...(loose || []), ...(i ? path.slice(samples[i - 1][2], samples[i][2]) : []), samples[i].slice(0, 2)];
+          continue;
+        }
+        if (loose) { strokes.push({ coords: [...loose, track.at[3]], props: { kind: 'plain', color: col('main') } }); loose = null; }
+        if (run && run.track.id === track.id
+          && lengthOf(where(run.last) <= where(track.at) ? along(track.pts, run.last, track.at) : along(track.pts, track.at, run.last)) <= 2.5 * STEP_M + 200) { reach(track.at); continue; }
+        const from = run && run.last[3], joint = run && run.track.id !== track.id && meets(run.track.pts, track.pts);
+        if (joint) reach(endOf(run.track.pts, joint[0] > 0));
+        end();
+        run = { track, lo: track.at, hi: track.at, last: track.at };
+        if (joint) reach(endOf(track.pts, joint[1] > 0));
+        else if (from && lengthOf([from, track.at[3]]) > 3) strokes.push({ coords: [from, track.at[3]], props: { kind: 'plain', color: track.colour } });
+        run.last = track.at;
       }
-      for (let i = 1, since = 0; i <= tints.length; i++) {          // a colour for a sample or two is the next section's edge: the colour before it
-        if (i < tints.length && tints[i] === tints[since]) continue;
-        if (i - since < 3 && since > 0) tints.fill(tints[since - 1], since, i);
-        since = i;
-      }
-      const strokes = [];
-      for (let i = 1, since = 0; i <= tints.length; i++) {
-        if (i < tints.length && tints[i] === tints[since]) continue;
-        const [colour, cased] = tints[since].split('|');
-        strokes.push({ colour, cased: !!cased, coords: coords.slice(mark[since], (i < tints.length ? mark[i] : coords.length - 1) + 1) });
-        since = i;
-      }
+      end();
+      if (loose && loose.length > 1) strokes.push({ coords: loose, props: { kind: 'plain', color: col('main') } });
       return { strokes, tints };
     }
     async function linesAlong(path, opts = {}) {
@@ -2920,13 +2936,49 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const most = part => {                         // the colour most of a line's stretch has
         const count = new Map();
         for (let i = part.from; i <= part.to; i++) count.set(tints[i], (count.get(tints[i]) || 0) + 1);
-        return [...count].reduce((a, b) => (b[1] > a[1] ? b : a))[0].split('|')[0];
+        return [...count].reduce((a, b) => (b[1] > a[1] ? b : a))[0];
       };
       return { rows: parts.map(part => {
         const [name, cls] = g.lines[part.li];
         return { name: named(railByKey.get('cn/' + name) || metroByName.get(name) || { n: name }), colour: most(part),
           km: Math.max(1, Math.round(length(part) / 1000)), minor: cls !== 'mrail' && length(part) < minM && parts.some(o => length(o) >= minM) };
       }), parts: strokes };
+    }
+    // CHINA-TRAINS-INTEGRATION: zoomed in, a train is drawn on its line (src/trains.mjs, draw). Its place is the
+    // timetable's own drawing of its route, which lies tens of metres off the lines of this map, here and there a
+    // hundred. This looks around that place, as far as 150 m and no further than 60 px, at the national railway
+    // as it is drawn now (the speed bands, the main lines and the branches: a class that is switched off is not
+    // looked at, nor is anything that lights a line), and gives the nearest point of a line and the bearing of
+    // the line there, of its two directions the one nearer the heading passed in; null when no line is near.
+    // A fast train (opts.fast) takes a line of a speed band if one is nearly as near as the nearest line, any
+    // other train a conventional line; and a line that runs across a moving train's heading (a line it crosses)
+    // is not its line. The map gives a line in the pieces of its tiles, in degrees, a piece in one part or several.
+    const SNAP = { layers: [...FAST, 'main', 'branch'], metres: 150, px: 60, nearly: 30, across: 60 };
+    function snapToLine(at, heading, opts = {}) {
+      const [x, y] = at, k = Math.cos(y * Math.PI / 180), M = 111320, turned = Number.isFinite(heading);
+      const layers = SNAP.layers.filter(id => map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none');
+      if (!layers.length) return null;
+      const pt = map.project(at), r = Math.min(SNAP.px, SNAP.metres * 512 * 2 ** map.getZoom() / (40075017 * k));
+      const off = bearing => Math.abs(((bearing - heading) % 360 + 540) % 360 - 180);      // degrees between a bearing and the heading
+      let own = null, other = null;                // the nearest on the train's kind of line and on the other kind: [metres, point, bearing]
+      for (const f of map.queryRenderedFeatures([[pt.x - r, pt.y - r], [pt.x + r, pt.y + r]], { layers })) {
+        const mine = FAST.includes(f.layer.id) === !!opts.fast, g = f.geometry;
+        for (const pts of g.type === 'MultiLineString' ? g.coordinates : g.type === 'LineString' ? [g.coordinates] : []) {
+          for (let i = 1; i < pts.length; i++) {
+            const ax = (pts[i - 1][0] - x) * k, ay = pts[i - 1][1] - y, dx = (pts[i][0] - pts[i - 1][0]) * k, dy = pts[i][1] - pts[i - 1][1];
+            const len = dx * dx + dy * dy, t = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0, d = Math.hypot(ax + t * dx, ay + t * dy) * M;
+            const best = mine ? own : other;
+            if (!len || d > SNAP.metres || (best && d >= best[0])) continue;
+            let along = Math.atan2(dx, dy) * 180 / Math.PI;
+            if (turned && off(along) > 90) along += 180;
+            if (turned && off(along) > SNAP.across) continue;
+            const hit = [d, [pts[i - 1][0] + t * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + t * (pts[i][1] - pts[i - 1][1])], (along + 360) % 360];
+            if (mine) own = hit; else other = hit;
+          }
+        }
+      }
+      const hit = own && other ? (own[0] <= other[0] + SNAP.nearly ? own : other) : own || other;
+      return hit ? { coordinate: hit[1], heading: turned ? hit[2] : null } : null;
     }
     const lightRoute = on => { if (on !== routeLit) { routeLit = on; styleMetro(); styleRail(); } };
     const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; lightRoute(false); };
@@ -2986,13 +3038,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const minM = Math.min(10000, Math.max(2000, metres * 0.005));
       const minor = st => st.cls !== 'metro' && st.cls !== 'mrail' && st.m < minM && shown.some(o => o.m >= minM);
       // drawn as a chosen line is: on the map's own lines, in their colours (strokesOn); plain until that is worked out
-      map.getSource('route').setData({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords } });
+      map.getSource('route').setData({ type: 'Feature', properties: { kind: 'plain' }, geometry: { type: 'LineString', coordinates: coords } });
       lightRoute(true);
       const samples = sampled(coords), pieceAt = samples.map(sample => spans.filter(span => span[0] < sample[2]).pop()[1]);
       strokesOn(G, coords, samples, pieceAt.map(e => g.edges[e * 5 + 2]), i => [pieceAt[i]], e => edgeCoords(G, e, g.edges[e * 5])).then(({ strokes }) => {
         if (seq !== routeSeq) return;
         map.getSource('route').setData({ type: 'FeatureCollection', features: strokes.map(stroke => (
-          { type: 'Feature', properties: { color: stroke.colour, cased: stroke.cased ? 1 : 0 }, geometry: { type: 'LineString', coordinates: stroke.coords } })) });
+          { type: 'Feature', properties: stroke.props, geometry: { type: 'LineString', coordinates: stroke.coords } })) });
       }).catch(() => {});
       // getting on at the start and off at the end is not part of the journey time
       const ends = [res.path[0], res.path[res.path.length - 1]].reduce((t, [, , e]) => t + (hubCost[g.lines[g.edges[e * 5 + 2]][1]] || 0), 0);
@@ -3415,7 +3467,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     applyVisibility();
     window.__bootStage = 'after-render';
     // CHINA-TRAINS-INTEGRATION: optional web overlay, no timetable fetch until its tab opens.
-    Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true, linesAlong,
+    Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true, linesAlong, snapToLine, strokeLayers: litLayers,
       view: () => ({ country, world, tab: shownTab, finding }) });
     dispatchEvent(new CustomEvent('rail:ready', { detail: window.__rail }));
     document.getElementById('loading').hidden = true;
@@ -3481,6 +3533,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // own country: China's classes to visible, the classes abroad to abroadVisible. The country the
   // card is about decides which switches the card shows (relabelLegend), and nothing on the map.
   let abroadMini = [];        // [layer, country, class]: the lines of a fast class in no band (see the layers abroad)
+  let litLayers = null;       // (source) -> the layers that draw a lit route's strokes on it (set with the map's layers)
   function applyVisibility() {
     if (!map.getLayer('hsr350')) return;
     applyHighlight();

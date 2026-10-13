@@ -30,6 +30,7 @@ const state = { data: null, engine: null, rail: null, active: [], selected: null
 const now = () => state.time ?? Date.now();
 const shapeCache = new Map(), packs = new Map(), waiting = [], failures = new Set();
 let downloads = 0, mapInstalled = false;
+let routeLayers = [];          // the layers of a train's route, as the page gave them (setupMap)
 const delayCache = new Map();
 let lastDelayRequest = 0;
 
@@ -81,6 +82,9 @@ function draw() {
   if (!state.rail || !state.engine || !mapInstalled || !inChina()) return;
   const features = [];
   let renderable = 0, pending = 0;
+  // Zoomed in, the trains in view are moved onto their lines (onLine, below); further out none is, and the map is not asked.
+  const map = state.rail.map, view = map.getZoom() >= SNAP_ZOOM ? map.getBounds() : null;
+  state.shown = null;            // where the chosen train is drawn: what locating and following it go to
   for (const instance of state.active) {
     if (!validType(instance.trip)) continue;
     if (!instance.trip.renderable) continue;
@@ -88,12 +92,16 @@ function draw() {
     if (!shapeFor(instance.trip)) { pending++; requestShape(instance.trip); continue; }
     const p = position(instance);
     if (!p.coordinate || !state.visible || !['running','dwell'].includes(p.status)) continue;
-    const properties = { key: instance.key, number: instance.trip.number, color: color(instance.trip), chosen: state.selected?.key === instance.key ? 1 : 0, dwell: p.status === 'dwell' ? 1 : 0 };
+    const chosen = state.selected?.key === instance.key;
     // Only a moving train has a heading. The marker layers tell the two apart by its presence (see setupMap).
-    if (p.status === 'running' && Number.isFinite(p.heading)) properties.heading = Math.round(p.heading) % 360;
-    features.push({ type: 'Feature', id: instance.key, properties, geometry: { type: 'Point', coordinates: p.coordinate } });
+    let coordinate = p.coordinate, heading = p.status === 'running' && Number.isFinite(p.heading) ? p.heading : null;
+    const on = view?.contains(coordinate) ? onLine(instance, coordinate, heading) : null;
+    if (on) { coordinate = on.coordinate; if (heading !== null && Number.isFinite(on.heading)) heading = on.heading; }
+    if (chosen) state.shown = { key: instance.key, coordinate };
+    const properties = { key: instance.key, number: instance.trip.number, color: color(instance.trip), chosen: chosen ? 1 : 0, dwell: p.status === 'dwell' ? 1 : 0 };
+    if (heading !== null) properties.heading = Math.round(heading) % 360;
+    features.push({ type: 'Feature', id: instance.key, properties, geometry: { type: 'Point', coordinates: coordinate } });
   }
-  const map = state.rail.map;
   map.getSource('cn-trains').setData(fc(features));
   const matching = state.active.filter(i => validType(i.trip)).length;
   $('trainCount').textContent = count(matching);
@@ -107,25 +115,63 @@ function draw() {
   const selected = state.selected;
   if (selected) {
     const raw = shapeFor(selected.trip), path = selected.trip.renderable && raw ? state.engine.tripPath(selected.trip,raw) : [];
-    // Once the page has said which lines the path runs along (renderDetail), the route is drawn in stretches,
-    // each in its line's colour there; until then as one plain line.
+    // Once the page has said which lines the path runs along (renderDetail), the route is drawn in its strokes,
+    // on the map's own lines; until then as one plain line.
     const parts = state.routeParts?.key === selected.key && state.routeParts.parts.length ? state.routeParts.parts : null;
     const signature = `${selected.key}/${Boolean(raw)}/${state.visible}/${Boolean(parts)}`;
     if (state.routeSignature !== signature) {
       state.routeSignature = signature;
-      const lines = parts ? parts.map(part => ({ type: 'Feature', properties: { color: part.colour, cased: part.cased ? 1 : 0 }, geometry: { type: 'LineString', coordinates: part.coords } }))
-        : [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: path } }];
+      const lines = parts ? parts.map(part => ({ type: 'Feature', properties: part.props, geometry: { type: 'LineString', coordinates: part.coords } }))
+        : [{ type: 'Feature', properties: { kind: 'plain' }, geometry: { type: 'LineString', coordinates: path } }];
       map.getSource('cn-train-route').setData(fc(state.visible && path.length > 1 ? lines : []));
     }
     const p = position(selected);
     if (state.following && !['running','dwell'].includes(p.status)) { state.following=false; state.lastDetail=''; }
     if (state.following && p.coordinate && ['running','dwell'].includes(p.status) && Date.now() - state.lastFollow > 4000 && state.visible) {
       state.lastFollow = Date.now();
-      map.easeTo({ center: p.coordinate, zoom: Math.max(map.getZoom(), 8), padding: state.rail.padding(), duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900 });
+      // (the train is followed where it is drawn: on its line, when it was moved there)
+      map.easeTo({ center: state.shown?.key === selected.key ? state.shown.coordinate : p.coordinate, zoom: Math.max(map.getZoom(), 8), padding: state.rail.padding(), duration: matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 900 });
     }
   } else if (state.routeSignature) {
     state.routeSignature = ''; map.getSource('cn-train-route').setData(fc([]));
   }
+}
+// Zoomed in, a train is drawn on its line. Its place comes from the timetable's own drawing of its route, which lies
+// tens of metres, here and there a hundred, off the lines of this map, so that from near the marker floats beside
+// its track. From zoom 10.5 a train in view is moved to the nearest point of a line within 150 m and turned the way
+// the line runs there. The page finds the line among those it draws (src/app.html, snapToLine: a fast train is put
+// on a fast line where it has the choice); the chosen train is kept on its own lit route (state.routeParts, see
+// renderDetail) wherever that is near. Without either, or with no line near, a train stays where the timetable has it.
+const SNAP_ZOOM = 10.5, SNAP_METRES = 150;
+function onLine(instance, at, heading) {
+  const parts = state.selected?.key === instance.key && state.routeParts?.key === instance.key ? state.routeParts.parts : null;
+  return (parts && onParts(parts, at, heading)) || state.rail.snapToLine?.(at, heading, { fast: 'GDCS'.includes(instance.trip.type) }) || null;
+}
+// The nearest point of a route's parts, and the bearing of the part there: of its two directions the one nearer the heading.
+// (A long route has a great many points and this runs once a second: a part's bounds are measured once, and only the
+// parts that reach this place are gone along.)
+const partBounds = new WeakMap();
+function onParts(parts, at, heading) {
+  const [x, y] = at, k = Math.cos(y * Math.PI / 180), turned = Number.isFinite(heading), reach = SNAP_METRES / 111320;
+  let best = null, least = reach * reach;
+  for (const part of parts) {
+    const coords = part.coords;
+    let box = partBounds.get(part);
+    if (!box) {
+      box = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const point of coords) { box[0] = Math.min(box[0], point[0]); box[1] = Math.min(box[1], point[1]); box[2] = Math.max(box[2], point[0]); box[3] = Math.max(box[3], point[1]); }
+      partBounds.set(part, box);
+    }
+    if (x < box[0] - reach / k || x > box[2] + reach / k || y < box[1] - reach || y > box[3] + reach) continue;
+    for (let i = 1; i < coords.length; i++) {
+      const ax = (coords[i - 1][0] - x) * k, ay = coords[i - 1][1] - y, dx = (coords[i][0] - coords[i - 1][0]) * k, dy = coords[i][1] - coords[i - 1][1];
+      const length = dx * dx + dy * dy, t = length ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / length)) : 0, d = (ax + t * dx) ** 2 + (ay + t * dy) ** 2;
+      if (length && d < least) { least = d; best = [coords[i - 1], coords[i], t, Math.atan2(dx, dy) * 180 / Math.PI]; }
+    }
+  }
+  if (!best) return null;
+  const [a, b, t, along] = best, back = turned && Math.abs(((along - heading) % 360 + 540) % 360 - 180) > 90;
+  return { coordinate: [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])], heading: turned ? (along + (back ? 180 : 0) + 360) % 360 : null };
 }
 
 function listItems() {
@@ -184,8 +230,9 @@ function choose(instance, focus = true) {
 }
 function locate() {
   if (!state.selected || !state.rail) return;
-  const p = position(state.selected);
-  if (p.coordinate) state.rail.frame({ point: p.coordinate, zoom: Math.max(state.rail.map.getZoom(),8) },900);
+  // (to where the train is drawn, which zoomed in is on its line: see draw)
+  const at = state.shown?.key === state.selected.key ? state.shown.coordinate : position(state.selected).coordinate;
+  if (at) state.rail.frame({ point: at, zoom: Math.max(state.rail.map.getZoom(),8) },900);
 }
 function wholeRoute() {
   if (!state.selected || !state.rail) return;
@@ -317,31 +364,49 @@ function update(force = false) {
 }
 
 // The train markers: a pointed dot from afar, a train seen from above from near, a ringed dot for a
-// train that stands. Each picture is a distance field, which MapLibre takes as an SDF icon (alpha 191
-// on the outline, 32 less for each texel outwards), so one picture is tinted by its feature's colour
-// and outlined by its layer. They are computed here, with no canvas and no file: heading north, two
-// texels to a CSS pixel, x to the right and y to the front of the middle. Seven texels of margin is
-// the room the outline takes at the smallest size a marker is drawn.
+// train that stands. Each shape is a distance from its edge (negative within), in units of which two
+// are a CSS pixel at size 1: heading north, x to the right and y to the front of the middle. From it
+// a picture is computed for every colour of train, with no canvas and no file: the shape in the colour,
+// a dark outline around it, nothing outside. The outline is in the picture, not the layer's (a layer
+// draws all its outlines and then all its fills, so trains that overlap ran together into one blob
+// inside one outline; owner, 2026-10-13): a train drawn over another covers it, outline and all.
 const hull = (x, y, r1, r2, h) => {          // a circle of r1 at the middle, drawn out to a circle of r2 at h ahead
   const b = (r1 - r2) / h, a = Math.sqrt(1 - b * b), k = a * y - b * Math.abs(x);
-  return k < 0 ? Math.hypot(x, y) - r1 : k > a * h ? Math.hypot(x, y - h) - r2 : a * Math.abs(x) + b * y - r1;
+  return k < 0 ? Math.sqrt(x * x + y * y) - r1 : k > a * h ? Math.sqrt(x * x + (y - h) * (y - h)) - r2 : a * Math.abs(x) + b * y - r1;
 };
 const slab = (x, y, w, h, r) => {            // a box of half-width w and half-length h, its corners rounded to r
-  const u = Math.abs(x) - w + r, v = Math.abs(y) - h + r;
-  return Math.hypot(Math.max(u, 0), Math.max(v, 0)) + Math.min(Math.max(u, v), 0) - r;
+  const u = Math.max(Math.abs(x) - w + r, 0), v = Math.max(Math.abs(y) - h + r, 0);
+  return Math.sqrt(u * u + v * v) + Math.min(Math.max(Math.abs(x) - w, Math.abs(y) - h) + r, 0) - r;
 };
-const MARKERS = {                            // width, height, distance from the outline (negative within)
-  'train-pointed': [28, 40, (x, y) => hull(x, y, 7, .8, 12)],
-  'train-bullet': [26, 50, (x, y) => Math.min(slab(x, y + 6, 6, 12, 3.2), hull(x, y - 3, 6, 2.2, 12.8))],
-  // (the gap between the dot and its ring is narrow enough for the outlines of the two to fill it at every size)
-  'train-ringed': [34, 34, (x, y) => Math.min(Math.hypot(x, y) - 4.8, Math.abs(Math.hypot(x, y) - 8.6) - 1.4)],
+const MARKERS = {                            // width, height, the coloured shape, and what the outline goes around if not that
+  pointed: [26, 38, (x, y) => hull(x, y, 7, .8, 12)],
+  bullet: [24, 48, (x, y) => Math.min(slab(x, y + 6, 6, 12, 3.2), hull(x, y - 3, 6, 2.2, 12.8))],
+  // (a dot and a ring: the outline goes around the ring and fills the gap between the two, at every size)
+  ringed: [32, 32, (x, y) => Math.min(Math.hypot(x, y) - 4.6, Math.abs(Math.hypot(x, y) - 8.7) - 1.3), (x, y) => Math.hypot(x, y) - 10],
 };
-function markerImage([width, height, distance]) {
-  const data = new Uint8ClampedArray(width * height * 4);
-  for (let j = 0; j < height; j++) for (let i = 0; i < width; i++) {
-    data.set([255, 255, 255, 191.25 - 31.875 * distance(i + .5 - width / 2, height / 2 - j - .5)], (j * width + i) * 4);
+// A marker's sizes in CSS pixels, as [zoom, usual, chosen], of the measure given first, which is its size 1: the ring's
+// and the dot's radius (the circle these replaced went from 2.4 to 4 to 5, chosen 6 to 8 to 9), the train's length.
+const SIZES = { ringed: [5, [3, 3.4, 7], [8, 5.6, 10], [14, 7, 12]], pointed: [3.5, [3, 2.4, 6], [8, 4, 8], [9, 4.3, 8.3]], bullet: [18, [8.25, 12.5, 17.5], [9, 14, 19.5], [14, 30, 42]] };
+const OUTLINE = '#0b1418';
+// The pictures of one shape, one in each of the colours: `density` texels to a unit, the outline `edge` units wide.
+// A texel on an edge is covered in part, so the edges are smooth; the colours are not multiplied by the alpha (the
+// map does that). The shape is measured once for all its colours.
+function markerImages([width, height, shape, body = shape], colours, density, edge) {
+  const w = Math.ceil(width * density), h = Math.ceil(height * density), within = new Float32Array(w * h), solid = new Float32Array(w * h);
+  const cover = distance => Math.max(0, Math.min(1, .5 - distance * density));
+  for (let j = 0, at = 0; j < h; j++) for (let i = 0; i < w; i++, at++) {
+    const x = (i + .5 - w / 2) / density, y = (h / 2 - j - .5) / density, from = shape(x, y);
+    within[at] = cover(from); solid[at] = cover((body === shape ? from : body(x, y)) - edge);
   }
-  return { width, height, data };
+  const rgb = hex => [1, 3, 5].map(at => parseInt(hex.slice(at, at + 2), 16)), line = rgb(OUTLINE);
+  return colours.map(colour => {
+    const fill = rgb(colour), data = new Uint8ClampedArray(w * h * 4);
+    for (let at = 0; at < w * h; at++) {
+      for (let c = 0; c < 3; c++) data[at * 4 + c] = line[c] + (fill[c] - line[c]) * within[at];
+      data[at * 4 + 3] = 255 * solid[at];
+    }
+    return { width: w, height: h, data };
+  });
 }
 
 function setupMap(rail) {
@@ -350,34 +415,40 @@ function setupMap(rail) {
   mapInstalled=true;
   const map=rail.map;
   map.addSource('cn-train-route',{type:'geojson',data:fc([])});
-  // A train's route is drawn bold in the colours of the lines it runs along, as the map colours them there, with
-  // no casing of its own (owner, 2026-10-13: no white edge, bolder): the other lines are dimmed meanwhile, which sets it off.
-  // Before the page has said which lines those are, and where it cannot say, it is the colour of a conventional line.
-  // The widths are the page's for anything chosen (BOLD and BOLD_CASING in src/app.html). A stretch on a line the map draws on a
-  // white casing (an intercity line a metro company runs) keeps the casing.
-  const round={'line-cap':'round','line-join':'round'}, bold=(...w)=>['interpolate',['exponential',1.5],['zoom'],3,w[0],6,w[1],9,w[2],12,w[3],16,w[4]];
-  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',filter:['==',['get','cased'],1],layout:round,paint:{'line-color':'#ffffff','line-width':bold(3.4,4.8,6.4,7.8,10)}});
-  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['coalesce',['get','color'],'#d7ecff'],'line-width':bold(2.2,3.2,4.4,5.4,7)}});
+  // A train's route is lit as the page lights a found route (src/app.html, strokeLayers): in strokes, each a part of a line
+  // as the map draws it, bolder, in that line's colour and at its place beside the lines it runs with. The page gives the
+  // layers; before it has said which lines the route runs along the route is one plain stroke.
+  routeLayers = (rail.strokeLayers ? rail.strokeLayers('cn-train-route') : [{id:'cn-train-route',type:'line',source:'cn-train-route',paint:{'line-color':'#d7ecff','line-width':4}}]);
+  for (const layer of routeLayers) map.addLayer(layer);
   map.addSource('cn-trains',{type:'geojson',data:fc([])});
-  // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them.
-  for (const [name,spec] of Object.entries(MARKERS)) if (!map.hasImage(name)) map.addImage(name,markerImage(spec),{sdf:true,pixelRatio:2});
+  // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them:
+  // of each shape one for every colour of train, and of each of those one for the usual sizes and one for the chosen
+  // train's ('train-bullet-G', 'train-bullet-G-chosen'). A picture is scaled by the map without smoothing down, so each
+  // is made for the sizes it is drawn at on this screen: at its largest it is stretched by a quarter at most (the chosen
+  // train at zoom 14 stays sharp), at its smallest shrunk to no less than half. Its outline grows with it, and is
+  // 1.5 CSS pixels, the stroke the circles had, in the middle of its sizes.
+  const ratio=Math.min(3,Math.max(1,map.getPixelRatio?.()||1)), chosen=['==',['get','chosen'],1];
+  for (const [shape,[unit,...stops]] of Object.entries(SIZES)) for (const [suffix,which] of [['',1],['-chosen',2]]) {
+    const sizes=stops.map(stop=>stop[which]/unit), largest=Math.max(...sizes), density=.4*ratio*largest, edge=3/Math.sqrt(largest*Math.min(...sizes));
+    const pictures=markerImages(MARKERS[shape],Object.values(COLORS),density,edge);
+    Object.keys(COLORS).forEach((kind,n)=>{const name=`train-${shape}-${kind}${suffix}`;if(!map.hasImage(name))map.addImage(name,pictures[n],{pixelRatio:2*density});});
+  }
+  // A feature's colour is its train's kind (color, above); a colour no picture was made for is drawn as the other trains are.
+  const picture=shape=>['concat',['match',['get','color'],...Object.entries(COLORS).filter(([kind])=>kind!=='other').flatMap(([kind,colour])=>[colour,`train-${shape}-${kind}`]),`train-${shape}-other`],['case',chosen,'-chosen','']];
   // A moving train carries a heading (see draw): it is the pointed dot below zoom 8.25 and the train from 8.75,
-  // one fading into the other between. A train without a heading is the ringed dot at every zoom. Sizes are in
-  // CSS pixels as [zoom, usual, chosen], of the measure given first: the ring's and the dot's radius (the circle
-  // this replaces went from 2.4 to 4 to 5, chosen 6 to 8 to 9), the train's length. No size falls below about
-  // two thirds of a picture's own, where its outline would reach the edge of the distance field.
+  // one fading into the other between. A train without a heading is the ringed dot at every zoom.
   const moving=['has','heading'];
-  const sized=(unit,...stops)=>['interpolate',['linear'],['zoom'],...stops.flatMap(([zoom,usual,chosen])=>[zoom,['case',['==',['get','chosen'],1],chosen/unit,usual/unit]])];
-  // The outline's width is in texels: 3 is 1.5 CSS pixels, the stroke the circles had. The chosen train is drawn over its neighbours.
-  const marker=(id,image,size,layer,layout,opacity)=>map.addLayer({id,type:'symbol',source:'cn-trains',...layer,
-    layout:{'icon-image':image,'icon-size':size,'icon-allow-overlap':true,'icon-ignore-placement':true,'symbol-sort-key':['get','chosen'],...layout},
-    paint:{'icon-color':['get','color'],'icon-halo-color':'#0b1418','icon-halo-width':3,'icon-opacity':opacity}});
+  const sized=(unit,...stops)=>['interpolate',['linear'],['zoom'],...stops.flatMap(([zoom,usual,large])=>[zoom,['case',chosen,large/unit,usual/unit]])];
+  // The chosen train is drawn over its neighbours.
+  const marker=(id,shape,layer,layout,opacity)=>map.addLayer({id,type:'symbol',source:'cn-trains',...layer,
+    layout:{'icon-image':picture(shape),'icon-size':sized(...SIZES[shape]),'icon-allow-overlap':true,'icon-ignore-placement':true,'symbol-sort-key':['get','chosen'],...layout},
+    paint:{'icon-opacity':opacity}});
   // Turned with the map, so a marker lies along its track whichever way the map faces. The train also lies
   // flat on the map, as its track does; the dot stays round, as the circle did.
   const turned=pitch=>({'icon-rotate':['get','heading'],'icon-rotation-alignment':'map','icon-pitch-alignment':pitch});
-  marker('cn-trains-stop','train-ringed',sized(5,[3,3.4,7],[8,5.6,10],[14,7,12]),{filter:['!',moving]},{},.98);
-  marker('cn-trains-dot','train-pointed',sized(3.5,[3,2.4,6],[8,4,8],[9,4.3,8.3]),{filter:moving,maxzoom:8.75},turned('viewport'),['interpolate',['linear'],['zoom'],8.25,.98,8.75,0]);
-  marker('cn-trains-body','train-bullet',sized(18,[8.25,12.5,17.5],[9,14,19.5],[14,30,42]),{filter:moving,minzoom:8.25},turned('map'),['interpolate',['linear'],['zoom'],8.25,0,8.75,.98]);
+  marker('cn-trains-stop','ringed',{filter:['!',moving]},{},.98);
+  marker('cn-trains-dot','pointed',{filter:moving,maxzoom:8.75},turned('viewport'),['interpolate',['linear'],['zoom'],8.25,.98,8.75,0]);
+  marker('cn-trains-body','bullet',{filter:moving,minzoom:8.25},turned('map'),['interpolate',['linear'],['zoom'],8.25,0,8.75,.98]);
   // The number stands above its marker, further off as the train grows.
   map.addLayer({id:'cn-trains-label',type:'symbol',source:'cn-trains',minzoom:7,layout:{'text-field':['get','number'],'text-font':['sans'],'text-size':11,'text-anchor':'bottom','text-offset':['interpolate',['linear'],['zoom'],8,['literal',[0,-.85]],14,['literal',[0,-1.4]]],'text-allow-overlap':false,'symbol-sort-key':['case',['==',['get','chosen'],1],-1,1]},paint:{'text-color':'#ffffff','text-halo-color':'rgba(8,14,18,0.9)','text-halo-width':1.4}});
   map.addLayer({id:'cn-trains-hit',type:'circle',source:'cn-trains',paint:{'circle-radius':['interpolate',['linear'],['zoom'],3,5,8,10,14,13],'circle-opacity':0}});
@@ -432,7 +503,15 @@ let announced = null, dimmed = false;
 function announce() {
   // A chosen train's route is lit as a chosen line is: the page dims every other line for it.
   const lit = Boolean(mapInstalled && state.selected && state.visible && inChina());
-  if (lit !== dimmed) { dimmed = lit; dispatchEvent(new CustomEvent('rail:dim', { detail: lit })); }
+  if (lit !== dimmed) {
+    dimmed = lit; dispatchEvent(new CustomEvent('rail:dim', { detail: lit }));
+    // ... and the other trains are dimmed with the lines (owner, 2026-10-13): the markers and numbers of all but the chosen one.
+    const map = state.rail.map, chosen = ['==', ['get', 'chosen'], 1], shown = lit ? ['case', chosen, .98, .32] : .98;
+    map.setPaintProperty('cn-trains-stop', 'icon-opacity', shown);
+    map.setPaintProperty('cn-trains-dot', 'icon-opacity', ['interpolate', ['linear'], ['zoom'], 8.25, shown, 8.75, 0]);
+    map.setPaintProperty('cn-trains-body', 'icon-opacity', ['interpolate', ['linear'], ['zoom'], 8.25, 0, 8.75, shown]);
+    map.setPaintProperty('cn-trains-label', 'text-opacity', lit ? ['case', chosen, 1, .4] : 1);
+  }
   const visible = Boolean(state.visible && inChina() && (state.engine || state.loading));
   if (visible === announced) return;
   announced = visible;
@@ -485,7 +564,7 @@ function syncView() {
   if (!here) { state.following = false; state.lastDetail = ''; }
   $('trainMapBadge').hidden = !here || !state.engine || !state.visible;
   if (mapInstalled) {
-    for (const id of ['cn-trains-stop', 'cn-trains-dot', 'cn-trains-body', 'cn-trains-label', 'cn-trains-hit', 'cn-train-route', 'cn-train-route-casing']) {
+    for (const id of ['cn-trains-stop', 'cn-trains-dot', 'cn-trains-body', 'cn-trains-label', 'cn-trains-hit', ...routeLayers.map(layer => layer.id)]) {
       state.rail.map.setLayoutProperty(id, 'visibility', here && state.visible ? 'visible' : 'none');
     }
   }
