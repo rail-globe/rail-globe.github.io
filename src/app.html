@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css?v=20261013-3">
+<link rel="stylesheet" href="src/trains.css?v=20261013-4">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-3"></script>
+<script type="module" src="src/trains.mjs?v=20261013-4"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -1139,9 +1139,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // The trains (src/trains.mjs) are a layer of the map as well: their switch is here too, and it
   // and the one on their own tab say the same. Turned on here, the timetable is fetched as it is
   // when their tab is first opened; the row is off until there are trains to show.
+  // (its mark is the train as the map draws it from near: src/trains.mjs, 'train-bullet')
   const trainRow = document.createElement('label');
   trainRow.className = 'row lyr off';
-  trainRow.innerHTML = `<span class="sw"><i style="width:9px;height:9px;border-radius:50%;background:#f8cf85;box-shadow:0 0 0 2px #0008;margin-left:9px"></i></span><span class="txt"><b></b><small></small></span><input type="checkbox" class="switch" id="t-trains">`;
+  trainRow.innerHTML = `<span class="sw"><svg viewBox="0 0 28 12" width="28" height="12" aria-hidden="true"><path d="M5.5 1.8h9.5c4.6 0 8.4 1.7 10.4 4.2c-2 2.5-5.8 4.2-10.4 4.2H5.5a2.7 2.7 0 0 1-2.7-2.7V4.5a2.7 2.7 0 0 1 2.7-2.7z" fill="#f8cf85" stroke="#0b1418" stroke-width="1.2" stroke-linejoin="round"/></svg></span><span class="txt"><b></b><small></small></span><input type="checkbox" class="switch" id="t-trains">`;
   trainRow.querySelector('input').addEventListener('change', e => {
     trainRow.classList.toggle('off', !e.target.checked);
     dispatchEvent(new CustomEvent('rail:trains', { detail: { visible: e.target.checked } }));
@@ -2414,8 +2415,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const W = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6] };
     const ZS = [3, 6, 9, 12, 16];
     const widthFor = cls => ['interpolate', ['exponential', 1.5], ['zoom'], ...ZS.flatMap((z, i) => [z, W[cls][i]])];
+    let trainLit = false;                // a train's route is lit (src/trains.mjs, 'rail:dim'): every line dims, as for a selection
     function styleRail() {
-      const sel = !!selected || !!selMetro;      // any selection, railway or metro, dims every other line
+      const sel = !!selected || !!selMetro || trainLit;      // any selection, railway or metro, dims every other line
       const set = (id, color, width, opacity) => {
         map.setPaintProperty(id, 'line-color', color);
         map.setPaintProperty(id, 'line-width', width);
@@ -2444,7 +2446,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // fade when a railway line is selected.
     function styleMetro() {
       const on = selMetro && ['all', ['==', ['get', 'n'], selMetro.n], ['==', ['get', 'ct'], selMetro.ct]];
-      const fade = !!selected;
+      const fade = !!selected || trainLit;
       const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
       // (a line in a bundle is drawn as the guest is, see GUEST; the selected one wider)
       const lit = expr => (on ? [...expr.slice(0, 3), ...expr.slice(3).map((v, i) => (i % 2 ? ['case', on, ['*', 1.7, v], v] : v))] : expr);
@@ -2456,6 +2458,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         map.setPaintProperty(id + '-casing', 'line-opacity', ['interpolate', ['linear'], ['zoom'], z0, pick(0.7, 0.1, 0.4), 9, pick(1, 0.22, 0.9)]);
       }
     }
+    addEventListener('rail:dim', e => { trainLit = !!e.detail; styleMetro(); styleRail(); });
     function select(name, fly, cls) {
       const of = name && byName.get(name);
       if (of) enter(abroad(of.g)); else if (name && world) enter(country);

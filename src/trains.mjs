@@ -166,7 +166,7 @@ function choose(instance, focus = true) {
   requestShape(instance.trip);
   state.rail?.showTab('trains');
   if (matchMedia('(max-width:720px)').matches) state.rail?.sheet.to('mid');
-  renderDetail(); renderList(); draw();
+  renderDetail(); renderList(); draw(); announce();
   if (focus) locate();
   requestAnimationFrame(() => {
     const detail = $('trainDetail'), scroll = $('scroll');
@@ -330,8 +330,10 @@ function setupMap(rail) {
   mapInstalled=true;
   const map=rail.map;
   map.addSource('cn-train-route',{type:'geojson',data:fc([])});
-  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',paint:{'line-color':'#111a23','line-width':7,'line-opacity':.8}});
-  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',paint:{'line-color':'#f6d8a5','line-width':3,'line-opacity':.86}});
+  // A train's route is drawn as the page draws a route between two stations: its blue on a white casing, the same widths.
+  const routeW=a=>['interpolate',['exponential',1.5],['zoom'],3,a[0],6,a[1],9,a[2],12,a[3],16,a[4]], round={'line-cap':'round','line-join':'round'};
+  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':'#ffffff','line-width':routeW([4.6,6,7.5,9,11]),'line-opacity':.95}});
+  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':'#0a84ff','line-width':routeW([2.6,3.6,4.6,5.6,7.2])}});
   map.addSource('cn-trains',{type:'geojson',data:fc([])});
   // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them.
   for (const [name,spec] of Object.entries(MARKERS)) if (!map.hasImage(name)) map.addImage(name,markerImage(spec),{sdf:true,pixelRatio:2});
@@ -345,7 +347,7 @@ function setupMap(rail) {
   // The outline's width is in texels: 3 is 1.5 CSS pixels, the stroke the circles had. The chosen train is drawn over its neighbours.
   const marker=(id,image,size,layer,layout,opacity)=>map.addLayer({id,type:'symbol',source:'cn-trains',...layer,
     layout:{'icon-image':image,'icon-size':size,'icon-allow-overlap':true,'icon-ignore-placement':true,'symbol-sort-key':['get','chosen'],...layout},
-    paint:{'icon-color':['get','color'],'icon-halo-color':'#152432','icon-halo-width':3,'icon-opacity':opacity}});
+    paint:{'icon-color':['get','color'],'icon-halo-color':'#0b1418','icon-halo-width':3,'icon-opacity':opacity}});
   // Turned with the map, so a marker lies along its track whichever way the map faces. The train also lies
   // flat on the map, as its track does; the dot stays round, as the circle did.
   const turned=pitch=>({'icon-rotate':['get','heading'],'icon-rotation-alignment':'map','icon-pitch-alignment':pitch});
@@ -353,7 +355,7 @@ function setupMap(rail) {
   marker('cn-trains-dot','train-pointed',sized(3.5,[3,2.4,6],[8,4,8],[9,4.3,8.3]),{filter:moving,maxzoom:8.75},turned('viewport'),['interpolate',['linear'],['zoom'],8.25,.98,8.75,0]);
   marker('cn-trains-body','train-bullet',sized(18,[8.25,12.5,17.5],[9,14,19.5],[14,30,42]),{filter:moving,minzoom:8.25},turned('map'),['interpolate',['linear'],['zoom'],8.25,0,8.75,.98]);
   // The number stands above its marker, further off as the train grows.
-  map.addLayer({id:'cn-trains-label',type:'symbol',source:'cn-trains',minzoom:7,layout:{'text-field':['get','number'],'text-font':['sans'],'text-size':11,'text-anchor':'bottom','text-offset':['interpolate',['linear'],['zoom'],8,['literal',[0,-.85]],14,['literal',[0,-1.4]]],'text-allow-overlap':false,'symbol-sort-key':['case',['==',['get','chosen'],1],-1,1]},paint:{'text-color':'#fff7e7','text-halo-color':'#0b1520','text-halo-width':2}});
+  map.addLayer({id:'cn-trains-label',type:'symbol',source:'cn-trains',minzoom:7,layout:{'text-field':['get','number'],'text-font':['sans'],'text-size':11,'text-anchor':'bottom','text-offset':['interpolate',['linear'],['zoom'],8,['literal',[0,-.85]],14,['literal',[0,-1.4]]],'text-allow-overlap':false,'symbol-sort-key':['case',['==',['get','chosen'],1],-1,1]},paint:{'text-color':'#ffffff','text-halo-color':'rgba(8,14,18,0.9)','text-halo-width':1.4}});
   map.addLayer({id:'cn-trains-hit',type:'circle',source:'cn-trains',paint:{'circle-radius':['interpolate',['linear'],['zoom'],3,5,8,10,14,13],'circle-opacity':0}});
   map.on('click','cn-trains-hit',event=>{
     const key=event.features?.[0]?.properties?.key, instance=state.active.find(i=>i.key===key);
@@ -400,8 +402,11 @@ async function loadData() {
 // The trains have a switch on their own tab and one among the map's layers (src/app.html):
 // either sets this, and both are told. From the layers the timetable is fetched as on a first
 // visit to the tab. The layers' switch is on only while there are trains to show.
-let announced = null;
+let announced = null, dimmed = false;
 function announce() {
+  // A chosen train's route is lit as a chosen line is: the page dims every other line for it.
+  const lit = Boolean(mapInstalled && state.selected && state.visible && inChina());
+  if (lit !== dimmed) { dimmed = lit; dispatchEvent(new CustomEvent('rail:dim', { detail: lit })); }
   const visible = Boolean(state.visible && inChina() && (state.engine || state.loading));
   if (visible === announced) return;
   announced = visible;
@@ -428,7 +433,7 @@ $('trainList').addEventListener('click',event=>{const button=event.target.closes
 $('trainMore').addEventListener('click',()=>{state.limit+=40;renderList();});
 $('trainDetail').addEventListener('click',event=>{
   const action=event.target.closest('[data-action]')?.dataset.action;
-  if(action==='close'){state.selected=null;state.following=false;state.lastDetail='';update(true);}
+  if(action==='close'){state.selected=null;state.following=false;state.lastDetail='';update(true);announce();}
   if(action==='locate')locate();
   if(action==='route')wholeRoute();
   if(action==='follow'){state.following=!state.following;state.lastFollow=0;state.lastDetail='';update(true);}

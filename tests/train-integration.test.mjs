@@ -120,7 +120,7 @@ test('every marker keeps the colour of its train and the dark outline, and none 
   for (const id of ['cn-trains-stop', 'cn-trains-dot', 'cn-trains-body']) {
     const { layout, paint } = layer(id);
     assert.deepEqual(paint['icon-color'], ['get', 'color']);
-    assert.equal(paint['icon-halo-color'], '#152432');
+    assert.equal(paint['icon-halo-color'], '#0b1418');
     assert.equal(layout['icon-allow-overlap'], true);
     assert.equal(layout['icon-ignore-placement'], true);
     assert.ok(images.has(layout['icon-image']), `${id} uses a picture that was never added`);
