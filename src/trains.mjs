@@ -107,10 +107,15 @@ function draw() {
   const selected = state.selected;
   if (selected) {
     const raw = shapeFor(selected.trip), path = selected.trip.renderable && raw ? state.engine.tripPath(selected.trip,raw) : [];
-    const signature = `${selected.key}/${Boolean(raw)}/${state.visible}`;
+    // Once the page has said which lines the path runs along (renderDetail), the route is drawn in those
+    // stretches, each lit as its line is when chosen; until then, and where it cannot say, as one plain line.
+    const parts = state.routeParts?.key === selected.key && state.routeParts.parts.length ? state.routeParts.parts : null;
+    const signature = `${selected.key}/${Boolean(raw)}/${state.visible}/${Boolean(parts)}`;
     if (state.routeSignature !== signature) {
       state.routeSignature = signature;
-      map.getSource('cn-train-route').setData(fc(state.visible && path.length > 1 ? [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: path } }] : []));
+      const lines = parts ? parts.map(part => ({ type: 'Feature', properties: { color: part.colour, fast: part.fast ? 1 : 0 }, geometry: { type: 'LineString', coordinates: part.coords } }))
+        : [{ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: path } }];
+      map.getSource('cn-train-route').setData(fc(state.visible && path.length > 1 ? lines : []));
     }
     const p = position(selected);
     if (state.following && !['running','dwell'].includes(p.status)) { state.following=false; state.lastDetail=''; }
@@ -219,9 +224,10 @@ function renderDetail() {
     // the timetable's drawing: the page lays it over its own network) and shown when the answer is there.
     if (trip.renderable && raw && state.linesKey !== `${language()}/${instance.key}` && state.rail?.linesAlong) {
       const key = state.linesKey = `${language()}/${instance.key}`;
-      state.rail.linesAlong(state.engine.tripPath(trip, raw), { slow: !'GDCS'.includes(trip.type) }).then(rows => {
+      state.rail.linesAlong(state.engine.tripPath(trip, raw), { slow: !'GDCS'.includes(trip.type) }).then(found => {
         if (state.linesKey !== key) return;
-        state.lines = { key, rows }; state.lastDetail = ''; renderDetail();
+        state.lines = { key, rows: found.rows }; state.routeParts = { key: instance.key, parts: found.parts };
+        state.lastDetail = ''; renderDetail(); draw();
       }).catch(() => { if (state.linesKey === key) state.linesKey = ''; });
     }
     const along = state.lines?.key === `${language()}/${instance.key}` ? state.lines.rows : [];
@@ -344,10 +350,15 @@ function setupMap(rail) {
   mapInstalled=true;
   const map=rail.map;
   map.addSource('cn-train-route',{type:'geojson',data:fc([])});
-  // A train's route is drawn as the page draws a route between two stations: its blue on a white casing, the same widths.
-  const routeW=a=>['interpolate',['exponential',1.5],['zoom'],3,a[0],6,a[1],9,a[2],12,a[3],16,a[4]], round={'line-cap':'round','line-join':'round'};
-  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':'#ffffff','line-width':routeW([4.6,6,7.5,9,11]),'line-opacity':.95}});
-  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':'#0a84ff','line-width':routeW([2.6,3.6,4.6,5.6,7.2])}});
+  // A train's route is lit as a chosen line is (src/app.html, the layers hl and hl-conv), stretch by stretch: a fast
+  // line in its own colour on a white casing, a conventional line as a white core on a dark casing; the same widths.
+  // A stretch that names no line, and the whole route before its lines are known, is lit as a conventional line.
+  const fast=['==',['get','fast'],1], round={'line-cap':'round','line-join':'round'};
+  const routeW=(lit,plain)=>['interpolate',['exponential',1.5],['zoom'],...[3,6,9,12,16].flatMap((zoom,i)=>[zoom,['case',fast,lit[i],plain[i]]])];
+  map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['case',fast,'#ffffff','#05090c'],
+    'line-width':routeW([2.2,3.2,4.4,5.4,7],[2.8,4,5.4,6.8,9]),'line-opacity':['case',fast,.95,.8]}});
+  map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',layout:round,paint:{'line-color':['case',fast,['get','color'],'#ffffff'],
+    'line-width':routeW([1,1.6,2.4,3.2,4.6],[1.3,2,3,4,5.4])}});
   map.addSource('cn-trains',{type:'geojson',data:fc([])});
   // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them.
   for (const [name,spec] of Object.entries(MARKERS)) if (!map.hasImage(name)) map.addImage(name,markerImage(spec),{sdf:true,pixelRatio:2});

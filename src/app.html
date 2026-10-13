@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css?v=20261013-6">
+<link rel="stylesheet" href="src/trains.css?v=20261013-7">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-6"></script>
+<script type="module" src="src/trains.mjs?v=20261013-7"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -2704,7 +2704,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // nothing: the drawing is no better than that, and of two lines side by side (the 京沪线 and
     // the 沪宁城际线 for hours) the path keeps the one it is on. A train that is no fast train
     // (opts.slow) is offered no line built for fast trains alone. A stretch with no line near it
-    // says nothing. What is listed is then put together as a route's steps are.
+    // says nothing of itself. Gives the lines in order (rows) and the path cut where the line changes
+    // (parts: its coordinates, the line's colour, and whether it is lit as a fast line or as a
+    // conventional one), so that the train's route can be drawn as chosen lines are.
     const RAILWAY = new Set(['hsr350', 'hsr250', 'hsr200', 'main', 'branch', 'mrail']);
     const DEDICATED = new Set(['hsr350', 'hsr250']);
     const GRID = 0.05, STEP_M = 1000, NEAR_M = 400, SAME_M = 150, CHANGE = 3, OFF = 4.5;      // (costs in hundreds of metres)
@@ -2742,7 +2744,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         const [ax, ay] = path[i - 1], [bx, by] = path[i], k = Math.cos(ay * Math.PI / 180);
         const len = Math.hypot((bx - ax) * k, by - ay) * M;
         let at = left;                 // (how far into this piece the next sample falls)
-        for (; at < len; at += STEP_M) samples.push([ax + (bx - ax) * at / len, ay + (by - ay) * at / len]);
+        for (; at < len; at += STEP_M) samples.push([ax + (bx - ax) * at / len, ay + (by - ay) * at / len, i]);    // (and the vertex that follows it)
         left = at - len;
       }
       // per sample: the lines near it and their price; then the cheapest line for every sample
@@ -2781,23 +2783,36 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const taken = new Array(samples.length);
       let li = [...costs].reduce((a, b) => (b[1] < a[1] ? b : a))[0];
       for (let i = samples.length - 1; i >= 0; i--) { taken[i] = li; li = back[i].get(li); }
-      // as a route's steps: repeats joined, unnamed links folded into the line before, what is
-      // too short to be anything but a junction passed left out
-      const steps = [];
-      for (const of of taken) {
-        if (of < 0) continue;
-        const [name, cls, , tint] = g.lines[of], last = steps[steps.length - 1];
-        if (last && (last.name === name || !name)) last.m += STEP_M;
-        else steps.push({ name, cls, tint, m: STEP_M });
+      // The path in stretches, one for each line it runs along: a stretch with no named line, or
+      // too short to be anything but a junction passed, goes with the line before it (the first
+      // with the line after), so the stretches cover the whole path and are a route's steps.
+      const runs = [];
+      for (let i = 0; i < taken.length; i++) {
+        const last = runs[runs.length - 1];
+        if (last && last.li === taken[i]) last.to = i; else runs.push({ li: taken[i], from: i, to: i });
       }
-      const named_ = steps.filter(st => st.name && st.m >= 3 * STEP_M), shown = [];
-      for (const st of named_) {
-        const last = shown[shown.length - 1];
-        if (last && last.name === st.name) last.m += st.m; else shown.push(st);
+      const real = run => run.li >= 0 && g.lines[run.li][0] && run.to - run.from + 1 >= 3;
+      const parts = [];
+      for (const run of runs) {
+        const last = parts[parts.length - 1];
+        if (real(run) && !(last && g.lines[last.li][0] === g.lines[run.li][0])) parts.push({ li: run.li, from: last ? run.from : 0, to: run.to });
+        else if (last) last.to = run.to;
       }
-      const metres = shown.reduce((sum, st) => sum + st.m, 0), minM = Math.min(10000, Math.max(2000, metres * 0.005));
-      return shown.map(st => ({ name: named(railByKey.get('cn/' + st.name) || metroByName.get(st.name) || { n: st.name }),
-        colour: st.tint || col(st.cls), km: Math.max(1, Math.round(st.m / 1000)), minor: st.cls !== 'mrail' && st.m < minM && shown.some(o => o.m >= minM) }));
+      if (!parts.length) return { rows: [], parts: [] };
+      parts[parts.length - 1].to = samples.length - 1;
+      const stretch = (part, next) => {            // the path itself from the part's first sample to the next part's
+        const from = samples[part.from], upTo = next ? samples[next.from] : null;
+        return [from.slice(0, 2), ...path.slice(from[2], upTo ? upTo[2] : path.length), ...(upTo ? [upTo.slice(0, 2)] : [])];
+      };
+      const metres = samples.length * STEP_M, minM = Math.min(10000, Math.max(2000, metres * 0.005));
+      const length = part => (part.to - part.from + 1) * STEP_M;
+      const shownParts = parts.map((part, i) => {
+        const [name, cls, , tint] = g.lines[part.li];
+        return { name: named(railByKey.get('cn/' + name) || metroByName.get(name) || { n: name }), colour: tint || col(cls),
+          fast: cls !== 'main' && cls !== 'branch', km: Math.max(1, Math.round(length(part) / 1000)),
+          minor: cls !== 'mrail' && length(part) < minM && parts.some(o => length(o) >= minM), coords: stretch(part, parts[i + 1]) };
+      });
+      return { rows: shownParts.map(({ coords, fast, ...row }) => row), parts: shownParts.map(({ coords, colour, fast }) => ({ coords, colour, fast })) };
     }
     const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; };
     let routeSeq = 0;         // every call is a new query; an older one that is still waiting gives up
