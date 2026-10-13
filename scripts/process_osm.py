@@ -1816,3 +1816,7 @@ print("track km (double track counted twice):", {f"{k[0]}:{k[1]}": round(v) for 
 from design_speeds import apply as apply_design_speeds, keep_base
 keep_base(ROOT)          # so that scripts/design_speeds.py can be run again on its own
 apply_design_speeds(ROOT)
+# Seats given by hand along a corridor: the railways were seated with their colouring just now, the urban lines here.
+import seat_overrides
+seat_overrides.keep_base(ROOT)          # so that scripts/seat_overrides.py can be run again on its own
+seat_overrides.reseat(ROOT)

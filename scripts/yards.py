@@ -47,6 +47,8 @@ def drawn_lines(g, data=None):
     for name in names:
         path = data / f"{name}.geojson"
         for f in (json.loads(path.read_text())["features"] if path.exists() else []):
+            if f["properties"].get("zf"):           # a stretch as drawn zoomed out, along another line's path: not its track
+                continue
             geom = f["geometry"]
             out += [co for co in (geom["coordinates"] if geom["type"] == "MultiLineString" else [geom["coordinates"]]) if len(co) > 1]
     return out

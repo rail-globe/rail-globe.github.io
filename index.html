@@ -1854,6 +1854,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
 
     const FAST_COLOR = ['match', ['get', 'c'], ...FAST.flatMap(id => [id, col(id)]), col('main')];
     const round = { 'line-cap': 'round', 'line-join': 'round' };
+    // A stretch seated by hand beside another line is written twice (scripts/seat_overrides.py):
+    // along that line's path (zf), so that the two are exactly parallel when zoomed out, and on its
+    // own track (zn) from SWAP on. Every layer of the layers that carry such stretches shows one
+    // of the two, whatever else it filters by. (A filter looks at the zoom in whole levels.)
+    const SWAP = 14, SIDE = ['case', ['==', ['get', 'zf'], 1], ['<', ['zoom'], SWAP], ['==', ['get', 'zn'], 1], ['>=', ['zoom'], SWAP], true];
+    const TWICE = new Set(['hsr', 'conv', 'metro']), twice = new Set();
+    const writtenTwice = layer => TWICE.has(layer.source) || (layer.source === 'tiles-cn' && TWICE.has(layer['source-layer']));
+    const addLayer0 = map.addLayer.bind(map), setFilter0 = map.setFilter.bind(map);
+    map.addLayer = (layer, before) => {
+      if (!writtenTwice(layer)) return addLayer0(layer, before);
+      twice.add(layer.id);
+      return addLayer0({ ...layer, filter: layer.filter ? ['all', layer.filter, SIDE] : SIDE }, before);
+    };
+    map.setFilter = (id, filter, ...rest) => setFilter0(id, twice.has(id) ? (filter ? ['all', filter, SIDE] : SIDE) : filter, ...rest);
     const EMPTY = { type: 'FeatureCollection', features: [] };
     // Yard and depot tracks sit under everything else and only appear once zoomed in.
     // (from the tiles they come with the view; as whole files they are fetched by loadYards)
@@ -1903,7 +1917,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // the offset of a line: a guest (no slot of its own) one step beside its host; a line of a
     // bundle slot steps from its middle; apart: on tracks of its own, back onto them by z16.5
     const beside = ({ guest = false, apart = false } = {}) => {
-      if (guest) return curve(GUEST.step);
+      // (a guest stands one step aside, or as many as the data seats it: a corridor laid out by hand, scripts/seat_overrides.py)
+      if (guest) return curve(GUEST.step.map(([z, px]) => [z, ['*', ['coalesce', ['get', 'off'], 1], px]]));
       const at = z => ['*', slot, stepAt(z)];
       // Shared services retain their spacing; independent tracks return to their source geometry.
       // A cross-category displacement is independent even when the internal group shares track.
@@ -1988,7 +2003,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const casing = ([id, g, kind, thin]) => map.addLayer({ id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
       paint: { 'line-color': '#ffffff', 'line-width': ownCasing(thin), 'line-offset': beside(), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
     const line = ([id, g, kind, thin]) => map.addLayer({ id, type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': sideWidth(METRO_STOPS.map(([z, v]) => [z, thin * v])), 'line-offset': beside() } });
+      // (a thin line stays thin where it stands in a bundle: 西郊线 beside 10 号线 at 巴沟 was drawn at a metro's width there, over its own casing)
+      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': sideWidth(METRO_STOPS.map(([z, v]) => [z, thin * v]), METRO_STOPS.map(([z, v]) => [z, thin * v])), 'line-offset': beside() } });
     // China's: every casing under every line, so that a thin line over a wide one leaves the wide
     // one's colour in sight on both sides (a tram above a metro tunnel: 沈阳, 大连, 香港).
     const homeMetro = metroLayers.filter(m => m[1] === 'cn');
@@ -2761,7 +2777,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       let id = 0;
       for (const f of data.features) {
         const props = f.properties;
-        if (!props.n) continue;
+        if (!props.n || props.zf) continue;      // (zf: the same stretch as it is drawn zoomed out, along its spine)
         if (!byName.has(props.n)) byName.set(props.n, []);
         for (const pts of f.geometry.type === 'MultiLineString' ? f.geometry.coordinates : [f.geometry.coordinates]) {
           if (pts.length > 1) byName.get(props.n).push({ id: layer + id++, layer, props, pts, box: boxOf(pts, 0.008, 0.006) });
@@ -2855,7 +2871,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         end();
         run = { track, lo: track.at, hi: track.at, last: track.at };
         if (joint) reach(endOf(track.pts, joint[1] > 0));
-        else if (from && lengthOf([from, track.at[3]]) > 3) strokes.push({ coords: [from, track.at[3]], props: { kind: 'plain', color: track.colour } });
+        // Between two pieces that do not meet end to end the route is drawn as the network has it, not straight across:
+        // a connecting curve shorter than the samples are apart has no sample of its own (柳广线 to 京沪线 by the 马广联络线, 2026-10-13).
+        else if (from && lengthOf([from, track.at[3]]) > 3) strokes.push({ coords: [from, ...(i ? path.slice(samples[i - 1][2], samples[i][2]) : []), track.at[3]], props: { kind: 'plain', color: track.colour } });
         run.last = track.at;
       }
       end();
@@ -3314,7 +3332,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         enter(abroad(f.properties.g));
         select(f.properties.n, false, f.properties.c);
       }
-      else if (!f) clearSelection();
+      else if (!f) { clearSelection(); if (routeLit) clearRoute(); }     // a tap on nothing puts the map back as it was: no line chosen, no route lit
     });
 
     // In another language everything that was written is written again: the head of the card,

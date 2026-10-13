@@ -56,6 +56,8 @@ def here(pt, zoom=15):
 def load(name):
     out = []
     for f in json.load(open(DATA / name))["features"]:
+        if f["properties"].get("zf"):       # the same stretch as drawn zoomed out, along the line it is seated beside: not its track
+            continue
         g = shape(f["geometry"])
         out.append((f["properties"], [x for x in (g.geoms if hasattr(g, "geoms") else [g]) if x.length > 0]))
     return out
@@ -235,14 +237,22 @@ def hidden(lines, step):
     return sorted(((v * KM, k, where[k]) for k, v in pairs.items() if v * KM > 1), key=lambda f: -f[0])
 
 
-def astray(lines, step):
+BESIDE_RAIL = 0.004      # degrees (~400 m): a railway this near is what an urban line was seated beside by hand, or is leaving
+
+
+def astray(lines, step, beside=None):
     """Lines moved off their own track where nothing runs with them: a line is drawn to one side
-    only along a stretch it shares. Short moved pieces are the line changing sides and are left out."""
+    only along a stretch it shares. Short moved pieces are the line changing sides and are left out.
+    beside: a tree of the railways. An urban line is also seated by hand beside a railway of its
+    corridor (data/seat_overrides.json: 13 号线 along the 京包客专线), and gives the seat up over a
+    kilometre or two after the two part: a railway near is company too."""
     found, where = defaultdict(float), {}
     for key, off, g, spacing, row in company(lines, step):
         if abs(off) < 0.25 or g.length < RAMP_MAX:
             continue
         for pt, mates in row:
+            if not mates and beside is not None and len(beside.query(pt, predicate="dwithin", distance=BESIDE_RAIL)):
+                continue
             if not mates:
                 found[key] += spacing
                 where.setdefault(key, pt)
@@ -319,7 +329,8 @@ def report(layer):
         print(f"   stacked: {len(stacked)} pairs of a tram and a line under its street in one place for more than 1 km, {sum(f[0] for f in stacked):.0f} km in all")
         for length, (a, b), pt in stacked[:20]:
             print(f"      {length:6.1f} km  {a[1]} + {b[1]} ({a[0]})  {here(pt)}")
-        found = astray(lines, step / 3)
+        railways = [g for name in ("rail_hsr.geojson", "rail_conv.geojson") for _, parts in load(name) for g in parts]
+        found = astray(lines, step / 3, STRtree(railways) if railways else None)
         result["astray"] = [{"km": length, "line": list(key), "view": here(pt)} for length, key, pt in found]
         print(f"   astray: {len(found)} lines moved off their track for more than 1 km with no line beside them, {sum(f[0] for f in found):.0f} km in all")
         for length, key, pt in found[:15]:

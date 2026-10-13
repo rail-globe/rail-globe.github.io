@@ -16,6 +16,7 @@ from pathlib import Path
 from shapely.geometry import LineString, Point, mapping, shape
 from shapely.ops import substring
 from shapely.strtree import STRtree
+from seat_overrides import apply as seat_apply, corridors as seat_corridors, told as seats_told
 
 ROOT = Path(__file__).resolve().parents[1]
 GRADES = ('hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow')
@@ -373,7 +374,13 @@ def split_part(g, spans, original):
         # lines keeps that band, marked as an estimate (e); every other line is conventional.
         # A high-speed line is never drawn as a conventional one for want of a reference.
         props.pop('e', None)
-        if props['r'] in NOMINAL_FAST:
+        if DEPOT_TRACK.search(props.get('n') or ''):
+            # The way into a depot is a branch whatever speed its track is tagged with (owner,
+            # 2026-10-13: 京南至动车段 A 线, B 线 and 丰台动车走行 A, B 线 are drawn as connecting
+            # lines). 40 of the 46 lines so named were branches already; the track tags of six
+            # put them among the fast lines.
+            props['c'] = 'branch'
+        elif props['r'] in NOMINAL_FAST:
             props.update(c=props['r'], e=1)
         else:
             props['c'] = 'main' if props['r'] != 'branch' else 'branch'
@@ -395,6 +402,59 @@ def split_part(g, spans, original):
                 props['v'] = section['operating']
         piece = substring(g, a, b)
         yield {'type': 'Feature', 'properties': props, 'geometry': mapping(piece)}
+
+
+DEPOT_TRACK = re.compile('走行|动车段|动车所')     # lines named as the way into a depot
+TAIL_DEG = 0.03          # ~3 km: a longer piece with no documented value is a stretch of its own
+TOUCH_DEG = 0.00002      # ~2 m: two pieces of a line this close meet
+DOCUMENTED = ('c', 'd', 'dt', 'v', 'dn', 'de', 'ref', 'db')
+
+
+def tails(drawn):
+    """The pieces of one line, with every short tail given what the stretch it ends has.
+
+    A documented section runs between two named places. The last few hundred metres of a line
+    beyond the station it is measured to (京包客专线 into 北京北, 170 m) lie outside every section and
+    fell back to the line's nominal band: one more colour at the very end of a line. Pieces with
+    no documented value that meet each other are taken together; where they are shorter than
+    TAIL_DEG in all and every documented piece of the line they meet says the same, they are the
+    end of that stretch (or a hole in it) and take its values (owner, 2026-10-13: the tail follows
+    the stretch it joins). Between two stretches that differ nothing is taken. Returns (pieces,
+    how many changed)."""
+    shapes = [shape(f['geometry']) for f in drawn]
+    bare = [i for i, f in enumerate(drawn) if 'dn' not in f['properties'] and shapes[i].geom_type == 'LineString']
+    if not bare or len(bare) == len(drawn):
+        return drawn, 0
+    ends = {i: [Point(shapes[i].coords[0]), Point(shapes[i].coords[-1])] for i in bare}
+    group = {i: i for i in bare}
+
+    def find(i):
+        while group[i] != i:
+            group[i] = group[group[i]]
+            i = group[i]
+        return i
+    for k, i in enumerate(bare):
+        for j in bare[k + 1:]:
+            if any(shapes[j].distance(e) < TOUCH_DEG for e in ends[i]) or any(shapes[i].distance(e) < TOUCH_DEG for e in ends[j]):
+                group[find(i)] = find(j)
+    clusters = defaultdict(list)
+    for i in bare:
+        clusters[find(i)].append(i)
+    told = [j for j, f in enumerate(drawn) if 'dn' in f['properties']]
+    changed = 0
+    for members in clusters.values():
+        if sum(shapes[i].length for i in members) > TAIL_DEG:
+            continue
+        said = {json.dumps({k: drawn[j]['properties'].get(k) for k in DOCUMENTED}, sort_keys=True, ensure_ascii=False)
+                for j in told if any(shapes[j].distance(e) < TOUCH_DEG for i in members for e in ends[i])}
+        if len(said) != 1:
+            continue
+        values = {k: v for k, v in json.loads(said.pop()).items() if v is not None}
+        for i in members:
+            drawn[i]['properties'].pop('e', None)
+            drawn[i]['properties'].update(values)
+            changed += 1
+    return drawn, changed
 
 
 def pack(features):
@@ -462,6 +522,7 @@ def apply(root=ROOT):
         else:
             unnamed.append(f)
     output, reports = [], []
+    tail_count = 0
     for name, fs in named.items():
         found, alias = catalogue_rows(name, sections, cards)
         rows = contiguous_sections(found)
@@ -548,6 +609,8 @@ def apply(root=ROOT):
             for i, more in graph.other_tracks(spans).items():
                 spans[i] += more
         drawn = [f for i, g in enumerate(parts) for f in split_part(g, spans[i], props[i])]
+        drawn, taken = tails(drawn)
+        tail_count += taken
         output.extend(drawn)
         if rows:
             known = sum(shape(f['geometry']).length for f in drawn if f['properties'].get('d'))
@@ -559,12 +622,23 @@ def apply(root=ROOT):
     for f in unnamed:
         for g in parts_of(f):
             output.extend(split_part(g, [], f['properties']))
+    # Seats given by hand along a corridor (scripts/seat_overrides.py): after the colouring, so
+    # that a seat never changes which stretch of a line a design speed is matched to.
+    metro_file = data / 'metro.geojson'
+    urban = json.loads(metro_file.read_text())['features'] if metro_file.exists() else []
+    seated_corridors = seat_corridors('cn', output + urban, data / 'seat_overrides.json')
     # Unknown speed remains neutral, never placed in <160 just because a tag is absent.
-    for bucket in ('hsr', 'conv'):
-        features = pack([f for f in output if not f['properties'].get('_shared')
-                         and (f['properties']['c'] in GRADES) == (bucket == 'hsr')])
+    buckets = {bucket: pack([f for f in output if not f['properties'].get('_shared')
+                             and (f['properties']['c'] in GRADES) == (bucket == 'hsr')]) for bucket in ('hsr', 'conv')}
+    # (the two files are seated as one: a line in both, fast where it was rebuilt, is one line)
+    together, seat_receipt = seat_apply([{**f, '_bucket': bucket} for bucket, features in buckets.items() for f in features],
+                                        seated_corridors)
+    for bucket in buckets:
+        features = [{k: v for k, v in f.items() if k != '_bucket'} for f in together if f['_bucket'] == bucket]
         (data / f'rail_{bucket}.geojson').write_text(json.dumps({'type': 'FeatureCollection', 'features': features},
                                                              ensure_ascii=False, separators=(',', ':')))
+    seats_told(seat_receipt, 'railways', len(seated_corridors))
+    print(f'tails of lines given the values of the stretch they end: {tail_count}', flush=True)
     shared_file = data / 'rail_shared.geojson'
     shared = {'type': 'FeatureCollection', 'features': [f for f in output if f['properties'].get('_shared')]}
     for f in shared['features']:

@@ -607,7 +607,7 @@ UNNAMED_CEILING = {"cn": 17, "jp": 7, "kr": 1, "uk": 4}
 def running_lines(g, data):
     """The country's metro, light-rail and tram lines as drawn, from its metro file."""
     path = data / f"{'' if g == 'cn' else g + '_'}metro.geojson"
-    feats = json.loads(path.read_text())["features"] if path.exists() else []
+    feats = [f for f in (json.loads(path.read_text())["features"] if path.exists() else []) if not f["properties"].get("zf")]
     return [co for f in feats for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]])]
 
 
