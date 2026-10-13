@@ -1,0 +1,287 @@
+{
+  "meta": {
+    "feedStartDate": "20260927",
+    "feedEndDate": "20261231",
+    "timezone": "Asia/Shanghai",
+    "sourceUrl": "https://github.com/wensimehrp/chinese-railway-gtfs",
+    "assetUrl": "https://github.com/wensimehrp/chinese-railway-gtfs/releases/download/gtfs-20261012-065400/output_gtfs.zip",
+    "release": "gtfs-20261012-065400",
+    "feedVersion": "20261012",
+    "generatedAt": "2026-10-12T14:08:56+00:00",
+    "mode": "timetable-estimate",
+    "isLiveVehiclePositionFeed": false,
+    "positionDescription": "根据社区时刻表与线路几何按北京时间估算；不提供列车实际GPS、实际晚点或停运信息。",
+    "scope": "中国境内；包含香港西九龙；含境外停站的跨境行程整体排除",
+    "coverageNote": "仅对有明确运行日期、有效停站时序且通过路线质量检查的旅程估算位置；缺失路线不补站间直线。",
+    "calendarNote": "严格使用本快照明确列出的运行日期；日历过期不会自动循环为每天。",
+    "geometryNote": "社区GTFS中的WGS84路线；上游可能对缺失坐标插值。本构建保守排除原始点间距过大的稀疏路线，该阈值不证明路线错误。通过校验也不等于逐段精确轨道或实际行车路径。",
+    "archiveSha256": "381c6573359f6bb045a9174e14b83e7180ba9b132494c73779126231ca43ac80",
+    "polylinePrecision": 5,
+    "distanceEarthRadiusM": 6371000,
+    "simplifyToleranceM": 100.0,
+    "qualityThresholds": {
+      "maxStopOffsetM": 1500.0,
+      "maxSourceSegmentM": 20000.0,
+      "maxSegmentSpeedKmh": 450.0
+    },
+    "quality": {
+      "sourceTrips": 11740,
+      "sourceStops": 3177,
+      "sourceStopTimes": 109580,
+      "sourceShapePoints": 3130572,
+      "sourceShapes": 5696,
+      "foreignStopsExcluded": 3,
+      "invalidStopsExcluded": 0,
+      "shapesRejectedForGeometryGap": 856,
+      "simplifiedShapePoints": 705371,
+      "endpointTimesNormalized": 175,
+      "tripsWithSourceShape": 7151,
+      "foreignTripsExcluded": 4,
+      "trips": 11736,
+      "stops": 3174,
+      "renderableTrips": 6117,
+      "rejectedTrips": 5619,
+      "publishedShapes": 2762,
+      "geometryShards": 2,
+      "geometryBytes": 2881416,
+      "renderablePercent": 52.12,
+      "maxStopOffsetM": 1005,
+      "sourceShapeTripsRejected": 1034
+    },
+    "rejectionReasons": {
+      "missing_route_shape": 4515,
+      "departure_before_arrival": 81,
+      "route_has_large_geometry_gap": 893,
+      "implausible_route_segment_speed": 7,
+      "station_too_far_from_route": 123
+    },
+    "license": {
+      "name": "CC BY 4.0",
+      "url": "https://creativecommons.org/licenses/by/4.0/",
+      "sourceLicenseUrl": "https://github.com/wensimehrp/chinese-railway-gtfs/blob/main/LICENSE",
+      "changes": "已作中国范围筛选、质量校验、几何简化、压缩与格式转换"
+    },
+    "attribution": [
+      {
+        "name": "Chinese Railway GTFS（社区生成，并非12306官方开放定位接口）",
+        "url": "https://github.com/wensimehrp/chinese-railway-gtfs"
+      },
+      {
+        "name": "RailGo-Parser 上游列车数据采集",
+        "url": "https://github.com/RailGoApps/RailGo-Parser"
+      },
+      {
+        "name": "OpenStreetMap 车站坐标贡献者",
+        "url": "https://www.openstreetmap.org/copyright"
+      }
+    ]
+  },
+  "indexBytes": 5044104,
+  "rejectedExamples": {
+    "missing_route_shape": [
+      {
+        "id": "01000K514710",
+        "number": "K5147",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K51810E",
+        "number": "K5181",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K513109",
+        "number": "K5131",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K513205",
+        "number": "K5132",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K703200",
+        "number": "K7032",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K51890G",
+        "number": "K5189",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K514930",
+        "number": "K5149",
+        "sourceShapeId": null
+      },
+      {
+        "id": "01000K516601",
+        "number": "K5166",
+        "sourceShapeId": null
+      }
+    ],
+    "departure_before_arrival": [
+      {
+        "id": "01000K51010F",
+        "number": "K5101",
+        "sourceShapeId": null
+      },
+      {
+        "id": "030000K56208",
+        "number": "K562",
+        "sourceShapeId": null
+      },
+      {
+        "id": "02000K706610",
+        "number": "K7066",
+        "sourceShapeId": null
+      },
+      {
+        "id": "03000K101404",
+        "number": "K1014",
+        "sourceShapeId": null
+      },
+      {
+        "id": "04000K12300H",
+        "number": "K1230",
+        "sourceShapeId": null
+      },
+      {
+        "id": "05000K12600E",
+        "number": "K1260",
+        "sourceShapeId": null
+      },
+      {
+        "id": "11000K11900R",
+        "number": "K1190",
+        "sourceShapeId": null
+      },
+      {
+        "id": "12000K126206",
+        "number": "K1262",
+        "sourceShapeId": null
+      }
+    ],
+    "route_has_large_geometry_gap": [
+      {
+        "id": "01000K703940",
+        "number": "K7039",
+        "sourceShapeId": "shape-1"
+      },
+      {
+        "id": "04000K511440",
+        "number": "K5114",
+        "sourceShapeId": "shape-7"
+      },
+      {
+        "id": "04000K710900",
+        "number": "K7109",
+        "sourceShapeId": "shape-9"
+      },
+      {
+        "id": "24000K111520",
+        "number": "K1115",
+        "sourceShapeId": "shape-40"
+      },
+      {
+        "id": "33000K111720",
+        "number": "K1117",
+        "sourceShapeId": "shape-58"
+      },
+      {
+        "id": "35000K79120W",
+        "number": "K7912",
+        "sourceShapeId": "shape-66"
+      },
+      {
+        "id": "490000K8820L",
+        "number": "K882",
+        "sourceShapeId": "shape-109"
+      },
+      {
+        "id": "760000K8560F",
+        "number": "K856",
+        "sourceShapeId": "shape-155"
+      }
+    ],
+    "implausible_route_segment_speed": [
+      {
+        "id": "16000G809600",
+        "number": "G8096",
+        "sourceShapeId": "shape-367"
+      },
+      {
+        "id": "1g000G809510",
+        "number": "G8095",
+        "sourceShapeId": "shape-417"
+      },
+      {
+        "id": "76000G958504",
+        "number": "G9585",
+        "sourceShapeId": "shape-2641"
+      },
+      {
+        "id": "12000D776802",
+        "number": "D7768",
+        "sourceShapeId": "shape-2856"
+      },
+      {
+        "id": "16000D776606",
+        "number": "D7766",
+        "sourceShapeId": "shape-2873"
+      },
+      {
+        "id": "16000D77920U",
+        "number": "D7792",
+        "sourceShapeId": "shape-2879"
+      },
+      {
+        "id": "24000C26010R",
+        "number": "C2601",
+        "sourceShapeId": "shape-4181"
+      }
+    ],
+    "station_too_far_from_route": [
+      {
+        "id": "240000G6510Y",
+        "number": "G651",
+        "sourceShapeId": "shape-524"
+      },
+      {
+        "id": "240000G6650Y",
+        "number": "G665",
+        "sourceShapeId": "shape-529"
+      },
+      {
+        "id": "240000G67100",
+        "number": "G671",
+        "sourceShapeId": "shape-532"
+      },
+      {
+        "id": "240000G68503",
+        "number": "G685",
+        "sourceShapeId": "shape-535"
+      },
+      {
+        "id": "24000G149501",
+        "number": "G1495",
+        "sourceShapeId": "shape-589"
+      },
+      {
+        "id": "24000G15770I",
+        "number": "G1577",
+        "sourceShapeId": "shape-599"
+      },
+      {
+        "id": "24000G67030N",
+        "number": "G6703",
+        "sourceShapeId": "shape-681"
+      },
+      {
+        "id": "24000G671122",
+        "number": "G6711",
+        "sourceShapeId": "shape-683"
+      }
+    ]
+  }
+}

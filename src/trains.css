@@ -1,0 +1,88 @@
+/* Rail Globe China train extension. Upstream copyright and license remain in LICENSE. */
+#tab-trains { gap: 16px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.train-summary { padding: 14px; border-radius: 14px; background: linear-gradient(140deg, rgba(65, 105, 142, .28), rgba(25, 38, 50, .54)); border: 1px solid rgba(173, 206, 225, .14); }
+.train-summary-top, .train-count, .train-small-controls, .train-actions, .train-detail-title, .train-list-top { display: flex; align-items: center; gap: 9px; }
+.train-summary-top, .train-small-controls, .train-detail-title { justify-content: space-between; }
+.train-mode { color: #f5d5a4; background: rgba(224, 164, 67, .13); border: 1px solid rgba(237, 195, 128, .23); border-radius: 5px; padding: 2px 6px; font-size: 11px; white-space: nowrap; }
+.train-clock { color: #bacbd6; font-size: 11px; font-variant-numeric: tabular-nums; }
+.train-count { margin: 13px 0 5px; align-items: baseline; }
+.train-count strong { font-size: 34px; font-weight: 650; letter-spacing: -1px; line-height: 1; font-variant-numeric: tabular-nums; }
+.train-count > span { font-size: 12px; color: var(--label2); }
+.train-toggle { margin-left: auto; font-size: 11px; white-space: nowrap; align-self: center; }
+.train-toggle input, .train-small-controls input { accent-color: #79cbf5; vertical-align: middle; }
+.train-muted { margin: 7px 0 0; color: var(--label2); font-size: 11px; line-height: 1.55; }
+.train-disclosure { margin: 11px 0 0; padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); color: #c1b8a8; font-size: 11px; line-height: 1.55; }
+.train-controls { display: grid; gap: 10px; }
+.train-search { display: block; border: 1px solid var(--sep); background: rgba(0,0,0,.16); border-radius: 10px; }
+.train-search input { display: block; width: 100%; min-width: 0; box-sizing: border-box; border: 0; border-radius: inherit; background: transparent; padding: 11px 12px; outline-offset: 0; font-size: 12px; }
+.train-search input::placeholder { color: var(--label3); }
+.train-filters { display: flex; gap: 5px; }
+.train-filters button { flex: 1; min-width: 0; padding: 6px 3px; border: 1px solid transparent; background: var(--fill2); border-radius: 7px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+.train-filters button[aria-pressed="true"] { border-color: rgba(135,208,250,.5); background: rgba(88,172,225,.18); color: #c1e8ff; }
+.train-small-controls { font-size: 11px; color: var(--label2); }
+.train-small-controls .link { font-size: 11px; color: #9edaff; }
+.train-time-panel { padding: 12px; background: var(--fill2); border-radius: 10px; display: grid; gap: 8px; font-size: 12px; }
+.train-time-panel input { width: 100%; box-sizing: border-box; border: 1px solid var(--sep); border-radius: 7px; background: #25303a; padding: 8px; }
+.train-actions { flex-wrap: wrap; }
+.train-button { border: 1px solid rgba(178,204,228,.2); border-radius: 7px; padding: 7px 10px; background: rgba(111,160,200,.13); color: #d3e9f9; cursor: pointer; font-size: 12px; }
+.train-button[aria-pressed="true"] { border-color: #74c5f1; background: rgba(74,164,218,.25); }
+.train-button:disabled { opacity: .45; cursor: default; }
+.train-error { border: 1px solid rgba(245,191,112,.3); background: rgba(138,88,18,.16); border-radius: 10px; padding: 12px; font-size: 12px; }
+.train-error p { margin: 0 0 8px; overflow-wrap: anywhere; }
+.train-list { margin: 0; padding: 0; list-style: none; }
+.train-list li { min-width: 0; }
+.train-list button { display: block; text-align: left; width: 100%; box-sizing: border-box; border: 0; padding: 11px 12px; background: transparent; cursor: pointer; }
+.train-list button:hover, .train-list button:focus-visible { background: rgba(255,255,255,.06); }
+.train-list button[aria-pressed="true"] { background: rgba(83,163,211,.14); box-shadow: inset 3px 0 #84cffa; }
+.train-number { font-size: 15px; font-weight: 650; letter-spacing: .3px; font-variant-numeric: tabular-nums; }
+.train-kind-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.train-status { margin-left: auto; font-size: 10px; color: #b9d3df; background: rgba(145,184,201,.1); border-radius: 4px; padding: 2px 5px; white-space: nowrap; }
+.train-status.inactive { color: var(--label3); }
+.train-od { margin-top: 5px; font-size: 12px; color: #d7dbe0; display: block; overflow-wrap: anywhere; }
+.train-route-sub { margin-top: 3px; font-size: 11px; color: var(--label2); display: block; }
+.train-more { width: 100%; border: 0; border-radius: 8px; background: var(--fill2); color: #a6d9f9; padding: 10px; margin-top: 8px; font-size: 12px; cursor: pointer; }
+.train-detail { background: rgba(37,61,78,.7); border: 1px solid rgba(143,200,230,.3); border-radius: 13px; padding: 13px; }
+.train-detail-title h2 { margin: 0; font-size: 23px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.train-close { border: 0; border-radius: 50%; background: var(--fill2); color: var(--label2); width: 28px; height: 28px; font-size: 20px; cursor: pointer; }
+.train-detail .train-od { font-size: 14px; margin: 8px 0; }
+.train-detail .train-actions { margin-top: 10px; }
+.train-progress { height: 3px; background: rgba(213,228,239,.12); border-radius: 3px; overflow: hidden; margin-top: 12px; }
+.train-progress > i { display: block; height: 100%; background: #8fd6ff; border-radius: inherit; }
+.train-detail-state { margin: 9px 0 0; font-size: 12px; color: #c6e4f5; }
+.train-stop-table { width: 100%; margin-top: 12px; border-collapse: collapse; font-size: 11px; font-variant-numeric: tabular-nums; }
+.train-stop-table th { padding: 5px 2px; text-align: left; color: var(--label2); font-weight: 400; }
+.train-stop-table td { padding: 7px 2px; border-top: 1px solid rgba(255,255,255,.07); vertical-align: top; }
+.train-stop-table td:not(:first-child) { white-space: nowrap; }
+.train-stop-table td.train-delay { white-space: normal; min-width: 38px; }
+.train-stop-table tr.current { color: #a8e2ff; background: rgba(125,205,246,.09); }
+.train-stop-table tr.past { color: rgba(224,237,246,.5); }
+.train-stop-table small { font-size: 9px; color: #aec0cb; }
+.train-delay { color: #e9c289; max-width: 68px; overflow-wrap: anywhere; }
+.train-detail details { margin-top: 12px; font-size: 12px; }
+.train-detail summary, .train-about summary { cursor: pointer; color: #b4d1e2; }
+.train-about { margin: 2px 2px 8px; padding-top: 12px; border-top: 1px solid var(--sep); color: var(--label2); font-size: 11px; line-height: 1.65; }
+.train-about p { margin: 9px 0; overflow-wrap: anywhere; }
+.train-about a, .train-detail a { color: #9acfea; }
+.train-map-badge { position: fixed; z-index: 1; top: 109px; right: calc(12px + env(safe-area-inset-right,0px)); display: flex; align-items: center; gap: 6px; padding: 7px 9px; border: 1px solid rgba(245,211,158,.24); border-radius: 8px; background: rgba(24,29,34,.8); backdrop-filter: blur(12px); color: #e2c9a5; font-size: 11px; pointer-events: none; }
+.train-map-badge i { display: block; width: 6px; height: 6px; border: 1px solid #e2c9a5; border-radius: 50%; }
+.train-map-badge[data-paused="true"] { color: #d4c5f4; border-color: rgba(181,157,224,.4); }
+@media (max-width:720px) {
+  .train-search input, .train-time-panel input { font-size: 16px; }
+  .train-map-badge { top: calc(66px + env(safe-area-inset-top,0px)); padding: 6px 8px; font-size: 10px; }
+  .train-toggle { font-size: 12px; }
+  .train-small-controls { min-height: 30px; }
+  .train-filters button { min-height: 35px; }
+  .train-button { min-height: 36px; }
+}
+
+/* The extension never restyles or hides the country's navigation and language control. */
+#tab-trains .train-summary-top, #tab-trains .train-count { flex-wrap: wrap; }
+#tab-trains .train-actions { flex-wrap: wrap; }
+#tab-trains .train-filters { flex-wrap: wrap; }
+#tab-trains .train-filters button { flex-basis: 28%; white-space: normal; }
+#tab-trains .train-mode { white-space: normal; }
+#tab-trains .train-small-controls { flex-wrap: wrap; }
+#tab-trains .train-stop-table { table-layout: fixed; }
+#tab-trains .train-stop-table td, #tab-trains .train-stop-table th { overflow-wrap: anywhere; }
+#tab-trains .train-stop-table td:not(:first-child) { white-space: normal; }

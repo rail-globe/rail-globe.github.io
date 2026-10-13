@@ -10,6 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="src/trains.css">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -396,15 +397,17 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       <button type="button" class="lang" id="lang" aria-label="语言：中文 / English" data-ta="aria-label:lang.label"><b data-lang="zh">中</b><b data-lang="en">EN</b></button>
     </div>
     <p class="facts" id="facts"></p>
-    <div class="segmented" id="tabs" role="tablist" style="--n: 3">
+    <div class="segmented" id="tabs" role="tablist" style="--n: 4">
       <span class="thumb"></span>
       <button type="button" role="tab" data-tab="route" aria-selected="true" aria-controls="tab-route" data-t="tab.route">路线</button>
+      <button type="button" role="tab" data-tab="trains" aria-selected="false" aria-controls="tab-trains" data-t="tab.trains">列车</button>
       <button type="button" role="tab" data-tab="lines" aria-selected="false" aria-controls="tab-lines" data-t="tab.lines">线路</button>
       <button type="button" role="tab" data-tab="layers" aria-selected="false" aria-controls="tab-layers" data-t="tab.layers">图层</button>
     </div>
   </div>
 
   <div class="scroll" id="scroll">
+    <div class="tab" id="tab-trains" role="tabpanel" hidden></div>
     <div class="tab" id="tab-find" role="region" aria-label="搜索结果" data-ta="aria-label:found.label" hidden></div>
     <div class="tab" id="tab-world" role="region" aria-label="国家" data-ta="aria-label:world.label">
       <ul class="group linelist countries" id="countryList"></ul>
@@ -478,12 +481,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
+<script type="module" src="src/trains.mjs?v=20261013-pr1"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
   const css = getComputedStyle(document.documentElement);
   const col = k => css.getPropertyValue('--' + k).trim();
-  const abs = u => new URL(u, document.baseURI).href;
+  // Protocol URLs can contain a second, absolute URL; do not normalise it twice.
+  const abs = u => /^(?:pmtiles|localglyph):\/\//i.test(u) ? u : new URL(u, document.baseURI).href;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // ---- the two languages ----
   // Everything the page itself says is in this one table: the Chinese it was written in, and the
@@ -540,6 +545,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'star.label': ['在 GitHub 上给这个项目加星', 'Star this project on GitHub'],
     'title.country': ['{country}铁路网', '{country}'],
     'tab.route': ['路线', 'Route'],
+    'tab.trains': ['列车', 'Trains'],
     'tab.lines': ['线路', 'Lines'],
     'tab.layers': ['图层', 'Layers'],
     'found.label': ['搜索结果', 'Search results'],
@@ -1192,6 +1198,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const syncRouteTab = () => {
     const bar = document.getElementById('tabs'), tab = tabButtons.find(b => b.dataset.tab === 'route');
     if (FOREIGN[country]) tab.remove(); else if (!tab.isConnected) bar.insertBefore(tab, bar.querySelector('button'));
+    // The train overlay is also China-only; the native app keeps its existing tabs.
+    const trainsTab = tabButtons.find(b => b.dataset.tab === 'trains');
+    if (FOREIGN[country] || window.__app) trainsTab.remove();
+    else if (!trainsTab.isConnected) bar.insertBefore(trainsTab, bar.querySelector('[data-tab="lines"]'));
     bar.style.setProperty('--n', bar.querySelectorAll('button').length);
   };
   // Route state (od, pins, result) is wired up later; setCountry runs before that, so the cleanup
@@ -1218,6 +1228,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const paintTabs = () => {
     for (const t of document.querySelectorAll('.tab')) t.hidden = t.id !== 'tab-' + (finding ? 'find' : world ? 'world' : shownTab);
     document.getElementById('scroll').scrollTop = 0;
+    dispatchEvent(new CustomEvent('rail:view', { detail: { country, world, tab: shownTab, finding } }));
   };
   const setFinding = on => {
     if (on === finding) return;
@@ -1469,7 +1480,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     maxZoom: 18,
     attributionControl: false,
     localIdeographFontFamily: "'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Noto Sans CJK SC', sans-serif",
-    transformRequest: url => ({ url: abs(url) }),
+    transformRequest: url => ({ url: abs(url), credentials: 'same-origin' }),
     dragRotate: false,
     pitchWithRotate: false,
   });
@@ -1679,7 +1690,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     tag.onerror = () => fail(new Error(src));
     document.head.appendChild(tag);
   });
-  const archiveOf = g => `data/tiles/${g}.pmtiles`;
+  const archiveOf = g => abs(`data/tiles/${g}.pmtiles`);
   const tilesReady = !TILES ? Promise.resolve(null)
     : Promise.all([script('vendor/pmtiles.js'), ...everyCountry.map(g => getJSON(`data/tiles/${g}.json`, 1))]).then(async ([, ...beside]) => {
       const protocol = new window.pmtiles.Protocol();          // answers pmtiles://<archive>/z/x/y by range requests
@@ -2345,7 +2356,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       relabelLegend();
       applyVisibility();
       // 路线 is not a tab abroad: a page that was on it opens on the lines instead.
-      const onRoute = shownTab === 'route';
+      const onRoute = shownTab === 'route' || shownTab === 'trains';
       if (FOREIGN[g] && onRoute) showTab('lines');
       if (go === 'overview') {
         if (!touched) history.replaceState(null, '', location.pathname + location.search);
@@ -2506,6 +2517,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     };
     const esc = s => String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
     map.on('mousemove', e => {
+      if (map.getLayer('cn-trains-hit') && map.queryRenderedFeatures(e.point, { layers: ['cn-trains-hit'] }).length) {
+        tip.remove(); map.getCanvas().style.cursor = 'pointer'; return;
+      }
       const f = pick(e.point);
       map.getCanvas().style.cursor = f ? 'pointer' : '';
       if (!f) { tip.remove(); return; }
@@ -2950,6 +2964,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       return best;
     };
     map.on('click', e => {
+      if (map.getLayer('cn-trains-hit') && map.queryRenderedFeatures(e.point, { layers: ['cn-trains-hit'] }).length) return;
       const shown = id => each(id).map(c => c[0]).filter(layer => map.getLayoutProperty(layer, 'visibility') !== 'none');
       const st = shown('stations').length && map.queryRenderedFeatures([[e.point.x - 7, e.point.y - 7], [e.point.x + 7, e.point.y + 7]], { layers: shown('stations') })[0];
       if (st) {
@@ -3128,6 +3143,10 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // APP-BRIDGE-END
     applyVisibility();
     window.__bootStage = 'after-render';
+    // CHINA-TRAINS-INTEGRATION: optional web overlay, no timetable fetch until its tab opens.
+    Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true,
+      view: () => ({ country, world, tab: shownTab, finding }) });
+    dispatchEvent(new CustomEvent('rail:ready', { detail: window.__rail }));
     document.getElementById('loading').hidden = true;
     creditsSeen();             // five seconds from the moment the map is there to be looked at
     // Yards and depots are fetched when they can first be seen (see loadYards); a picture of the
