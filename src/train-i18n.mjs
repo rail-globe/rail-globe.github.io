@@ -62,6 +62,7 @@ export const EN = {
   "定位车站": "Show station",
   "定位估算位置": "Show estimated position",
   "全程路径": "Whole route",
+  "经由线路": "Lines on the way",
   "跟随": "Follow",
   "当前位置按时刻表与线路距离估算，未按正晚点修正。": "Position is estimated from the timetable and route distance; delay results do not adjust it.",
   "此行程缺少可验证的有效路径，只显示时刻表。": "This trip has no verified usable route. Only its timetable is available.",

@@ -14,7 +14,10 @@
 /* (the two switches are the page's own, as in the list of layers: the words, then the switch) */
 .train-toggle { margin-left: auto; font-size: 0.75rem; color: var(--label2); white-space: nowrap; align-self: center; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 8px; cursor: pointer; }
 .train-muted { margin: 6px 0 0; color: var(--label2); font-size: 0.75rem; line-height: 1.5; }
-.train-disclosure { margin: 10px 0 0; padding-top: 8px; border-top: 0.5px solid var(--sep); color: var(--label2); font-size: 0.75rem; line-height: 1.5; }
+/* The sentence under the count ("positions are estimated … may be off") is not shown (owner, 2026-10-13:
+   the disclaimers make the card untidy): the label above it says "时刻表估算", and the sources and what is
+   covered are in the folded note at the foot of the tab. */
+.train-disclosure { display: none; }
 .train-controls { display: grid; gap: 8px; }
 .train-search { display: block; background: var(--fill2); border-radius: 20px; transition: background-color 160ms ease-out; }
 .train-search:focus-within { background: var(--fill); }
@@ -63,6 +66,13 @@
 .train-close::after { transform: rotate(-45deg); }
 .train-detail .train-od { font-size: 0.875rem; margin: 6px 0; }
 .train-detail .train-actions { margin-top: 10px; }
+/* (the lines a train runs along: the list a route between two stations has, in a group one step lighter) */
+.train-lines { margin-top: 10px; }
+.train-lines-cap { margin: 0 0 6px; font-size: 0.75rem; color: var(--label2); }
+.train-lines .steps { border-radius: 14px; background: var(--fill2); overflow: hidden; }
+.train-lines .steps li { padding: 8px 12px; font-size: 0.875rem; }
+.train-lines .steps li + li { border-top: 0.5px solid var(--sep); }
+.train-lines .steps li.minor { padding-top: 5px; padding-bottom: 5px; font-size: 0.75rem; }
 .train-progress { height: 3px; background: var(--fill); border-radius: 3px; overflow: hidden; margin-top: 10px; }
 .train-progress > i { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
 .train-detail-state { margin: 8px 0 0; font-size: 0.8125rem; color: var(--label); }

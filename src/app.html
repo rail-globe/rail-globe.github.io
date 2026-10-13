@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="144x144" href="mark.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="src/trains.css?v=20261013-4">
+<link rel="stylesheet" href="src/trains.css?v=20261013-6">
 <style>
 /*MAPLIBRE_CSS*/
 </style>
@@ -483,7 +483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   </div>
 </aside>
 
-<script type="module" src="src/trains.mjs?v=20261013-4"></script>
+<script type="module" src="src/trains.mjs?v=20261013-6"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
 <script>
 (() => {
@@ -2695,6 +2695,110 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       pts.push([g.nodes[v * 2] / 1e5, g.nodes[v * 2 + 1] / 1e5]);
       return start === u ? pts : pts.reverse();
     };
+    // The named lines a path runs along, in the order it runs along them: for a train's route
+    // (src/trains.mjs), which is the timetable's own drawing, good to a hundred metres or so, and
+    // not a path on this network. The path is sampled every kilometre; a sample is offered the
+    // railway lines within NEAR_M of it, each at the price of its distance; and one is taken for
+    // every sample so that the whole costs least, a change of line being dear, so that the path
+    // does not hop for a sample or two to a line beside its own. Within SAME_M a line costs
+    // nothing: the drawing is no better than that, and of two lines side by side (the 京沪线 and
+    // the 沪宁城际线 for hours) the path keeps the one it is on. A train that is no fast train
+    // (opts.slow) is offered no line built for fast trains alone. A stretch with no line near it
+    // says nothing. What is listed is then put together as a route's steps are.
+    const RAILWAY = new Set(['hsr350', 'hsr250', 'hsr200', 'main', 'branch', 'mrail']);
+    const DEDICATED = new Set(['hsr350', 'hsr250']);
+    const GRID = 0.05, STEP_M = 1000, NEAR_M = 400, SAME_M = 150, CHANGE = 3, OFF = 4.5;      // (costs in hundreds of metres)
+    let edgeGrid = null;
+    const cellKey = (x, y) => Math.floor(x / GRID) * 100000 + Math.floor(y / GRID);
+    const gridOf = G => edgeGrid || (edgeGrid = (() => {
+      const cells = new Map(), g = G.g;
+      for (let e = 0; e < g.edges.length / 5; e++) {
+        if (!RAILWAY.has(g.lines[g.edges[e * 5 + 2]][1])) continue;
+        const pts = edgeCoords(G, e, g.edges[e * 5]), seen = new Set();
+        for (let i = 0; i < pts.length; i++) {
+          const [x, y] = pts[i], [px, py] = pts[Math.max(0, i - 1)];
+          const n = Math.max(1, Math.ceil(Math.max(Math.abs(x - px), Math.abs(y - py)) / (GRID / 2)));
+          for (let k = 1; k <= n; k++) seen.add(cellKey(px + (x - px) * k / n, py + (y - py) * k / n));
+        }
+        for (const key of seen) { if (!cells.has(key)) cells.set(key, []); cells.get(key).push(e); }
+      }
+      return cells;
+    })());
+    async function linesAlong(path, opts = {}) {
+      if (!path || path.length < 2) return [];
+      const G = await loadNetwork(), g = G.g, cells = gridOf(G), shapes = new Map();
+      const M = 111320, metresTo = (pts, x, y, k) => {       // from a point to a polyline; k: the cosine of the latitude
+        let best = Infinity;
+        for (let i = 1; i < pts.length; i++) {
+          const ax = (pts[i - 1][0] - x) * k, ay = pts[i - 1][1] - y, bx = (pts[i][0] - x) * k, by = pts[i][1] - y;
+          const dx = bx - ax, dy = by - ay, len = dx * dx + dy * dy, t = len ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / len)) : 0;
+          best = Math.min(best, Math.hypot(ax + t * dx, ay + t * dy));
+        }
+        return best * M;
+      };
+      const samples = [];
+      let left = 0;
+      for (let i = 1; i < path.length; i++) {
+        const [ax, ay] = path[i - 1], [bx, by] = path[i], k = Math.cos(ay * Math.PI / 180);
+        const len = Math.hypot((bx - ax) * k, by - ay) * M;
+        let at = left;                 // (how far into this piece the next sample falls)
+        for (; at < len; at += STEP_M) samples.push([ax + (bx - ax) * at / len, ay + (by - ay) * at / len]);
+        left = at - len;
+      }
+      // per sample: the lines near it and their price; then the cheapest line for every sample
+      let costs = new Map([[-1, 0]]);
+      const back = [];
+      for (const [x, y] of samples) {
+        const k = Math.cos(y * Math.PI / 180), near = new Map(), tried = new Set();
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+          for (const e of cells.get(cellKey(x + dx * GRID, y + dy * GRID)) || []) {
+            if (tried.has(e)) continue;
+            tried.add(e);
+            if (!shapes.has(e)) {
+              const pts = edgeCoords(G, e, g.edges[e * 5]), xs = pts.map(c => c[0]), ys = pts.map(c => c[1]);
+              shapes.set(e, { pts, box: [Math.min(...xs) - 0.006, Math.min(...ys) - 0.005, Math.max(...xs) + 0.006, Math.max(...ys) + 0.005] });
+            }
+            const { pts, box } = shapes.get(e);
+            if (x < box[0] || y < box[1] || x > box[2] || y > box[3]) continue;
+            const li = g.edges[e * 5 + 2];
+            if (opts.slow && DEDICATED.has(g.lines[li][1])) continue;
+            const d = metresTo(pts, x, y, k);
+            if (d <= NEAR_M && d < (near.get(li) ?? Infinity)) near.set(li, d);
+          }
+        }
+        near.set(-1, OFF * 100);
+        const next = new Map(), from = new Map();
+        const cheapest = [...costs].reduce((a, b) => (b[1] < a[1] ? b : a));
+        for (const [li, d] of near) {
+          const stay = costs.get(li), change = cheapest[1] + CHANGE;
+          const by = stay !== undefined && stay <= change ? [li, stay] : [cheapest[0], change];
+          next.set(li, by[1] + Math.max(0, d - SAME_M) / 100);
+          from.set(li, by[0]);
+        }
+        costs = next;
+        back.push(from);
+      }
+      const taken = new Array(samples.length);
+      let li = [...costs].reduce((a, b) => (b[1] < a[1] ? b : a))[0];
+      for (let i = samples.length - 1; i >= 0; i--) { taken[i] = li; li = back[i].get(li); }
+      // as a route's steps: repeats joined, unnamed links folded into the line before, what is
+      // too short to be anything but a junction passed left out
+      const steps = [];
+      for (const of of taken) {
+        if (of < 0) continue;
+        const [name, cls, , tint] = g.lines[of], last = steps[steps.length - 1];
+        if (last && (last.name === name || !name)) last.m += STEP_M;
+        else steps.push({ name, cls, tint, m: STEP_M });
+      }
+      const named_ = steps.filter(st => st.name && st.m >= 3 * STEP_M), shown = [];
+      for (const st of named_) {
+        const last = shown[shown.length - 1];
+        if (last && last.name === st.name) last.m += st.m; else shown.push(st);
+      }
+      const metres = shown.reduce((sum, st) => sum + st.m, 0), minM = Math.min(10000, Math.max(2000, metres * 0.005));
+      return shown.map(st => ({ name: named(railByKey.get('cn/' + st.name) || metroByName.get(st.name) || { n: st.name }),
+        colour: st.tint || col(st.cls), km: Math.max(1, Math.round(st.m / 1000)), minor: st.cls !== 'mrail' && st.m < minM && shown.some(o => o.m >= minM) }));
+    }
     const clearRoute = () => { map.getSource('route').setData(EMPTY); routeOut.hidden = true; };
     let routeSeq = 0;         // every call is a new query; an older one that is still waiting gives up
     async function showRoute() {
@@ -3172,7 +3276,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     applyVisibility();
     window.__bootStage = 'after-render';
     // CHINA-TRAINS-INTEGRATION: optional web overlay, no timetable fetch until its tab opens.
-    Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true,
+    Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true, linesAlong,
       view: () => ({ country, world, tab: shownTab, finding }) });
     dispatchEvent(new CustomEvent('rail:ready', { detail: window.__rail }));
     document.getElementById('loading').hidden = true;

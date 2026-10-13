@@ -161,6 +161,8 @@ function renderList() {
   state.lastList = Date.now();
 }
 
+// No train is chosen any more: its card closes, its route goes, and the other lines are lit again.
+function unchoose() { state.selected = null; state.following = false; state.lastDetail = ''; update(true); announce(); }
 function choose(instance, focus = true) {
   state.selected = instance; state.following = false; state.lastDetail = ''; state.routeSignature = '';
   requestShape(instance.trip);
@@ -212,7 +214,19 @@ function renderDetail() {
     const locationLabel = p.status === 'scheduled' ? '定位始发站' : p.status === 'finished' ? '定位终到站' : !trip.renderable ? '定位车站' : '定位估算位置';
     const receipt = cached?.fetchedAt
       ? tr('查询于北京时间 {date} {time}；显示 {service} 发车行程，结果缓存 5 分钟。', { date: fmtDate(chinaDate(cached.fetchedAt)), time: clock(cached.fetchedAt), service: fmtDate(instance.serviceDate) })
-      : tr('按需查询所选车次，正晚点与地图位置分开显示。');
+      : '';
+    // The lines of the map the route runs along, asked of the page once for a train (its path is
+    // the timetable's drawing: the page lays it over its own network) and shown when the answer is there.
+    if (trip.renderable && raw && state.linesKey !== `${language()}/${instance.key}` && state.rail?.linesAlong) {
+      const key = state.linesKey = `${language()}/${instance.key}`;
+      state.rail.linesAlong(state.engine.tripPath(trip, raw), { slow: !'GDCS'.includes(trip.type) }).then(rows => {
+        if (state.linesKey !== key) return;
+        state.lines = { key, rows }; state.lastDetail = ''; renderDetail();
+      }).catch(() => { if (state.linesKey === key) state.linesKey = ''; });
+    }
+    const along = state.lines?.key === `${language()}/${instance.key}` ? state.lines.rows : [];
+    const lines = along.length ? `<div class="train-lines"><p class="train-lines-cap">${tr('经由线路')}</p><ul class="steps">${along.map(row =>
+      `<li${row.minor ? ' class="minor"' : ''}><i style="background:${html(row.colour)}"></i><span>${html(row.name)}</span><span class="km">${row.km}\u00a0km</span></li>`).join('')}</ul></div>` : '';
     detail.innerHTML = `
       <div class="train-detail-title"><h2>${html(trip.number)}</h2><button type="button" data-action="close" class="train-close" aria-label="${tr('关闭列车详情')}">×</button></div>
       <p class="train-od">${html(stopName(trip, 0))} → ${html(stopName(trip, trip.stops.length - 1))}</p>
@@ -221,12 +235,12 @@ function renderDetail() {
       <div class="train-actions">${button('locate', locationLabel, Boolean(p.coordinate))}
         ${button('route', '全程路径', Boolean(trip.renderable && raw))}
         ${button('follow', '跟随', Boolean(p.coordinate && ['running', 'dwell'].includes(p.status)), `aria-pressed="${state.following}"`)}</div>
-      <p class="train-muted">${tr(trip.renderable ? '当前位置按时刻表与线路距离估算，未按正晚点修正。' : '此行程缺少可验证的有效路径，只显示时刻表。')} ${!raw && trip.renderable ? tr('路径正在载入。') : ''}</p>
+      ${!trip.renderable ? `<p class="train-muted">${tr('此行程缺少可验证的有效路径，只显示时刻表。')}</p>` : !raw ? `<p class="train-muted">${tr('路径正在载入。')}</p>` : ''}${lines}
       <table class="train-stop-table"><thead><tr>${['经停站', '图定到达', '图定出发', '正晚点'].map(k => `<th scope="col">${tr(k)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table>
       <div class="train-actions">${button('delay', cached?.loading ? '正在查询…' : cached?.rows ? '刷新逐站正晚点' : '查询逐站正晚点', !cached?.loading)}
         <a class="link" href="https://railgo.dev/" target="_blank" rel="noopener">${tr('来源 RailGo')}</a></div>
-      <p class="train-muted">${cached?.error ? html(tr(cached.error)) + ' ' : ''}${html(receipt)}</p>
-      <p class="train-muted">${tr('“预计”表示到发预测；“—”表示尚未查询或该站无数据。')}</p>`;
+      ${cached?.error || receipt ? `<p class="train-muted">${cached?.error ? html(tr(cached.error)) + ' ' : ''}${html(receipt)}</p>` : ''}
+      ${cached?.rows ? `<p class="train-muted">${tr('“预计”表示到发预测；“—”表示尚未查询或该站无数据。')}</p>` : ''}`;
     if (focused) {
       const control = detail.querySelector(`[data-action="${focused}"]`);
       if (control && !control.disabled) control.focus({ preventScroll: true });
@@ -361,6 +375,8 @@ function setupMap(rail) {
     const key=event.features?.[0]?.properties?.key, instance=state.active.find(i=>i.key===key);
     if (instance) choose(instance,false);
   });
+  // A click anywhere else on the map lets the chosen train go, as it lets a chosen line go.
+  map.on('click',event=>{if(state.selected && !map.queryRenderedFeatures(event.point,{layers:['cn-trains-hit']}).length)unchoose();});
   map.on('mouseenter','cn-trains-hit',()=>{map.getCanvas().style.cursor='pointer';});
   map.on('mouseleave','cn-trains-hit',()=>{map.getCanvas().style.cursor='';});
   map.on('movestart',e=>{if(e.originalEvent && state.following){state.following=false;state.lastDetail='';renderDetail();}});
@@ -433,7 +449,7 @@ $('trainList').addEventListener('click',event=>{const button=event.target.closes
 $('trainMore').addEventListener('click',()=>{state.limit+=40;renderList();});
 $('trainDetail').addEventListener('click',event=>{
   const action=event.target.closest('[data-action]')?.dataset.action;
-  if(action==='close'){state.selected=null;state.following=false;state.lastDetail='';update(true);announce();}
+  if(action==='close')unchoose();
   if(action==='locate')locate();
   if(action==='route')wholeRoute();
   if(action==='follow'){state.following=!state.following;state.lastFollow=0;state.lastDetail='';update(true);}

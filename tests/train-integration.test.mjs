@@ -92,6 +92,27 @@ function linear(expression, zoom) {
   return stops.at(-1);
 }
 
+test('a click elsewhere on the map lets the chosen train go, a click on a train does not', () => {
+  const handlers = [], calls = [];
+  let under = [];
+  const map = { addSource: () => {}, hasImage: () => true, addImage: () => {}, addLayer: () => {}, getCanvas: () => ({ style: {} }),
+    on: (...args) => handlers.push(args), queryRenderedFeatures: (point, options) => { calls.push(plain(options)); return under; } };
+  const scope = { state: { selected: null }, mapInstalled: false, fc: features => ({ type: 'FeatureCollection', features }),
+    update: () => {}, choose: () => {}, renderDetail: () => {}, renderList: () => {}, unchoose: () => calls.push('unchoose') };
+  runInNewContext(between(trains, 'const hull =', 'function renderDataDate()') + '\nthis.setupMap = setupMap;', scope);
+  scope.setupMap({ map });
+  const anywhere = handlers.filter(args => args[0] === 'click' && typeof args[1] === 'function');
+  assert.equal(anywhere.length, 1);
+  const click = () => anywhere[0][1]({ point: { x: 1, y: 2 } });
+  click();                                         // no train is chosen: nothing to do, the map is not even asked
+  assert.deepEqual(calls, []);
+  scope.state.selected = { key: 'a' };
+  under = [{}]; click();                           // on a train: that train's own handler chooses it
+  assert.deepEqual(calls, [{ layers: ['cn-trains-hit'] }]);
+  under = []; click();                             // on anything else
+  assert.deepEqual(calls.at(-1), 'unchoose');
+});
+
 test('the train markers lie between the route and the labels, and every layer is switched with the overlay', () => {
   const { layers } = installedMap();
   assert.deepEqual(layers.map(layer => layer.id), ['cn-train-route-casing', 'cn-train-route',
