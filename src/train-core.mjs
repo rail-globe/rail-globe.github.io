@@ -16,6 +16,8 @@ const OFFSET_MS = 8 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const EMPTY_PATH = Object.freeze([]);
 const DISTANCE_ROUNDING_METRES = 2;
+const HEADING_WINDOW_METRES = 150;
+const HEADING_MIN_CHORD_METRES = 1;
 const shapeCache = new WeakMap();
 const stringShapeCache = new Map();
 
@@ -187,6 +189,45 @@ function pointAlong(shape, distance) {
   return [longitude, a[1] + fraction * (b[1] - a[1])];
 }
 
+/**
+ * Initial great-circle bearing from a to b, in degrees clockwise from north
+ * within [0, 360). Points less than a metre apart return null: their bearing
+ * would be decided by rounding, not by the track.
+ */
+function bearingDegrees(a, b) {
+  const rad = Math.PI / 180;
+  let deltaLng = b[0] - a[0];
+  if (deltaLng > 180) deltaLng -= 360;
+  if (deltaLng < -180) deltaLng += 360;
+  const fromLat = a[1] * rad, toLat = b[1] * rad;
+  const east = Math.sin(deltaLng * rad) * Math.cos(toLat);
+  const north = Math.cos(fromLat) * Math.sin(toLat) -
+    Math.sin(fromLat) * Math.cos(toLat) * Math.cos(deltaLng * rad);
+  // The two components span the sine of the angle between the points.
+  if (Math.hypot(east, north) * EARTH_RADIUS_METRES < HEADING_MIN_CHORD_METRES) return null;
+  // The second modulo folds a tiny negative angle, which rounds to 360, to 0.
+  return (Math.atan2(east, north) / rad + 360) % 360;
+}
+
+/**
+ * Direction of the track at a distance along a shape, towards increasing
+ * distance, which is the way every drawable trip runs (checkedGeometry rejects
+ * stop distances that decrease). It is the bearing of the chord between two
+ * points a short way behind and ahead, kept within [first, last] so a train at
+ * either end of its trip still looks along its own path.
+ */
+function headingAlong(shape, distance, first, last) {
+  const from = Math.max(0, first, distance - HEADING_WINDOW_METRES);
+  const to = Math.min(shape.length, last, distance + HEADING_WINDOW_METRES);
+  if (!(to > from)) return null;
+  const heading = bearingDegrees(pointAlong(shape, from), pointAlong(shape, to));
+  if (heading !== null) return heading;
+  // Where a path doubles back on itself (a reversal in a terminus) both ends of
+  // the window can be the same place. Look ahead only, then behind only.
+  const here = pointAlong(shape, distance);
+  return bearingDegrees(here, pointAlong(shape, to)) ?? bearingDegrees(pointAlong(shape, from), here);
+}
+
 function upperBound(values, target) {
   let lo = 0, hi = values.length;
   while (lo < hi) {
@@ -215,6 +256,9 @@ function upperBound(values, target) {
  * valid shape and valid monotonic stop distances. Otherwise coordinate is null.
  * A stopped train can use its supplied station coordinate. For a dwell,
  * fromIndex === toIndex === stopIndex; secondsToNext is until departure.
+ * heading is the direction of travel along the track, in degrees clockwise from
+ * north within [0, 360), for a running train on a valid shape. It is null for
+ * every other status, without a shape, and on a leg that covers no distance.
  */
 export function createEngine(data) {
   if (!data || data.schemaVersion !== 1 || !Array.isArray(data.trips) ||
@@ -413,6 +457,7 @@ export function createEngine(data) {
       geometryIssue: geometry.reason,
       serviceSeconds,
       tripProgress: Math.max(0, Math.min(1, (epochMs - run.startMs) / (run.endMs - run.startMs))),
+      heading: null,
     };
     if (epochMs < run.startMs) {
       return {
@@ -445,6 +490,9 @@ export function createEngine(data) {
           ...base, status: 'running',
           coordinate: geometry.shape ? pointAlong(geometry.shape, distance) : null,
           coordinateSource: geometry.shape ? 'shape' : null,
+          // A leg between two stops at one shape distance does not move.
+          heading: geometry.shape && next.distance > here.distance
+            ? headingAlong(geometry.shape, distance, rows[0].distance, rows[last].distance) : null,
           fromIndex: i, toIndex: i + 1, stopIndex: null, nextIndex: i + 1, progress,
           secondsToNext: next.arrival - serviceSeconds, nextEvent: 'arrival',
           nextEventMs: run.serviceStartMs + next.arrival * 1000,

@@ -313,6 +313,88 @@ test('shape interpolation uses its bent path rather than the line between statio
   close(position.coordinate[1], 0);
 });
 
+// One trip over the whole of a path, 08:00 to 10:00: its position a fraction of the way through.
+function along(points, fraction) {
+  const data = fixture(), path = { p: encode(points) };
+  const decoded = shapePath(path);
+  let length = 0;
+  for (let i = 1; i < decoded.length; i++) length += haversineMetres(decoded[i - 1], decoded[i]);
+  data.trips[0].stops = [[0, 8 * HOUR, 8 * HOUR, 0], [2, 10 * HOUR, 10 * HOUR, length]];
+  const engine = createEngine(data), start = at('2026-10-12T08:00:00');
+  const instance = engine.tripInstances('trip-1', start)[0];
+  return engine.positionAt(instance, start + Math.round(fraction * 2 * HOUR * 1000), path);
+}
+
+test('heading on a north-south track is 0 northbound and 180 southbound', () => {
+  close(along([[116, 39], [116, 40]], 0.5).heading, 0, 1e-9);
+  close(along([[116, 40], [116, 39]], 0.5).heading, 180, 1e-9);
+});
+
+test('heading on an east-west track near latitude 40 is 90 eastbound and 270 westbound', () => {
+  close(along([[116, 40], [117, 40]], 0.5).heading, 90, 1);
+  close(along([[117, 40], [116, 40]], 0.5).heading, 270, 1);
+  // A diagonal is told by the ground, not by the degrees: one degree east is shorter than one north.
+  const diagonal = along([[116, 40], [117, 41]], 0.5).heading;
+  assert.ok(diagonal > 30 && diagonal < 40, `${diagonal}`);
+});
+
+test('only a running train on a valid shape has a heading', () => {
+  const data = fixture(), engine = createEngine(data);
+  const instance = engine.tripInstances('trip-1', at('2026-10-12T08:30:00'))[0];
+  close(engine.positionAt(instance, at('2026-10-12T08:30:00'), shape).heading, 90, 1e-9);
+  assert.equal(engine.positionAt(instance, at('2026-10-12T09:05:00'), shape).status, 'dwell');
+  assert.equal(engine.positionAt(instance, at('2026-10-12T09:05:00'), shape).heading, null);
+  assert.equal(engine.positionAt(instance, at('2026-10-12T07:00:00'), shape).heading, null);
+  assert.equal(engine.positionAt(instance, at('2026-10-12T10:00:00'), shape).heading, null);
+  const unplaced = engine.positionAt(instance, at('2026-10-12T08:30:00'));
+  assert.equal(unplaced.status, 'running');
+  assert.equal(unplaced.heading, null);
+});
+
+test('a train in the first and last metres of its path still has a finite heading', () => {
+  for (const fraction of [0, 1e-6, 1 - 1e-6]) {
+    const position = along([[116, 39], [116, 40]], fraction);
+    assert.equal(position.status, 'running');
+    close(position.heading, 0, 1e-9);
+  }
+  // A trip that uses the middle of a longer shape looks along its own part of it.
+  const data = fixture();
+  data.trips[0].stops = [[0, 8 * HOUR, 8 * HOUR, 0.5 * ONE_DEGREE_METRES], [2, 10 * HOUR, 10 * HOUR, 1.5 * ONE_DEGREE_METRES]];
+  const engine = createEngine(data), instance = engine.tripInstances('trip-1', at('2026-10-12T08:00:00'))[0];
+  for (const time of ['2026-10-12T08:00:00', '2026-10-12T09:59:59.999']) {
+    close(engine.positionAt(instance, at(time), shape).heading, 90, 1e-9);
+  }
+});
+
+test('heading through a bend turns from one leg to the other', () => {
+  const corner = [[116, 0], [117, 0], [117, 1]];
+  close(along(corner, 0.25).heading, 90, 1e-6);
+  close(along(corner, 0.75).heading, 0, 1e-6);
+  const turning = along(corner, 0.5).heading;
+  assert.ok(turning > 5 && turning < 85, `${turning}`);
+  // Within the bend the heading has left the first leg but not yet reached the second.
+  const entering = along(corner, 0.5 - 50 / (2 * ONE_DEGREE_METRES)).heading;
+  assert.ok(entering > turning && entering < 90, `${entering}`);
+});
+
+test('heading follows travel where a path doubles back on itself', () => {
+  const spur = [[116, 0], [116.02, 0], [116, 0]];
+  close(along(spur, 0.25).heading, 90, 1e-9);
+  close(along(spur, 0.75).heading, 270, 1e-9);
+  // At the buffer stop both ends of the window are one place: the way ahead decides.
+  close(along(spur, 0.5).heading, 270, 1e-9);
+});
+
+test('a timed leg that covers no distance has a position but no heading', () => {
+  const data = fixture();
+  data.trips[0].stops = [[0, 8 * HOUR, 8 * HOUR, 0], [1, 9 * HOUR, 9 * HOUR, 0], [2, 10 * HOUR, 10 * HOUR, 2 * ONE_DEGREE_METRES]];
+  const engine = createEngine(data), now = at('2026-10-12T08:30:00');
+  const position = engine.positionAt(engine.activeAt(now)[0], now, shape);
+  assert.equal(position.status, 'running');
+  assert.deepEqual(position.coordinate, [116, 0]);
+  assert.equal(position.heading, null);
+});
+
 test('a null station coordinate is not interpreted as the Gulf of Guinea', () => {
   const data = fixture();
   data.stops[1].lon = null;

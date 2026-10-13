@@ -88,7 +88,10 @@ function draw() {
     if (!shapeFor(instance.trip)) { pending++; requestShape(instance.trip); continue; }
     const p = position(instance);
     if (!p.coordinate || !state.visible || !['running','dwell'].includes(p.status)) continue;
-    features.push({ type: 'Feature', id: instance.key, properties: { key: instance.key, number: instance.trip.number, color: color(instance.trip), chosen: state.selected?.key === instance.key ? 1 : 0, dwell: p.status === 'dwell' ? 1 : 0 }, geometry: { type: 'Point', coordinates: p.coordinate } });
+    const properties = { key: instance.key, number: instance.trip.number, color: color(instance.trip), chosen: state.selected?.key === instance.key ? 1 : 0, dwell: p.status === 'dwell' ? 1 : 0 };
+    // Only a moving train has a heading. The marker layers tell the two apart by its presence (see setupMap).
+    if (p.status === 'running' && Number.isFinite(p.heading)) properties.heading = Math.round(p.heading) % 360;
+    features.push({ type: 'Feature', id: instance.key, properties, geometry: { type: 'Point', coordinates: p.coordinate } });
   }
   const map = state.rail.map;
   map.getSource('cn-trains').setData(fc(features));
@@ -293,6 +296,34 @@ function update(force = false) {
   if (force || (Date.now() - state.lastList > 15000 && !$('trainList').contains(document.activeElement))) renderList();
 }
 
+// The train markers: a pointed dot from afar, a train seen from above from near, a ringed dot for a
+// train that stands. Each picture is a distance field, which MapLibre takes as an SDF icon (alpha 191
+// on the outline, 32 less for each texel outwards), so one picture is tinted by its feature's colour
+// and outlined by its layer. They are computed here, with no canvas and no file: heading north, two
+// texels to a CSS pixel, x to the right and y to the front of the middle. Seven texels of margin is
+// the room the outline takes at the smallest size a marker is drawn.
+const hull = (x, y, r1, r2, h) => {          // a circle of r1 at the middle, drawn out to a circle of r2 at h ahead
+  const b = (r1 - r2) / h, a = Math.sqrt(1 - b * b), k = a * y - b * Math.abs(x);
+  return k < 0 ? Math.hypot(x, y) - r1 : k > a * h ? Math.hypot(x, y - h) - r2 : a * Math.abs(x) + b * y - r1;
+};
+const slab = (x, y, w, h, r) => {            // a box of half-width w and half-length h, its corners rounded to r
+  const u = Math.abs(x) - w + r, v = Math.abs(y) - h + r;
+  return Math.hypot(Math.max(u, 0), Math.max(v, 0)) + Math.min(Math.max(u, v), 0) - r;
+};
+const MARKERS = {                            // width, height, distance from the outline (negative within)
+  'train-pointed': [28, 40, (x, y) => hull(x, y, 7, .8, 12)],
+  'train-bullet': [26, 50, (x, y) => Math.min(slab(x, y + 6, 6, 12, 3.2), hull(x, y - 3, 6, 2.2, 12.8))],
+  // (the gap between the dot and its ring is narrow enough for the outlines of the two to fill it at every size)
+  'train-ringed': [34, 34, (x, y) => Math.min(Math.hypot(x, y) - 4.8, Math.abs(Math.hypot(x, y) - 8.6) - 1.4)],
+};
+function markerImage([width, height, distance]) {
+  const data = new Uint8ClampedArray(width * height * 4);
+  for (let j = 0; j < height; j++) for (let i = 0; i < width; i++) {
+    data.set([255, 255, 255, 191.25 - 31.875 * distance(i + .5 - width / 2, height / 2 - j - .5)], (j * width + i) * 4);
+  }
+  return { width, height, data };
+}
+
 function setupMap(rail) {
   state.rail=rail;
   if (mapInstalled) return;
@@ -302,9 +333,28 @@ function setupMap(rail) {
   map.addLayer({id:'cn-train-route-casing',type:'line',source:'cn-train-route',paint:{'line-color':'#111a23','line-width':7,'line-opacity':.8}});
   map.addLayer({id:'cn-train-route',type:'line',source:'cn-train-route',paint:{'line-color':'#f6d8a5','line-width':3,'line-opacity':.86}});
   map.addSource('cn-trains',{type:'geojson',data:fc([])});
-  map.addLayer({id:'cn-trains-dot',type:'circle',source:'cn-trains',paint:{'circle-color':['get','color'],'circle-radius':['interpolate',['linear'],['zoom'],3,['case',['==',['get','chosen'],1],6,2.4],8,['case',['==',['get','chosen'],1],8,4],14,['case',['==',['get','chosen'],1],9,5]],'circle-stroke-color':'#152432','circle-stroke-width':1.5,'circle-opacity':.98}});
-  map.addLayer({id:'cn-trains-label',type:'symbol',source:'cn-trains',minzoom:7,layout:{'text-field':['get','number'],'text-font':['sans'],'text-size':11,'text-anchor':'bottom','text-offset':[0,-.85],'text-allow-overlap':false,'symbol-sort-key':['case',['==',['get','chosen'],1],-1,1]},paint:{'text-color':'#fff7e7','text-halo-color':'#0b1520','text-halo-width':2}});
-  map.addLayer({id:'cn-trains-hit',type:'circle',source:'cn-trains',paint:{'circle-radius':['interpolate',['linear'],['zoom'],3,5,8,10],'circle-opacity':0}});
+  // The style is never replaced (no setStyle anywhere), so the pictures are added once, before the layers that use them.
+  for (const [name,spec] of Object.entries(MARKERS)) if (!map.hasImage(name)) map.addImage(name,markerImage(spec),{sdf:true,pixelRatio:2});
+  // A moving train carries a heading (see draw): it is the pointed dot below zoom 8.25 and the train from 8.75,
+  // one fading into the other between. A train without a heading is the ringed dot at every zoom. Sizes are in
+  // CSS pixels as [zoom, usual, chosen], of the measure given first: the ring's and the dot's radius (the circle
+  // this replaces went from 2.4 to 4 to 5, chosen 6 to 8 to 9), the train's length. No size falls below about
+  // two thirds of a picture's own, where its outline would reach the edge of the distance field.
+  const moving=['has','heading'];
+  const sized=(unit,...stops)=>['interpolate',['linear'],['zoom'],...stops.flatMap(([zoom,usual,chosen])=>[zoom,['case',['==',['get','chosen'],1],chosen/unit,usual/unit]])];
+  // The outline's width is in texels: 3 is 1.5 CSS pixels, the stroke the circles had. The chosen train is drawn over its neighbours.
+  const marker=(id,image,size,layer,layout,opacity)=>map.addLayer({id,type:'symbol',source:'cn-trains',...layer,
+    layout:{'icon-image':image,'icon-size':size,'icon-allow-overlap':true,'icon-ignore-placement':true,'symbol-sort-key':['get','chosen'],...layout},
+    paint:{'icon-color':['get','color'],'icon-halo-color':'#152432','icon-halo-width':3,'icon-opacity':opacity}});
+  // Turned with the map, so a marker lies along its track whichever way the map faces. The train also lies
+  // flat on the map, as its track does; the dot stays round, as the circle did.
+  const turned=pitch=>({'icon-rotate':['get','heading'],'icon-rotation-alignment':'map','icon-pitch-alignment':pitch});
+  marker('cn-trains-stop','train-ringed',sized(5,[3,3.4,7],[8,5.6,10],[14,7,12]),{filter:['!',moving]},{},.98);
+  marker('cn-trains-dot','train-pointed',sized(3.5,[3,2.4,6],[8,4,8],[9,4.3,8.3]),{filter:moving,maxzoom:8.75},turned('viewport'),['interpolate',['linear'],['zoom'],8.25,.98,8.75,0]);
+  marker('cn-trains-body','train-bullet',sized(18,[8.25,12.5,17.5],[9,14,19.5],[14,30,42]),{filter:moving,minzoom:8.25},turned('map'),['interpolate',['linear'],['zoom'],8.25,0,8.75,.98]);
+  // The number stands above its marker, further off as the train grows.
+  map.addLayer({id:'cn-trains-label',type:'symbol',source:'cn-trains',minzoom:7,layout:{'text-field':['get','number'],'text-font':['sans'],'text-size':11,'text-anchor':'bottom','text-offset':['interpolate',['linear'],['zoom'],8,['literal',[0,-.85]],14,['literal',[0,-1.4]]],'text-allow-overlap':false,'symbol-sort-key':['case',['==',['get','chosen'],1],-1,1]},paint:{'text-color':'#fff7e7','text-halo-color':'#0b1520','text-halo-width':2}});
+  map.addLayer({id:'cn-trains-hit',type:'circle',source:'cn-trains',paint:{'circle-radius':['interpolate',['linear'],['zoom'],3,5,8,10,14,13],'circle-opacity':0}});
   map.on('click','cn-trains-hit',event=>{
     const key=event.features?.[0]?.properties?.key, instance=state.active.find(i=>i.key===key);
     if (instance) choose(instance,false);
@@ -404,7 +454,7 @@ function syncView() {
   if (!here) { state.following = false; state.lastDetail = ''; }
   $('trainMapBadge').hidden = !here || !state.engine || !state.visible;
   if (mapInstalled) {
-    for (const id of ['cn-trains-dot', 'cn-trains-label', 'cn-trains-hit', 'cn-train-route', 'cn-train-route-casing']) {
+    for (const id of ['cn-trains-stop', 'cn-trains-dot', 'cn-trains-body', 'cn-trains-label', 'cn-trains-hit', 'cn-train-route', 'cn-train-route-casing']) {
       state.rail.map.setLayoutProperty(id, 'visibility', here && state.visible ? 'visible' : 'none');
     }
   }

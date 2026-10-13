@@ -6,7 +6,7 @@
 .train-summary { padding: 12px 14px; border-radius: 20px; background: var(--fill2); }
 .train-summary-top, .train-count, .train-small-controls, .train-actions, .train-detail-title, .train-list-top { display: flex; align-items: center; gap: 8px; }
 .train-summary-top, .train-small-controls, .train-detail-title { justify-content: space-between; }
-.train-mode { color: var(--yard); background: rgba(255, 208, 138, 0.14); border-radius: 999px; padding: 2px 8px; font-size: 0.6875rem; white-space: nowrap; }
+.train-mode { color: var(--label2); background: var(--fill2); border-radius: 999px; padding: 2px 8px; font-size: 0.6875rem; white-space: nowrap; }
 .train-clock { color: var(--label2); font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
 .train-count { margin: 10px 0 4px; align-items: baseline; }
 .train-count strong { font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -49,28 +49,41 @@
 .train-od { margin-top: 4px; font-size: 0.8125rem; color: var(--label); display: block; overflow-wrap: anywhere; }
 .train-route-sub { margin-top: 2px; font-size: 0.75rem; color: var(--label2); display: block; }
 .train-more { width: 100%; border: 0; border-radius: 999px; background: var(--fill2); color: var(--blue); padding: 8px 12px; margin-top: 8px; font-size: 0.8125rem; cursor: pointer; }
-.train-detail { background: rgba(10, 132, 255, 0.2); border-radius: 20px; padding: 12px 14px; }
+/* (the chosen train's card is a group like the others, grey, not tinted: it is tall, and a tall
+   blue card reads as a different app; what it holds sits one step lighter) */
+.train-detail { background: var(--fill2); border-radius: 20px; padding: 12px 14px; }
+.train-detail .train-mode, .train-detail .train-button { background: var(--fill); }
+.train-detail .train-button[aria-pressed="true"] { background: var(--blue); }
 .train-detail-title h2 { margin: 0; font-size: 1.375rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-.train-close { border: 0; border-radius: 50%; background: var(--fill); color: var(--label2); width: 28px; height: 28px; font-size: 18px; line-height: 1; cursor: pointer; }
+/* (the cross is drawn, two strokes about the middle of the circle: a typed "×" sits where its
+   font puts it, which is not the middle) */
+.train-close { flex: none; position: relative; border: 0; border-radius: 50%; background: var(--fill); color: var(--label2); width: 28px; height: 28px; padding: 0; font-size: 0; cursor: pointer; }
+.train-close::before, .train-close::after { content: ""; position: absolute; left: 50%; top: 50%; width: 12px; height: 1.5px; margin: -0.75px 0 0 -6px; border-radius: 1px; background: currentColor; }
+.train-close::before { transform: rotate(45deg); }
+.train-close::after { transform: rotate(-45deg); }
 .train-detail .train-od { font-size: 0.875rem; margin: 6px 0; }
 .train-detail .train-actions { margin-top: 10px; }
 .train-progress { height: 3px; background: var(--fill); border-radius: 3px; overflow: hidden; margin-top: 10px; }
 .train-progress > i { display: block; height: 100%; background: var(--blue); border-radius: inherit; }
 .train-detail-state { margin: 8px 0 0; font-size: 0.8125rem; color: var(--label); }
-.train-stop-table { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
-.train-stop-table th { padding: 5px 2px; text-align: left; color: var(--label2); font-weight: 400; }
-.train-stop-table td { padding: 7px 2px; border-top: 0.5px solid var(--sep); vertical-align: top; }
+.train-stop-table { width: 100%; margin-top: 10px; border-collapse: separate; border-spacing: 0; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.train-stop-table th { padding: 5px 6px; text-align: left; color: var(--label2); font-weight: 400; }
+.train-stop-table td { padding: 7px 6px; border-top: 0.5px solid var(--sep); vertical-align: top; }
 .train-stop-table td:not(:first-child) { white-space: nowrap; }
 .train-stop-table td.train-delay { white-space: normal; min-width: 38px; }
-.train-stop-table tr.current { color: var(--label); font-weight: 600; background: rgba(255, 255, 255, 0.08); }
+.train-stop-table tr.current { color: var(--label); font-weight: 600; }
+.train-stop-table tr.current td { background: var(--fill); border-top-color: transparent; }
+.train-stop-table tr.current + tr td { border-top-color: transparent; }
+.train-stop-table tr.current td:first-child { border-radius: 8px 0 0 8px; }
+.train-stop-table tr.current td:last-child { border-radius: 0 8px 8px 0; }
 .train-stop-table tr.past { color: var(--label3); }
 .train-stop-table small { font-size: 0.625rem; color: var(--label2); }
-.train-delay { color: var(--yard); max-width: 68px; overflow-wrap: anywhere; }
+.train-delay { max-width: 68px; overflow-wrap: anywhere; }
 .train-detail details { margin-top: 10px; font-size: 0.8125rem; }
 .train-detail summary, .train-about summary { cursor: pointer; color: var(--label2); }
 .train-about { margin: 0 4px 8px; padding-top: 10px; border-top: 0.5px solid var(--sep); color: var(--label2); font-size: 0.75rem; line-height: 1.55; }
 .train-about p { margin: 8px 0; overflow-wrap: anywhere; }
-.train-about a, .train-detail a { color: var(--blue); }
+.train-about a, .train-detail a { color: var(--blue); text-decoration: none; }
 /* The note on the map ("列车 · 时刻表估算") is not shown (owner, 2026-10-13: "去掉"): the card says
    the same in its label and its sentence about estimates. The element stays for the script. */
 .train-map-badge { display: none; }
