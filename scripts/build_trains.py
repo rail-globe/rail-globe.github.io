@@ -545,6 +545,11 @@ def compile_feed(args: argparse.Namespace) -> dict:
     report = {"meta": meta, "indexBytes": (output / "index.json").stat().st_size, "rejectedExamples": rejected_examples}
     (output / "quality.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"output": str(output), "indexBytes": report["indexBytes"], "quality": dict(counts), "rejectionReasons": dict(rejection_reasons)}, ensure_ascii=False, indent=2))
+    if args.fit and (ROOT / "data" / "graph.json").exists():
+        # The routes are put onto this map's lines where they leave them (needs shapely; scripts/fit_trains.py).
+        import fit_trains
+        fit_trains.main(output)
+        result = json.loads((output / "index.json").read_text(encoding="utf-8"))
     return result
 
 
@@ -561,6 +566,7 @@ def main() -> None:
     parser.add_argument("--max-source-gap-m", type=float, default=20000.0)
     parser.add_argument("--max-speed-kmh", type=float, default=450.0)
     parser.add_argument("--shard-bytes", type=int, default=2_800_000)
+    parser.add_argument("--no-fit", dest="fit", action="store_false", help="Leave the routes as the feed has them; do not put them onto this map's lines")
     args = parser.parse_args()
     if min(args.max_stop_offset_m, args.max_source_gap_m, args.max_speed_kmh, args.shard_bytes) <= 0 or args.simplify_m < 0:
         parser.error("Thresholds must be positive, and simplification nonnegative")

@@ -43,7 +43,7 @@
       "rejectedTrips": 5619,
       "publishedShapes": 2762,
       "geometryShards": 2,
-      "geometryBytes": 2881416,
+      "geometryBytes": 2977915,
       "renderablePercent": 52.12,
       "maxStopOffsetM": 1005,
       "sourceShapeTripsRejected": 1034
@@ -59,7 +59,7 @@
       "name": "CC BY 4.0",
       "url": "https://creativecommons.org/licenses/by/4.0/",
       "sourceLicenseUrl": "https://github.com/wensimehrp/chinese-railway-gtfs/blob/main/LICENSE",
-      "changes": "已作中国范围筛选、质量校验、几何简化、压缩与格式转换"
+      "changes": "已作中国范围筛选、质量校验、几何简化、压缩与格式转换；偏离本图线路 150 米以上的区段改为沿本图线路的路径，停站里程随之重算"
     },
     "attribution": [
       {
@@ -74,9 +74,18 @@
         "name": "OpenStreetMap 车站坐标贡献者",
         "url": "https://www.openstreetmap.org/copyright"
       }
-    ]
+    ],
+    "fittedToMapLines": {
+      "km replaced": 32526.6,
+      "shapes changed": 1355,
+      "stretches left: no way along the lines": 272,
+      "stretches left: runs off the end of the shape": 13,
+      "stretches left: the way along the lines is much shorter": 2,
+      "stretches replaced": 4284,
+      "trips on them": 2433
+    }
   },
-  "indexBytes": 5044104,
+  "indexBytes": 5044479,
   "rejectedExamples": {
     "missing_route_shape": [
       {

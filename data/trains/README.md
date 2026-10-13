@@ -8,7 +8,8 @@
 - GTFS 数据许可：[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。[源许可文件](https://github.com/wensimehrp/chinese-railway-gtfs/blob/main/LICENSE)的副本保存在 `SOURCE_LICENSE_CC_BY_4.0.txt`。
 - 车站坐标来源：[OpenStreetMap 贡献者](https://www.openstreetmap.org/copyright)。线路与列车数据上游采集项目：[RailGo-Parser](https://github.com/RailGoApps/RailGo-Parser)。此处使用的是已发布的 GTFS，未调用 RailGo 实时 API，未爬取 12306。
 - 本构建所做修改：中国范围筛选、时序校验、线路质量筛选、100 米容差的几何简化、polyline5 压缩、停站位置投影和静态索引格式转换。
-- 推荐署名：“列车时刻表与线路数据：wensimehrp/chinese-railway-gtfs，CC BY 4.0；已作筛选、简化、压缩及格式转换。车站坐标来源 OpenStreetMap；上游列车数据由 RailGo-Parser 采集。”
+- 路线贴到本图的线路上（`scripts/fit_trains.py`，`build_trains.py` 末尾自动执行，`--no-fit` 可跳过）：路线离本图寻路网络 150 米以上、且某处超过 300 米的区段，改为沿本图线路从离开点到回归点的路径，各车次的停站里程随之重算。只在这条路径与原区段长度相近、位置相近时才替换；找不到这样的路径、或区段在路线首尾的，保持上游原样。替换与保留的数量记在 `index.json` 和 `quality.json` 的 `meta.fittedToMapLines`。
+- 推荐署名：“列车时刻表与线路数据：wensimehrp/chinese-railway-gtfs，CC BY 4.0；已作筛选、简化、压缩及格式转换，偏离本图线路的区段改为沿本图线路。车站坐标来源 OpenStreetMap；上游列车数据由 RailGo-Parser 采集。”
 
 GTFS 中的 `feed_info.txt` 与 `agency.txt` 使用了国铁名称、12306 网址。这不表示本数据是国铁发布的官方开放数据，也不表示存在官方实时列车位置接口。
 
