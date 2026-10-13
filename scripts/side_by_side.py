@@ -188,10 +188,13 @@ def eased(runs, ramp=RAMP, grain=GRAIN):
     return [(a, b, s) for a, b, s in out if b - a > 1e-9]
 
 
-def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=slots, min_run=MIN_RUN):
+def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=slots, min_run=MIN_RUN, rings=False):
     """Rewrite the metro features so that each carries the slot of one stretch of its line: a line
     becomes a few features, one per slot. Returns the new list; other features pass through.
-    slots_of: slots() for lines drawn along one path, abreast() for lines each on its own track."""
+    slots_of: slots() for lines drawn along one path, abreast() for lines each on its own track.
+    rings: a part that is a ring is written from the middle of its longest stretch of one slot.
+    A change of slot is spread over a ramp between two stretches of a part; where a ring begins
+    there is no stretch before, and a change of slot there is a step to the side (輕鐵706綫)."""
     parts, where = [], []
     for fi, f in enumerate(features):
         props, g = f["properties"], f["geometry"]
@@ -201,8 +204,22 @@ def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=sl
             if len(co) > 1 and LineString(co).length > 0:
                 parts.append(((props.get("r"), props["n"]), props.get("col"), LineString(co)))
                 where.append(fi)
+    rows = list(slots_of(parts))
+    if rings:
+        turned = False
+        for k, ((key, colour, g), row) in enumerate(zip(parts, rows)):
+            runs = stretches(row, min_run) if g.is_ring else []
+            if len(runs) > 1:
+                longest = max(runs, key=lambda run: run[1] - run[0])
+                start = (longest[0] + longest[1]) / 2
+                first, rest = substring(g, start, g.length), substring(g, 0, start)
+                if first.geom_type == rest.geom_type == "LineString" and first.length > 0 and rest.length > 0:
+                    parts[k] = (key, colour, LineString(list(first.coords) + list(rest.coords)[1:]))
+                    turned = True
+        if turned:
+            rows = list(slots_of(parts))
     by_slot = defaultdict(lambda: defaultdict(list))             # feature -> slot -> lines
-    for fi, (_, _, g), row in zip(where, parts, slots_of(parts)):
+    for fi, (_, _, g), row in zip(where, parts, rows):
         for a, b, slot in eased(stretches(row, min_run)):
             piece = substring(g, a, b)
             if piece.geom_type == "LineString" and piece.length > 0:

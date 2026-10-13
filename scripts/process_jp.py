@@ -502,6 +502,65 @@ def adopt_unnamed(line_of, unnamed, ways):
     return left
 
 
+def adopt_aliases(line_of, ways, relations, length, limit):
+    """Track of an urban line that carries another name of that line. 横浜's blue line is 横浜市営
+    1号線 and 3号線 on most of its track, and here and there ブルーライン, 横浜市営地下鉄ブルーライン
+    or the same with a space in it: each of those was a "line" of under two kilometres, left out
+    as a ride in a park, and the line had gaps (センター北 to センター南, reported 2026-10-13).
+    A name with less than `limit` km of track in all is taken stretch by stretch, a stretch being
+    its track joined end to end, and a stretch goes to the longer line it meets, if a route
+    relation runs over both of them: one service, one track, two names. Tram track is left to
+    the tramways, whose short lines are lines of their system. Returns the km of track that
+    changed hands, by (name it had, line it joined)."""
+    urban = sorted(wid for wid, key in line_of.items() if key[0] == "metro" and ways[wid][0].get("railway") != "tram")
+    total = Counter()
+    for wid in urban:
+        total[line_of[wid]] += length[wid]
+    short = {key for key, track in total.items() if track < limit}
+    over = defaultdict(set)                        # way -> the urban route relations that run over it
+    for rid, tags, members in relations:
+        if tags.get("route") in METRO_RAIL:
+            for kind, ref in members:
+                if kind == "w":
+                    over[ref].add(rid)
+    ends = lambda wid: (ways[wid][1][0], ways[wid][1][-1])
+    at, routes = defaultdict(set), defaultdict(set)    # a track end -> the longer lines that end there; a longer line -> its relations
+    for wid in urban:
+        if line_of[wid] not in short:
+            routes[line_of[wid]] |= over[wid]
+            for end in ends(wid):
+                at[end].add(line_of[wid])
+    todo = [wid for wid in urban if line_of[wid] in short]
+    group = {wid: wid for wid in todo}
+
+    def root(wid):
+        while group[wid] != wid:
+            group[wid] = group[group[wid]]
+            wid = group[wid]
+        return wid
+    first = {}
+    for wid in todo:
+        for end in ends(wid):
+            if end in first:
+                group[root(wid)] = root(first[end])
+            else:
+                first[end] = wid
+    stretches = defaultdict(list)
+    for wid in todo:
+        stretches[root(wid)].append(wid)
+    moved = Counter()
+    for _, wids in sorted(stretches.items()):
+        theirs = set().union(*(over[wid] for wid in wids))
+        met = Counter(key for end in sorted({end for wid in wids for end in ends(wid)}) for key in at[end] if routes[key] & theirs)
+        if not met:
+            continue
+        line = max(met.items(), key=lambda kv: (kv[1], str(kv[0])))[0]
+        for wid in wids:
+            moved[(line_of[wid][2], line[2])] += length[wid]
+            line_of[wid] = line
+    return moved
+
+
 def being_built(ways, code, name_of, build_name=lambda name: name, build_fast=lambda name: False, names=None):
     """The lines under construction of a country, as features of the layer of lines being built
     (drawn dashed): the track being built under one name is one line, drawn once; a line with
@@ -622,6 +681,9 @@ def main():
     line_of.update(tram_of)
     print(f"japan tramways: {sum(length[w] for w in unnamed_tram) - sum(length[w] for w in left):.1f} km of unnamed track joined to the line it connects, "
           f"{sum(length[w] for w in left):.1f} km left", flush=True)
+    aliases = adopt_aliases(line_of, ways, ex["relations"], length, 2 * METRO_MIN_KM)
+    print(f"japan: urban track under another name of its line, joined to the line: "
+          f"{[(old, new, round(track, 2)) for (old, new), track in sorted(aliases.items())]}", flush=True)
     print(f"japan: {len(line_of)} ways on named lines, {sum(length[w] for w in line_of):.0f} km of track; "
           f"{sum(length[w] for w in unnamed):.0f} km of running track left without a line", flush=True)
 
@@ -826,17 +888,25 @@ def main():
     # tramway system that is longer than that as a whole.
     system = tram_systems({key: tracks[key] for key in drawn_metro if is_tram[key]}, ways,
                           [wid for wid, (t, co) in ways.items() if t.get("railway") == "tram"])
+    # Nor a short line that is an underground line by its track and by a route relation of its
+    # own kind (名古屋市営上飯田線, 0.8 km between 上飯田 and 平安通): no ride in a park is mapped so.
+    subway_route = {ref for _, t, members in ex["relations"] if t.get("route") == "subway" for kind, ref in members if kind == "w"}
     metro_feats, tram_feats, metro_rows = [], [], []
+    left_out = []
     for key in sorted(drawn_metro, key=lambda k: is_tram[k]):          # the tramways after the rest, which keep their order
         _, firm, name = key
         simp, jk, line_km = drawn_metro[key]
         if max(line_km, sum(drawn_metro[k][2] for k in system.get(key, ()))) < METRO_MIN_KM:
-            continue
+            if not (all(ways[w][0].get("railway") == "subway" for w in tracks[key]) and any(w in subway_route for w in tracks[key])):
+                left_out.append((name, round(line_km, 2), sorted({ways[w][0].get("railway") for w in tracks[key]})))
+                continue
+            print(f"japan: {name}, {line_km:.2f} km, is kept: underground track on a subway route", flush=True)
         col = line_colour.get(key) or "#5cc8ff"
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
         city = next((c[0] for c in CITIES if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), "日本其他")
         (tram_feats if is_tram[key] else metro_feats).append({"type": "Feature", "properties": {"r": "JP", "g": "jp", "col": col, "n": name, "ct": city, "jk": jk}, "geometry": geometry(simp)})
         metro_rows.append((city, {"n": name, "col": col, "jk": jk, "km": round(line_km), "bbox": bbox_of(simp)}))
+    print(f"japan: {len(left_out)} urban lines of under {METRO_MIN_KM:g} km left out as rides: {sorted(left_out)}", flush=True)
     # A tramway keeps company with tramways only: where one runs in the street over a subway
     # (札幌市電 over 南北線, 都電 over 副都心線) neither is moved aside for the other, as in China.
     metro_feats = side_by_side(metro_feats) + side_by_side(tram_feats)

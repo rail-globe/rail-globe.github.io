@@ -438,7 +438,27 @@ def eased(before, after, least=0.00006, bends=False):
     return list(a.coords), list(b.coords)
 
 
-def stitch(pieces, reach=0.0012, far=0.005, ease=0.00006, bends=False):
+def closed(chain, gap, ease=0.00006, bends=False):
+    """A run whose two ends stop short of each other by no more than `gap` is a ring that was cut
+    there: it is joined end to start, by a slant where the ends are abreast (eased). A circle line
+    that runs along another line for a stretch is put together from its own track and the shared
+    path, and the one join stitch() does not make, a run with itself, was left open: 重庆轨道交通
+    环线 west of 民安大道, 55 m (reported 2026-10-13), and four more rings. Only a run much longer
+    than the opening is taken for a ring."""
+    if len(chain) < 4 or chain[0] == chain[-1]:
+        return chain
+    step = math.hypot(chain[-1][0] - chain[0][0], chain[-1][1] - chain[0][1])
+    if not 0 < step <= gap or LineString(chain).length < max(20 * step, 0.02):
+        return chain
+    # The ring is written from the middle of the run, away from the join: where a ring begins is
+    # where its sideways slot may change without a ramp (scripts/side_by_side.py works along a
+    # line from its start), and the join is just where a ring comes onto a shared path.
+    half = len(chain) // 2
+    tail, head = eased(chain[half:], chain[:half + 1], ease, bends)
+    return tail + head
+
+
+def stitch(pieces, reach=0.0012, far=0.005, ease=0.00006, bends=False, close=0.0):
     """Make one line continuous: join its pieces wherever they stop short of each other.
 
     Drawing a double line by one of its tracks leaves seams: the kept track changes from one to
@@ -450,10 +470,12 @@ def stitch(pieces, reach=0.0012, far=0.005, ease=0.00006, bends=False):
     back in the direction of their longest piece. `ease` is the narrowest step to the side that
     is turned into a slant; with `bends`, pieces that meet at an angle are joined as they are (the
     metro layers: a light-rail line turning off at a junction must not be cut across the bend).
+    With `close`, a run left with its two ends that near each other is a ring and is closed (see
+    closed(); the metro lines: a railway line is never taken for a ring).
     """
     runs = [list(g.coords) for g in pieces if g.length > 0]
     if len(runs) < 2:
-        return [LineString(r) for r in runs]
+        return [LineString(closed(r, close, ease, bends) if close else r) for r in runs]
     ends = [(i, side, Point(r[0] if side == 0 else r[-1])) for i, r in enumerate(runs) for side in (0, 1)]
     tree = STRtree([e[2] for e in ends])
 
@@ -510,6 +532,8 @@ def stitch(pieces, reach=0.0012, far=0.005, ease=0.00006, bends=False):
             nxt = link.get(2 * k + (1 - enter))
             k, enter = (ends[nxt][0], ends[nxt][1]) if nxt is not None else (None, 0)
         out.append(chain[::-1] if longest[1] else chain)
+    if close:
+        out = [closed(chain, close, ease, bends) for chain in out]
     geoms = [LineString(c) for c in out if len(c) > 1]
     if len(geoms) > 1:          # an end that stops beside another run is carried on to it
         tree = STRtree(geoms)

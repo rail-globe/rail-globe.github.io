@@ -126,6 +126,31 @@ def twice(lines, step):
     return sorted(found, key=lambda f: -f[0])
 
 
+def loose(lines, least=5.0, most=300.0):
+    """Two ends of one line that stop short of each other: neither touches any other piece of the
+    line, and they lie `least` to `most` metres apart. broken() does not see these on a ring: a
+    ring cut open in one place is still one connected line the other way round (重庆轨道交通环线
+    west of 民安大道, 55 m, and four more rings, 2026-10-13)."""
+    found = []
+    metres = lambda a, b: math.hypot((a[0] - b[0]) * math.cos(math.radians(a[1])), a[1] - b[1]) * 111320
+    for key, pieces in lines.items():
+        geoms = [g for g, _ in pieces]
+        ends = [(g.coords[0], i) for i, g in enumerate(geoms)] + [(g.coords[-1], i) for i, g in enumerate(geoms)]
+        tree = STRtree(geoms)
+        free = [(c, i) for c, i in ends
+                if not any(int(j) != i for j in tree.query(Point(c), predicate="dwithin", distance=0.00003))]
+        taken = set()
+        for a in range(len(free)):
+            for b in range(a + 1, len(free)):
+                if a in taken or b in taken or free[a][1] == free[b][1] and geoms[free[a][1]].length * 111320 < 20 * most:
+                    continue
+                gap = metres(free[a][0], free[b][0])
+                if least <= gap <= most:
+                    taken |= {a, b}
+                    found.append((gap, key, Point(free[a][0])))
+    return sorted(found, key=lambda f: -f[0])
+
+
 def broken(lines):
     """Lines that stop and resume: the gaps between the connected parts of a line."""
     found = []
@@ -251,7 +276,7 @@ def report(layer):
     # Unnamed features collect unrelated tracks across the country. They can be checked for
     # corners, but their separate pieces cannot be treated as one named continuous route.
     named = {key: pieces for key, pieces in lines.items() if not key[1].startswith("未命名[")}
-    result = {"lines": len(lines), "drawn_km": total, "twice": [], "broken": [], "sharp": [], "hidden": [], "astray": []}
+    result = {"lines": len(lines), "drawn_km": total, "twice": [], "broken": [], "loose": [], "sharp": [], "hidden": [], "astray": []}
     found = twice(named, step)
     result["twice"] = [{"km": length, "line": list(key), "view": here(pt)} for length, key, pt in found]
     print(f"   twice: {len(found)} lines with more than 1 km drawn twice, {sum(f[0] for f in found):.0f} km in all")
@@ -262,6 +287,11 @@ def report(layer):
     print(f"   broken: {len(found)} places where a line stops and carries on within 3 km")
     for gap, key, pt, size in found[:25]:
         print(f"      gap {gap:5.0f} m  {key[1]} ({key[0]}), the smaller part is {size:.1f} km  {here(pt, 16)}")
+    found = loose(named)
+    result["loose"] = [{"gap_m": gap, "line": list(key), "view": here(pt, 16)} for gap, key, pt in found]
+    print(f"   loose: {len(found)} places where two ends of a line stop short of each other (5 to 300 m)")
+    for gap, key, pt in found[:25]:
+        print(f"      gap {gap:5.0f} m  {key[1]} ({key[0]})  {here(pt, 16)}")
     found = sharp(lines)
     result["sharp"] = [{"angle": angle, "line": list(key), "view": here(pt, 17)} for angle, key, pt in found]
     print(f"   sharp: {len(found)} turns of more than 70 degrees")

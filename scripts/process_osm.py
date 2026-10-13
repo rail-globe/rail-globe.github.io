@@ -1494,7 +1494,11 @@ for key, pieces in display_parts.items():
     # The corridor sampler drops short solo slivers (< RIDE_SLIVER). Their two neighbouring
     # reference ends can be up to twice that distance apart; carry the same line across them.
     light = metro_lines[key].get("light")
-    runs = stitch(runs_of(pieces), reach=4 * TRACK if light else 3 * RIDE_SLIVER, ease=0.00002 if light else 0.00006, bends=True)
+    # (a ring is cut where its own track meets a path it shares: that last join, of the run with itself, is made here)
+    merged = runs_of(pieces)
+    runs = stitch(merged, reach=4 * TRACK if light else 3 * RIDE_SLIVER, ease=0.00002 if light else 0.00006, bends=True, close=RIDE_SLIVER)
+    if any(g.is_ring for g in runs) and not any(g.is_ring for g in merged):
+        print(f"metro ring closed across its last join: {key[1]}", flush=True)
     guides = direction_guides[key]
     oriented = []
     for g in runs:
@@ -1706,7 +1710,7 @@ print("metro cities:", {k: f"{len(c['lines'])} lines {c['km']:.0f} km" for k, c 
 # A tram and a metro under its street are not on one path (see above): each kind is moved apart
 # among its own. The trams are written last, and so drawn over the tunnels beneath them.
 metro_lines_drawn = len(metro_feats)
-metro_feats = side_by_side([f for f in metro_feats if not of_tram(f)]) + side_by_side([f for f in metro_feats if of_tram(f)])
+metro_feats = side_by_side([f for f in metro_feats if not of_tram(f)], rings=True) + side_by_side([f for f in metro_feats if of_tram(f)], rings=True)
 print(f"metro lines side by side: {metro_lines_drawn} lines written as {len(metro_feats)} features, "
       f"{sum(1 for f in metro_feats if f['properties'].get('off'))} of them moved to a side")
 write("metro.geojson", metro_feats)
