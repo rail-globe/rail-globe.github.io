@@ -397,14 +397,19 @@ def on_spine(fine, far, by):
     inside = [by[max(i - 1, 0)] or by[min(i, n - 2)] for i in range(n)]       # the corridor at each point
     if not any(inside):
         return [[round(x, 7), round(y, 7)] for x, y in fine]
+    # Where a line passes from one corridor to the next (S2 线 from the 东北环线 to the 京包客专线) it is
+    # on its own track too: the feet on two spines lie apart, and joining them would draw a
+    # stroke across from one spine to the other.
+    edge = [inside[i] is None or (i and inside[i - 1] is not None and inside[i - 1] is not inside[i])
+            or (i < n - 1 and inside[i + 1] is not None and inside[i + 1] is not inside[i]) for i in range(n)]
     away = [math.inf] * n               # metres along the path to the nearest point not beside a spine
     reach = math.inf
     for i in range(n):
-        reach = 0.0 if inside[i] is None else reach + (far[i] - far[i - 1] if i else 0.0)
+        reach = 0.0 if edge[i] else reach + (far[i] - far[i - 1] if i else 0.0)
         away[i] = reach
     reach = math.inf
     for i in range(n - 1, -1, -1):
-        reach = 0.0 if inside[i] is None else reach + (far[i + 1] - far[i] if i < n - 1 else 0.0)
+        reach = 0.0 if edge[i] else reach + (far[i + 1] - far[i] if i < n - 1 else 0.0)
         away[i] = min(away[i], reach)
     out = []
     for i, (x, y) in enumerate(fine):
