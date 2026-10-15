@@ -1,77 +1,63 @@
 # Rail Globe
 
+中文 | [English](README.en.md)
+
 中国、日本、韩国和英国的铁路、地铁和有轨电车，画在卫星影像的地球上。
 
-四个国家用同一套上色规则：动车组和高速线路按设计时速分档，其余铁路有官方线路色的用线路色、没有的用中性浅色，地铁、轻轨和有轨电车用官方线路色。不按公司上色。
-
-在线查看：https://rail-globe.github.io/
+**在线查看：https://rail-globe.github.io/**
 
 ![全国铁路网，画在卫星影像的地球上](docs/images/china.jpg)
 
+## 能做什么
+
+- **看线路**：四个国家的线路同时画在地球上，也可切成平面地图。放大到车站，能看到站台、每一股道和车辆段。
+- **搜索**：车站、线路、城市、国家在一个框里搜，当地名、中文名、英文名都能搜到。
+- **看一条线**：点一条线，整条高亮，卡片写它的类别和设计时速。
+- **两站怎么走**(中国)：沿真实线路给出走法、里程和估算时间，铁路和地铁一起算，相邻车站可步行换乘。
+- **列车**(中国)：按时刻表估算此刻或任一时刻全国列车的位置。选中一趟车，看整条路线、经停站和经由线路。位置不是实时定位。
+- **中文 / English**：界面和地名写法一键切换。
+
+## 怎么上色
+
+四个国家用同一套规则，不按公司上色：
+
+1. 动车组和高速线路按**设计时速**分七档：>350、350、300、250、200、160、<160 km/h。
+2. 其余铁路有官方线路色的用线路色，没有的用中性浅色。
+3. 地铁、轻轨和有轨电车用官方线路色。
+
 ![图例：动车组线路按设计时速分七档，普速铁路，未建成线路](docs/images/legend.png)
+
+虚线是在建线路。每条线只画一条；几条线共用或紧贴同一段轨道时并排画，放大后回到各自的轨道。
+
+## 截图
 
 | ![华东的高铁网](docs/images/speed.jpg) | ![上海的地铁](docs/images/shanghai.jpg) | ![上海虹桥站](docs/images/hongqiao.jpg) |
 |:-:|:-:|:-:|
-| 动车组线路按设计时速分七档上色 | 上海的地铁，按各线官方色 | 上海虹桥站：放大能看到每一股道 |
-| ![香港和深圳](docs/images/hongkong.jpg) | ![日本的铁路网](docs/images/japan.jpg) | ![东京的铁路和地铁](docs/images/tokyo.jpg) |
-| 香港和深圳：港铁、轻铁和深圳地铁 | 日本：新干线按设计时速，其余按线路色 | 东京：每条线是它自己的线路色 |
-| ![韩国的铁路网](docs/images/korea.jpg) | ![首尔的地铁和铁路](docs/images/seoul.jpg) | ![英国的铁路网](docs/images/uk.jpg) |
-| 韩国：高速线 350 / 300 档，准高速 250 / 200 档 | 首尔：地铁按线路色 | 英国：High Speed 1、国铁、遗产铁路 |
-| ![伦敦的地铁和铁路](docs/images/london.jpg) | ![格拉斯哥的市郊铁路和地铁](docs/images/glasgow.jpg) | |
-| 伦敦：地铁、Elizabeth line、DLR | 格拉斯哥：市郊铁路按线路色 | |
-| ![长三角此刻在路上的列车](docs/images/trains.jpg) | ![选中一趟车，整条路线亮起来](docs/images/train-route.jpg) | |
-| 列车：按时刻表估算此刻在路上的车，带车次号 | 选中 Z328 长春→昆明，整条路线按所经线路的颜色亮起来 | |
+| 华东的高铁，按设计时速上色 | 上海的地铁 | 上海虹桥站的股道 |
+| ![长三角此刻在路上的列车](docs/images/trains.jpg) | ![选中一趟车，整条路线亮起来](docs/images/train-route.jpg) | ![香港和深圳](docs/images/hongkong.jpg) |
+| 列车，按时刻表估算的位置 | 选中 Z328 长春→昆明 | 香港和深圳 |
+| ![日本的铁路网](docs/images/japan.jpg) | ![东京的铁路和地铁](docs/images/tokyo.jpg) | ![首尔的地铁和铁路](docs/images/seoul.jpg) |
+| 日本 | 东京 | 首尔 |
+| ![韩国的铁路网](docs/images/korea.jpg) | ![英国的铁路网](docs/images/uk.jpg) | ![伦敦的地铁和铁路](docs/images/london.jpg) |
+| 韩国 | 英国 | 伦敦 |
 
-截图里的卫星影像来自 Esri World Imagery，线路数据来自 OpenStreetMap 贡献者，列车时刻表来自 Chinese Railway GTFS，许可见下面的“数据与许可”。
+## 覆盖范围
 
-## 能做什么
-
-- **看线路**：四个国家的线路同时画在卫星影像的地球上，可以切到平面地图、调卫星影像的亮度。放大到车站，能看到站台、每一股道和车辆段(“站场与车辆基地”图层)。每个国家的“图层”页单独开关各类线路、车站、在建线路、城市名和列车，图例只列这个国家有的时速档。顶部可以快速跳到各个国家和主要城市。
-- **搜索**：一个搜索框搜车站、线路、城市和国家，四个国家一起搜，结果按国家分组。当地名、中文名、英文名都能搜到，“城市 站名”可以区分同名车站。
-- **看一条线**：在地图上或“线路”页点一条线，整条线加粗，其他线变暗。卡片写它的类别和设计时速；长线路分区段列出，按轨道限速暂时归档的标明“设计时速待核实”。
-- **两站怎么走**(仅中国)：点两个车站或输入站名，沿真实线路给出走法、里程和估算时间。铁路和地铁一起算，相邻的火车站和地铁站之间按步行换乘，走过的每一条线都列出来。时间按线路等级和平均速度估算，不代表有直达车次。
-- **列车**(仅中国)：按时刻表估算全国列车此刻在哪，也可以换成任意一个北京时间。远看是带方向的点，放大后是沿线路朝行进方向的车，标着车次号，颜色分 G、D、C 和其他。可以按车次或停靠站找车，按 G、D、C 筛选，或只看当前画面里的车。选中一趟车：整条路线按所经线路的颜色亮起来，其他线变暗；卡片列出经停站和图定到发时刻、一路走过的线路和各段里程，地图可以跟着车走；逐站正晚点由读者手动查询，和地图上的位置分开显示。
-  - 位置是按时刻表和线路里程估算的，不是实时定位，也不含晚点。
-  - 时刻表里约一半的车次(11,736 个里的 6,117 个)有可用的路线，没有路线的车不画，普速列车缺得多。路线偏离本图线路的区段改为沿本图线路(`scripts/fit_trains.py`)。
-- **中文和英文**：卡片里的“中 / EN”切换整个界面和地名的写法，见下面“图上有什么”。
-
-## 图上有什么
-
-- 中国：铁路按区段设计时速分 >350、350、300、250、200、160、<160 七档，没有设计时速资料的线路列为普速铁路，未建成线路用虚线
-- 日本：全国铁路和各城市的地铁、单轨、路面电车。新干线按已建成的设计及改造标准分段着色，东海道 285、山阳 300、东北宇都宫至盛冈 320 km/h，其余区段和在建提速分别记录。依据与区段保存在 `data/jp_design_standards.json`，设计标准的改造口径见[日本土木学会](https://note.com/jsce/n/n66945fec6082)。山形、秋田保留独立的 130 km/h 图层与线路色。其余铁路有自己的线路色就用线路色，没有的用中性浅色。同一走廊里并行的线路按实际位置并排画，放大后回到各自的轨道上；在建的中央新干线等画虚线
-- 韩国：全国铁路和首尔、釜山、大邱、仁川、大田、光州的地铁与轻轨。京釜、水西平泽高速线按 350 km/h 的设计时速归档；湖南高速线暂按最高运行速度 305 km/h 归入 300 档；中央线、京江线等准高速线路按轨道限速归入 250、200 档。后两类的设计时速待核实，页面上标明
-- 英国：全国铁路(含北爱尔兰)、遗产铁路、伦敦地铁、格拉斯哥地铁、DLR、泰恩威尔地铁和各城市的有轨电车。High Speed 1 归入 300 档(依据是最高运行速度，设计时速待核实)；ScotRail、威尔士交通、Overground、Elizabeth line、Merseyrail 等给各条线路定了颜色的，按线路色；在建的 High Speed 2 画虚线
-- 地铁：全国各城市的地铁、单轨和磁浮(含港铁、澳门轻轨、台湾的捷运)，按线路官方色
-- 轻轨·电车：中国的轻轨、有轨电车和云巴(日本、韩国、英国的有轨电车也在各自的城市轨道里)。有轨电车按线路关系画，电车站只挂电车轨道
-- 城际和市郊按运营方归类：地铁公司运营的城际、市域线和铁路局运营的市郊线都归入“市郊·城际”这一类；铁路局运营、借国铁线路跑的市郊线画成细线叠在国铁线路旁，国铁线路本身的归属不变
-- 站场与车辆基地、车站(四个国家都有)、国界。车辆段的名字来自 OSM 里带名字的铁路用地(含多边形关系)和站场对象；OSM 没有名字的，用一份带出处的名称表补(`data/depot_names.json`)
-- 城市名：中国的地级市、日本的县厅所在地、韩国的广域市和道厅所在地、英国的首府，分级出现，“图层”页可以关掉
-- 中文和英文两种界面，卡片里的“中 / EN”切换。名字由页面按语言拼：先写当地名字，当地文字不是读者的文字时空一格、在后面括号里加读者语言的名字(如 `서울 (首尔)`、`上海虹桥 (Shanghai Hongqiao)`)；数据里 `n` 永远是当地名字，中文名 `nz`、英文名 `ne` 是单独的字段。韩国、英国的中文名来自带出处的名称表(`data/kr_names.tsv`、`data/uk_names.tsv`)，没有出处的不写
-- 卡片首页是国家列表，点进一个国家是它自己的页面(线路、图层，中国还有路线和列车)，可以返回列表；图层开关和筛选只作用于这个国家。线路页按各国自己的分类列出，地铁按城市列出
-
-长线路按有来源和明确范围的区段分别着色，整条线路保留一个身份，选择时所有区段一起高亮。优先采用线下设计标准，缺失时采用轨道设计标准。设计标准与参考运行速度分别展示，不能用站内限速推断设计等级。网站给出的 165、205 分别归入 160、200 档，同时保留具体数值。已进入联调联试的线路按已建成画实线。虚线只表示未建成线路，包括线路还没修到、但站内已提前铺好的那一小段轨道。
-
-每条线路只画一条线：复线只画其中一股轨道，上下行分开走不同线位的区段才各画一条(`scripts/single_track.py`)。所以线旁的平行线只表示另一条线路或另一种列车共用这段轨道。地铁也一样：几条线路共用的轨道上，每条线路并排各画一条(港铁东涌线与机场快线、屯门和元朗的轻铁、上海 3 号线与 4 号线)；颜色相同的贯通线路只画一条。并排只发生在共线区段，线路独自运行时画在自己的轨道上，进出共线区段时逐步移到一侧(`scripts/side_by_side.py`)。寻路和车站匹配仍然用全部轨道。
-
-轻铁、轻轨按街道的尺度画：只有在同一条轨道上才算并线，其余地方画在自己的轨道上，道岔处的弯道沿真实轨道走，每条线画到自己的终点站(`scripts/along.py`)。`process_osm.py` 每次都会量一遍画出来的线离自己的轨道有多远、有没有轨道没画到，结果在 `output/metro_fit.json`。
-
-北京周边有 18 段走廊，几条不同类别的线(国铁、市郊、地铁)各走各的轨道却贴得很近，拉远会叠成一条。这些地方按手工指定的顺序并排(`data/seat_overrides.json`，每处写明范围和原因)：拉远时沿走廊主线的线形画，放大后回到各自的轨道；联络线、走行线和去动车段的线不排。
-
-两条不同等级的线路共用同一段轨道时，轨道保持所属线路的颜色，另一条线路在旁边画成一条平行线(如汉十高铁在汉口至云梦东之间走武孝城际的轨道)。这类区段列在 `scripts/process_osm.py` 的 `SHARED_KNOWN` 里。
+| 国家 | 内容 |
+|---|---|
+| 中国 | 含港澳台。国铁按区段设计时速着色；各城市的地铁、轻轨·电车、市郊·城际；站场与车辆段；列车；两站寻路 |
+| 日本 | 全国铁路，各城市的地铁、单轨和路面电车；新干线按已建成的设计标准分段着色 |
+| 韩国 | 全国铁路，首尔、釜山、大邱、仁川、大田、光州的地铁与轻轨；高速线和准高速线按时速档，部分时速待核实 |
+| 英国 | 全国铁路(含北爱尔兰)、遗产铁路、伦敦地铁、DLR 和各城市的有轨电车；High Speed 1 按 300 档 |
 
 ## 数据与许可
 
-- 线路、车站、站场：© [OpenStreetMap](https://www.openstreetmap.org/copyright) 贡献者，ODbL。Geofabrik 快照截止 2026-10-05 20:21:35 UTC(日本、韩国为 2026-10-06 20:21:06 UTC，英国为 2026-10-03 20:20:50 UTC)。
-- 设计时速参考：[中国动车组线路资料](https://www.china-emu.cn/RailRoads/)。保存线路和区段的事实字段、来源链接及读取日期，不复制网站的地图、图片或文章。该网站为参考资料，范围不清或存在疑点的记录保留待核实。
-- 列车时刻表与路线：社区项目 [Chinese Railway GTFS](https://github.com/wensimehrp/chinese-railway-gtfs)(wensimehrp)，[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；上游列车数据由 RailGo-Parser 采集。本站做了中国范围筛选、线形简化、压缩和格式转换，偏离本图线路的区段改为沿本图线路，做法和数据日期见 `data/trains/README.md`。它不是 12306 的官方开放数据，不含实时位置和晚点。逐站正晚点在读者点“查询”时向 [RailGo](https://railgo.dev/) 查询。
-- 卫星影像：Esri World Imagery(Esri, Maxar, Earthstar Geographics)，在线加载，不包含在本仓库中。
-- 标注字形：Open Sans，SIL Open Font License。
-- 地图引擎：[MapLibre GL JS](https://maplibre.org/)。
-- 瓦片读取：[PMTiles](https://github.com/protomaps/PMTiles) 的读取库(`vendor/pmtiles.js`，BSD-3-Clause)，随本站发布，不走 CDN。
-
-中国一行的营业里程数字来自交通运输部《2025年交通运输行业发展统计公报》，不是从地图数据计算的。
-
-OSM 快照日期不代表每一条线路都已跟上现实进度。已核实的区段状态记录在 `data/rail_status_overrides.json`，保留来源、核查日期和区段范围，原始 OSM 标签不覆盖。已建成也不等于已经开通载客。
+- 线路、车站、站场：© [OpenStreetMap](https://www.openstreetmap.org/copyright) 贡献者，ODbL。Geofabrik 快照：中国 2026-10-05，日本、韩国 2026-10-06，英国 2026-10-03。
+- 设计时速：[中国动车组线路资料](https://www.china-emu.cn/RailRoads/)及各线的公开来源，逐段记出处；只查到运行速度的标为待核实。
+- 列车时刻表：[Chinese Railway GTFS](https://github.com/wensimehrp/chinese-railway-gtfs)(wensimehrp)，[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)，上游由 RailGo-Parser 采集。本站做了筛选、简化和格式转换，并把偏离本图线路的区段改为沿本图线路，见 `data/trains/README.md`。不是 12306 的官方数据。逐站正晚点在读者点“查询”时向 [RailGo](https://railgo.dev/) 查询。
+- 卫星影像：Esri World Imagery(Esri, Maxar, Earthstar Geographics)，在线加载，不在本仓库中。
+- 中国的营业里程数字来自交通运输部《2025年交通运输行业发展统计公报》。
+- 软件：[MapLibre GL JS](https://maplibre.org/)，[PMTiles](https://github.com/protomaps/PMTiles) 读取库(BSD-3-Clause)，Open Sans 字体(SIL Open Font License)。
 
 ## 本地运行
 
@@ -79,45 +65,26 @@ OSM 快照日期不代表每一条线路都已跟上现实进度。已核实的�
 python3 scripts/serve.py
 ```
 
-然后打开 http://localhost:8765 。页面源码在 `src/app.html`，修改后运行 `python3 scripts/build.py` 重新生成 `index.html`。
+打开 http://localhost:8765 。页面源码在 `src/app.html`，改完运行 `python3 scripts/build.py`。
 
-页面按需取线路数据。每个国家的图层预先切成矢量瓦片，存成一个 PMTiles 文件(`data/tiles/<国家>.pmtiles`)，页面只取当前画面里的那几块，用的是 HTTP Range 请求(`scripts/serve.py` 和 GitHub Pages 都支持)。线路列表和车站名单是小文件，一次取完；两站寻路的线路网络在第一次算路线时才取。瓦片读不到时(文件缺失，或服务器不支持 Range)页面会在控制台说明，并退回一次加载全部 GeoJSON 的方式；地址加 `?tiles=0` 可以直接用这种方式，`?tiles=1` 相反。`site.json` 的 `tiles` 决定默认用哪一种。
-
-## 重新生成数据
-
-需要 Python 3、`osmium`、`shapely` 和 `numpy`，以及 Geofabrik 的 `china`、`taiwan`、`japan-latest`、`south-korea-latest`、`united-kingdom` 五份 `.osm.pbf` 文件，放在 `data/raw/` 下。切瓦片还需要 [tippecanoe](https://github.com/felt/tippecanoe)(只在重新生成数据时用，看图不需要)。`site.json` 里的 `jp`、`kr`、`uk` 决定页面是否加载这三个国家。
+重新生成数据需要 Python 3(`osmium`、`shapely`、`numpy`)、[tippecanoe](https://github.com/felt/tippecanoe)，以及 Geofabrik 的 `china`、`taiwan`、`japan-latest`、`south-korea-latest`、`united-kingdom` 五份 `.osm.pbf`，放在 `data/raw/`：
 
 ```bash
-python3 scripts/build_border.py       # 国界，同时缓存省界(process_osm.py 用它划分地铁所属地区)
-python3 scripts/extract_osm.py        # 中国、港澳台
-python3 scripts/extract_osm.py uk     # 英国(united-kingdom.osm.pbf，含有轨电车、遗产铁路)
-python3 scripts/extract_osm.py jp     # 日本(japan-latest.osm.pbf)
-python3 scripts/extract_osm.py kr     # 韩国(south-korea-latest.osm.pbf)
-python3 scripts/process_jp.py         # 日本的图层 data/jp_*.json，独立于中国的处理
-python3 scripts/process_uk.py         # 英国的图层 data/uk_*.json(配置在这个文件里，做法在 scripts/country.py)
-python3 scripts/process_kr.py         # 韩国的图层 data/kr_*.json，同上
-python3 scripts/yards.py jp           # 只重做某国的站场与车辆基地(上面两个脚本末尾也会做；中国用 yards.py cn)
-python3 scripts/build_cities.py       # 城市标注 data/cities.json：中国地级市驻地、国外首都与一级行政区首府，带中文、英文名(加国家代码只做一国)
-python3 scripts/check_country.py jp kr uk # 国外各国的核查：图层是否齐全、断线、画重、时速出处、线路色
-python3 scripts/fetch_design_catalog.py # 显式刷新设计时速参考资料(需要 requests、beautifulsoup4)
-python3 scripts/extract_design_points.py # 区段边界使用同一快照的车站、线路所坐标
-python3 scripts/process_osm.py        # 连续线路几何，再按设计区段着色
-python3 scripts/build_graph.py        # 两站寻路用的线路网络
-python3 scripts/build_trains.py --download # 列车时刻表(取社区 GTFS 的最新发布)，末尾把路线贴到本图线路上，见 data/trains/README.md
-python3 scripts/build_tiles.py        # 各国图层切成矢量瓦片 data/tiles/<国家>.pmtiles，并核对最细一级离 GeoJSON 不超过 1 米
-python3 scripts/build_tiles.py jp     # 只重切一个国家(改了哪个国家的数据就重切哪个)
-python3 scripts/build.py              # 生成页面
-python3 scripts/check_layers.py       # 全国核查：重复、断开、急转弯、互相遮挡、偏离轨道
-python3 scripts/audit_rail_data.py    # 原始名称、建设状态、已核实区段和待核查项
-python3 -m unittest discover -s tests # 画法的回归测试
+python3 scripts/build_border.py              # 国界
+python3 scripts/extract_osm.py               # 提取中国；加 jp、kr、uk 提取其他国家
+python3 scripts/process_jp.py                # 日本的图层；韩国、英国是 process_kr.py、process_uk.py
+python3 scripts/extract_design_points.py     # 设计时速区段的分界点
+python3 scripts/process_osm.py               # 中国的图层，按设计时速分段着色
+python3 scripts/build_graph.py               # 两站寻路的线路网络
+python3 scripts/build_trains.py --download   # 列车时刻表
+python3 scripts/build_tiles.py               # 切成矢量瓦片 data/tiles/<国家>.pmtiles
+python3 scripts/build.py                     # 生成页面
+python3 scripts/check_layers.py              # 核查断线、重复和偏离轨道
+python3 -m unittest discover -s tests
 ```
 
-有来源说明是既有线、只是被高铁列车借用的区段，在 `data/rail_design_overrides.json` 里标为 `conventional`，画成普速并保留来源。参考目录随数据保存在仓库，离线重算不依赖实时网站响应。
-
-同样的数据和代码每次生成的结果相同(`process_osm.py` 固定了哈希种子)。瓦片是由 GeoJSON 切出来的显示用文件：各项核查仍在 GeoJSON 上做，改了数据要重切对应国家的瓦片。瓦片切到 13 级，更大的缩放级别由 13 级放大绘制，线形和 GeoJSON 的偏差在 1 米以内，`build_tiles.py` 每次都会量。
+同样的数据和代码，每次生成的结果相同。
 
 ## 许可
 
-- **代码、页面和文档**：[PolyForm Noncommercial 1.0.0](LICENSE)。可以用来学习、研究、个人和教学使用，也可以修改和分享；**不能用于商业用途**，除非得到作者的书面授权。需要商用授权，请在本仓库开一个 Issue 联系。
-
-This project's code is licensed under PolyForm Noncommercial 1.0.0 (study, research and personal use are welcome; commercial use needs written permission).
+代码、页面和文档使用 [PolyForm Noncommercial 1.0.0](LICENSE)：可以学习、研究、个人和教学使用，也可以修改和分享；**商用需要作者书面授权**，请在本仓库开 Issue 联系。数据按上面各自的许可。
