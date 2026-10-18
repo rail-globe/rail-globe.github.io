@@ -1,4 +1,4 @@
-"""Stage 1: pull railway and metro objects out of the Geofabrik extracts into data/raw/extract*.pkl.
+"""Stage 1: pull railway and metro objects out of OSM country extracts into data/raw/extract*.pkl.
 
     python3 scripts/extract_osm.py        China, Hong Kong, Macao, Taiwan -> extract.pkl (with trams
                                           and tram stops)
@@ -7,6 +7,10 @@
     python3 scripts/extract_osm.py jp     Japan                           -> extract_jp.pkl (with trams
                                           and tram stops)
     python3 scripts/extract_osm.py kr     South Korea                     -> extract_kr.pkl
+    python3 scripts/extract_osm.py de     Germany                         -> extract_de.pkl
+    python3 scripts/extract_osm.py fr     France                          -> extract_fr.pkl
+    python3 scripts/extract_osm.py ch     Switzerland                     -> extract_ch.pkl
+    python3 scripts/extract_osm.py es     Spain                           -> extract_es.pkl
 
 Reading a 1.6-2.3 GB extract takes a few minutes, so it is done once here;
 scripts/process_osm.py then classifies and writes the map layers from the pickles in seconds.
@@ -39,10 +43,26 @@ RAW = ROOT / "data" / "raw"
 WAY_TAGS = ("railway", "service", "usage", "highspeed", "maxspeed", "maxspeed:design", "design_speed",
             "construction", "construction:railway", "name", "name:zh", "name:en", "network", "operator", "colour",
             "tunnel", "bridge", "electrified", "voltage", "frequency", "gauge", "tracks", "railway:preserved")
-REL_TAGS = ("type", "route", "route_master", "name", "name:zh", "name:en", "ref", "colour", "network", "operator")
+REL_TAGS = ("type", "route", "route_master", "name", "name:zh", "name:en", "ref", "colour", "network", "operator",
+            "usage", "service", "tourism", "heritage", "railway:preserved", "description", "opening_hours",
+            "website", "wikipedia", "disused", "end_date")
 NAME_TAGS = ("name", "name:zh", "name:en")
 METRO_RAIL = {"subway", "light_rail", "monorail", "maglev"}
+# Ordinary train services stop at railway stations; their stops let a station that two parallel
+# railway lines both call at show a capsule (scripts/station_capsules.py, 2026-10-18). Every
+# consumer of "stops" looks routes up by relation id, so metro and tram results do not change.
+STOP_ROUTES = {"train"}
 YARD_KINDS = {"yard", "depot", "workshop", "engine_shed", "roundhouse"}
+
+
+def station_tags(tags, obj, keys=NAME_TAGS):
+    """Keep native object identity inside the existing station tuple contract.
+
+    It is provenance, not an OSM tag or a display coordinate. Older extracts
+    without these fields require a hash-bound native-source recovery scan.
+    """
+    return {**{key: tags.get(key) for key in keys if tags.get(key)},
+            "_osm_type": "w" if obj.is_way() else "n", "_osm_id": obj.id}
 
 
 def centre(way):
@@ -66,6 +86,12 @@ def named_ground(path, g):
     in its name (depots.worth_keeping): there are tens of thousands of named factories.
     No index of every node is built: the nodes of the outlines are fetched by their numbers."""
     forms = [("landuse", v) for v in AREA_USES] + [("railway", k) for k in YARD_KINDS]
+    if g in ("de", "fr", "ch", "es", "nl", "be", "it"):
+        # Swiss tram depots, among others, put their names on the depot building.
+        # Still keep only a depot name; its actual outline must hold yard track.
+        forms += [("building", k) for k in ("industrial", "transportation", "train_station", "service", "yes")]
+    def named_form(tags):
+        return form_of(tags) or ("building=" + tags["building"] if g in ("de", "fr", "ch", "es", "nl", "be", "it") and tags.get("building") else None)
     tags_of = lambda o: {t.k: t.v for t in o.tags}
 
     def thinned(refs):
@@ -75,7 +101,7 @@ def named_ground(path, g):
     members = {}                      # way of a multipolygon -> its node numbers
     for o in osmium.FileProcessor(path, osmium.osm.RELATION).with_filter(osmium.filter.TagFilter(*forms)):
         t = tags_of(o)
-        form = form_of(t)
+        form = named_form(t)
         name, key = name_of(t, form, g) if form else ("", "")
         if t.get("type") == "multipolygon" and worth_keeping(g, name, form, key):
             ways = [m.ref for m in o.members if m.type == "w" and m.role in ("outer", "")]
@@ -83,7 +109,7 @@ def named_ground(path, g):
             found.append([form, f"r{o.id}", name, key, ways, english(t, name)])
     for o in osmium.FileProcessor(path, osmium.osm.WAY).with_filter(osmium.filter.TagFilter(*forms)):
         t = tags_of(o)
-        form = form_of(t)
+        form = named_form(t)
         name, key = name_of(t, form, g) if form else ("", "")
         if worth_keeping(g, name, form, key):
             found.append([form, f"w{o.id}", name, key, [thinned([n.ref for n in o.nodes])], english(t, name)])
@@ -120,7 +146,7 @@ STOP_TAGS = ("name", "name:zh", "railway", "public_transport", "station", "const
 
 
 def route_stops(path, kinds):
-    """Where the metro and tram routes of an extract stop: the stop and platform members of each
+    """Where the metro, tram and train routes of an extract stop: the stop and platform members of each
     route relation, with their roles, names and places. Returns {"routes": {relation: [(member
     type, id, role)]}, "nodes": {id: (tags, lon, lat)}, "platforms": {way: (tags, lon, lat) of its
     middle}, "areas": {node: the name of the stop_area it is in}}. A route's stops are the stations
@@ -155,7 +181,7 @@ def route_stops(path, kinds):
 
 
 def stops_again(files, out, kinds):
-    """Reads only where the metro and tram routes stop, into a pickle that is there."""
+    """Reads only where the metro, tram and train routes stop, into a pickle that is there."""
     cache = pickle.load(open(RAW / out, "rb"))        # written here, by main() below
     t0 = time.time()
     found = {"routes": {}, "nodes": {}, "platforms": {}, "areas": {}}
@@ -202,6 +228,16 @@ def main(files, out, more=(), stops=(), g="cn"):
                             "timestamp": header.get("osmosis_replication_timestamp"),
                             "sequence": header.get("osmosis_replication_sequence_number"),
                             "replication_url": header.get("osmosis_replication_base_url")})
+        receipt = path.with_name(path.name + ".source.json")
+        if receipt.exists():
+            import hashlib
+            provenance = json.loads(receipt.read_text())
+            with path.open("rb") as stream:
+                digest = hashlib.file_digest(stream, "sha256").hexdigest()
+            if provenance.get("bytes") != path.stat().st_size or provenance.get("sha256") != digest:
+                sys.exit(f"source receipt does not match {pbf}, nothing written")
+            sources[-1].update({key: provenance[key] for key in ("url", "sha256", "etag", "last_modified")
+                               if key in provenance})
         t0 = time.time()
         fp = osmium.FileProcessor(str(path)).with_locations("sparse_mem_array").with_filter(osmium.filter.KeyFilter("railway"))
         for o in fp:
@@ -211,12 +247,12 @@ def main(files, out, more=(), stops=(), g="cn"):
                 if r in stops:
                     c = centre(o)
                     if c and t.get("name"):
-                        stations.append(({**{k: t.get(k) for k in NAME_TAGS if t.get(k)}, "railway": r}, *c))
+                        stations.append(({**station_tags(t, o), "railway": r}, *c))
                     continue
                 if r == "station" or r in YARD_KINDS:
                     c = centre(o)
                     if c and r == "station":
-                        stations.append(({k: t.get(k) for k in NAME_TAGS + ("station", "subway", "light_rail") if t.get(k)}, *c))
+                        stations.append((station_tags(t, o, NAME_TAGS + ("station", "subway", "light_rail")), *c))
                     elif c and t.get("name"):
                         places.append((r, {k: t.get(k) for k in NAME_TAGS if t.get(k)}, *c))
                     continue
@@ -228,10 +264,10 @@ def main(files, out, more=(), stops=(), g="cn"):
                 ways.append((o.id, {k: t.get(k) for k in WAY_TAGS if t.get(k) is not None}, coords))
             elif o.is_node():
                 if r == "station":
-                    stations.append(({k: t.get(k) for k in NAME_TAGS + ("station", "subway", "light_rail") if t.get(k)},
+                    stations.append((station_tags(t, o, NAME_TAGS + ("station", "subway", "light_rail")),
                                      o.location.lon, o.location.lat))
                 elif r in stops and t.get("name"):
-                    stations.append(({**{k: t.get(k) for k in NAME_TAGS if t.get(k)}, "railway": r}, o.location.lon, o.location.lat))
+                    stations.append(({**station_tags(t, o), "railway": r}, o.location.lon, o.location.lat))
                 elif r in YARD_KINDS and t.get("name"):
                     places.append((r, {k: t.get(k) for k in NAME_TAGS if t.get(k)}, o.location.lon, o.location.lat))
         print(f"{pbf}: {len(ways)} ways, {len(stations)} stations, {time.time() - t0:.0f}s", flush=True)
@@ -260,17 +296,17 @@ def main(files, out, more=(), stops=(), g="cn"):
         print(f"{pbf}: {len(named)} named ground and yard objects, {time.time() - t0:.0f}s", flush=True)
 
         t0 = time.time()
-        part = route_stops(str(path), METRO_RAIL | set(more))
+        part = route_stops(str(path), METRO_RAIL | STOP_ROUTES | set(more))
         for key in route_stopping:
             route_stopping[key].update(part[key])
-        print(f"{pbf}: stops of {len(route_stopping['routes'])} metro and tram routes, {time.time() - t0:.0f}s", flush=True)
+        print(f"{pbf}: stops of {len(route_stopping['routes'])} metro, tram and train routes, {time.time() - t0:.0f}s", flush=True)
 
     if not ways or not stations:
         sys.exit("nothing extracted, the cache is left as it was")
     tmp = RAW / (out + ".tmp")            # written beside the cache and swapped in only when complete
     with open(tmp, "wb") as f:
         pickle.dump({"ways": ways, "stations": stations, "relations": relations, "places": places, "sources": sources, "named": named,
-                     "stops": route_stopping},
+                     "stops": route_stopping, "relation_tag_schema": REL_TAGS},
                     f, protocol=pickle.HIGHEST_PROTOCOL)
     os.replace(tmp, RAW / out)
     (RAW / (out + ".sources.json")).write_text(json.dumps(sources, ensure_ascii=False, indent=2))
@@ -281,6 +317,14 @@ COUNTRIES = {
     "uk": dict(files=["united-kingdom.osm.pbf"], out="extract_uk.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
     "jp": dict(files=["japan-latest.osm.pbf"], out="extract_jp.pkl", more=("tram",), stops=("tram_stop",)),      # the street tramways (都電荒川線, 広島電鉄, ...)
     "kr": dict(files=["south-korea-latest.osm.pbf"], out="extract_kr.pkl", more=("tram",), stops=("tram_stop", "halt")),
+    "de": dict(files=["germany-latest.osm.pbf"], out="extract_de.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "fr": dict(files=["france-latest.osm.pbf"], out="extract_fr.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "ch": dict(files=["switzerland-latest.osm.pbf"], out="extract_ch.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "es": dict(files=["spain-latest.osm.pbf", "canarias-latest.osm.pbf", "ceuta-latest.osm.pbf", "melilla-latest.osm.pbf"],
+               out="extract_es.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "nl": dict(files=["netherlands-latest.osm.pbf"], out="extract_nl.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "be": dict(files=["belgium-latest.osm.pbf"], out="extract_be.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    "it": dict(files=["italy-latest.osm.pbf"], out="extract_it.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
     # Trams are light rail here (Shenyang, Suzhou, Dalian, Wuhan, Hong Kong's 電車), so their track,
     # routes and stops are taken too. Halts are not: in China a halt is a stop on the railway,
     # and the railway stations would change with it.
@@ -291,10 +335,10 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if a not in ("places", "stops")]
     g = args[0] if args else "cn"
     if g not in COUNTRIES or len(args) > 1:
-        sys.exit("usage: python3 scripts/extract_osm.py [uk|jp|kr] [places] [stops]")
+        sys.exit("usage: python3 scripts/extract_osm.py [uk|jp|kr|de|fr|ch|es|nl|be|it] [places] [stops]")
     if "places" in sys.argv[1:]:
         places_again(COUNTRIES[g]["files"], COUNTRIES[g]["out"], g)
     if "stops" in sys.argv[1:]:
-        stops_again(COUNTRIES[g]["files"], COUNTRIES[g]["out"], METRO_RAIL | set(COUNTRIES[g].get("more", ())))
+        stops_again(COUNTRIES[g]["files"], COUNTRIES[g]["out"], METRO_RAIL | STOP_ROUTES | set(COUNTRIES[g].get("more", ())))
     if not {"places", "stops"} & set(sys.argv[1:]):
         main(g=g, **COUNTRIES[g])

@@ -111,5 +111,12 @@
 {"g":"uk","at":[-0.16085,51.15173],"n":"Racecourse Sidings","line":"Brighton Main Line","source":"osm way 245301780"},
 {"g":"uk","at":[-5.08897,56.82595],"n":"Fort William Yard","line":"West Highland Line","source":"osm way 179535374"},
 {"g":"uk","at":[-1.67803,54.90994],"n":"Tanfield Railway Engine Shed","line":"Tanfield Railway","source":"osm way 445048863"},
-{"g":"uk","at":[-1.37702,52.72994],"n":"Coalville TMD","line":"Knighton Junction Swannington and Leicester Junction Line","source":"osm way 56085938"}
+{"g":"uk","at":[-1.37702,52.72994],"n":"Coalville TMD","line":"Knighton Junction Swannington and Leicester Junction Line","source":"osm way 56085938"},
+{"g":"ch","at":[8.49111,47.38291],"n":"Depot Altstetten","line":"VBZ Zürich","source":"https://www.stadt-zuerich.ch/vbz/de/die-vbz/depots-und-garagen.html"},
+{"g":"ch","at":[7.55635,47.50754],"n":"Depot Hüslimatt","line":"BLT","source":"https://www.blt.ch/fileadmin/user_upload/blt/situationsplan_hueslimmat.pdf"},
+{"g":"es","at":[-3.66206,40.43062],"n":"Cocheras de Ventas","line":"Metro de Madrid","source":"https://www.openstreetmap.org/way/309138933#name"},
+{"g":"es","at":[-3.72966,40.32973],"n":"Cocheras El Bercial","line":"Metro de Madrid","source":"https://www.openstreetmap.org/way/1068345085#name"},
+{"g":"es","at":[-0.41064,39.44173],"n":"Taller València Sud","line":"Metrovalencia","source":"https://www.openstreetmap.org/way/23377185#name"},
+{"g":"nl","at":[4.24534456,52.041405],"n":"Opstelterrein Meppelwerf","line":"Rail Haaglanden","source":"https://www.openstreetmap.org/way/753278308#name"},
+{"g":"nl","at":[4.96552944,52.370357],"n":"TIJS","line":"Stadsvervoer Amsterdam","source":"https://www.openstreetmap.org/way/802397662#name"}
 ]

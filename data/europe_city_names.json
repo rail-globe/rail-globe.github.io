@@ -1,0 +1,3791 @@
+{
+  "checked": "2026-10-16",
+  "source": "Wikidata labels, aliases and Chinese Wikipedia article titles",
+  "evidence_files": [
+    {
+      "file": "wikidata-cities-first.json",
+      "sha256": "39cc72cad462f093291d018dd821fd583352b67c22528ea518f0532ef0ca8bfa"
+    },
+    {
+      "file": "wikidata-cities-es.json",
+      "sha256": "25e1054fd1ffc595ab63d6cad2c33ebb340d76186ec476cb2cabeef10278bf27"
+    },
+    {
+      "file": "wikidata-cities-corrections.json",
+      "sha256": "95d672a05170f546f1a84459a6177f294e44ddd1df75531965fb39c1ee25726e"
+    },
+    {
+      "file": "wikidata-cities-aliases.json",
+      "sha256": "701c29d74900253630ea4458496d32cf28ec3dc1e6ce6b59da405d3584ba722a"
+    },
+    {
+      "file": "wikidata-capitals.json",
+      "sha256": "068aa0690142275bd523669c7fbed670535c45728cca2cbf1b9892f563dc4f34"
+    },
+    {
+      "file": "insee-regions-2026.csv",
+      "sha256": "d903566d9c0d263389d279baea6761917b7460749a07bec8ba37dd8f2ff7d98a"
+    }
+  ],
+  "countries": {
+    "de": {
+      "Berlin": {
+        "n": "Berlin",
+        "nz": "柏林",
+        "ne": "Berlin",
+        "ref": "https://www.wikidata.org/wiki/Q64",
+        "source_text": "柏林",
+        "basis": "label:zh"
+      },
+      "Hamburg": {
+        "n": "Hamburg",
+        "nz": "汉堡",
+        "ne": "Hamburg",
+        "ref": "https://www.wikidata.org/wiki/Q1055",
+        "source_text": "汉堡",
+        "basis": "label:zh-hans"
+      },
+      "München": {
+        "n": "München",
+        "nz": "慕尼黑",
+        "ne": "Munich",
+        "ref": "https://www.wikidata.org/wiki/Q1726",
+        "source_text": "慕尼黑",
+        "basis": "label:zh"
+      },
+      "Frankfurt am Main": {
+        "n": "Frankfurt am Main",
+        "nz": "法兰克福",
+        "ne": "Frankfurt",
+        "ref": "https://www.wikidata.org/wiki/Q1794",
+        "source_text": "法兰克福",
+        "basis": "alias:zh-hans"
+      },
+      "Köln": {
+        "n": "Köln",
+        "nz": "科隆",
+        "ne": "Cologne",
+        "ref": "https://www.wikidata.org/wiki/Q365",
+        "source_text": "科隆",
+        "basis": "label:zh"
+      },
+      "Düsseldorf": {
+        "n": "Düsseldorf",
+        "nz": "杜塞尔多夫",
+        "ne": "Düsseldorf",
+        "ref": "https://www.wikidata.org/wiki/Q1718",
+        "source_text": "杜塞爾多夫",
+        "basis": "label:zh"
+      },
+      "Stuttgart": {
+        "n": "Stuttgart",
+        "nz": "斯图加特",
+        "ne": "Stuttgart",
+        "ref": "https://www.wikidata.org/wiki/Q1022",
+        "source_text": "斯图加特",
+        "basis": "label:zh"
+      },
+      "Nürnberg": {
+        "n": "Nürnberg",
+        "nz": "纽伦堡",
+        "ne": "Nuremberg",
+        "ref": "https://www.wikidata.org/wiki/Q2090",
+        "source_text": "纽伦堡",
+        "basis": "label:zh"
+      },
+      "Hannover": {
+        "n": "Hannover",
+        "nz": "汉诺威",
+        "ne": "Hanover",
+        "ref": "https://www.wikidata.org/wiki/Q1715",
+        "source_text": "汉诺威",
+        "basis": "label:zh"
+      },
+      "Leipzig": {
+        "n": "Leipzig",
+        "nz": "莱比锡",
+        "ne": "Leipzig",
+        "ref": "https://www.wikidata.org/wiki/Q2079",
+        "source_text": "莱比锡",
+        "basis": "label:zh"
+      },
+      "Dresden": {
+        "n": "Dresden",
+        "nz": "德累斯顿",
+        "ne": "Dresden",
+        "ref": "https://www.wikidata.org/wiki/Q1731",
+        "source_text": "德累斯顿",
+        "basis": "label:zh"
+      },
+      "Bremen": {
+        "n": "Bremen",
+        "nz": "不来梅",
+        "ne": "Bremen",
+        "ref": "https://www.wikidata.org/wiki/Q24879",
+        "source_text": "不来梅",
+        "basis": "label:zh"
+      },
+      "Essen": {
+        "n": "Essen",
+        "nz": "埃森",
+        "ne": "Essen",
+        "ref": "https://www.wikidata.org/wiki/Q2066",
+        "source_text": "埃森",
+        "basis": "label:zh"
+      },
+      "Dortmund": {
+        "n": "Dortmund",
+        "nz": "多特蒙德",
+        "ne": "Dortmund",
+        "ref": "https://www.wikidata.org/wiki/Q1295",
+        "source_text": "多特蒙德",
+        "basis": "label:zh"
+      },
+      "Potsdam": {
+        "n": "Potsdam",
+        "nz": "波茨坦",
+        "ne": "Potsdam",
+        "ref": "https://www.wikidata.org/wiki/Q1711",
+        "source_text": "波茨坦",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/1695218178"
+      },
+      "Schwerin": {
+        "n": "Schwerin",
+        "nz": "什未林",
+        "ne": "Schwerin",
+        "ref": "https://www.wikidata.org/wiki/Q1709",
+        "source_text": "什未林",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/21993086"
+      },
+      "Magdeburg": {
+        "n": "Magdeburg",
+        "nz": "马格德堡",
+        "ne": "Magdeburg",
+        "ref": "https://www.wikidata.org/wiki/Q1733",
+        "source_text": "马格德堡",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/33997995"
+      },
+      "Kiel": {
+        "n": "Kiel",
+        "nz": "基尔",
+        "ne": "Kiel",
+        "ref": "https://www.wikidata.org/wiki/Q1707",
+        "source_text": "基尔",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/24487450"
+      },
+      "Erfurt": {
+        "n": "Erfurt",
+        "nz": "爱尔福特",
+        "ne": "Erfurt",
+        "ref": "https://www.wikidata.org/wiki/Q1729",
+        "source_text": "爱尔福特",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/240038130"
+      },
+      "Wiesbaden": {
+        "n": "Wiesbaden",
+        "nz": "威斯巴登",
+        "ne": "Wiesbaden",
+        "ref": "https://www.wikidata.org/wiki/Q1721",
+        "source_text": "威斯巴登",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/240028377"
+      },
+      "Mainz": {
+        "n": "Mainz",
+        "nz": "美因茨",
+        "ne": "Mainz",
+        "ref": "https://www.wikidata.org/wiki/Q1720",
+        "source_text": "美因茨",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/240116263"
+      },
+      "Saarbrücken": {
+        "n": "Saarbrücken",
+        "nz": "萨尔布吕肯",
+        "ne": "Saarbrücken",
+        "ref": "https://www.wikidata.org/wiki/Q1724",
+        "source_text": "萨尔布吕肯",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/1530957491"
+      }
+    },
+    "fr": {
+      "Paris": {
+        "n": "Paris",
+        "nz": "巴黎",
+        "ne": "Paris",
+        "ref": "https://www.wikidata.org/wiki/Q90",
+        "source_text": "巴黎",
+        "basis": "label:zh"
+      },
+      "Marseille": {
+        "n": "Marseille",
+        "nz": "马赛",
+        "ne": "Marseille",
+        "ref": "https://www.wikidata.org/wiki/Q23482",
+        "source_text": "马赛",
+        "basis": "label:zh-hans"
+      },
+      "Lyon": {
+        "n": "Lyon",
+        "nz": "里昂",
+        "ne": "Lyon",
+        "ref": "https://www.wikidata.org/wiki/Q456",
+        "source_text": "里昂",
+        "basis": "label:zh"
+      },
+      "Toulouse": {
+        "n": "Toulouse",
+        "nz": "图卢兹",
+        "ne": "Toulouse",
+        "ref": "https://www.wikidata.org/wiki/Q7880",
+        "source_text": "圖盧茲",
+        "basis": "label:zh"
+      },
+      "Nice": {
+        "n": "Nice",
+        "nz": "尼斯",
+        "ne": "Nice",
+        "ref": "https://www.wikidata.org/wiki/Q33959",
+        "source_text": "尼斯",
+        "basis": "label:zh"
+      },
+      "Nantes": {
+        "n": "Nantes",
+        "nz": "南特",
+        "ne": "Nantes",
+        "ref": "https://www.wikidata.org/wiki/Q12191",
+        "source_text": "南特",
+        "basis": "label:zh"
+      },
+      "Montpellier": {
+        "n": "Montpellier",
+        "nz": "蒙彼利埃",
+        "ne": "Montpellier",
+        "ref": "https://www.wikidata.org/wiki/Q6441",
+        "source_text": "蒙彼利埃",
+        "basis": "label:zh"
+      },
+      "Strasbourg": {
+        "n": "Strasbourg",
+        "nz": "斯特拉斯堡",
+        "ne": "Strasbourg",
+        "ref": "https://www.wikidata.org/wiki/Q6602",
+        "source_text": "斯特拉斯堡",
+        "basis": "label:zh"
+      },
+      "Bordeaux": {
+        "n": "Bordeaux",
+        "nz": "波尔多",
+        "ne": "Bordeaux",
+        "ref": "https://www.wikidata.org/wiki/Q1479",
+        "source_text": "波尔多",
+        "basis": "label:zh"
+      },
+      "Lille": {
+        "n": "Lille",
+        "nz": "里尔",
+        "ne": "Lille",
+        "ref": "https://www.wikidata.org/wiki/Q648",
+        "source_text": "里尔",
+        "basis": "label:zh"
+      },
+      "Rennes": {
+        "n": "Rennes",
+        "nz": "雷恩",
+        "ne": "Rennes",
+        "ref": "https://www.wikidata.org/wiki/Q647",
+        "source_text": "雷恩",
+        "basis": "label:zh"
+      },
+      "Reims": {
+        "n": "Reims",
+        "nz": "兰斯",
+        "ne": "Reims",
+        "ref": "https://www.wikidata.org/wiki/Q41876",
+        "source_text": "兰斯",
+        "basis": "label:zh"
+      },
+      "Saint-Étienne": {
+        "n": "Saint-Étienne",
+        "nz": "圣艾蒂安",
+        "ne": "Saint-Étienne",
+        "ref": "https://www.wikidata.org/wiki/Q42716",
+        "source_text": "圣艾蒂安",
+        "basis": "label:zh"
+      },
+      "Toulon": {
+        "n": "Toulon",
+        "nz": "土伦",
+        "ne": "Toulon",
+        "ref": "https://www.wikidata.org/wiki/Q44160",
+        "source_text": "土伦",
+        "basis": "label:zh"
+      },
+      "Grenoble": {
+        "n": "Grenoble",
+        "nz": "格勒诺布尔",
+        "ne": "Grenoble",
+        "ref": "https://www.wikidata.org/wiki/Q1289",
+        "source_text": "格勒诺布尔",
+        "basis": "label:zh"
+      },
+      "Rouen": {
+        "n": "Rouen",
+        "nz": "鲁昂",
+        "ne": "Rouen",
+        "ref": "https://www.wikidata.org/wiki/Q30974",
+        "source_text": "鲁昂",
+        "basis": "label:zh"
+      },
+      "Dijon": {
+        "n": "Dijon",
+        "nz": "第戎",
+        "ne": "Dijon",
+        "ref": "https://www.wikidata.org/wiki/Q7003",
+        "source_text": "第戎",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/26686504"
+      },
+      "Orléans": {
+        "n": "Orléans",
+        "nz": "奥尔良",
+        "ne": "Orléans",
+        "ref": "https://www.wikidata.org/wiki/Q6548",
+        "source_text": "奥尔良",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/26686508"
+      },
+      "Ajaccio": {
+        "n": "Ajaccio",
+        "nz": "阿雅克肖",
+        "ne": "Ajaccio",
+        "ref": "https://www.wikidata.org/wiki/Q40104",
+        "source_text": "阿雅克肖",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/51341115"
+      }
+    },
+    "ch": {
+      "Zürich": {
+        "n": "Zürich",
+        "nz": "苏黎世",
+        "ne": "Zurich",
+        "ref": "https://www.wikidata.org/wiki/Q72",
+        "source_text": "苏黎世",
+        "basis": "label:zh"
+      },
+      "Genève": {
+        "n": "Genève",
+        "nz": "日内瓦",
+        "ne": "Geneva",
+        "ref": "https://www.wikidata.org/wiki/Q71",
+        "source_text": "日内瓦",
+        "basis": "label:zh-cn"
+      },
+      "Basel": {
+        "n": "Basel",
+        "nz": "巴塞尔",
+        "ne": "Basel",
+        "ref": "https://www.wikidata.org/wiki/Q78",
+        "source_text": "巴塞爾",
+        "basis": "label:zh"
+      },
+      "Bern": {
+        "n": "Bern",
+        "nz": "伯尔尼",
+        "ne": "Bern",
+        "ref": "https://www.wikidata.org/wiki/Q70",
+        "source_text": "伯尔尼",
+        "basis": "label:zh"
+      },
+      "Lausanne": {
+        "n": "Lausanne",
+        "nz": "洛桑",
+        "ne": "Lausanne",
+        "ref": "https://www.wikidata.org/wiki/Q807",
+        "source_text": "洛桑",
+        "basis": "label:zh"
+      },
+      "Luzern": {
+        "n": "Luzern",
+        "nz": "卢塞恩",
+        "ne": "Lucerne",
+        "ref": "https://www.wikidata.org/wiki/Q4191",
+        "source_text": "卢塞恩",
+        "basis": "label:zh"
+      },
+      "St. Gallen": {
+        "n": "St. Gallen",
+        "nz": "圣加仑",
+        "ne": "St. Gallen",
+        "ref": "https://www.wikidata.org/wiki/Q25607",
+        "source_text": "圣加仑",
+        "basis": "label:zh"
+      },
+      "Lugano": {
+        "n": "Lugano",
+        "nz": "卢加诺",
+        "ne": "Lugano",
+        "ref": "https://www.wikidata.org/wiki/Q7024",
+        "source_text": "卢加诺",
+        "basis": "label:zh"
+      },
+      "Altdorf UR": {
+        "n": "Altdorf UR",
+        "nz": "阿尔特多夫",
+        "ne": "Altdorf",
+        "ref": "https://www.wikidata.org/wiki/Q68150",
+        "source_text": "阿尔特多夫",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/240093137"
+      },
+      "Schwyz": {
+        "n": "Schwyz",
+        "nz": "施维茨",
+        "ne": "Schwyz",
+        "ref": "https://www.wikidata.org/wiki/Q68155",
+        "source_text": "施维茨",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/25844325"
+      },
+      "Sarnen": {
+        "n": "Sarnen",
+        "nz": "萨尔嫩",
+        "ne": "Sarnen",
+        "ref": "https://www.wikidata.org/wiki/Q63964",
+        "source_text": "萨尔嫩",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/240110029"
+      },
+      "Stans": {
+        "n": "Stans",
+        "nz": "施坦斯",
+        "ne": "Stans",
+        "ref": "https://www.wikidata.org/wiki/Q63931",
+        "source_text": "施坦斯",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/181328750"
+      },
+      "Glarus": {
+        "n": "Glarus",
+        "nz": "格拉鲁斯",
+        "ne": "Glarus",
+        "ref": "https://www.wikidata.org/wiki/Q63912",
+        "source_text": "格拉魯斯",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/31367562"
+      },
+      "Zug": {
+        "n": "Zug",
+        "nz": "楚格",
+        "ne": "Zug",
+        "ref": "https://www.wikidata.org/wiki/Q68144",
+        "source_text": "楚格",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/60404417"
+      },
+      "Fribourg": {
+        "n": "Fribourg",
+        "nz": "弗里堡",
+        "ne": "Fribourg",
+        "ref": "https://www.wikidata.org/wiki/Q36378",
+        "source_text": "弗里堡",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/1685926271"
+      },
+      "Solothurn": {
+        "n": "Solothurn",
+        "nz": "索洛图恩",
+        "ne": "Solothurn",
+        "ref": "https://www.wikidata.org/wiki/Q68965",
+        "source_text": "索洛图恩",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/1388360819"
+      },
+      "Liestal": {
+        "n": "Liestal",
+        "nz": "利斯塔尔",
+        "ne": "Liestal",
+        "ref": "https://www.wikidata.org/wiki/Q68972",
+        "source_text": "利斯塔尔",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/27386700"
+      },
+      "Schaffhausen": {
+        "n": "Schaffhausen",
+        "nz": "沙夫豪森",
+        "ne": "Schaffhausen",
+        "ref": "https://www.wikidata.org/wiki/Q9009",
+        "source_text": "沙夫豪森",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/29011774"
+      },
+      "Herisau": {
+        "n": "Herisau",
+        "nz": "黑里绍",
+        "ne": "Herisau",
+        "ref": "https://www.wikidata.org/wiki/Q63970",
+        "source_text": "黑里绍",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/1376423353"
+      },
+      "Appenzell": {
+        "n": "Appenzell",
+        "nz": "阿彭策尔",
+        "ne": "Appenzell",
+        "ref": "https://www.wikidata.org/wiki/Q209270",
+        "source_text": "阿彭策尔",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/240102374"
+      },
+      "Chur": {
+        "n": "Chur",
+        "nz": "库尔",
+        "ne": "Chur",
+        "ref": "https://www.wikidata.org/wiki/Q69007",
+        "source_text": "库尔",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/1577255384"
+      },
+      "Aarau": {
+        "n": "Aarau",
+        "nz": "阿劳",
+        "ne": "Aarau",
+        "ref": "https://www.wikidata.org/wiki/Q14274",
+        "source_text": "阿劳",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/29886774"
+      },
+      "Frauenfeld": {
+        "n": "Frauenfeld",
+        "nz": "弗劳恩费尔德",
+        "ne": "Frauenfeld",
+        "ref": "https://www.wikidata.org/wiki/Q68120",
+        "source_text": "弗劳恩费尔德",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/1599381299"
+      },
+      "Bellinzona": {
+        "n": "Bellinzona",
+        "nz": "贝林佐纳",
+        "ne": "Bellinzona",
+        "ref": "https://www.wikidata.org/wiki/Q64044",
+        "source_text": "贝林佐纳",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/1376769424"
+      },
+      "Sion": {
+        "n": "Sion",
+        "nz": "锡永",
+        "ne": "Sion",
+        "ref": "https://www.wikidata.org/wiki/Q68136",
+        "source_text": "锡永",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/197501928"
+      },
+      "Neuchâtel": {
+        "n": "Neuchâtel",
+        "nz": "纳沙泰尔",
+        "ne": "Neuchâtel",
+        "ref": "https://www.wikidata.org/wiki/Q69345",
+        "source_text": "纳沙泰尔",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/3019197852"
+      },
+      "Delémont": {
+        "n": "Delémont",
+        "nz": "德莱蒙",
+        "ne": "Delémont",
+        "ref": "https://www.wikidata.org/wiki/Q63896",
+        "source_text": "德莱蒙",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/1384879294"
+      }
+    },
+    "es": {
+      "Madrid": {
+        "n": "Madrid",
+        "nz": "马德里",
+        "ne": "Madrid",
+        "ref": "https://www.wikidata.org/wiki/Q2807",
+        "source_text": "马德里",
+        "basis": "label:zh"
+      },
+      "Barcelona": {
+        "n": "Barcelona",
+        "nz": "巴塞罗那",
+        "ne": "Barcelona",
+        "ref": "https://www.wikidata.org/wiki/Q1492",
+        "source_text": "巴塞罗那",
+        "basis": "label:zh"
+      },
+      "València": {
+        "n": "València",
+        "nz": "瓦伦西亚",
+        "ne": "Valencia",
+        "ref": "https://www.wikidata.org/wiki/Q8818",
+        "source_text": "瓦倫西亞",
+        "basis": "label:zh"
+      },
+      "Sevilla": {
+        "n": "Sevilla",
+        "nz": "塞维利亚",
+        "ne": "Seville",
+        "ref": "https://www.wikidata.org/wiki/Q8717",
+        "source_text": "塞维利亚",
+        "basis": "label:zh"
+      },
+      "Zaragoza": {
+        "n": "Zaragoza",
+        "nz": "萨拉戈萨",
+        "ne": "Zaragoza",
+        "ref": "https://www.wikidata.org/wiki/Q10305",
+        "source_text": "萨拉戈萨",
+        "basis": "label:zh"
+      },
+      "Málaga": {
+        "n": "Málaga",
+        "nz": "马拉加",
+        "ne": "Málaga",
+        "ref": "https://www.wikidata.org/wiki/Q8851",
+        "source_text": "马拉加",
+        "basis": "label:zh"
+      },
+      "Murcia": {
+        "n": "Murcia",
+        "nz": "穆尔西亚",
+        "ne": "Murcia",
+        "ref": "https://www.wikidata.org/wiki/Q12225",
+        "source_text": "穆尔西亚",
+        "basis": "label:zh"
+      },
+      "Palma": {
+        "n": "Palma",
+        "nz": "帕尔马",
+        "ne": "Palma",
+        "ref": "https://www.wikidata.org/wiki/Q8826",
+        "source_text": "帕尔马",
+        "basis": "label:zh"
+      },
+      "Las Palmas de Gran Canaria": {
+        "n": "Las Palmas de Gran Canaria",
+        "nz": "拉斯帕尔马斯",
+        "ne": "Las Palmas",
+        "ref": "https://www.wikidata.org/wiki/Q11974",
+        "source_text": "拉斯帕尔马斯",
+        "basis": "label:zh"
+      },
+      "Bilbao": {
+        "n": "Bilbao",
+        "nz": "毕尔巴鄂",
+        "ne": "Bilbao",
+        "ref": "https://www.wikidata.org/wiki/Q8692",
+        "source_text": "毕尔巴鄂",
+        "basis": "label:zh"
+      },
+      "Alacant / Alicante": {
+        "n": "Alacant / Alicante",
+        "nz": "阿利坎特",
+        "ne": "Alicante",
+        "ref": "https://www.wikidata.org/wiki/Q11959",
+        "source_text": "阿利坎特",
+        "basis": "label:zh",
+        "local_name_ref": "https://www.openstreetmap.org/node/21323935",
+        "local_name_basis": "OSM name in Spain snapshot 2026-10-15"
+      },
+      "Córdoba": {
+        "n": "Córdoba",
+        "nz": "科尔多瓦",
+        "ne": "Córdoba",
+        "ref": "https://www.wikidata.org/wiki/Q5818",
+        "source_text": "科爾多瓦",
+        "basis": "label:zh"
+      },
+      "Valladolid": {
+        "n": "Valladolid",
+        "nz": "巴利亚多利德",
+        "ne": "Valladolid",
+        "ref": "https://www.wikidata.org/wiki/Q8356",
+        "source_text": "巴利亚多利德",
+        "basis": "label:zh"
+      },
+      "Vigo": {
+        "n": "Vigo",
+        "nz": "维戈",
+        "ne": "Vigo",
+        "ref": "https://www.wikidata.org/wiki/Q8745",
+        "source_text": "維戈",
+        "basis": "label:zh"
+      },
+      "Gijón / Xixón": {
+        "n": "Gijón / Xixón",
+        "nz": "希洪",
+        "ne": "Gijón",
+        "ref": "https://www.wikidata.org/wiki/Q12273",
+        "source_text": "希洪",
+        "basis": "label:zh",
+        "local_name_ref": "https://www.openstreetmap.org/node/529391484",
+        "local_name_basis": "OSM name in Spain snapshot 2026-10-15"
+      },
+      "A Coruña": {
+        "n": "A Coruña",
+        "nz": "拉科鲁尼亚",
+        "ne": "A Coruña",
+        "ref": "https://www.wikidata.org/wiki/Q8757",
+        "source_text": "拉科魯尼亞",
+        "basis": "label:zh"
+      },
+      "Granada": {
+        "n": "Granada",
+        "nz": "格拉纳达",
+        "ne": "Granada",
+        "ref": "https://www.wikidata.org/wiki/Q8810",
+        "source_text": "格拉纳达",
+        "basis": "label:zh"
+      },
+      "Santa Cruz de Tenerife": {
+        "n": "Santa Cruz de Tenerife",
+        "nz": "圣克鲁斯-德特内里费",
+        "ne": "Santa Cruz de Tenerife",
+        "ref": "https://www.wikidata.org/wiki/Q14328",
+        "source_text": "圣克鲁斯-德特内里费",
+        "basis": "label:zh"
+      },
+      "Mérida": {
+        "n": "Mérida",
+        "nz": "梅里达",
+        "ne": "Mérida",
+        "ref": "https://www.wikidata.org/wiki/Q14323",
+        "source_text": "梅里达",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/252217933"
+      },
+      "Toledo": {
+        "n": "Toledo",
+        "nz": "托莱多",
+        "ne": "Toledo",
+        "ref": "https://www.wikidata.org/wiki/Q5836",
+        "source_text": "托莱多",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/1679058496"
+      },
+      "Oviedo / Uviéu": {
+        "n": "Oviedo / Uviéu",
+        "nz": "奥维耶多",
+        "ne": "Oviedo",
+        "ref": "https://www.wikidata.org/wiki/Q14317",
+        "source_text": "奥维耶多",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/493395619"
+      },
+      "Pamplona / Iruña": {
+        "n": "Pamplona / Iruña",
+        "nz": "潘普洛纳",
+        "ne": "Pamplona",
+        "ref": "https://www.wikidata.org/wiki/Q10282",
+        "source_text": "潘普洛纳",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/28849760"
+      },
+      "Logroño": {
+        "n": "Logroño",
+        "nz": "洛格罗尼奥",
+        "ne": "Logroño",
+        "ref": "https://www.wikidata.org/wiki/Q14325",
+        "source_text": "洛格罗尼奥",
+        "basis": "label:zh",
+        "osm_ref": "https://www.openstreetmap.org/node/257352079"
+      },
+      "Santander": {
+        "n": "Santander",
+        "nz": "桑坦德",
+        "ne": "Santander",
+        "ref": "https://www.wikidata.org/wiki/Q12233",
+        "source_text": "桑坦德",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/26562214"
+      },
+      "Santiago de Compostela": {
+        "n": "Santiago de Compostela",
+        "nz": "圣地亚哥-德孔波斯特拉",
+        "ne": "Santiago de Compostela",
+        "ref": "https://www.wikidata.org/wiki/Q14314",
+        "source_text": "圣地亚哥-德孔波斯特拉",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/998649870"
+      },
+      "Vitoria-Gasteiz": {
+        "n": "Vitoria-Gasteiz",
+        "nz": "维多利亚-加斯泰斯",
+        "ne": "Vitoria-Gasteiz",
+        "ref": "https://www.wikidata.org/wiki/Q14318",
+        "source_text": "维多利亚-加斯泰斯",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/27000791"
+      },
+      "Ceuta": {
+        "n": "Ceuta",
+        "nz": "休达",
+        "ne": "Ceuta",
+        "ref": "https://www.wikidata.org/wiki/Q5823",
+        "source_text": "休达",
+        "basis": "label:zh-hans",
+        "osm_ref": "https://www.openstreetmap.org/node/291768008"
+      },
+      "Melilla": {
+        "n": "Melilla",
+        "nz": "梅利利亚",
+        "ne": "Melilla",
+        "ref": "https://www.wikidata.org/wiki/Q5831",
+        "source_text": "梅利利亚",
+        "basis": "label:zh-cn",
+        "osm_ref": "https://www.openstreetmap.org/node/289031151"
+      }
+    },
+    "be": {
+      "Bruxelles - Brussel": {
+        "n": "Bruxelles - Brussel",
+        "nz": "布鲁塞尔",
+        "ne": "Brussels",
+        "ref": "https://www.wikidata.org/wiki/Q239",
+        "source_text": "布鲁塞尔",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q239",
+        "english_source_text": "Brussels",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1635651356",
+        "local_name_source_text": "Bruxelles - Brussel",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1635651356",
+        "osm_node_id": 1635651356,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.352493,
+          50.8467372
+        ],
+        "osm_wikidata": "Q239",
+        "name_wikidata": "Q239",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "布鲁塞尔"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Brussels",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Antwerpen": {
+        "n": "Antwerpen",
+        "nz": "安特卫普",
+        "ne": "Antwerp",
+        "ref": "https://www.wikidata.org/wiki/Q12892",
+        "source_text": "安特卫普",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q12892",
+        "english_source_text": "Antwerp",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1765433658",
+        "local_name_source_text": "Antwerpen",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1765433658",
+        "osm_node_id": 1765433658,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.3997081,
+          51.2211097
+        ],
+        "osm_wikidata": "Q12892",
+        "name_wikidata": "Q12892",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "安特卫普"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Antwerp",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Brugge": {
+        "n": "Brugge",
+        "nz": "布鲁日",
+        "ne": "Bruges",
+        "ref": "https://www.wikidata.org/wiki/Q12994",
+        "source_text": "布鲁日",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q12994",
+        "english_source_text": "Bruges",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1651558422",
+        "local_name_source_text": "Brugge",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1651558422",
+        "osm_node_id": 1651558422,
+        "osm_place": "city",
+        "osm_coordinates": [
+          3.226772,
+          51.2085526
+        ],
+        "osm_wikidata": "Q12994",
+        "name_wikidata": "Q12994",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "布魯日",
+          "name:zh-Hans": "布鲁日"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Bruges",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Namur": {
+        "n": "Namur",
+        "nz": "那慕尔",
+        "ne": "Namur",
+        "ref": "https://www.wikidata.org/wiki/Q134121",
+        "source_text": "那慕尔",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q134121",
+        "english_source_text": "Namur",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1765500676",
+        "local_name_source_text": "Namur",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1765500676",
+        "osm_node_id": 1765500676,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.8661892,
+          50.4665284
+        ],
+        "osm_wikidata": "Q134121",
+        "name_wikidata": "Q134121",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "那慕爾",
+          "name:zh-Hans": "那慕尔"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Namur",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Gent": {
+        "n": "Gent",
+        "nz": "根特",
+        "ne": "Ghent",
+        "ref": "https://www.wikidata.org/wiki/Q1296",
+        "source_text": "根特",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1296",
+        "english_source_text": "Ghent",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1668655163",
+        "local_name_source_text": "Gent",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1668655163",
+        "osm_node_id": 1668655163,
+        "osm_place": "city",
+        "osm_coordinates": [
+          3.7250121,
+          51.0538286
+        ],
+        "osm_wikidata": "Q1296",
+        "name_wikidata": "Q1296",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "根特",
+          "name:zh-Hans": "根特"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Ghent",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Charleroi": {
+        "n": "Charleroi",
+        "nz": "沙勒罗瓦",
+        "ne": "Charleroi",
+        "ref": "https://www.wikidata.org/wiki/Q81046",
+        "source_text": "沙勒罗瓦",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q81046",
+        "english_source_text": "Charleroi",
+        "english_basis": "label:mul (shared proper name, used unchanged for English)",
+        "local_name_ref": "https://www.openstreetmap.org/node/9002746",
+        "local_name_source_text": "Charleroi",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/9002746",
+        "osm_node_id": 9002746,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.444528,
+          50.4116233
+        ],
+        "osm_wikidata": "Q81046",
+        "name_wikidata": "Q81046",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "沙勒罗瓦"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Liège": {
+        "n": "Liège",
+        "nz": "列日",
+        "ne": "Liège",
+        "ref": "https://www.wikidata.org/wiki/Q3992",
+        "source_text": "列日",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3992",
+        "english_source_text": "Liège",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1689207163",
+        "local_name_source_text": "Liège",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1689207163",
+        "osm_node_id": 1689207163,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.5736112,
+          50.6450944
+        ],
+        "osm_wikidata": "Q3992",
+        "name_wikidata": "Q3992",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "列日",
+          "name:zh-Hans": "列日"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Oostende": {
+        "n": "Oostende",
+        "nz": "奥斯坦德",
+        "ne": "Ostend",
+        "ref": "https://www.wikidata.org/wiki/Q12996",
+        "source_text": "奥斯坦德",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q12996",
+        "english_source_text": "Ostend",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1651555409",
+        "local_name_source_text": "Oostende",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1651555409",
+        "osm_node_id": 1651555409,
+        "osm_place": "city",
+        "osm_coordinates": [
+          2.919496,
+          51.2258565
+        ],
+        "osm_wikidata": "Q12996",
+        "name_wikidata": "Q12996",
+        "osm_pbf_sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-be-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "奥斯坦德"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Ostend",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      }
+    },
+    "nl": {
+      "Amsterdam": {
+        "n": "Amsterdam",
+        "nz": "阿姆斯特丹",
+        "ne": "Amsterdam",
+        "ref": "https://www.wikidata.org/wiki/Q727",
+        "source_text": "阿姆斯特丹",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q727",
+        "english_source_text": "Amsterdam",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/268396336",
+        "local_name_source_text": "Amsterdam",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/268396336",
+        "osm_node_id": 268396336,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.8924534,
+          52.3730796
+        ],
+        "osm_wikidata": "Q727",
+        "name_wikidata": "Q727",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "阿姆斯特丹"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Amsterdam",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Rotterdam": {
+        "n": "Rotterdam",
+        "nz": "鹿特丹",
+        "ne": "Rotterdam",
+        "ref": "https://www.wikidata.org/wiki/Q34370",
+        "source_text": "鹿特丹",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q34370",
+        "english_source_text": "Rotterdam",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/44410812",
+        "local_name_source_text": "Rotterdam",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/44410812",
+        "osm_node_id": 44410812,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.47775,
+          51.9244424
+        ],
+        "osm_wikidata": "Q34370",
+        "name_wikidata": "Q34370",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "鹿特丹"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Rotterdam",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Den Haag": {
+        "n": "Den Haag",
+        "nz": "海牙",
+        "ne": "The Hague",
+        "ref": "https://www.wikidata.org/wiki/Q36600",
+        "source_text": "海牙",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q36600",
+        "english_source_text": "The Hague",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/235857686",
+        "local_name_source_text": "Den Haag",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/235857686",
+        "osm_node_id": 235857686,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.3113461,
+          52.0799838
+        ],
+        "osm_wikidata": "Q36600",
+        "name_wikidata": "Q36600",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "海牙",
+          "name:zh-Hans": "海牙"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "The Hague",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Assen": {
+        "n": "Assen",
+        "nz": "阿森",
+        "ne": "Assen",
+        "ref": "https://www.wikidata.org/wiki/Q798",
+        "source_text": "阿森",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q798",
+        "english_source_text": "Assen",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/29629883",
+        "local_name_source_text": "Assen",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/29629883",
+        "osm_node_id": 29629883,
+        "osm_place": "city",
+        "osm_coordinates": [
+          6.560498,
+          52.9952273
+        ],
+        "osm_wikidata": "Q798",
+        "name_wikidata": "Q798",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "阿森"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Assen",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Lelystad": {
+        "n": "Lelystad",
+        "nz": "莱利斯塔德",
+        "ne": "Lelystad",
+        "ref": "https://www.wikidata.org/wiki/Q166065",
+        "source_text": "莱利斯塔德",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q166065",
+        "english_source_text": "Lelystad",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/243670659",
+        "local_name_source_text": "Lelystad",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/243670659",
+        "osm_node_id": 243670659,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.4768915,
+          52.5150949
+        ],
+        "osm_wikidata": "Q166065",
+        "name_wikidata": "Q166065",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "莱利斯塔德"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Lelystad",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Leeuwarden": {
+        "n": "Leeuwarden",
+        "nz": "吕伐登",
+        "ne": "Leeuwarden",
+        "ref": "https://www.wikidata.org/wiki/Q25390",
+        "source_text": "吕伐登",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q25390",
+        "english_source_text": "Leeuwarden",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/235278210",
+        "local_name_source_text": "Leeuwarden",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/235278210",
+        "osm_node_id": 235278210,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.7918548,
+          53.2005936
+        ],
+        "osm_wikidata": "Q25390",
+        "name_wikidata": "Q25390",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "吕伐登"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Leeuwarden",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Arnhem": {
+        "n": "Arnhem",
+        "nz": "阿纳姆",
+        "ne": "Arnhem",
+        "ref": "https://www.wikidata.org/wiki/Q1310",
+        "source_text": "阿纳姆",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1310",
+        "english_source_text": "Arnhem",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/6394641551",
+        "local_name_source_text": "Arnhem",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/6394641551",
+        "osm_node_id": 6394641551,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.9108573,
+          51.984257
+        ],
+        "osm_wikidata": "Q1310",
+        "name_wikidata": "Q1310",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "阿纳姆"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Arnhem",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Groningen": {
+        "n": "Groningen",
+        "nz": "格罗宁根",
+        "ne": "Groningen",
+        "ref": "https://www.wikidata.org/wiki/Q749",
+        "source_text": "格罗宁根",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q749",
+        "english_source_text": "Groningen",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/3125538288",
+        "local_name_source_text": "Groningen",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/3125538288",
+        "osm_node_id": 3125538288,
+        "osm_place": "city",
+        "osm_coordinates": [
+          6.5680077,
+          53.2190652
+        ],
+        "osm_wikidata": "Q749",
+        "name_wikidata": "Q749",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "格罗宁根",
+          "name:zh-Hans": "格罗宁根"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Groningen",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Maastricht": {
+        "n": "Maastricht",
+        "nz": "马斯特里赫特",
+        "ne": "Maastricht",
+        "ref": "https://www.wikidata.org/wiki/Q1309",
+        "source_text": "马斯特里赫特",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1309",
+        "english_source_text": "Maastricht",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/41977208",
+        "local_name_source_text": "Maastricht",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/41977208",
+        "osm_node_id": 41977208,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.6909768,
+          50.8512438
+        ],
+        "osm_wikidata": "Q1309",
+        "name_wikidata": "Q1309",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "马斯特里赫特",
+          "name:zh-Hans": "马斯特里赫特"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Maastricht",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "'s-Hertogenbosch": {
+        "n": "'s-Hertogenbosch",
+        "nz": "斯海尔托亨博斯",
+        "ne": "'s-Hertogenbosch",
+        "ref": "https://www.wikidata.org/wiki/Q2766547",
+        "source_text": "斯海尔托亨博斯",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf",
+        "english_source_text": "'s-Hertogenbosch",
+        "english_basis": "PCGN Netherlands administrative-centre table",
+        "local_name_ref": "https://www.openstreetmap.org/node/60400458",
+        "local_name_source_text": "'s-Hertogenbosch",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/60400458",
+        "osm_node_id": 60400458,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.303116,
+          51.6889387
+        ],
+        "osm_wikidata": "Q2766547",
+        "name_wikidata": "Q2766547",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "斯海尔托亨博斯"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Haarlem": {
+        "n": "Haarlem",
+        "nz": "哈勒姆",
+        "ne": "Haarlem",
+        "ref": "https://www.wikidata.org/wiki/Q9920",
+        "source_text": "哈勒姆",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q9920",
+        "english_source_text": "Haarlem",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/296054949",
+        "local_name_source_text": "Haarlem",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/296054949",
+        "osm_node_id": 296054949,
+        "osm_place": "city",
+        "osm_coordinates": [
+          4.6388048,
+          52.3885317
+        ],
+        "osm_wikidata": "Q9920",
+        "name_wikidata": "Q9920",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "哈勒姆",
+          "name:zh-Hans": "哈勒姆"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Haarlem",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Zwolle": {
+        "n": "Zwolle",
+        "nz": "兹沃勒",
+        "ne": "Zwolle",
+        "ref": "https://www.wikidata.org/wiki/Q793",
+        "source_text": "兹沃勒",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q793",
+        "english_source_text": "Zwolle",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/235886826",
+        "local_name_source_text": "Zwolle",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/235886826",
+        "osm_node_id": 235886826,
+        "osm_place": "city",
+        "osm_coordinates": [
+          6.0943765,
+          52.5089759
+        ],
+        "osm_wikidata": "Q793",
+        "name_wikidata": "Q793",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "兹沃勒",
+          "name:zh-Hans": "兹沃勒"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Zwolle",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Utrecht": {
+        "n": "Utrecht",
+        "nz": "乌得勒支",
+        "ne": "Utrecht",
+        "ref": "https://www.wikidata.org/wiki/Q803",
+        "source_text": "乌得勒支",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q803",
+        "english_source_text": "Utrecht",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/235861650",
+        "local_name_source_text": "Utrecht",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/235861650",
+        "osm_node_id": 235861650,
+        "osm_place": "city",
+        "osm_coordinates": [
+          5.1215634,
+          52.0907006
+        ],
+        "osm_wikidata": "Q803",
+        "name_wikidata": "Q803",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "乌特勒支",
+          "name:zh-Hans": "乌特勒支"
+        },
+        "osm_chinese_name_crosscheck": "alternative spelling retained in evidence",
+        "osm_english_name_source_text": "Utrecht",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Middelburg": {
+        "n": "Middelburg",
+        "nz": "米德尔堡",
+        "ne": "Middelburg",
+        "ref": "https://www.wikidata.org/wiki/Q52101",
+        "source_text": "米德尔堡",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q52101",
+        "english_source_text": "Middelburg",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/3122879753",
+        "local_name_source_text": "Middelburg",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/3122879753",
+        "osm_node_id": 3122879753,
+        "osm_place": "city",
+        "osm_coordinates": [
+          3.6137371,
+          51.4996784
+        ],
+        "osm_wikidata": "Q52101",
+        "name_wikidata": "Q52101",
+        "osm_pbf_sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-nl-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh-Hans": "米德尔堡"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Middelburg",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      }
+    },
+    "it": {
+      "Roma": {
+        "n": "Roma",
+        "nz": "罗马",
+        "ne": "Rome",
+        "ref": "https://www.wikidata.org/wiki/Q220",
+        "source_text": "罗马",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q220",
+        "english_source_text": "Rome",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/72959652",
+        "local_name_source_text": "Roma",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/72959652",
+        "osm_node_id": 72959652,
+        "osm_place": "city",
+        "osm_coordinates": [
+          12.4829321,
+          41.8933203
+        ],
+        "osm_wikidata": "Q220",
+        "name_wikidata": "Q220",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "羅馬/罗马",
+          "name:zh-Hans": "罗马"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Rome",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Milano": {
+        "n": "Milano",
+        "nz": "米兰",
+        "ne": "Milan",
+        "ref": "https://www.wikidata.org/wiki/Q490",
+        "source_text": "米兰",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q490",
+        "english_source_text": "Milan",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/62505581",
+        "local_name_source_text": "Milano",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/62505581",
+        "osm_node_id": 62505581,
+        "osm_place": "city",
+        "osm_coordinates": [
+          9.1896346,
+          45.4641943
+        ],
+        "osm_wikidata": "Q490",
+        "name_wikidata": "Q490",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "米蘭",
+          "name:zh-Hans": "米兰"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Milan",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Napoli": {
+        "n": "Napoli",
+        "nz": "那不勒斯",
+        "ne": "Naples",
+        "ref": "https://www.wikidata.org/wiki/Q2634",
+        "source_text": "那不勒斯",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q2634",
+        "english_source_text": "Naples",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/428339558",
+        "local_name_source_text": "Napoli",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/428339558",
+        "osm_node_id": 428339558,
+        "osm_place": "city",
+        "osm_coordinates": [
+          14.2487679,
+          40.8358846
+        ],
+        "osm_wikidata": "Q2634",
+        "name_wikidata": "Q2634",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "那不勒斯",
+          "name:zh-Hans": "那不勒斯"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Naples",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Torino": {
+        "n": "Torino",
+        "nz": "都灵",
+        "ne": "Turin",
+        "ref": "https://www.wikidata.org/wiki/Q495",
+        "source_text": "都灵",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q495",
+        "english_source_text": "Turin",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/63621589",
+        "local_name_source_text": "Torino",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/63621589",
+        "osm_node_id": 63621589,
+        "osm_place": "city",
+        "osm_coordinates": [
+          7.6824892,
+          45.0677551
+        ],
+        "osm_wikidata": "Q495",
+        "name_wikidata": "Q495",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "都灵",
+          "name:zh-Hans": "都灵"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Turin",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Firenze": {
+        "n": "Firenze",
+        "nz": "佛罗伦萨",
+        "ne": "Florence",
+        "ref": "https://www.wikidata.org/wiki/Q2044",
+        "source_text": "佛罗伦萨",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q2044",
+        "english_source_text": "Florence",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/61753360",
+        "local_name_source_text": "Firenze",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/61753360",
+        "osm_node_id": 61753360,
+        "osm_place": "city",
+        "osm_coordinates": [
+          11.2556404,
+          43.7697955
+        ],
+        "osm_wikidata": "Q2044",
+        "name_wikidata": "Q2044",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "佛罗伦萨"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Florence",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Venezia": {
+        "n": "Venezia",
+        "nz": "威尼斯",
+        "ne": "Venice",
+        "ref": "https://www.wikidata.org/wiki/Q641",
+        "source_text": "威尼斯",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q641",
+        "english_source_text": "Venice",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/64778090",
+        "local_name_source_text": "Venezia",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/64778090",
+        "osm_node_id": 64778090,
+        "osm_place": "city",
+        "osm_coordinates": [
+          12.3345898,
+          45.4371908
+        ],
+        "osm_wikidata": "Q641",
+        "name_wikidata": "Q641",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "威尼斯",
+          "name:zh-Hans": "威尼斯"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Venice",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "L'Aquila": {
+        "n": "L'Aquila",
+        "nz": "拉奎拉",
+        "ne": "L'Aquila",
+        "ref": "https://www.wikidata.org/wiki/Q3476",
+        "source_text": "拉奎拉",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3476",
+        "english_source_text": "L'Aquila",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/70990193",
+        "local_name_source_text": "L'Aquila",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/70990193",
+        "osm_node_id": 70990193,
+        "osm_place": "city",
+        "osm_coordinates": [
+          13.3979672,
+          42.3489203
+        ],
+        "osm_wikidata": "Q3476",
+        "name_wikidata": "Q3476",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "拉奎拉"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "L'Aquila",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Potenza": {
+        "n": "Potenza",
+        "nz": "波坦察",
+        "ne": "Potenza",
+        "ref": "https://www.wikidata.org/wiki/Q3543",
+        "source_text": "波坦察",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3543",
+        "english_source_text": "Potenza",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/67280322",
+        "local_name_source_text": "Potenza",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/67280322",
+        "osm_node_id": 67280322,
+        "osm_place": "city",
+        "osm_coordinates": [
+          15.8022077,
+          40.6384046
+        ],
+        "osm_wikidata": "Q3543",
+        "name_wikidata": "Q3543",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "波坦察"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Catanzaro": {
+        "n": "Catanzaro",
+        "nz": "卡坦扎罗",
+        "ne": "Catanzaro",
+        "ref": "https://www.wikidata.org/wiki/Q3883",
+        "source_text": "卡坦扎罗",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3883",
+        "english_source_text": "Catanzaro",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/67273291",
+        "local_name_source_text": "Catanzaro",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/67273291",
+        "osm_node_id": 67273291,
+        "osm_place": "city",
+        "osm_coordinates": [
+          16.5960465,
+          38.9076353
+        ],
+        "osm_wikidata": "Q3883",
+        "name_wikidata": "Q3883",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "卡坦扎羅",
+          "name:zh-Hans": "卡坦扎罗"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Bologna": {
+        "n": "Bologna",
+        "nz": "博洛尼亚",
+        "ne": "Bologna",
+        "ref": "https://www.wikidata.org/wiki/Q1891",
+        "source_text": "博洛尼亚",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1891",
+        "english_source_text": "Bologna",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/667350399",
+        "local_name_source_text": "Bologna",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/667350399",
+        "osm_node_id": 667350399,
+        "osm_place": "city",
+        "osm_coordinates": [
+          11.3426327,
+          44.4938203
+        ],
+        "osm_wikidata": "Q1891",
+        "name_wikidata": "Q1891",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "博洛尼亚"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Bologna",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Trieste": {
+        "n": "Trieste",
+        "nz": "的里雅斯特",
+        "ne": "Trieste",
+        "ref": "https://www.wikidata.org/wiki/Q546",
+        "source_text": "的里雅斯特",
+        "basis": "label:zh-hans",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q546",
+        "english_source_text": "Trieste",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/66502648",
+        "local_name_source_text": "Trieste",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/66502648",
+        "osm_node_id": 66502648,
+        "osm_place": "city",
+        "osm_coordinates": [
+          13.7772781,
+          45.6496485
+        ],
+        "osm_wikidata": "Q546",
+        "name_wikidata": "Q546",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "的里雅斯特"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Trieste",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Genova": {
+        "n": "Genova",
+        "nz": "热那亚",
+        "ne": "Genoa",
+        "ref": "https://www.wikidata.org/wiki/Q1449",
+        "source_text": "热那亚",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1449",
+        "english_source_text": "Genoa",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/66586322",
+        "local_name_source_text": "Genova",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/66586322",
+        "osm_node_id": 66586322,
+        "osm_place": "city",
+        "osm_coordinates": [
+          8.9338624,
+          44.40726
+        ],
+        "osm_wikidata": "Q1449",
+        "name_wikidata": "Q1449",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "热那亚"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Genoa",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Ancona": {
+        "n": "Ancona",
+        "nz": "安科纳",
+        "ne": "Ancona",
+        "ref": "https://zh.wikipedia.org/wiki/%E5%AE%89%E7%A7%91%E7%BA%B3",
+        "source_text": "安科纳",
+        "basis": "sitelink:zhwiki",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3415",
+        "english_source_text": "Ancona",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/70978800",
+        "local_name_source_text": "Ancona",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/70978800",
+        "osm_node_id": 70978800,
+        "osm_place": "city",
+        "osm_coordinates": [
+          13.5170982,
+          43.6170137
+        ],
+        "osm_wikidata": "Q3415",
+        "name_wikidata": "Q3415",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "安科纳"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Ancona",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Campobasso": {
+        "n": "Campobasso",
+        "nz": "坎波巴索",
+        "ne": "Campobasso",
+        "ref": "https://www.wikidata.org/wiki/Q3497",
+        "source_text": "坎波巴索",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3497",
+        "english_source_text": "Campobasso",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/67283748",
+        "local_name_source_text": "Campobasso",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/67283748",
+        "osm_node_id": 67283748,
+        "osm_place": "city",
+        "osm_coordinates": [
+          14.6602725,
+          41.5597935
+        ],
+        "osm_wikidata": "Q3497",
+        "name_wikidata": "Q3497",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "坎波巴索"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Campobasso",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Bari": {
+        "n": "Bari",
+        "nz": "巴里",
+        "ne": "Bari",
+        "ref": "https://www.wikidata.org/wiki/Q3519",
+        "source_text": "巴里",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3519",
+        "english_source_text": "Bari",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/68528585",
+        "local_name_source_text": "Bari",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/68528585",
+        "osm_node_id": 68528585,
+        "osm_place": "city",
+        "osm_coordinates": [
+          16.8620293,
+          41.1257843
+        ],
+        "osm_wikidata": "Q3519",
+        "name_wikidata": "Q3519",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "巴里"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Bari",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Casteddu/Cagliari": {
+        "n": "Casteddu/Cagliari",
+        "nz": "卡利亚里",
+        "ne": "Cagliari",
+        "ref": "https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%88%A9%E4%BA%9A%E9%87%8C",
+        "source_text": "卡利亚里",
+        "basis": "sitelink:zhwiki",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1897",
+        "english_source_text": "Cagliari",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/72990657",
+        "local_name_source_text": "Casteddu/Cagliari",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/72990657",
+        "osm_node_id": 72990657,
+        "osm_place": "city",
+        "osm_coordinates": [
+          9.113311,
+          39.2171994
+        ],
+        "osm_wikidata": "Q1897",
+        "name_wikidata": "Q1897",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "卡利亚里"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Cagliari",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Palermo": {
+        "n": "Palermo",
+        "nz": "巴勒莫",
+        "ne": "Palermo",
+        "ref": "https://www.wikidata.org/wiki/Q2656",
+        "source_text": "巴勒莫",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q2656",
+        "english_source_text": "Palermo",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/67253662",
+        "local_name_source_text": "Palermo",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/67253662",
+        "osm_node_id": 67253662,
+        "osm_place": "city",
+        "osm_coordinates": [
+          13.3524434,
+          38.1112268
+        ],
+        "osm_wikidata": "Q2656",
+        "name_wikidata": "Q2656",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "巴勒莫"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Palermo",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Trento": {
+        "n": "Trento",
+        "nz": "特伦托",
+        "ne": "Trento",
+        "ref": "https://www.wikidata.org/wiki/Q3376",
+        "source_text": "特伦托",
+        "basis": "label:zh-hans",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3376",
+        "english_source_text": "Trento",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/64776484",
+        "local_name_source_text": "Trento",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/64776484",
+        "osm_node_id": 64776484,
+        "osm_place": "city",
+        "osm_coordinates": [
+          11.1257601,
+          46.0664228
+        ],
+        "osm_wikidata": "Q3376",
+        "name_wikidata": "Q3376",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "特伦托"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Perugia": {
+        "n": "Perugia",
+        "nz": "佩鲁贾",
+        "ne": "Perugia",
+        "ref": "https://www.wikidata.org/wiki/Q3437",
+        "source_text": "佩鲁贾",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3437",
+        "english_source_text": "Perugia",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/68507505",
+        "local_name_source_text": "Perugia",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/68507505",
+        "osm_node_id": 68507505,
+        "osm_place": "city",
+        "osm_coordinates": [
+          12.3890104,
+          43.1119613
+        ],
+        "osm_wikidata": "Q3437",
+        "name_wikidata": "Q3437",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "翁布里亚"
+        },
+        "osm_chinese_name_crosscheck": "alternative spelling retained in evidence",
+        "osm_english_name_source_text": "Perugia",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Aosta - Aoste": {
+        "n": "Aosta - Aoste",
+        "nz": "奥斯塔",
+        "ne": "Aosta",
+        "ref": "https://www.wikidata.org/wiki/Q3367",
+        "source_text": "奥斯塔",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q3367",
+        "english_source_text": "Aosta",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/252686619",
+        "local_name_source_text": "Aosta - Aoste",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/252686619",
+        "osm_node_id": 252686619,
+        "osm_place": "city",
+        "osm_coordinates": [
+          7.3204025,
+          45.7373075
+        ],
+        "osm_wikidata": "Q3367",
+        "name_wikidata": "Q3367",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {},
+        "osm_chinese_name_crosscheck": "no Chinese OSM name tag",
+        "osm_english_name_source_text": "Aosta",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Brescia": {
+        "n": "Brescia",
+        "nz": "布雷西亚",
+        "ne": "Brescia",
+        "ref": "https://www.wikidata.org/wiki/Q6221",
+        "source_text": "布雷西亚",
+        "basis": "label:zh",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q6221",
+        "english_source_text": "Brescia",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/62505590",
+        "local_name_source_text": "Brescia",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/62505590",
+        "osm_node_id": 62505590,
+        "osm_place": "city",
+        "osm_coordinates": [
+          10.2200214,
+          45.5398022
+        ],
+        "osm_wikidata": "Q6221",
+        "name_wikidata": "Q6221",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "布雷西亚"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Brescia",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Bergamo": {
+        "n": "Bergamo",
+        "nz": "贝加莫",
+        "ne": "Bergamo",
+        "ref": "https://www.wikidata.org/wiki/Q628",
+        "source_text": "贝加莫",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q628",
+        "english_source_text": "Bergamo",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/2289017953",
+        "local_name_source_text": "Bergamo",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/2289017953",
+        "osm_node_id": 2289017953,
+        "osm_place": "city",
+        "osm_coordinates": [
+          9.6698727,
+          45.6944947
+        ],
+        "osm_wikidata": "Q628",
+        "name_wikidata": "Q628",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "贝尔加莫",
+          "name:zh-Hans": "贝加莫"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Bergamo",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Padova": {
+        "n": "Padova",
+        "nz": "帕多瓦",
+        "ne": "Padua",
+        "ref": "https://www.wikidata.org/wiki/Q617",
+        "source_text": "帕多瓦",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q617",
+        "english_source_text": "Padua",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/406747508",
+        "local_name_source_text": "Padova",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/406747508",
+        "osm_node_id": 406747508,
+        "osm_place": "city",
+        "osm_coordinates": [
+          11.8734455,
+          45.4077172
+        ],
+        "osm_wikidata": "Q33705528",
+        "name_wikidata": "Q617",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "Actual OSM place=city node name Padova and name:en Padua; OSM entity Q33705528 has English label Padova, country P17=Q38, and administrative-parent P131=Q617, the sourced city/municipality naming entity.",
+        "node_identity_ref": "https://www.wikidata.org/wiki/Q33705528",
+        "node_identity_source_text": "Padova",
+        "node_identity_evidence_file": "output/review/nl-be-it-cities/node-identity-evidence.json",
+        "osm_chinese_name_tags": {
+          "name:zh": "帕多瓦"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Padua",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Messina": {
+        "n": "Messina",
+        "nz": "墨西拿",
+        "ne": "Messina",
+        "ref": "https://www.wikidata.org/wiki/Q13666",
+        "source_text": "墨西拿",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q13666",
+        "english_source_text": "Messina",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/67253701",
+        "local_name_source_text": "Messina",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/67253701",
+        "osm_node_id": 67253701,
+        "osm_place": "city",
+        "osm_coordinates": [
+          15.5542082,
+          38.1937571
+        ],
+        "osm_wikidata": "Q13666",
+        "name_wikidata": "Q13666",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "墨西拿",
+          "name:zh-Hans": "墨西拿"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": "Messina",
+        "osm_english_name_crosscheck": "exact sourced-name match",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      },
+      "Tàttari/Sassari": {
+        "n": "Tàttari/Sassari",
+        "nz": "萨萨里",
+        "ne": "Sassari",
+        "ref": "https://www.wikidata.org/wiki/Q13629",
+        "source_text": "萨萨里",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-17",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q13629",
+        "english_source_text": "Sassari",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/2615891334",
+        "local_name_source_text": "Tàttari/Sassari",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/2615891334",
+        "osm_node_id": 2615891334,
+        "osm_place": "city",
+        "osm_coordinates": [
+          8.5612674,
+          40.7234746
+        ],
+        "osm_wikidata": "Q13629",
+        "name_wikidata": "Q13629",
+        "osm_pbf_sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+        "node_evidence_file": "output/review/nl-be-it-cities/osm-it-candidates.json",
+        "node_status": "verified complete local PBF",
+        "node_identity_basis": "OSM wikidata matches sourced name entity",
+        "osm_chinese_name_tags": {
+          "name:zh": "薩薩里",
+          "name:zh-Hans": "萨萨里"
+        },
+        "osm_chinese_name_crosscheck": "exact sourced-name match",
+        "osm_english_name_source_text": null,
+        "osm_english_name_crosscheck": "no English OSM name tag",
+        "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
+        "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
+      }
+    }
+  },
+  "administrative_seats": {
+    "de": {
+      "ref": "https://www.bundesrat.de/DE/bundesrat/laender/laender-node.html",
+      "seats": [
+        {
+          "region": "Baden-Württemberg",
+          "n": "Stuttgart"
+        },
+        {
+          "region": "Bayern",
+          "n": "München"
+        },
+        {
+          "region": "Berlin",
+          "n": "Berlin"
+        },
+        {
+          "region": "Brandenburg",
+          "n": "Potsdam"
+        },
+        {
+          "region": "Bremen",
+          "n": "Bremen"
+        },
+        {
+          "region": "Hamburg",
+          "n": "Hamburg"
+        },
+        {
+          "region": "Hessen",
+          "n": "Wiesbaden"
+        },
+        {
+          "region": "Mecklenburg-Vorpommern",
+          "n": "Schwerin"
+        },
+        {
+          "region": "Niedersachsen",
+          "n": "Hannover"
+        },
+        {
+          "region": "Nordrhein-Westfalen",
+          "n": "Düsseldorf"
+        },
+        {
+          "region": "Rheinland-Pfalz",
+          "n": "Mainz"
+        },
+        {
+          "region": "Saarland",
+          "n": "Saarbrücken"
+        },
+        {
+          "region": "Sachsen",
+          "n": "Dresden"
+        },
+        {
+          "region": "Sachsen-Anhalt",
+          "n": "Magdeburg"
+        },
+        {
+          "region": "Schleswig-Holstein",
+          "n": "Kiel"
+        },
+        {
+          "region": "Thüringen",
+          "n": "Erfurt"
+        }
+      ]
+    },
+    "fr": {
+      "ref": "https://www.insee.fr/fr/statistiques/fichier/8740222/v_region_2026.csv",
+      "seats": [
+        {
+          "region": "Île-de-France",
+          "n": "Paris"
+        },
+        {
+          "region": "Centre-Val de Loire",
+          "n": "Orléans"
+        },
+        {
+          "region": "Bourgogne-Franche-Comté",
+          "n": "Dijon"
+        },
+        {
+          "region": "Normandie",
+          "n": "Rouen"
+        },
+        {
+          "region": "Hauts-de-France",
+          "n": "Lille"
+        },
+        {
+          "region": "Grand Est",
+          "n": "Strasbourg"
+        },
+        {
+          "region": "Pays de la Loire",
+          "n": "Nantes"
+        },
+        {
+          "region": "Bretagne",
+          "n": "Rennes"
+        },
+        {
+          "region": "Nouvelle-Aquitaine",
+          "n": "Bordeaux"
+        },
+        {
+          "region": "Occitanie",
+          "n": "Toulouse"
+        },
+        {
+          "region": "Auvergne-Rhône-Alpes",
+          "n": "Lyon"
+        },
+        {
+          "region": "Provence-Alpes-Côte d'Azur",
+          "n": "Marseille"
+        },
+        {
+          "region": "Corse",
+          "n": "Ajaccio"
+        }
+      ]
+    },
+    "ch": {
+      "ref": "https://www.swisstopo.admin.ch/dam/de/sd-web/eIcUnG1yV9VL/Blattuebersicht-LK25-Hauptorte-2022-DE.pdf",
+      "seats": [
+        {
+          "region": "ZH",
+          "n": "Zürich"
+        },
+        {
+          "region": "BE",
+          "n": "Bern"
+        },
+        {
+          "region": "LU",
+          "n": "Luzern"
+        },
+        {
+          "region": "UR",
+          "n": "Altdorf UR"
+        },
+        {
+          "region": "SZ",
+          "n": "Schwyz"
+        },
+        {
+          "region": "OW",
+          "n": "Sarnen"
+        },
+        {
+          "region": "NW",
+          "n": "Stans"
+        },
+        {
+          "region": "GL",
+          "n": "Glarus"
+        },
+        {
+          "region": "ZG",
+          "n": "Zug"
+        },
+        {
+          "region": "FR",
+          "n": "Fribourg"
+        },
+        {
+          "region": "SO",
+          "n": "Solothurn"
+        },
+        {
+          "region": "BS",
+          "n": "Basel"
+        },
+        {
+          "region": "BL",
+          "n": "Liestal"
+        },
+        {
+          "region": "SH",
+          "n": "Schaffhausen"
+        },
+        {
+          "region": "AR",
+          "n": "Herisau"
+        },
+        {
+          "region": "AI",
+          "n": "Appenzell"
+        },
+        {
+          "region": "SG",
+          "n": "St. Gallen"
+        },
+        {
+          "region": "GR",
+          "n": "Chur"
+        },
+        {
+          "region": "AG",
+          "n": "Aarau"
+        },
+        {
+          "region": "TG",
+          "n": "Frauenfeld"
+        },
+        {
+          "region": "TI",
+          "n": "Bellinzona"
+        },
+        {
+          "region": "VD",
+          "n": "Lausanne"
+        },
+        {
+          "region": "VS",
+          "n": "Sion"
+        },
+        {
+          "region": "NE",
+          "n": "Neuchâtel"
+        },
+        {
+          "region": "GE",
+          "n": "Genève"
+        },
+        {
+          "region": "JU",
+          "n": "Delémont"
+        }
+      ],
+      "note": "Herisau is the government seat of Appenzell Ausserrhoden."
+    },
+    "es": {
+      "ref": "https://transparencia.gob.es/va/masinformacion/administraciones-publicas",
+      "seats": [
+        {
+          "region": "Andalucía",
+          "n": "Sevilla"
+        },
+        {
+          "region": "Aragón",
+          "n": "Zaragoza"
+        },
+        {
+          "region": "Asturias",
+          "n": "Oviedo / Uviéu"
+        },
+        {
+          "region": "Illes Balears",
+          "n": "Palma"
+        },
+        {
+          "region": "Canarias",
+          "n": "Santa Cruz de Tenerife"
+        },
+        {
+          "region": "Canarias",
+          "n": "Las Palmas de Gran Canaria"
+        },
+        {
+          "region": "Cantabria",
+          "n": "Santander"
+        },
+        {
+          "region": "Castilla-La Mancha",
+          "n": "Toledo"
+        },
+        {
+          "region": "Castilla y León",
+          "n": "Valladolid"
+        },
+        {
+          "region": "Catalunya",
+          "n": "Barcelona"
+        },
+        {
+          "region": "Comunitat Valenciana",
+          "n": "València"
+        },
+        {
+          "region": "Extremadura",
+          "n": "Mérida"
+        },
+        {
+          "region": "Galicia",
+          "n": "Santiago de Compostela"
+        },
+        {
+          "region": "Madrid",
+          "n": "Madrid"
+        },
+        {
+          "region": "Murcia",
+          "n": "Murcia"
+        },
+        {
+          "region": "Navarra",
+          "n": "Pamplona / Iruña"
+        },
+        {
+          "region": "País Vasco",
+          "n": "Vitoria-Gasteiz"
+        },
+        {
+          "region": "La Rioja",
+          "n": "Logroño"
+        },
+        {
+          "region": "Ceuta",
+          "n": "Ceuta"
+        },
+        {
+          "region": "Melilla",
+          "n": "Melilla"
+        }
+      ],
+      "note": "Canarias has two capitals. Valladolid is the government seat of Castilla y León. Vitoria-Gasteiz is the seat of Basque institutions. Ceuta and Melilla are autonomous cities."
+    },
+    "be": {
+      "ref": "https://www.vlaanderen.be/vlaanderen-intern-communicatie/huisstijl-en-merkbeleid/huisstijlrichtlijnen/richtlijnen-voor-teksten",
+      "checked": "2026-10-17",
+      "scope": "3 regions, not 10 provinces",
+      "expected_units": 3,
+      "seats": [
+        {
+          "region": "Vlaams Gewest",
+          "n": "Bruxelles - Brussel",
+          "sources": [
+            "BE2",
+            "BE1"
+          ],
+          "source_text": "Flanders is the autonomous northern region of Belgium with Brussels as its capital.",
+          "basis": "regional institutional capital; do not substitute Antwerpen provincial capital",
+          "confidence": "high",
+          "ref": "https://www.vlaanderen.be/vlaanderen-intern-communicatie/huisstijl-en-merkbeleid/huisstijlrichtlijnen/richtlijnen-voor-teksten",
+          "refs": [
+            "https://www.vlaanderen.be/vlaanderen-intern-communicatie/huisstijl-en-merkbeleid/huisstijlrichtlijnen/richtlijnen-voor-teksten",
+            "https://www.belgium.be/en/section_en/regions"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/1635651356"
+        },
+        {
+          "region": "Région de Bruxelles-Capitale / Brussels Hoofdstedelijk Gewest",
+          "n": "Bruxelles - Brussel",
+          "sources": [
+            "BE4",
+            "BE1"
+          ],
+          "source_text": "BE-BRU | Bruxelles / Brussel (Brussels)",
+          "basis": "administrative centre of Brussels-Capital Region; same city node as rank1 and Flemish institutional capital",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/69454896888ddc41b48a53f6/Belgium_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/69454896888ddc41b48a53f6/Belgium_Toponymic_Factfile.pdf",
+            "https://www.belgium.be/en/section_en/regions"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/1635651356"
+        },
+        {
+          "region": "Région wallonne",
+          "n": "Namur",
+          "sources": [
+            "BE3",
+            "BE1"
+          ],
+          "source_text": "Namur est officiellement reconnue comme la capitale de la Wallonie",
+          "basis": "regional capital, not Liège historical capital or provincial-capital list",
+          "confidence": "high",
+          "ref": "https://connaitrelawallonie.wallonie.be/histoire-et-symboles/symboles/une-capitale-namur",
+          "refs": [
+            "https://connaitrelawallonie.wallonie.be/histoire-et-symboles/symboles/une-capitale-namur",
+            "https://www.belgium.be/en/section_en/regions"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/1765500676"
+        }
+      ],
+      "evidence_file": "output/review/nl-be-it-cities/administrative-evidence.json",
+      "note": "rank1 and seats are deduplicated by actual local city node; no rank3"
+    },
+    "nl": {
+      "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+      "checked": "2026-10-17",
+      "scope": "European territory, 12 provinces",
+      "expected_units": 12,
+      "seats": [
+        {
+          "region": "Drenthe",
+          "n": "Assen",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Drenthe | 德伦特 | Assen | 阿森",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/29629883"
+        },
+        {
+          "region": "Flevoland",
+          "n": "Lelystad",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Flevoland | 弗雷佛兰 | Lelystad | 莱律斯塔德",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/243670659"
+        },
+        {
+          "region": "Fryslân",
+          "source_region_name": "Friesland",
+          "n": "Leeuwarden",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Friesland | 弗里斯兰 | Leeuwarden | 吕伐登",
+          "current_region_source_text": "Fryslân NL-FR Leeuwarden (Ljouwert)",
+          "basis": "first city under 省会(首位的); PCGN uses current official provincial name Fryslân and Leeuwarden (Ljouwert)",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/235278210"
+        },
+        {
+          "region": "Gelderland",
+          "n": "Arnhem",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Gelderland | 格尔德兰 | Arnhem | 阿纳姆",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/6394641551"
+        },
+        {
+          "region": "Groningen",
+          "n": "Groningen",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Groningen | 格罗宁根 | Groningen | 格罗宁根",
+          "basis": "first city under 省会(首位的); city, not province label node",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/3125538288"
+        },
+        {
+          "region": "Limburg",
+          "n": "Maastricht",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Limburg | 林堡 | Maastricht | 马斯特里赫特",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/41977208"
+        },
+        {
+          "region": "Noord-Brabant",
+          "n": "'s-Hertogenbosch",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Noord-Brabant | 北布拉邦 | 's Hertogenbosch | 斯海尔托亨博斯",
+          "basis": "first city under 省会(首位的); PCGN spells 's-Hertogenbosch; final n follows PBF",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/60400458"
+        },
+        {
+          "region": "Noord-Holland",
+          "n": "Haarlem",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Noord-Holland | Haarlem | 哈勒姆",
+          "basis": "first city is Haarlem; Amsterdam is later in this table, not provincial capital",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/296054949"
+        },
+        {
+          "region": "Overijssel",
+          "n": "Zwolle",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Overijssel | 上艾瑟尔 | Zwolle | 兹沃勒",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/235886826"
+        },
+        {
+          "region": "Utrecht",
+          "n": "Utrecht",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Utrecht | 乌特勒支 | Utrecht | 乌特勒支",
+          "basis": "first city under 省会(首位的); city, not province label node",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/235861650"
+        },
+        {
+          "region": "Zeeland",
+          "n": "Middelburg",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Zeeland | 泽兰 | Middelburg | 米德堡",
+          "basis": "first city under 省会(首位的); PCGN administrative centre",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/3122879753"
+        },
+        {
+          "region": "Zuid-Holland",
+          "n": "Den Haag",
+          "sources": [
+            "NL1",
+            "NL2"
+          ],
+          "source_text": "Zuid-Holland | 南荷兰 | Den Haag | 海牙",
+          "basis": "first city under 省会(首位的); national government seat and provincial capital, not national capital",
+          "confidence": "high",
+          "ref": "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+          "refs": [
+            "https://nl.china-embassy.gov.cn/zjhl/200603/t20060302_2737809.htm",
+            "https://assets.publishing.service.gov.uk/media/68aee36c960e2d135b4c8e76/Netherlands_Toponymic_Factfile.pdf"
+          ],
+          "osm_ref": "https://www.openstreetmap.org/node/235857686"
+        }
+      ],
+      "evidence_file": "output/review/nl-be-it-cities/administrative-evidence.json",
+      "note": "rank1 and seats are deduplicated by actual local city node; no rank3"
+    },
+    "it": {
+      "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+      "checked": "2026-10-17",
+      "scope": "20 regions, including Sicily and Sardinia",
+      "expected_units": 20,
+      "seats": [
+        {
+          "region": "Abruzzo",
+          "n": "L'Aquila",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Abruzzo | IT-65 | L'Aquila",
+          "italian_source_text": "L’Aquila, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/70990193"
+        },
+        {
+          "region": "Basilicata",
+          "n": "Potenza",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Basilicata | IT-77 | Potenza",
+          "italian_source_text": "Potenza, il capoluogo, si caratterizza come polo di servizi",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/67280322"
+        },
+        {
+          "region": "Calabria",
+          "n": "Catanzaro",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Calabria | IT-78 | Catanzaro",
+          "italian_source_text": "Catanzaro, il capoluogo, si caratterizza",
+          "basis": "regional administrative centre, not regional council seat in Reggio Calabria",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/67273291"
+        },
+        {
+          "region": "Campania",
+          "n": "Napoli",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Campania | IT-72 | Napoli (Naples)",
+          "italian_source_text": "Napoli, il capoluogo, si caratterizza come polo di servizi",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/428339558"
+        },
+        {
+          "region": "Emilia-Romagna",
+          "n": "Bologna",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Emilia-Romagna | IT-45 | Bologna",
+          "italian_source_text": "Bologna, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/667350399"
+        },
+        {
+          "region": "Friuli-Venezia Giulia",
+          "n": "Trieste",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Friuli-Venezia Giulia | IT-36 | Trieste",
+          "italian_source_text": "Trieste, il capoluogo, si distingue per la maggiore incidenza dei servizi.",
+          "basis": "autonomous regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/66502648"
+        },
+        {
+          "region": "Lazio",
+          "n": "Roma",
+          "sources": [
+            "IT1",
+            "IT4"
+          ],
+          "source_text": "Lazio | IT-62 | Roma (Rome)",
+          "italian_source_text": "Roma, capitale della Repubblica, e' capoluogo della Regione.",
+          "basis": "PCGN administrative centre and explicit regional statute Art. 2",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.gazzettaufficiale.it/atto/regioni/caricaArticolo?art.versione=1&art.idGruppo=1&art.codiceRedazionale=05R00184&art.idArticolo=2&art.idSottoArticolo=1&art.dataPubblicazioneGazzetta=2005-05-07&art.progressivo=0"
+          ],
+          "italian_source_ref": "https://www.gazzettaufficiale.it/atto/regioni/caricaArticolo?art.versione=1&art.idGruppo=1&art.codiceRedazionale=05R00184&art.idArticolo=2&art.idSottoArticolo=1&art.dataPubblicazioneGazzetta=2005-05-07&art.progressivo=0",
+          "osm_ref": "https://www.openstreetmap.org/node/72959652"
+        },
+        {
+          "region": "Liguria",
+          "n": "Genova",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Liguria | IT-42 | Genova (Genoa)",
+          "italian_source_text": "Genova, il capoluogo, concentra oltre un terzo della popolazione regionale",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/66586322"
+        },
+        {
+          "region": "Lombardia",
+          "n": "Milano",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Lombardia | IT-25 | Milano (Milan)",
+          "italian_source_text": "Milano, il capoluogo, si conferma",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/62505581"
+        },
+        {
+          "region": "Marche",
+          "n": "Ancona",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Marche | IT-57 | Ancona",
+          "italian_source_text": "Ancona, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/70978800"
+        },
+        {
+          "region": "Molise",
+          "n": "Campobasso",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Molise | IT-67 | Campobasso",
+          "italian_source_text": "Campobasso, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/67283748"
+        },
+        {
+          "region": "Piemonte",
+          "n": "Torino",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Piemonte | IT-21 | Torino (Turin)",
+          "italian_source_text": "Torino, dal passato industriale, oggi si configura come polo di servizi, e il capoluogo si conferma",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/63621589"
+        },
+        {
+          "region": "Puglia",
+          "n": "Bari",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Puglia | IT-75 | Bari",
+          "italian_source_text": "Bari, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/68528585"
+        },
+        {
+          "region": "Sardegna",
+          "n": "Casteddu/Cagliari",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Sardegna | IT-88 | Cagliari",
+          "italian_source_text": "Cagliari, il capoluogo, si caratterizza fortemente come polo di servizi.",
+          "basis": "autonomous region; island included",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/72990657"
+        },
+        {
+          "region": "Sicilia",
+          "n": "Palermo",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Sicilia | IT-82 | Palermo",
+          "italian_source_text": "Palermo, il capoluogo, si caratterizza",
+          "basis": "autonomous region; island included",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/67253662"
+        },
+        {
+          "region": "Toscana",
+          "n": "Firenze",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Toscana | IT-52 | Firenze (Florence)",
+          "italian_source_text": "Firenze, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/61753360"
+        },
+        {
+          "region": "Trentino-Alto Adige/Südtirol",
+          "n": "Trento",
+          "sources": [
+            "IT1",
+            "IT5",
+            "IT3"
+          ],
+          "source_text": "Trentino-Alto Adige/Trentino-Südtirol | IT-32 | Trento",
+          "italian_source_text": "La regione Trentino - Alto Adige ha per capoluogo la città di Trento.",
+          "basis": "regional capital established by unified statute Art. 1; Bolzano provincial capital is not a second regional capital",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.regione.taa.it/ocmultibinary/download/37078/2544836/7/37cd79bcad4821cfa32050112611a8d4.pdf/file/Trentino-Alto+Adige.pdf",
+            "https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.versione=1&art.idGruppo=1&art.flagTipoArticolo=0&art.codiceRedazionale=048C0005&art.idArticolo=1&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.dataPubblicazioneGazzetta=1948-03-13&art.progressivo=0"
+          ],
+          "italian_source_ref": "https://www.regione.taa.it/ocmultibinary/download/37078/2544836/7/37cd79bcad4821cfa32050112611a8d4.pdf/file/Trentino-Alto+Adige.pdf",
+          "osm_ref": "https://www.openstreetmap.org/node/64776484"
+        },
+        {
+          "region": "Umbria",
+          "n": "Perugia",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Umbria | IT-55 | Perugia",
+          "italian_source_text": "Perugia, il capoluogo, si caratterizza come polo di servizi.",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/68507505"
+        },
+        {
+          "region": "Valle d'Aosta/Vallée d'Aoste",
+          "n": "Aosta - Aoste",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Valle d'Aosta/Vallée d'Aoste | IT-23 | Aosta/Aoste",
+          "italian_source_text": "Aosta, il capoluogo, svolge il ruolo di principale polo amministrativo",
+          "basis": "autonomous bilingual region; final local spelling follows PBF city node",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/252686619"
+        },
+        {
+          "region": "Veneto",
+          "n": "Venezia",
+          "sources": [
+            "IT1",
+            "IT2"
+          ],
+          "source_text": "Veneto | IT-34 | Venezia (Venice)",
+          "italian_source_text": "Venezia, il capoluogo, si caratterizza come polo di servizi",
+          "basis": "regional administrative centre",
+          "confidence": "high",
+          "ref": "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+          "refs": [
+            "https://assets.publishing.service.gov.uk/media/6a5a125f5ca06bf11ccb43c9/Italy_Toponymic_Factfile.pdf",
+            "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/"
+          ],
+          "italian_source_ref": "https://www.istat.it/comunicato-stampa/storie-di-dati-le-trasformazioni-delle-regioni-italiane/",
+          "osm_ref": "https://www.openstreetmap.org/node/64778090"
+        }
+      ],
+      "evidence_file": "output/review/nl-be-it-cities/administrative-evidence.json",
+      "note": "rank1 and seats are deduplicated by actual local city node; no rank3"
+    }
+  },
+  "rank1": {
+    "de": [
+      "Berlin",
+      "Hamburg",
+      "München",
+      "Frankfurt am Main",
+      "Köln"
+    ],
+    "fr": [
+      "Paris",
+      "Marseille",
+      "Lyon",
+      "Toulouse",
+      "Nice"
+    ],
+    "ch": [
+      "Zürich",
+      "Genève",
+      "Basel",
+      "Bern",
+      "Lausanne"
+    ],
+    "es": [
+      "Madrid",
+      "Barcelona",
+      "València",
+      "Sevilla",
+      "Bilbao"
+    ],
+    "be": [
+      "Bruxelles - Brussel",
+      "Antwerpen",
+      "Brugge"
+    ],
+    "nl": [
+      "Amsterdam",
+      "Rotterdam",
+      "Den Haag"
+    ],
+    "it": [
+      "Roma",
+      "Milano",
+      "Napoli",
+      "Torino",
+      "Firenze",
+      "Venezia"
+    ]
+  },
+  "label_cities": {
+    "de": [
+      "Berlin",
+      "Hamburg",
+      "München",
+      "Frankfurt am Main",
+      "Köln",
+      "Stuttgart",
+      "Potsdam",
+      "Bremen",
+      "Wiesbaden",
+      "Schwerin",
+      "Hannover",
+      "Düsseldorf",
+      "Mainz",
+      "Saarbrücken",
+      "Dresden",
+      "Magdeburg",
+      "Kiel",
+      "Erfurt"
+    ],
+    "fr": [
+      "Paris",
+      "Marseille",
+      "Lyon",
+      "Toulouse",
+      "Nice",
+      "Orléans",
+      "Dijon",
+      "Rouen",
+      "Lille",
+      "Strasbourg",
+      "Nantes",
+      "Rennes",
+      "Bordeaux",
+      "Ajaccio"
+    ],
+    "ch": [
+      "Zürich",
+      "Genève",
+      "Basel",
+      "Bern",
+      "Lausanne",
+      "Luzern",
+      "Altdorf UR",
+      "Schwyz",
+      "Sarnen",
+      "Stans",
+      "Glarus",
+      "Zug",
+      "Fribourg",
+      "Solothurn",
+      "Liestal",
+      "Schaffhausen",
+      "Herisau",
+      "Appenzell",
+      "St. Gallen",
+      "Chur",
+      "Aarau",
+      "Frauenfeld",
+      "Bellinzona",
+      "Sion",
+      "Neuchâtel",
+      "Delémont"
+    ],
+    "es": [
+      "Madrid",
+      "Barcelona",
+      "València",
+      "Sevilla",
+      "Bilbao",
+      "Zaragoza",
+      "Oviedo / Uviéu",
+      "Palma",
+      "Santa Cruz de Tenerife",
+      "Las Palmas de Gran Canaria",
+      "Santander",
+      "Toledo",
+      "Valladolid",
+      "Mérida",
+      "Santiago de Compostela",
+      "Murcia",
+      "Pamplona / Iruña",
+      "Vitoria-Gasteiz",
+      "Logroño",
+      "Ceuta",
+      "Melilla"
+    ],
+    "be": [
+      "Bruxelles - Brussel",
+      "Antwerpen",
+      "Brugge",
+      "Namur"
+    ],
+    "nl": [
+      "Amsterdam",
+      "Rotterdam",
+      "Den Haag",
+      "Assen",
+      "Lelystad",
+      "Leeuwarden",
+      "Arnhem",
+      "Groningen",
+      "Maastricht",
+      "'s-Hertogenbosch",
+      "Haarlem",
+      "Zwolle",
+      "Utrecht",
+      "Middelburg"
+    ],
+    "it": [
+      "Roma",
+      "Milano",
+      "Napoli",
+      "Torino",
+      "Firenze",
+      "Venezia",
+      "L'Aquila",
+      "Potenza",
+      "Catanzaro",
+      "Bologna",
+      "Trieste",
+      "Genova",
+      "Ancona",
+      "Campobasso",
+      "Bari",
+      "Casteddu/Cagliari",
+      "Palermo",
+      "Trento",
+      "Perugia",
+      "Aosta - Aoste"
+    ]
+  }
+}

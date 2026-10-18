@@ -1,12 +1,18 @@
 """Lines are moved to a side only where they are drawn along one path, and move over gradually."""
 import sys
+import json
 import unittest
 from pathlib import Path
 
 from shapely.geometry import LineString, Point, shape
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from side_by_side import GRAIN, abreast, side_by_side
+from side_by_side import GRAIN, abreast, side_by_side as generate_side_by_side
+from continuous_offset import value_at
+
+
+def side_by_side(*args, **kwargs):
+    return generate_side_by_side(*args, continuous=True, **kwargs)
 
 
 def feature(name, colour, coords, **props):
@@ -25,7 +31,11 @@ def pieces(features, name):
 
 
 def slot_at(features, name, x, y):
-    return min(pieces(features, name), key=lambda p: p[1].distance(Point(x, y)))[0]
+    point = Point(x, y)
+    f = min((f for f in features if f["properties"]["n"] == name),
+            key=lambda f: shape(f["geometry"]).distance(point))
+    p = f["properties"]
+    return value_at(json.loads(p["op"]), shape(f["geometry"]).project(point)) if "op" in p else p.get("off", 0)
 
 
 # A runs west to east; B joins its path between x = 0.01 and x = 0.03 and leaves again
@@ -46,17 +56,20 @@ class SideBySideTest(unittest.TestCase):
         for name, x, y in (("A", 0.001, 0), ("A", 0.039, 0), ("B", 0.006, 0.0032), ("B", 0.034, 0.0032)):
             self.assertEqual(slot_at(out, name, x, y), 0, (name, x))
 
-    def test_the_line_moves_over_in_small_steps_and_keeps_its_length(self):
+    def test_the_line_is_continuous_and_keeps_every_original_vertex(self):
         out = side_by_side([feature("A", "#ff0000", A), feature("B", "#0000ff", B)])
         for name, coords in (("A", A), ("B", B)):
-            parts = pieces(out, name)
-            self.assertAlmostEqual(sum(g.length for _, g in parts), LineString(coords).length, places=5)
-            start = Point(coords[0])
-            ordered = sorted(parts, key=lambda p: LineString(coords).project(p[1].interpolate(0.5, normalized=True)))
-            self.assertEqual(ordered[0][1].distance(start), 0)
-            for (s1, g1), (s2, g2) in zip(ordered, ordered[1:]):
-                self.assertLess(g1.distance(g2), 1e-6)                  # no gap in the line
-                self.assertLessEqual(abs(s1 - s2), GRAIN + 1e-9)        # no sideways jump
+            fs = [f for f in out if f["properties"]["n"] == name]
+            self.assertEqual(len(fs), 1)
+            self.assertEqual(fs[0]["geometry"]["coordinates"], [list(c) for c in coords])
+            spec = json.loads(fs[0]["properties"]["op"])
+            self.assertTrue(spec["ramps"])
+            for lo, hi, before, after in spec["ramps"]:
+                values = [value_at(spec, lo + (hi - lo) * k / 100) for k in range(101)]
+                self.assertAlmostEqual(values[0], before)
+                self.assertAlmostEqual(values[-1], after)
+                self.assertLess(max(abs(a - b) for a, b in zip(values, values[1:])), .02)
+                self.assertLess(abs(values[1] - values[0]), .00001)
 
     def test_a_line_running_the_other_way_still_gets_its_own_side(self):
         out = side_by_side([feature("A", "#ff0000", A), feature("B", "#0000ff", B[::-1])])
@@ -68,6 +81,29 @@ class SideBySideTest(unittest.TestCase):
     def test_a_crossing_line_is_not_company(self):
         out = side_by_side([feature("A", "#ff0000", A), feature("C", "#0000ff", [(0.02, -0.01), (0.02, 0.01)])])
         self.assertTrue(all("off" not in f["properties"] for f in out))
+
+    def test_surface_service_cannot_turn_a_subway_bundle(self):
+        metro = [
+            feature("A", "#00aa50", A, jk="subway", network="Metro", rid="1"),
+            feature("B", "#ffd301", A[::-1], jk="subway", network="Metro", rid="2"),
+            feature("C", "#f35858", A[::-1], jk="subway", network="Metro", rid="3"),
+        ]
+        surface = [
+            feature(f"T{i}", "#5cc8ff", B, jk="urban", network="Tram", rid=str(i + 10))
+            for i in range(4)
+        ]
+        group = lambda props: props["jk"]
+        alone = side_by_side(metro, group_of=group)
+        out = side_by_side(metro + surface, group_of=group)
+        self.assertEqual(out[:3], alone)
+        self.assertEqual([f["geometry"] for f in out], [f["geometry"] for f in metro + surface])
+        # The old mixed calculation really changes the subway bundle at this point.
+        mixed = side_by_side(metro + surface)
+        self.assertNotEqual(slot_at(mixed, "A", .02, 0), slot_at(out, "A", .02, 0))
+        self.assertEqual(len({slot_at(out, f"T{i}", .02, 0) for i in range(4)}), 4)
+        reordered = side_by_side(list(reversed(metro + surface)), group_of=group)
+        self.assertEqual({f["properties"]["n"]: f for f in reordered},
+                         {f["properties"]["n"]: f for f in out})
 
     def test_one_colour_is_one_line(self):
         out = side_by_side([feature("A", "#ff0000", A), feature("A east", "#ff0000", B)])

@@ -1,0 +1,214 @@
+{
+  "version": 1,
+  "country": "fr",
+  "status": "production_guarded",
+  "extract_sha256": "aa30e6173a53e5dcb519374fdffa9415ebe3de14f0e38bfba701b9be4299e224",
+  "previous_extract_sha256": "1abe84dabf1903c0e5caca0eb1234a8bbafd1ec675f50cae5e1a6a2612194e78",
+  "extract_revision_proof": "output/review/fr-seats/extract-drift-proof.json",
+  "extract_fields_sha256": {
+    "ways": "b195a36f7a7c1a15e19dbba7ac44d8940f45ffe19edbb82422a227b748eaec08",
+    "stations": "77afec1689813c6943eeb927af705fedbc09b0b00ff5a5b12eceb3aed50fd6cb",
+    "relations": "fa1f26bef49164d3b861d913948a53d9272ac2f5cb180f02f83174c3bdedb6d7",
+    "places": "82e54afab1d769ac921e002474b379fd5741ac5da314053ccd9d2e801f21c6a0",
+    "sources": "0d94748425f9196f78c7777ba48f43984101817b7211788843e3edda1dae119f",
+    "named": "836cfff99eb4e89d52b51a0cc5edf214734d184bd803715e21acff1258598171",
+    "stops": "6ed74c09d1076f7d17a3eb924e58dcc08bfd80fabfa2c1659025d11a4eb40c25"
+  },
+  "baseline_metro_sha256": "11b7409e436ce67bcfa181b0d9133f8b023cfdbc6ebf3965cd35258eed9b8069",
+  "evidence": "output/review/fr-seats/raw-proof.json",
+  "aliases": [
+    {
+      "id": "paris-t8-identity",
+      "network": "Tramway d'Île de France",
+      "name": "Tramway T8",
+      "relations": [
+        4007732,
+        4007733,
+        4007766,
+        4007767
+      ],
+      "source_colours": [
+        "#9f9825",
+        "#b1a245"
+      ],
+      "canonical_colour": "#b1a245",
+      "why": "One route_master/ref T8, two branches and their reverse directions. Keep the union of all 81 source ways before representative-track selection. Master colour is observed, not invented.",
+      "asked": "用户 2026-10-17: 对确认问题写局部人工配置，保持高倍率实际线位。"
+    },
+    {
+      "id": "dijon-t2-identity",
+      "network": "Divia",
+      "name": "Tram Ligne 2 : Chenôve ↔ Valmy",
+      "relations": [
+        1823363,
+        1823364
+      ],
+      "source_colours": [
+        "#ab0672",
+        "#cc008e"
+      ],
+      "canonical_colour": "#ab0672",
+      "why": "Two directions of ref T2 under one route_master, whose colour is #ab0672. Never merge T1 even though its displayed colour is similar.",
+      "asked": "用户 2026-10-17: 对确认问题写局部人工配置，保持高倍率实际线位。"
+    },
+    {
+      "id": "orleans-b-identity",
+      "network": "FR:TAO",
+      "name": "Tram B",
+      "relations": [
+        10493863,
+        374911
+      ],
+      "source_colours": [
+        "#72277b",
+        "#762a80"
+      ],
+      "canonical_colour": "#762a80",
+      "why": "Two reverse directions of ref B under one route_master. Use its observed #762a80 and select a representative only after combining both way sets.",
+      "asked": "用户 2026-10-17: 对确认问题写局部人工配置，保持高倍率实际线位。"
+    }
+  ],
+  "independent": [
+    {
+      "id": "choisy-m7-independent",
+      "identity": [
+        "巴黎",
+        "Ligne 7: La Courneuve ↔ Villejuif - Louis Aragon / Mairie d’Ivry",
+        "#ff82b4",
+        "subway"
+      ],
+      "relations": [
+        123652,
+        3328804,
+        3328811,
+        3328812
+      ],
+      "bbox": [
+        2.359,
+        48.8185,
+        2.37,
+        48.823
+      ],
+      "ramp_m": 350,
+      "line_sha256": "93d6733d5283c1496ada4f4c53166f215f0c128f4c12e2fcc042397ad923d292",
+      "why": "Raw ways place M7 in tunnels at layers -2/-3 and T3a on the surface. Their near-parallel display is not shared track. Preserve distant off, fade only its local independent displacement through goff at the existing renderer zoom stops.",
+      "asked": "用户 2026-10-17: 区分真实共轨、上下行、不同高度和独立邻轨",
+      "network": "Métro de Paris",
+      "bounded_validation": {
+        "source_sha256": "6a5d97fe0108e9a420ab86b04e0482216f14d677edf0eab519312b1cd6f31ab5",
+        "selected_sha256": "cd38b3173501b14a88de3a1d79eb3d7b28c49ab46924a0e62a3fde387ddbd3d8",
+        "display_sha256": "145b17e98f1b91d61fa517aedbb6c4b83b37facb466423725c5827ba4ec6d66a",
+        "reviewed_layout_sha256": [
+          "0bca6f8143ab6117dcec27b3830c5a5b33d2519730c3d098f7c8fb201c4bb600",
+          "8c79689f0a317d2853da1d702ce52718e068483f032322ad0be65726dbf9df8b"
+        ]
+      }
+    },
+    {
+      "id": "choisy-t3a-independent",
+      "identity": [
+        "巴黎",
+        "Tramway T3a : Pont du Garigliano-(Hopital Européen Georges Pompidou) ↔ Porte de Vincennes",
+        "#f68c59",
+        "urban"
+      ],
+      "relations": [
+        151598,
+        6907401
+      ],
+      "bbox": [
+        2.359,
+        48.8185,
+        2.37,
+        48.823
+      ],
+      "ramp_m": 350,
+      "line_sha256": "181de95f9f215ab7f237eb397b1f7308fceef66640cc5502f214ebef78fad38b",
+      "why": "Surface T3a is independent of subterranean M7. Do not mark sh; do not change source vertices or distant seating. The selected source alignment itself still needs separate review.",
+      "asked": "用户 2026-10-17: 区分真实共轨、上下行、不同高度和独立邻轨",
+      "network": "Tramway d'Île de France",
+      "bounded_validation": {
+        "source_sha256": "25c1b8fe5c0f804fdaadc9e2aaec6f152758ae777c0486beb0f2b2b1c44e4e20",
+        "selected_sha256": "7c6764168884ea3eb8425a26fa91423629e0db53a82c009bee80f51882cc2871",
+        "display_sha256": "2e0ac57b834d921ab5a4417832a4e07dc18307ce2949ce33da1f04d085dbded5",
+        "reviewed_layout_sha256": [
+          "422b04a6cc3abbd41aa091df95d23f563e6772989100dbd840843d751cc08e07",
+          "24f523a928f10d5b0de6b8d31d1c9449461b86cea7d65f86c190cf27b95e1b05"
+        ]
+      }
+    },
+    {
+      "id": "versailles-m12-independent",
+      "identity": [
+        "巴黎",
+        "Ligne 12 : Mairie d'Aubervilliers ↔ Mairie d’Issy",
+        "#00a161",
+        "subway"
+      ],
+      "relations": [
+        123775,
+        7731178
+      ],
+      "bbox": [
+        2.281,
+        48.828,
+        2.291,
+        48.834
+      ],
+      "ramp_m": 350,
+      "line_sha256": "73703abc0efefddd5ad385abea99730b048c2625c786e7638a189bff1823ad7f",
+      "why": "Raw M12 layer -4/tunnel evidence excludes shared surface track with T2/T3a. Revert only local extra displacement at high zoom. The actual underground alignment is not visible in satellite imagery.",
+      "asked": "用户 2026-10-17: 区分真实共轨、上下行、不同高度和独立邻轨",
+      "network": "Métro de Paris",
+      "bounded_validation": {
+        "source_sha256": "c680de2210771f6da65a72bb3dc9d4d84eff068654e8b04266931bdb09fbeffb",
+        "selected_sha256": "0f1a04295653fbe7c641ed16ec4ee5d29741f0917146bc57e6a8d4260ff68754",
+        "display_sha256": "a9888c4484a9e8a2c6674ba9ac3cbd57144296b0ceff49e8dc1b508e39afbf1e",
+        "reviewed_layout_sha256": [
+          "8fb73c08ae91c19d7bbef873a2bfa9128cea78f7a55d4c2f3fb411ace8cbe8c1",
+          "3d4357cbf8dfa5b899be800c68c0fea2cdc9651daa255efa7fd10344fad5be32"
+        ]
+      }
+    },
+    {
+      "id": "marseille-m2-independent",
+      "identity": [
+        "马赛",
+        "Metro 2",
+        "#fb535d",
+        "subway"
+      ],
+      "relations": [
+        6274532,
+        6274533
+      ],
+      "bbox": [
+        5.365,
+        43.298,
+        5.378,
+        43.316
+      ],
+      "ramp_m": 400,
+      "line_sha256": "735e9cf87a1cab0e8bfe937d313291195e9ee4fa9f79d7fe55cc52e3b4959aa8",
+      "why": "Raw M2 tunnel layers -3/-5 differ from surface tram layers. Do not convert proximity into sh. This does not fix Tram 2/3 choosing different physical representatives on their genuinely shared route ways.",
+      "asked": "用户 2026-10-17: 区分真实共轨、上下行、不同高度和独立邻轨",
+      "network": "RTM",
+      "bounded_validation": {
+        "source_sha256": "593c8bde7f46a5e453578fba04a933127b7a0b8118c58914a8479f5d73e5d6d7",
+        "selected_sha256": "8cce88d477b20d2b716c513d9440f9acd8eda3d822086c6c287eb712663b9295",
+        "display_sha256": "89b54637decef245c2473ec7c756cb91e356a53272d34edb9dc395b17e836b5b",
+        "reviewed_layout_sha256": [
+          "ae0b073d828c8a10bd40086deebe429259d0fc5e2eb2f30de31294439a5efdcf",
+          "177a5277ac3301d8c50b54349a158f5dff78048d61c3d3b180f9169d6497841c"
+        ]
+      }
+    }
+  ],
+  "open": [
+    "Formal country pipeline and tile wiring is owned by the main thread.",
+    "Marseille Tram 2/3: common route ways but selected representative intersection is zero; no sh override authorised.",
+    "Strasbourg B/C/F: route membership alone does not prove the retained common edge; equal signed off is not proof of overlap.",
+    "Dijon T1/T2: similar official colours are different lines; no broad colour alias.",
+    "Source representation and all-network full-length visual acceptance remain separate from these local corrections."
+  ]
+}

@@ -9,6 +9,23 @@ import build_tiles
 
 
 class TileParallelPropertiesTest(unittest.TestCase):
+    def test_single_unseated_service_keeps_source_identity(self):
+        feature = {
+            "type": "Feature",
+            "properties": {"g": "be", "ct": "列日", "n": "Tram T1",
+                           "network": "TECL", "rid": "18173306,18173307",
+                           "col": "#abcdef", "jk": "urban"},
+            "geometry": {"type": "LineString", "coordinates": [[5.57, 50.63], [5.58, 50.64]]},
+        }
+        with patch.object(build_tiles, "features", side_effect=lambda layer, country:
+                          [feature] if layer == "metro" else []):
+            text, layers = build_tiles.tippecanoe_input("be")
+        self.assertEqual(layers, ["metro"])
+        properties = json.loads(text)["properties"]
+        self.assertEqual(properties["network"], "TECL")
+        self.assertEqual(properties["rid"], "18173306,18173307")
+        self.assertNotIn("off", properties)
+
     def test_parallel_identity_survives_the_tile_input_in_every_line_layer(self):
         marks = {"off": 0, "sh": 1, "bn": 3, "lead": 0}
         feature = {

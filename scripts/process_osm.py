@@ -1800,6 +1800,9 @@ with open(RAW / "routing_stops.pkl", "wb") as f:
 print(f"metro stations by the stops of their lines: {sum(1 for x in at_dot if x)} of {len(dots)} have lines that stop there; "
       f"{sum(1 for v in line_stops.values() if v)} lines with stops, {sum(1 for k in final_of.values() if not line_stops.get(k))} without")
 write("stations.geojson", st_feats)
+from station_capsules import annotate as annotate_capsules
+metro_st = annotate_capsules(metro_st, metro_feats, stopping=ex.get("stops"),
+                            relations=ex.get("relations", ()))
 write("metro_stations.geojson", metro_st)
 print(f"stations on fast lines: {sum(1 for f in st_feats if f['properties'].get('h'))}; dropped (no drawn line nearby): {dropped}")
 
@@ -1820,3 +1823,7 @@ apply_design_speeds(ROOT)
 import seat_overrides
 seat_overrides.keep_base(ROOT)          # so that scripts/seat_overrides.py can be run again on its own
 seat_overrides.reseat(ROOT)
+# Capsules at the railway stations across the parallel lines that stop there, from the final rail,
+# shared and suburban files (scripts/station_capsules.py rail_display; build_graph.py keeps them).
+from station_capsules import rail_display
+rail_display("cn", ROOT)

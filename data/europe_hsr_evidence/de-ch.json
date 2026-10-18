@@ -1,0 +1,1891 @@
+{
+  "schema": 1,
+  "scope": "independent supplement only; catalog and normal pipeline unchanged",
+  "read": "2026-10-18",
+  "catalog_sha256": "e8ad8ed5406327bebd8077078acfd710eef5e91b87a571d9c904df3e8400735a",
+  "extract_sha256": {
+    "de": "51763c432557429e67d5f17fdf7e6147775687c24638c7f5b0fbd0fc0093fd6f",
+    "ch": "bf6beea65dae482d16b188c1bd91107eb7f19f6654d424a5c60f7f289a71a222"
+  },
+  "policy": {
+    "original_names_only": true,
+    "adopted_names": false,
+    "structure_aliases": false,
+    "official_design_binding_to_all_ways": false,
+    "unresolved_not_conventional_by_default": true
+  },
+  "sources": {
+    "dech-db-hannover-1973": {
+      "url": "https://www.deutschebahn.com/de/1973-7032800",
+      "title": "1973",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Baubeginn für die erste Neubaustrecke Hannover–Würzburg",
+      "supports_scope": "Hannover–Würzburg new line, historical construction-stage design 250 km/h.",
+      "limitations": "Historical 1973 statement does not validate the legacy final-design claim of 300 km/h.",
+      "location": "line 182"
+    },
+    "dech-bw-mannheim-2020": {
+      "url": "https://vm.baden-wuerttemberg.de/de/service/presse/pressemitteilung/pid/deutsche-bahn-schnellfahrstrecke-mannheim-stuttgart-geht-puenktlich-wieder-in-betrieb",
+      "title": "Deutsche Bahn: Schnellfahrstrecke Mannheim–Stuttgart geht pünktlich wieder in Betrieb",
+      "publication_date": "2020-11-02",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Die 99 km lange Schnellfahrstrecke zwischen Mannheim und Stuttgart wurde 1991 in Betrieb genommen.",
+      "supports_scope": "99 km new Mannheim–Stuttgart line, distinct old diversion routes.",
+      "limitations": "Up to 280 km/h describes trains operating, not design.",
+      "location": "lines 54–57"
+    },
+    "dech-bmv-vde-2022": {
+      "url": "https://www.bmv.de/SharedDocs/DE/Anlage/G/sachstandsbericht-verkehrsprojekte-deutsche-einheit-2022.pdf?__blob=publicationFile",
+      "title": "Sachstandsbericht Verkehrsprojekte Deutsche Einheit 2022",
+      "publication_date": "2022",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Neubau der zweigleisigen Strecke",
+      "supports_scope": "Projects 4 and 8, with separately listed new and upgraded sections.",
+      "limitations": "vmax is not an explicit Entwurfsgeschwindigkeit. Project names span different identities.",
+      "location": "PDF pp.12,16–18 (zero based)"
+    },
+    "dech-db-netz-2006": {
+      "url": "https://ir.deutschebahn.com/fileadmin/Deutsch/2006/Berichte/2006_gb_dbnetz_de.pdf",
+      "title": "DB Netz AG Geschäftsbericht 2006",
+      "publication_date": "2006",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Neubaustrecke Nürnberg – Ingolstadt",
+      "supports_scope": "NBS Nürnberg–Ingolstadt opened 2006-05-28, ABS Ingolstadt–München opened 2006-12-10.",
+      "limitations": "300 km/h design statement is explicitly only parts of the combined 171 km project.",
+      "location": "PDF p.16 (zero based)"
+    },
+    "dech-db-wendlingen-ulm": {
+      "url": "https://www.deutschebahn.com/de/konzern/Im-Fokus/Mit-250-Sachen-ueber-die-Neubaustrecke-Wendlingen-Ulm-7533734",
+      "title": "Mit 250 Sachen über die Neubaustrecke Wendlingen–Ulm",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "60 Kilometer neue Schienenwege",
+      "supports_scope": "New Wendlingen–Ulm route.",
+      "limitations": "250 km/h operation and higher test speed do not prove design speed. Page publication date not shown.",
+      "location": "article body"
+    },
+    "dech-db-karlsruhe-basel-2017": {
+      "url": "https://www.deutschebahn.com/resource/blob/264836/66bdaf86afb69d69bcb1da9b635bc1ac/gesamtbroschuere_ausbau_neubaustrecke_karlsruhe_basel-data.pdf",
+      "title": "Die Basis der Zukunft. Ausbau- und Neubaustrecke Karlsruhe–Basel",
+      "publication_date": "2017-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Die neue Strecke ist ausgelegt für Tempo 250",
+      "supports_scope": "Rastatt-Süd–Offenburg new parallel route, Katzenberg new alignment, Haltingen mixed tracks, existing Rheintalbahn upgrades.",
+      "limitations": "2017 construction dates are historical. New freight route 160, upgraded passenger route 250, project-wide figures cannot bind all ways.",
+      "location": "PDF pp.6,10,14,23 (zero based)"
+    },
+    "dech-infrago-rastatt-2026": {
+      "url": "https://www.dbinfrago.com/web/aktuelles/kund-inneninformationen/kund-inneninformationen/2026-KW38_Inbetriebnahme-Tunnel-Rastatt-14037478",
+      "title": "Inbetriebnahme Tunnel Rastatt: Streckenprospekt und Vorlaufbetrieb ab 23. November 2026",
+      "publication_date": "2026-09-17",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Abzweig Bashaide bis Überleitstelle Rastatt-Süd",
+      "supports_scope": "New section of 4280, commercial opening planned 2026-12-13.",
+      "limitations": "Future opening and noncommercial tests do not establish current operation or design speed.",
+      "location": "notice body"
+    },
+    "dech-db-haltingen-2024": {
+      "url": "https://www.deutschebahn.com/de/presse/presse-regional/pr-stuttgart-de/aktuell/presseinformationen/002-DB-baut-Bahnhof-Weil-am-Rhein-um-12619704",
+      "title": "Für eine starke Rheintalbahn: Deutsche Bahn baut Bahnhof Weil am Rhein um",
+      "publication_date": "2024-01-04",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "sechs neue Gleise",
+      "supports_scope": "Haltingen to Swiss border: separate freight, long-distance and regional tracks.",
+      "limitations": "New infrastructure has mixed uses. No uniform HSR or design-speed proof.",
+      "location": "press release"
+    },
+    "dech-db-stuttgart-wendlingen-2025": {
+      "url": "https://www.bahnprojekt-stuttgart-ulm.de/projekt/ueber-uns/presse/Strecke-Stuttgart-Wendlingen-unter-Strom-13441416",
+      "title": "Strecke Stuttgart–Wendlingen unter Strom",
+      "publication_date": "2025-02-20",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Fildertunnel bis zum Albvorlandtunnel",
+      "supports_scope": "New Stuttgart–Wendlingen section power-on 2025-03-01.",
+      "limitations": "December 2026 commercial opening was a forecast made in 2025, not a current commissioning confirmation.",
+      "location": "press release"
+    },
+    "dech-bav-mattstetten-2004": {
+      "url": "https://www.admin.ch/de/nsb?id=1160",
+      "title": "Neubaustrecke Mattstetten-Rothrist für den Betrieb freigegeben",
+      "publication_date": "2004-11-25",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Neubaustrecke Mattstetten-Rothrist",
+      "supports_scope": "NBS allowed operation from 2004-12-12 initially at max 160 km/h.",
+      "limitations": "Initial operating restriction is not design speed.",
+      "location": "BAV release"
+    },
+    "dech-bav-nbs-abs-2006": {
+      "url": "https://www.admin.ch/de/nsb?id=5934",
+      "title": "Neubaustrecke Mattstetten–Rothrist der BAHN 2000 kann mit ETCS Level 2 in Betrieb gehen",
+      "publication_date": "2006-06-30",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Ausbaustrecke Derendingen–Inkwil",
+      "supports_scope": "Explicit NBS Mattstetten–Rothrist versus ABS Derendingen–Inkwil.",
+      "limitations": "Does not justify classifying the longer Solothurn/Wanzwil or line 400 name as one identity.",
+      "location": "BAV release"
+    },
+    "dech-bls-loetschberg-2017": {
+      "url": "https://www.bls.ch/de/unternehmen/medien/medienmitteilungen/2017/06-15-10-jahre-lbt",
+      "title": "10 Jahre Vollbetrieb des Lötschberg-Basistunnels",
+      "publication_date": "2017-06-15",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "15. Juni 2007",
+      "supports_scope": "New NEAT base tunnel opened 2007, distinct mountain route.",
+      "limitations": "At publication some second tube was only shell. No way binding or design-speed proof.",
+      "location": "BLS release"
+    },
+    "dech-bls-loetschberg-completion": {
+      "url": "https://www.bls.ch/de/unternehmen/projekte-und-hintergruende/neat",
+      "title": "Ausbau Lötschberg-Basistunnel",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Lötschberg-Basistunnel",
+      "supports_scope": "Current second-tube completion project.",
+      "limitations": "Existing operation and unfinished second-tube works must stay separate.",
+      "location": "current project page"
+    },
+    "dech-sbb-gotthard-2026": {
+      "url": "https://news.sbb.ch/de/019e72ae-25de-7db5-9dcc-a87bb7d034bb/gotthard-basistunnel-zehn-jahre-schnellere-verbindungen-fuer-die-reisenden-und-effizienterer-gueterverkehr",
+      "title": "Gotthard-Basistunnel: Zehn Jahre schnellere Verbindungen für die Reisenden und effizienterer Güterverkehr",
+      "publication_date": "2026-06-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "57 Kilometer",
+      "supports_scope": "New NEAT base tunnel opened 2016-06-01, distinct old mountain route.",
+      "limitations": "No original native infrastructure name or design-speed binding established.",
+      "location": "SBB anniversary article"
+    },
+    "dech-sbb-ceneri-2020": {
+      "url": "https://news.sbb.ch/de/019d7b7a-c699-783f-92bc-8e55aaf65673/gueterzuege-fahren-seit-mitte-september-durch-den-ceneri-basistunnel",
+      "title": "Güterzüge fahren seit Mitte September durch den Ceneri-Basistunnel",
+      "publication_date": "2020-10-21",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "13. Dezember 2020",
+      "supports_scope": "New Ceneri base tunnel, commercial freight trials before scheduled opening 2020-12-13.",
+      "limitations": "No native way scope or design speed proved.",
+      "location": "SBB article"
+    },
+    "dech-bav-bahn2000-evaluation-2006": {
+      "url": "https://www.aramis.admin.ch/Default?DocumentID=73359&Load=true",
+      "title": "Evaluation BAHN 2000 1. Etappe, Schlussbericht",
+      "publication_date": "2006-12-14",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Ausbaustrecke Inkwil - Derendingen",
+      "supports_scope": "Government-commissioned inventory: line 415 new Wanzwil connectors versus upgraded Inkwil–Derendingen, line 500 new Muttenz–Liestal, line 720 new Zürich–Nidelbad–Thalwil.",
+      "limitations": "Original infrastructure inventory, not HSR design-standard proof. Kilometer references are documented rail chainage, not a GIS adapter.",
+      "location": "PDF pp.138–139 (zero based)"
+    },
+    "dech-sbb-zimmerberg-archive": {
+      "url": "https://www.sbbarchiv.ch/archivplansuche.aspx?ID=669300",
+      "title": "SBB Historic Archive plan search, D_101_02339 W I-BF 18/03",
+      "publication_date": "2003",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Inbetriebnahme Zimmerberg-Basistunnel",
+      "supports_scope": "Archive entry for 2003 opening instruction.",
+      "limitations": "Only archive metadata read, underlying circular not retrieved. Supports year, not speed or detailed limits.",
+      "location": "record D_101_02339"
+    },
+    "dech-sbb-adler-liestal": {
+      "url": "https://company.sbb.ch/de/bahnentwicklung/projekte/deutschschweiz/region-basel/ausbau-bahnknoten-liestal/vierspurausbau.html",
+      "title": "Der Vierspurausbau Liestal",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "die Neubaustrecke via Adlertunnel",
+      "supports_scope": "New Adlertunnel route distinguished from Basel–Frenkendorf–Olten trunk.",
+      "limitations": "No HSR standard or design speed established.",
+      "location": "project text"
+    },
+    "dech-sbb-bruetten-schedule": {
+      "url": "https://company.sbb.ch/de/bahnentwicklung/projekte/deutschschweiz/region-zuerich/zuerich-winterthur-bruettenertunnel/zeitplan-kosten.html",
+      "title": "Zeitplan und Kosten",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Ende 2037",
+      "supports_scope": "Brüttenertunnel project: permission January 2026, preparatory work 2026, first trains planned end 2037.",
+      "limitations": "Future new tunnel and surrounding station upgrades do not establish current operating HSR.",
+      "location": "current schedule page"
+    },
+    "dech-db-wendlingen-opening-2022": {
+      "url": "https://www.deutschebahn.com/resource/blob/9914742/4df945b783c51afb68607d956f112ed2/20221209_PI-IBN-Wendlingen-Ulm-data.pdf",
+      "title": "Neubaustrecke Wendlingen–Ulm: Tempomacher für den Bahnverkehr in ganz Deutschland geht in Betrieb",
+      "publication_date": "2022-12-09",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "geht heute offiziell in Betrieb",
+      "supports_scope": "New Wendlingen–Ulm route opened 2022-12-09, regular timetable from 2022-12-11.",
+      "limitations": "Historical future Stuttgart 21 dates in this release are not current status evidence.",
+      "location": "PDF p.0 (zero based)"
+    },
+    "dech-bav-loetschberg-250-2008": {
+      "url": "https://www.admin.ch/de/nsb?id=24695",
+      "title": "Lötschberg-Basistunnel bereit für Fahrten bis 250 km/h",
+      "publication_date": "2008-12-30",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "den gesamten Tunnel für Fahrten mit einer Höchstgeschwindigkeit von 250 Kilometer pro Stunde freigegeben",
+      "supports_scope": "BAV checked safety/system evidence and authorised complete operating tunnel for up to 250 km/h.",
+      "limitations": "Technical capability/authorisation, not a claim that every approach way is designed for 250.",
+      "location": "release body"
+    },
+    "dech-bls-basis-technical-2018": {
+      "url": "https://www.bls.ch/-/media/bls/pdf/uebrige-pdfs/trassen-netzzugang/infrastruktur-trassen-voraussetzungen-netzzugang-loetschberg-basisstrecke.pdf?la=de&vs=1",
+      "title": "D IA 01/18: Lötschberg-Basisstrecke, Technische Bedingungen der Strecke und Anforderungen an das Rollmaterial",
+      "publication_date": "2018-04-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Wengi-Ey (exkl.) / Frutigen (exkl.) – St. German (exkl.)",
+      "supports_scope": "BLS defines full base-route extent, tunnel and north/south connections, 250 km/h passenger capability under axle-load/evidence conditions.",
+      "limitations": "Technical route conditions do not assign 250 km/h to each connection segment or establish individual way design speed.",
+      "location": "PDF pp.3–6 zero based"
+    },
+    "dech-parliament-neat-completion-2019": {
+      "url": "https://www.parlament.ch/centers/documents/de/bericht-nad-2019-11-04-d.pdf",
+      "title": "Oberaufsicht über den Bau der Neat in den Jahren 2018 und 2019",
+      "publication_date": "2019-11-04",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Vom Portal Raron führen die beiden Rhonebrücken an die SBB-Rhonetallinie",
+      "supports_scope": "Completed Lötschberg base-route construction project includes Engstligentunnel connection at Wengi-Ey and new southern Rhone bridge connections. Existing access-line upgrades are separately listed.",
+      "limitations": "Does not make old mountain/access corridors new-build. Relation members must remain confined to the completed base-route connections.",
+      "location": "PDF pp.36–37 zero based"
+    },
+    "dech-bls-loetschberg-status-2026": {
+      "url": "https://www.bls.ch/de/unternehmen/medien/medienmitteilungen/2026/08-19-auflage-pgv-vollausbau-lbt",
+      "title": "BLS legt Pläne für den Vollausbau des Lötschberg-Basistunnels öffentlich auf",
+      "publication_date": "2026-08-19",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Zwischen Raron und Ferden",
+      "supports_scope": "14 km has two operating equipped tubes, next 14 km is unequipped shell, remaining north 7 km second tube not excavated.",
+      "limitations": "Supports independent operating/construction treatment, not blanket rejection of all western-tube operation.",
+      "location": "release body"
+    },
+    "dech-sbb-etcs-egb": {
+      "url": "https://company.sbb.ch/de/bahnentwicklung/bahnbetrieb/bahnumfeld/etcs.html",
+      "title": "Zugsicherung",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "ETCS Level 2 im EGB",
+      "supports_scope": "SBB explicitly lists Lötschberg, Gotthard and Ceneri under extended control area for speeds greater than 160 up to 250 km/h.",
+      "limitations": "Control-area technical standard is not uniform way design speed. ETCS alone is not evidence of new construction.",
+      "location": "ETCS Level 2 section"
+    }
+  },
+  "records": [
+    {
+      "id": "de-00",
+      "country": "de",
+      "name": "Schnellfahrstrecke Hannover–Würzburg",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-hannover-1973"
+      ],
+      "exact_names": [
+        "Schnellfahrstrecke Hannover–Würzburg"
+      ],
+      "design_binding": null,
+      "supported_scope": "Hannover–Würzburg dedicated new route",
+      "conclusion": "官方历史资料明确是新建线路。桥隧名不成为整线身份别名。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "Talbrücke Leinach",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Bartelsgrabentalbrücke",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Talbrücke Kassemühle",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Ohlenrode-Talbrücke",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Hopfenbergtunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Mahnmilch-Talbrücke",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "final_design_300_not_revalidated"
+      ],
+      "design_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-db-hannover-1973",
+          "scope": "1973 construction-stage project",
+          "basis": "historical_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Hannover–Würzburg": {
+          "way_count": 924,
+          "railway_counts": {
+            "rail": 924
+          }
+        },
+        "Talbrücke Leinach": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Bartelsgrabentalbrücke": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Talbrücke Kassemühle": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        },
+        "Ohlenrode-Talbrücke": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        },
+        "Hopfenbergtunnel": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Mahnmilch-Talbrücke": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "de-01",
+      "country": "de",
+      "name": "Schnellfahrstrecke Mannheim–Stuttgart",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-bw-mannheim-2020"
+      ],
+      "exact_names": [
+        "Schnellfahrstrecke Mannheim–Stuttgart",
+        "Neubaustrecke Mannheim–Stuttgart"
+      ],
+      "design_binding": null,
+      "supported_scope": "99 km Mannheim–Stuttgart new route",
+      "conclusion": "官方明确新线与旧绕行线分开。280为运行速度，未核实250设计值。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 280,
+          "source": "dech-bw-mannheim-2020",
+          "scope": "trains using the new line",
+          "basis": "operating_only",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Mannheim–Stuttgart": {
+          "way_count": 338,
+          "railway_counts": {
+            "rail": 338
+          }
+        },
+        "Neubaustrecke Mannheim–Stuttgart": {
+          "way_count": 4,
+          "railway_counts": {
+            "rail": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "de-02",
+      "country": "de",
+      "name": "Schnellfahrstrecke Hannover–Berlin (Neubauabschnitt Oebisfelde–Berlin-Staaken)",
+      "identity": "unresolved",
+      "infrastructure_identity": "mixed_new_and_upgraded",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Oebisfelde–Staaken only. Lehrte–Oebisfelde and Staaken–Berlin are upgrades.",
+      "conclusion": "新建段已证，但Spandau/Berlin及Berlin-Lehrter Bahn源名超出Staaken边界，需范围适配。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "Schnellfahrstrecke Oebisfelde–Spandau",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "SFS Oebisfelde–Spandau",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Oebisfelde–Berlin",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Berlin-Lehrter Bahn",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "broader_source_names_require_native_range_adapter"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-bmv-vde-2022",
+          "scope": "new Oebisfelde–Staaken",
+          "basis": "project_vmax_not_explicit_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Oebisfelde–Spandau": {
+          "way_count": 222,
+          "railway_counts": {
+            "rail": 222
+          }
+        },
+        "SFS Oebisfelde–Spandau": {
+          "way_count": 24,
+          "railway_counts": {
+            "rail": 24
+          }
+        },
+        "Oebisfelde–Berlin": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        },
+        "Berlin-Lehrter Bahn": {
+          "way_count": 54,
+          "railway_counts": {
+            "rail": 54
+          }
+        }
+      }
+    },
+    {
+      "id": "de-04",
+      "country": "de",
+      "name": "Schnellfahrstrecke Nürnberg–Ingolstadt",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-netz-2006"
+      ],
+      "exact_names": [
+        "Neubaustrecke Nürnberg–Ingolstadt"
+      ],
+      "design_binding": null,
+      "supported_scope": "Nürnberg–Ingolstadt NBS only, excluding Ingolstadt–München ABS",
+      "conclusion": "官方报告分别列明新建和升级区段及投用日期。整项目部分300设计不能普灌。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "5934 Schnellfahrstrecke Nürnberg - Ingolstadt",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Euerwangtunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Irlahülltunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Göggelsbuchtunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Offenbautunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Schellenbergtunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Schwarzachtalbrücke",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Auditunnel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "design_300_only_parts_of_combined_project"
+      ],
+      "design_evidence": [
+        {
+          "kmh": 300,
+          "source": "dech-db-netz-2006",
+          "scope": "unspecified parts of combined Nürnberg–Ingolstadt–München project",
+          "basis": "partial_project_design_not_bindable",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Neubaustrecke Nürnberg–Ingolstadt": {
+          "way_count": 139,
+          "railway_counts": {
+            "rail": 139
+          }
+        },
+        "5934 Schnellfahrstrecke Nürnberg - Ingolstadt": {
+          "way_count": 0,
+          "railway_counts": {}
+        },
+        "Euerwangtunnel": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Irlahülltunnel": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        },
+        "Göggelsbuchtunnel": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Offenbautunnel": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Schellenbergtunnel": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Schwarzachtalbrücke": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Auditunnel": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "de-05",
+      "country": "de",
+      "name": "Neubaustrecke Ebensfeld–Erfurt",
+      "identity": "unresolved",
+      "infrastructure_identity": "mixed_new_and_upgraded",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Ebensfeld–Erfurt 107 km, upgraded Nürnberg–Ebensfeld 83 km",
+      "conclusion": "当前唯一源名Nürnberg-Erfurt横跨新建和升级区段，不能整名激活。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "Schnellfahrstrecke Nürnberg-Erfurt",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "source_name_spans_nbs_and_abs"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 300,
+          "source": "dech-bmv-vde-2022",
+          "scope": "Ebensfeld–Erfurt only",
+          "basis": "project_vmax_not_explicit_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Nürnberg-Erfurt": {
+          "way_count": 467,
+          "railway_counts": {
+            "rail": 467
+          }
+        }
+      }
+    },
+    {
+      "id": "de-06",
+      "country": "de",
+      "name": "Neubaustrecke Erfurt–Leipzig/Halle",
+      "identity": "new_build",
+      "infrastructure_identity": "mixed_new_and_upgraded",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [
+        "Schnellfahrstrecke Erfurt-Leipzig",
+        "Schnellfahrstrecke Leipzig-Erfurt",
+        "Schnellfahrstrecke Erfurt–Leipzig"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Erfurt–Leipzig 114 km, distinct upgraded Schkopau–Halle 8 km",
+      "conclusion": "只激活完整Erfurt–Leipzig/Leipzig–Erfurt源名，Halle组合名及泛称保持未解。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "Schnellfahrstrecke Erfurt-Halle/Leipzig",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Schnellfahrstrecke Erfurt–Halle",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Schnellfahrstrecke",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "halle_combined_names_require_range_adapter",
+        "design_speed_not_explicit"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 300,
+          "source": "dech-bmv-vde-2022",
+          "scope": "new Erfurt–Leipzig only",
+          "basis": "project_vmax_not_explicit_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Erfurt-Halle/Leipzig": {
+          "way_count": 197,
+          "railway_counts": {
+            "rail": 197
+          }
+        },
+        "Schnellfahrstrecke Erfurt-Leipzig": {
+          "way_count": 219,
+          "railway_counts": {
+            "rail": 219
+          }
+        },
+        "Schnellfahrstrecke Erfurt–Halle": {
+          "way_count": 9,
+          "railway_counts": {
+            "rail": 9
+          }
+        },
+        "Schnellfahrstrecke Leipzig-Erfurt": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        },
+        "Schnellfahrstrecke Erfurt–Leipzig": {
+          "way_count": 219,
+          "railway_counts": {
+            "rail": 219
+          }
+        },
+        "Schnellfahrstrecke": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "de-07",
+      "country": "de",
+      "name": "Schnellfahrstrecke Wendlingen–Ulm",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-wendlingen-ulm",
+        "dech-db-wendlingen-opening-2022"
+      ],
+      "exact_names": [
+        "Schnellfahrstrecke Wendlingen – Ulm"
+      ],
+      "design_binding": null,
+      "supported_scope": "60 km new Wendlingen–Ulm route",
+      "conclusion": "官方明确新建高速路线。250运行和试验速度均不作为设计值。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-db-wendlingen-ulm",
+          "scope": "new Wendlingen–Ulm route",
+          "basis": "operating_only",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Schnellfahrstrecke Wendlingen – Ulm": {
+          "way_count": 136,
+          "railway_counts": {
+            "construction": 18,
+            "rail": 118
+          }
+        }
+      }
+    },
+    {
+      "id": "de-08",
+      "country": "de",
+      "name": "ABS/NBS Karlsruhe–Basel: Neubaugleise Rastatt Süd–Offenburg",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-karlsruhe-basel-2017"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New parallel Rastatt-Süd–Offenburg 44 km only",
+      "conclusion": "新建身份及250设计已证，4280和Schnellbahntrasse不能唯一绑定该44km段。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "4280",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "Schnellbahntrasse",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "4280 Abzw Bashaide - Weil am Rhein",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "generic_or_broader_source_names_require_range_adapter"
+      ],
+      "design_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-db-karlsruhe-basel-2017",
+          "scope": "new Rastatt-Süd–Offenburg 44 km",
+          "basis": "explicit_section_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "4280": {
+          "way_count": 7,
+          "railway_counts": {
+            "rail": 7
+          }
+        },
+        "Schnellbahntrasse": {
+          "way_count": 3,
+          "railway_counts": {
+            "rail": 3
+          }
+        },
+        "4280 Abzw Bashaide - Weil am Rhein": {
+          "way_count": 0,
+          "railway_counts": {}
+        }
+      }
+    },
+    {
+      "id": "de-09",
+      "country": "de",
+      "name": "ABS/NBS Karlsruhe–Basel: Neubauabschnitt Schliengen–Eimeldingen (Katzenbergtunnel)",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-karlsruhe-basel-2017"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Schliengen–Eimeldingen alignment via Katzenbergtunnel",
+      "conclusion": "新建替代线2012投用已证。当前源名是整个4280，旧300设计未核实。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "4280 Abzw Bashaide - Weil am Rhein",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        },
+        {
+          "name": "4280 Abzw Bashaide - Weil am Rhein [fr_lines.json]",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "broader_4280_name_requires_range_adapter",
+        "legacy_design_300_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-db-karlsruhe-basel-2017",
+          "scope": "Katzenbergtunnel slab track capability",
+          "basis": "maximum_capability_not_explicit_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "4280 Abzw Bashaide - Weil am Rhein": {
+          "way_count": 0,
+          "railway_counts": {}
+        },
+        "4280 Abzw Bashaide - Weil am Rhein [fr_lines.json]": {
+          "way_count": 0,
+          "railway_counts": {}
+        }
+      }
+    },
+    {
+      "id": "de-10",
+      "country": "de",
+      "name": "ABS/NBS Karlsruhe–Basel: Bashaide–Rastatt Süd (Tunnel Rastatt)",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-infrago-rastatt-2026"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "4280 Abzw Bashaide–Üst Rastatt-Süd, including tunnel Rastatt",
+      "conclusion": "截至核查日仍在建，2026-12-13是预定商业投用日期。整Karlsruhe-Basel项目名不能绑定。",
+      "operational_status": "under_construction",
+      "blocked_aliases": [
+        {
+          "name": "Ausbau- und Neubaustrecke Karlsruhe-Basel",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "commercial_opening_future_2026_12_13",
+        "whole_project_name_requires_range_adapter"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Ausbau- und Neubaustrecke Karlsruhe-Basel": {
+          "way_count": 23,
+          "railway_counts": {
+            "rail": 23
+          }
+        }
+      }
+    },
+    {
+      "id": "de-11",
+      "country": "de",
+      "name": "ABS/NBS Karlsruhe–Basel: Haltingen–Basel (PfA 9.2/9.3)",
+      "identity": "unresolved",
+      "infrastructure_identity": "mixed_new_and_existing",
+      "verified_sources": [
+        "dech-db-haltingen-2024",
+        "dech-db-karlsruhe-basel-2017"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Haltingen–Swiss border, distinct freight/long-distance/regional tracks and old Rheintalbahn connection",
+      "conclusion": "已证新增多类轨道及旧线衔接，缺统一高速身份、当前各段投用状态和原始范围绑定。",
+      "operational_status": "mixed_or_unresolved",
+      "blocked_aliases": [],
+      "blockers": [
+        "mixed_track_functions",
+        "no_native_name_binding",
+        "current_section_status_and_design_unresolved"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {}
+    },
+    {
+      "id": "de-12",
+      "country": "de",
+      "name": "Stuttgart 21 / NBS Stuttgart–Wendlingen (Filderbereich)",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-db-stuttgart-wendlingen-2025"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Fildertunnel–Albvorlandtunnel section of Stuttgart–Wendlingen",
+      "conclusion": "新建区段已证。2025稿所述2026开通是当时计划，不能证明现已投用。",
+      "operational_status": "under_construction_or_status_unresolved",
+      "blocked_aliases": [],
+      "blockers": [
+        "no_native_name_binding",
+        "current_commissioning_not_confirmed",
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {}
+    },
+    {
+      "id": "ch-27",
+      "country": "ch",
+      "name": "Neubaustrecke Mattstetten–Rothrist",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-bav-mattstetten-2004",
+        "dech-bav-nbs-abs-2006",
+        "dech-bav-bahn2000-evaluation-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Mattstetten–Rothrist, separate ABS Derendingen–Inkwil and new Wanzwil connectors",
+      "conclusion": "NBS已证但源名Löchligut–Rothrist比精确新建段更广，需范围适配。初期开通160为运行限制。",
+      "operational_status": "in_service",
+      "blocked_aliases": [
+        {
+          "name": "Bahnstrecke 400: Löchligut – Rothrist",
+          "reason": "structure_or_broader_or_unverified_original_name"
+        }
+      ],
+      "blockers": [
+        "broader_line_400_name_requires_range_adapter",
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 160,
+          "source": "dech-bav-mattstetten-2004",
+          "scope": "initial December 2004 operation",
+          "basis": "historical_operating_restriction",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Bahnstrecke 400: Löchligut – Rothrist": {
+          "way_count": 0,
+          "railway_counts": {}
+        }
+      }
+    },
+    {
+      "id": "ch-28",
+      "country": "ch",
+      "name": "Lötschberg-Basistunnel",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-bls-loetschberg-2017",
+        "dech-bav-loetschberg-250-2008",
+        "dech-bls-basis-technical-2018",
+        "dech-parliament-neat-completion-2019",
+        "dech-bls-loetschberg-status-2026",
+        "dech-sbb-etcs-egb"
+      ],
+      "exact_names": [
+        "Lötschberg-Basistunnel Ostrohr",
+        "Lötschberg-Basistunnel Westrohr"
+      ],
+      "design_binding": null,
+      "supported_scope": "Unique complete native infrastructure relations 17170013/330 Ostrohr and 17164523/331 Westrohr, their new base-route connections only; old mountain relation 17207496 excluded.",
+      "conclusion": "已核全部原始名称和基础设施关系：东管20运营way，西管7运营way加2施工way。完整关系名唯一绑定新建基线及工程连接段，BAV技术验收证明250能力。施工守卫保留，不激活旧山线或Frutigen–Adelrein关系。",
+      "operational_status": "operating_and_construction_tubes_mixed",
+      "blocked_aliases": [
+        {
+          "name": "Frutigen - Adelrein",
+          "reason": "broader_approach_not_reviewed_for_activation"
+        }
+      ],
+      "blockers": [
+        "individual_way_design_not_bound"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 250,
+          "source": "dech-bav-loetschberg-250-2008",
+          "scope": "equipped operating base tunnel under authorisation",
+          "basis": "system_authorised_capability_not_way_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Lötschberg-Basistunnel Ostrohr": {
+          "way_count": 0,
+          "railway_counts": {}
+        },
+        "Lötschberg-Basistunnel Westrohr": {
+          "way_count": 0,
+          "railway_counts": {}
+        },
+        "Frutigen - Adelrein": {
+          "way_count": 0,
+          "railway_counts": {}
+        }
+      },
+      "native_binding_evidence": [
+        {
+          "relation_id": 17170013,
+          "original_tags": {
+            "type": "route",
+            "route": "railway",
+            "name": "Lötschberg-Basistunnel Ostrohr",
+            "ref": "330",
+            "operator": "BLS"
+          },
+          "original_members": [
+            [
+              "w",
+              318715158
+            ],
+            [
+              "w",
+              961599958
+            ],
+            [
+              "w",
+              1353658550
+            ],
+            [
+              "w",
+              147742739
+            ],
+            [
+              "w",
+              147742747
+            ],
+            [
+              "w",
+              15593850
+            ],
+            [
+              "w",
+              318715166
+            ],
+            [
+              "w",
+              861126222
+            ],
+            [
+              "w",
+              642895151
+            ],
+            [
+              "w",
+              318715167
+            ],
+            [
+              "w",
+              147734363
+            ],
+            [
+              "w",
+              174153835
+            ],
+            [
+              "w",
+              147734371
+            ],
+            [
+              "w",
+              848948612
+            ],
+            [
+              "w",
+              1354445992
+            ],
+            [
+              "w",
+              147734368
+            ],
+            [
+              "w",
+              147734373
+            ],
+            [
+              "w",
+              775439196
+            ],
+            [
+              "w",
+              775439195
+            ],
+            [
+              "w",
+              147734367
+            ]
+          ],
+          "member_set_sha256": "9e59c6276b1a1ed06f18d16ebcb9f091644a2133ce3d3d5a48b36a46d7d55551",
+          "members": [
+            {
+              "way_id": 318715158,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.083382,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 961599958,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.076665,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 1353658550,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.06667,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 147742739,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.57237,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 147742747,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.105596,
+              "original_evidence_tags": {
+                "usage": "main",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 15593850,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 13.667541,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 318715166,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 13.190904,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 861126222,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.253758,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 642895151,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 6.446915,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 318715167,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.990535,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 147734363,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.068103,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 174153835,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.237286,
+              "original_evidence_tags": {
+                "usage": "main",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 147734371,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.122382,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 848948612,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 2.590174,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 1354445992,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.332469,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "120"
+              }
+            },
+            {
+              "way_id": 147734368,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.445248,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "120"
+              }
+            },
+            {
+              "way_id": 147734373,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.006187,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "120"
+              }
+            },
+            {
+              "way_id": 775439196,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.023145,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "120"
+              }
+            },
+            {
+              "way_id": 775439195,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.007133,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "120"
+              }
+            },
+            {
+              "way_id": 147734367,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Ostrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.542387,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "120"
+              }
+            }
+          ],
+          "old_mountain_overlap": [],
+          "track_km": 39.828849
+        },
+        {
+          "relation_id": 17164523,
+          "original_tags": {
+            "type": "route",
+            "route": "railway",
+            "name": "Lötschberg-Basistunnel Westrohr",
+            "ref": "331",
+            "operator": "BLS"
+          },
+          "original_members": [
+            [
+              "w",
+              530652066
+            ],
+            [
+              "w",
+              1353658551
+            ],
+            [
+              "w",
+              1353658552
+            ],
+            [
+              "w",
+              147742743
+            ],
+            [
+              "w",
+              147742749
+            ],
+            [
+              "w",
+              147742744
+            ],
+            [
+              "w",
+              1246957035
+            ],
+            [
+              "w",
+              642895149
+            ],
+            [
+              "w",
+              1476494116
+            ]
+          ],
+          "member_set_sha256": "1ee75d00b9d04430b0e50856a1647cc7d1d33c325a30df4a7e3420a2f9d02eeb",
+          "members": [
+            {
+              "way_id": 530652066,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.016482,
+              "original_evidence_tags": {
+                "usage": "main",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 1353658551,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.08545,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 1353658552,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.124251,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "maxspeed": "160"
+              }
+            },
+            {
+              "way_id": 147742743,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.624136,
+              "original_evidence_tags": {
+                "usage": "main",
+                "bridge": "yes",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 147742749,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.064162,
+              "original_evidence_tags": {
+                "usage": "main",
+                "highspeed": "yes",
+                "maxspeed": "200"
+              }
+            },
+            {
+              "way_id": 147742744,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 12.737143,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 1246957035,
+              "original_name": null,
+              "railway": "rail",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.19888,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "180"
+              }
+            },
+            {
+              "way_id": 642895149,
+              "original_name": null,
+              "railway": "construction",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 13.660497,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes",
+                "maxspeed": "250"
+              }
+            },
+            {
+              "way_id": 1476494116,
+              "original_name": null,
+              "railway": "construction",
+              "unique_named_railway_relation": "Lötschberg-Basistunnel Westrohr",
+              "other_named_infrastructure_relations": [],
+              "track_km": 0.262757,
+              "original_evidence_tags": {
+                "usage": "main",
+                "tunnel": "yes",
+                "highspeed": "yes"
+              }
+            }
+          ],
+          "old_mountain_overlap": [],
+          "track_km": 27.773756
+        }
+      ],
+      "standard_evidence": [
+        {
+          "source": "dech-bav-loetschberg-250-2008",
+          "basis": "regulator_complete_system_250_authorisation",
+          "apply_to_native_ways": false
+        },
+        {
+          "source": "dech-bls-basis-technical-2018",
+          "basis": "operator_base_route_technical_conditions",
+          "apply_to_native_ways": false
+        }
+      ]
+    },
+    {
+      "id": "ch-29",
+      "country": "ch",
+      "name": "Gotthard-Basistunnel",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-sbb-gotthard-2026",
+        "dech-sbb-etcs-egb"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New 57 km NEAT Gotthard base tunnel, excluding old mountain line",
+      "conclusion": "新建基础设施已证，当前原始无名way未建立唯一基础设施范围绑定。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "unnamed_native_ways_unbound",
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "standard_evidence": [
+        {
+          "source": "dech-sbb-etcs-egb",
+          "basis": "extended_control_area_greater_than_160_up_to_250",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_binding_search": {
+        "all_original_way_name_fields_scanned": 55342,
+        "all_route_railway_relations_scanned": 200,
+        "matching_original_names": [],
+        "result": "No named original way or named infrastructure relation found. Unnamed relations/ref numbers cannot become invented exact names."
+      }
+    },
+    {
+      "id": "ch-30",
+      "country": "ch",
+      "name": "Ceneri-Basistunnel",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "dech-sbb-ceneri-2020",
+        "dech-sbb-etcs-egb"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Ceneri base tunnel, excluding old mountain alignment",
+      "conclusion": "新基线隧道及2020投用已证，当前无原始名称或唯一基础设施关系绑定。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "unnamed_native_ways_unbound",
+        "design_speed_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "standard_evidence": [
+        {
+          "source": "dech-sbb-etcs-egb",
+          "basis": "extended_control_area_greater_than_160_up_to_250",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_binding_search": {
+        "all_original_way_name_fields_scanned": 55342,
+        "all_route_railway_relations_scanned": 200,
+        "matching_original_names": [],
+        "result": "No named original way or named infrastructure relation found. Unnamed relations/ref numbers cannot become invented exact names."
+      }
+    },
+    {
+      "id": "ch-31",
+      "country": "ch",
+      "name": "Zimmerberg-Basistunnel (Etappe I)",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_infrastructure_hsr_unresolved",
+      "verified_sources": [
+        "dech-bav-bahn2000-evaluation-2006",
+        "dech-sbb-zimmerberg-archive"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Zimmerberg I: Zürich Langstrasse–Nidelbad–Thalwil, line 720 new tracks",
+      "conclusion": "政府工程清单及SBB2003开通档案支持新基础设施，不能据此判定高速设计标准，禁止混入Zimmerberg II。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "no_native_name_binding",
+        "hsr_standard_and_design_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {}
+    },
+    {
+      "id": "ch-32",
+      "country": "ch",
+      "name": "Adlertunnel",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_infrastructure_hsr_unresolved",
+      "verified_sources": [
+        "dech-sbb-adler-liestal",
+        "dech-bav-bahn2000-evaluation-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Muttenz Ost–Liestal Nord route via Adlertunnel, distinct Basel–Frenkendorf–Olten trunk",
+      "conclusion": "新建线路身份明确，高速设计标准仍缺官方证据，当前无唯一原始范围绑定。",
+      "operational_status": "in_service",
+      "blocked_aliases": [],
+      "blockers": [
+        "no_native_name_binding",
+        "hsr_standard_and_design_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {}
+    },
+    {
+      "id": "ch-33",
+      "country": "ch",
+      "name": "Brüttener Tunnel",
+      "identity": "unresolved",
+      "infrastructure_identity": "new_infrastructure_hsr_unresolved",
+      "verified_sources": [
+        "dech-sbb-bruetten-schedule"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Planned new Brüttenertunnel, distinct surrounding station upgrades",
+      "conclusion": "新双线隧道项目已证，2026开始准备，2037是计划投用。无运营高速或设计标准结论。",
+      "operational_status": "under_construction",
+      "blocked_aliases": [],
+      "blockers": [
+        "future_opening_2037",
+        "no_native_name_binding",
+        "hsr_standard_and_design_not_revalidated"
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {}
+    }
+  ],
+  "additional_upgraded_existing_scopes": [
+    {
+      "id": "dech-existing-lehrte-oebisfelde",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Lehrte–Oebisfelde existing trunk upgrade",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "Separate new Fallersleben–Oebisfelde third track must not be included in blanket old-line exclusion."
+    },
+    {
+      "id": "dech-existing-staaken-berlin",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Staaken–Berlin Ostbahnhof existing route upgrade",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "Do not extend Oebisfelde–Staaken new-build identity to the Berlin urban approach."
+    },
+    {
+      "id": "dech-existing-nuernberg-ebensfeld",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Existing Nürnberg–Ebensfeld 83 km upgraded by adding tracks",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "Corridor addition includes new tracks. Keep individual new tracks distinct from the existing-line upgrade."
+    },
+    {
+      "id": "dech-existing-ingolstadt-muenchen",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Ingolstadt–München ABS",
+      "verified_sources": [
+        "dech-db-netz-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "Separate from new Nürnberg–Ingolstadt NBS."
+    },
+    {
+      "id": "dech-existing-schkopau-halle",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Schkopau–Halle 8 km ABS",
+      "verified_sources": [
+        "dech-bmv-vde-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "Do not apply new Erfurt–Leipzig project identity through entire Halle-combined name."
+    },
+    {
+      "id": "dech-existing-leipzig-halle-berlin",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Leipzig/Halle–Berlin upgraded existing route",
+      "verified_sources": [
+        "dech-bmv-vde-2022",
+        "dech-db-netz-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "200 km/h operation is not evidence of new-build identity."
+    },
+    {
+      "id": "dech-existing-rheintalbahn-breisgau",
+      "country": "de",
+      "identity": "upgraded_existing",
+      "supported_scope": "Existing Rheintalbahn passenger tracks in Offenburg–Freiburg/Breisgau sections described on brochure p.14",
+      "verified_sources": [
+        "dech-db-karlsruhe-basel-2017"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "2017 plan upgrades existing tracks toward 250 while new motorway-parallel freight alignment is 160. No blanket 4280 or Rheintalbahn name activation."
+    },
+    {
+      "id": "dech-existing-derendingen-inkwil",
+      "country": "ch",
+      "identity": "upgraded_existing",
+      "supported_scope": "Inkwil–Derendingen ABS, chainage 70.599–77.254 in government 2006 inventory",
+      "verified_sources": [
+        "dech-bav-nbs-abs-2006",
+        "dech-bav-bahn2000-evaluation-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "activation": "requires_native_range_adapter",
+      "note": "New Wanzwil–Wolfacher–Inkwil connectors are separately listed. Do not blanket-exclude Solothurn–Wanzwil or assign all line 400 as new."
+    }
+  ]
+}

@@ -143,6 +143,48 @@ GENERIC = {
                      r"|terminal|goods|marshalling|exchange|reception|loop|c&w)\b|[&()/'’.,\-\s]", re.I),
 }
 
+# The continental-European additions use the same conservative multilingual vocabulary.
+# It favours missing a label over calling a bus depot, car park or generic industrial site a
+# railway depot. Country-specific exceptions can be split out when the audits find one.
+EU_MORE = re.compile(
+    r"Depot|D[ée]p[oô]t|Deposito|Depósito|Betriebswerk|Bahnbetriebswerk|Abstellanlage|"
+    r"Rangierbahnhof|Technicentre|Triage|Atelier|Remisage|Taller(?:es)?\b|Tallers\b|"
+    r"Cocheras|Cotxer[ae]s?\b|Kotxerak\b|Tailerrak\b|Dipòsit|"
+    r"Clasificación|Werkstatt|Lokschuppen|Maintenance|Stabling|Yard|Terminal", re.I)
+EU_STRICT = re.compile(
+    r"Rail(?:way)? Depot|Train Depot|Tram\s*Depot|Metro\s*Depot|Dépôt ferroviaire|"
+    r"D[ée]p[oô]t (?:du |de la |de )?(?:métro|metro|m\d+\b|tram)|"
+    r"Bahnbetriebswerk|Betriebsbahnhof|Abstellanlage|Technicentre|"
+    r"Estación de clasificación|Depósito de trenes|Cocheras (?:de |del )?(?:metro|tranvía)|"
+    r"Cotxer[ae]s? (?:de |del )?(?:metro|tram)|(?:Metro|TRAM).{0,30}\bTailerrak", re.I)
+EU_NEVER = re.compile(
+    r"\bBus\b|Autobus|Autocar|Parking|Parkhaus|Aparcamiento|Car Park|Garage routier|"
+    r"\bEMT\b|"
+    r"Feuerwehr|Pompiers|Bomberos|Police|Polizei|School|Schule|École|Escuela|"
+    r"Shopping|Commercial|Retail|Industrial Estate", re.I)
+EU_RAILWAY = re.compile(
+    r"Freight|Fret|Güter|Mercancías|Rangier|Triage|Clasificación|Locomotive|Lok|"
+    r"Carriage|Wagon|Traincare|Technicentre|Betriebswerk|Bahnbetriebswerk|Yard", re.I)
+EU_GENERIC = re.compile(
+    r"\b(?:rail|railway|ferroviaire|ferroviario|bahn|zug|train|tram|metro|maintenance|"
+    r"depot|dépôt|deposito|depósito|dipòsit|tramvia|cotxeres|cocheras|yard|works|werk|atelier|taller|sidings|"
+    r"abstellanlage|betriebswerk|technicentre|triage|clasificación|terminal)\b|"
+    r"[&()/'’.,\-\s0-9]", re.I)
+for _country, _latitude in {"de": 51.0, "fr": 46.5, "ch": 47.0, "es": 40.0,
+                            "nl": 52.2, "be": 50.8, "it": 43.0}.items():
+    LAT0[_country] = _latitude
+    MORE[_country] = EU_MORE
+    STRICT[_country] = EU_STRICT
+    NEVER[_country] = EU_NEVER
+    RAILWAY_ONLY[_country] = EU_RAILWAY
+    GENERIC[_country] = EU_GENERIC
+MORE["de"] = re.compile(EU_MORE.pattern + r"|Betriebshof|Betriebsbahnhof", re.I)
+NEVER["de"] = re.compile(EU_NEVER.pattern + r"|Busbetriebshof|Buswerkstatt|Busgarage|Omnibus", re.I)
+GENERIC["de"] = re.compile(EU_GENERIC.pattern + r"|\bBetriebshof\b|\bBetriebsbahnhof\b", re.I)
+MORE["fr"] = re.compile(EU_MORE.pattern + r"|Centre technique|Centre d['’]Exploitation|Unité de transport métro", re.I)
+MORE["be"] = re.compile(EU_MORE.pattern + r"|Stelplaats|Werkplaats", re.I)
+MORE["nl"] = re.compile(EU_MORE.pattern + r"|Remise|Werkplaats|Opstelterrein", re.I)
+
 
 def not_a_depot(g, name):
     """Is this the name of something that is never a depot?"""
@@ -186,7 +228,8 @@ def worth_keeping(g, name, form, key="name"):
     name, and ground known by its operator only where that names a depot."""
     if not name:
         return False
-    if form.startswith("landuse=") and form != "landuse=railway" or key == "operator":
+    if (form.startswith("landuse=") and form != "landuse=railway"
+            or form.startswith("building=") or key == "operator"):
         return bool(MORE[g].search(name)) and not not_a_depot(g, name)
     return True
 
@@ -425,6 +468,9 @@ def labels(g, lines, named, table=(), running=()):
             continue
         if spot is None and form.startswith("landuse=") and form != "landuse=railway":
             continue                     # ground that is not railway ground holds no yard track: not the depot's
+        if spot is None and form.startswith("building=") and not (
+                STRICT[g].search(name) and metro and metro.to_track(*o["at"]) is not None):
+            continue                     # only an explicit metro depot can stand by its mapped running line
         at = spot or tuple(o["at"])      # a shed or a plainly named area stands as a point on its tracks
         by_line = metro and not plain and MORE[g].search(name) and not RAILWAY_ONLY[g].search(name)
         if yards.to_track(*at) is not None or (by_line and metro.to_track(*at) is not None):
@@ -626,10 +672,12 @@ def check(g, data, extract):
     there, gone = FIXED.get(g, ((), ()))
     missing, back = [n for n in there if n not in names], [n for n in gone if n in names]
     by = a["origin"]
+    ceiling = UNNAMED_CEILING.get(g, 0)
+    limit_note = f"ceiling {ceiling}" if g in UNNAMED_CEILING else "new country: each unnamed depot needs a look"
     out = [(False, f"depot labels: {a['labels']} at {a['depots']} depots (fans of yard track); from named ground with its tracks {by.get('ground', 0)}, "
                    f"from a yard or depot object {by.get('object', 0)}, from the names table {by.get('table', 0)}"),
-           (len(a["unnamed_metro"]) > UNNAMED_CEILING[g], f"metro, light-rail and tram depots with no name within {REACH} m: {len(a['unnamed_metro'])} "
-            f"(ceiling {UNNAMED_CEILING[g]}) " + str([f"{km} km at {lat},{lon}" for km, lon, lat in a["unnamed_metro"][:6]])
+           (len(a["unnamed_metro"]) > ceiling, f"metro, light-rail and tram depots with no name within {REACH} m: {len(a['unnamed_metro'])} "
+            f"({limit_note}) " + str([f"{km} km at {lat},{lon}" for km, lon, lat in a["unnamed_metro"][:6]])
             + f"; {len(a['held'])} more named by a ground whose label stands on its other fans"),
            (False, f"to look at, not a fault: railway depots of {REVIEW_KM:.0f} km of track or more, no station within {STATION_YARD_M} m, with no name: {len(a['unnamed_rail'])} "
                    + str([f"{km} km at {lat},{lon}" for km, lon, lat in a["unnamed_rail"][:10]])),

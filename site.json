@@ -2,5 +2,12 @@
   "uk": true,
   "jp": true,
   "kr": true,
+  "de": true,
+  "fr": true,
+  "ch": true,
+  "es": true,
+  "nl": true,
+  "be": true,
+  "it": true,
   "tiles": true
 }

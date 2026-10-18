@@ -41,13 +41,40 @@ KINDS = {"station": "station", "depot": "depot", "rail line": "line", "metro lin
 # the Hong Kong or Taiwan way, with no mainland form on the page.
 UK_TIER_B = False
 UK_FLAGGED_WORDING = False
-ENGLISH = {"cn", "jp", "kr"}          # the countries whose features get ne from name:en
-# Metro cities that data/cities.json does not have among its places: (own name, English name),
-# each read off the place node of the city in the country's extract.
+ENGLISH = {"cn", "jp", "kr", "de", "fr", "ch", "es", "nl", "be", "it"}  # countries whose features get ne from name:en
+# Metro cities that data/cities.json does not have among its places: (own name, English name).
+# Japanese entries are read from the OSM place nodes cited below. European city names are
+# checked against data/europe_city_names.json; the regional Ruhr group is not a place label.
 CITY_NAMES = {
     "jp": {"北九州": ("北九州", "Kitakyushu"),      # node 5410283420 place=city name=北九州市 name:en=Kitakyushu
            "函馆": ("函館", "Hakodate"),           # node 3229063363 place=city name=函館市 name:en=Hakodate
            "丰桥": ("豊橋", "Toyohashi")},         # node 569005441 place=city name=豊橋市 name:en=Toyohashi
+    "de": {"柏林": ("Berlin", "Berlin"), "汉堡": ("Hamburg", "Hamburg"), "慕尼黑": ("München", "Munich"),
+           "法兰克福": ("Frankfurt am Main", "Frankfurt"), "科隆": ("Köln", "Cologne"),
+           "杜塞尔多夫": ("Düsseldorf", "Düsseldorf"), "鲁尔": ("Ruhrgebiet", "Ruhr"),
+           "斯图加特": ("Stuttgart", "Stuttgart"), "纽伦堡": ("Nürnberg", "Nuremberg"),
+           "汉诺威": ("Hannover", "Hanover"), "莱比锡": ("Leipzig", "Leipzig"),
+           "德累斯顿": ("Dresden", "Dresden"), "不来梅": ("Bremen", "Bremen")},
+    "fr": {"巴黎": ("Paris", "Paris"), "里昂": ("Lyon", "Lyon"), "马赛": ("Marseille", "Marseille"),
+           "里尔": ("Lille", "Lille"), "图卢兹": ("Toulouse", "Toulouse"), "波尔多": ("Bordeaux", "Bordeaux"),
+           "斯特拉斯堡": ("Strasbourg", "Strasbourg"), "南特": ("Nantes", "Nantes"),
+           "尼斯": ("Nice", "Nice"), "蒙彼利埃": ("Montpellier", "Montpellier"),
+           "雷恩": ("Rennes", "Rennes"), "鲁昂": ("Rouen", "Rouen"), "格勒诺布尔": ("Grenoble", "Grenoble")},
+    "ch": {"苏黎世": ("Zürich", "Zurich"), "日内瓦": ("Genève", "Geneva"), "巴塞尔": ("Basel", "Basel"),
+           "伯尔尼": ("Bern", "Bern"), "洛桑": ("Lausanne", "Lausanne"), "卢塞恩": ("Luzern", "Lucerne"),
+           "圣加仑": ("St. Gallen", "St. Gallen"), "卢加诺": ("Lugano", "Lugano")},
+    "es": {"马德里": ("Madrid", "Madrid"), "巴塞罗那": ("Barcelona", "Barcelona"),
+           "瓦伦西亚": ("València", "Valencia"), "塞维利亚": ("Sevilla", "Seville"),
+           "毕尔巴鄂": ("Bilbao", "Bilbao"), "马拉加": ("Málaga", "Málaga"),
+           "阿利坎特": ("Alicante", "Alicante"), "萨拉戈萨": ("Zaragoza", "Zaragoza"),
+           "格拉纳达": ("Granada", "Granada"), "帕尔马": ("Palma", "Palma"),
+           "圣克鲁斯-德特内里费": ("Santa Cruz de Tenerife", "Santa Cruz de Tenerife"),
+           "拉斯帕尔马斯": ("Las Palmas de Gran Canaria", "Las Palmas")},
+    # Metro-city names only; these do not add a city-label rank. Local OSM
+    # place nodes 67253693/67273302/68566163, Chinese/English labels Q1903/
+    # Q13619/Q1083; evidence output/it_extra_urban_cities.json.
+    "it": {"卡塔尼亚": ("Catania", "Catania"),
+           "科森扎": ("Cosenza", "Cosenza"), "萨莱诺": ("Salerno", "Salerno")},
 }
 
 
@@ -186,7 +213,16 @@ def city_names(g, data=DATA):
         key = c["n"] if g == "cn" else c.get("m")
         if key and key not in out:
             out[key] = (c["n"], c.get("ne"))
+    label_names = dict(out)
     out.update(CITY_NAMES.get(g, {}))
+    european = data / "europe_city_names.json"
+    if european.exists():
+        for city in json.loads(european.read_text())["countries"].get(g, {}).values():
+            # A generated OSM city label may carry a sourced English alias
+            # absent from Wikidata's canonical label (Palma de Mallorca).
+            # Its m identity already binds the two lists; use the table only
+            # before the city's first generation or when there is no label.
+            out[city["nz"]] = label_names.get(city["nz"], (city["n"], city.get("ne")))
     # the table's rows for the metro cities: the city's own name beside the Chinese one (London 伦敦)
     table = data / f"{g}_names.tsv"
     if g in TABLES and table.exists():

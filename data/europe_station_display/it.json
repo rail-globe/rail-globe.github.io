@@ -1,0 +1,70 @@
+{
+  "extract_sha256": "c7675100bc04f749b06dce357d2e5247a3d523c086d24e504fdd1e89ce477912",
+  "native_nodes": [
+    {
+      "type": "n",
+      "id": 1770715974,
+      "tags": {
+        "bench": "yes",
+        "bin": "yes",
+        "lit": "yes",
+        "name": "Cappuccina Villa ErizzoM9",
+        "network": "Rete Urbana di Mestre",
+        "operator": "Azienda del Consorzio Trasporti Veneziano",
+        "operator:short": "Actv",
+        "operator:wikidata": "Q548005",
+        "public_transport": "platform",
+        "railway": "tram_stop",
+        "ref": "6032",
+        "shelter": "yes",
+        "tactile_paving": "yes",
+        "tram": "yes",
+        "wheelchair": "yes"
+      },
+      "version": 15,
+      "timestamp": "2026-01-30 16:31:51+00:00",
+      "at": [
+        12.2406401,
+        45.4903102
+      ]
+    },
+    {
+      "type": "n",
+      "id": 2032998808,
+      "tags": {
+        "bench": "yes",
+        "bin": "yes",
+        "highway": "bus_stop",
+        "lit": "yes",
+        "name": "Cappuccina Villa ErizzoM9",
+        "network": "Rete Urbana di Mestre",
+        "operator": "Azienda del Consorzio Trasporti Veneziano",
+        "operator:short": "Actv",
+        "operator:wikidata": "Q548005",
+        "public_transport": "platform",
+        "railway": "tram_stop",
+        "ref": "6031",
+        "shelter": "yes",
+        "tactile_paving": "yes",
+        "tram": "yes",
+        "wheelchair": "yes"
+      },
+      "version": 12,
+      "timestamp": "2026-01-30 16:31:51+00:00",
+      "at": [
+        12.2405392,
+        45.4903572
+      ]
+    }
+  ],
+  "official_stop_codes": [
+    "6031",
+    "6032"
+  ],
+  "source": "actv-t2",
+  "normal_entry_position": "Call after annotate_capsules inside existing process_europe.station_display / Country.urban_station_display. Keep raw stop names for capsule source matching.",
+  "old_display_name": "Cappuccina Villa ErizzoM9",
+  "new_display_name": "Cappuccina Villa Erizzo M9",
+  "official_source": "https://actv.avmspa.it/sites/default/files/attachments/pdf/UM/U-T_2.pdf",
+  "official_pdf_sha256": "122de1aaedb264b0490b6594efc423932072b6625d9bb1e728f3ef7af22a9eef"
+}

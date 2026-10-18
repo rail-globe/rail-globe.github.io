@@ -96,6 +96,22 @@ COUNTRIES = {
                       "Birmingham": ("Birmingham", "伯明翰"), "Glasgow": ("Glasgow", "格拉斯哥"), "Cardiff": ("Cardiff", "加的夫"),
                       "Belfast": ("Belfast", "贝尔法斯特")}},
 }
+EUROPE_CITY_NAMES = json.loads((ROOT / "data/europe_city_names.json").read_text())
+EUROPE_FILES = {"de": "germany", "fr": "france", "ch": "switzerland", "es": "spain",
+                "nl": "netherlands", "be": "belgium", "it": "italy"}
+for code in EUROPE_CITY_NAMES["label_cities"]:
+    filename = EUROPE_FILES[code]
+    locals_ = EUROPE_CITY_NAMES["label_cities"][code]
+    sourced = EUROPE_CITY_NAMES["countries"][code]
+    COUNTRIES[code] = {
+        "file": f"{filename}-latest.osm.pbf", "metro": f"{code}_metro_cities.json",
+        "count": len(locals_), "first": EUROPE_CITY_NAMES["rank1"][code],
+        "places": {local: (sourced[local]["n"], sourced[local]["nz"],
+                           *([sourced[local]["ne"]] if sourced[local]["ne"] != sourced[local]["n"] else []))
+                   for local in locals_},
+    }
+COUNTRIES["es"]["files"] = ["spain-latest.osm.pbf", "canarias-latest.osm.pbf",
+                           "ceuta-latest.osm.pbf", "melilla-latest.osm.pbf"]
 # China: the seat of a unit where the extract names none (its admin_centre is missing, or is the
 # unit's own label) or an old one: 红河's seat moved from 个旧 to 蒙自 in 2003.
 SEATS = {"红河哈尼族彝族自治州": "蒙自", "凉山彝族自治州": "西昌", "大兴安岭地区": "加格达奇", "大理白族自治州": "大理",
@@ -116,20 +132,22 @@ def number(text):
 def read(g):
     """One pass over a country's extract: its place nodes {id: (tags, lon, lat)} of the kinds KEPT
     and its administrative relations of level 4 and 5 [(id, tags, members)]."""
-    path = RAW / COUNTRIES[g]["file"]
-    if not path.exists():
-        sys.exit(f"missing input, nothing written: {path}")
-    t0 = time.time()
+    paths = [RAW / name for name in COUNTRIES[g].get("files", [COUNTRIES[g]["file"]])]
+    missing = [str(file_path) for file_path in paths if not file_path.exists()]
+    if missing:
+        sys.exit("missing input, nothing written: " + ", ".join(missing))
     nodes, relations = {}, []
     wanted = osmium.filter.KeyFilter("place", "admin_level")
-    for o in osmium.FileProcessor(str(path), osmium.osm.NODE | osmium.osm.RELATION).with_filter(wanted):
-        t = o.tags
-        if o.is_node():
-            if t.get("place") in KEPT and t.get("name"):
-                nodes[o.id] = ({k: t.get(k) for k in TAGS if t.get(k)}, o.location.lon, o.location.lat)
-        elif t.get("boundary") == "administrative" and t.get("admin_level") in ("4", "5"):
-            relations.append((o.id, {k: t.get(k) for k in TAGS if t.get(k)}, [(m.type, m.ref, m.role) for m in o.members if m.type != "w"]))
-    print(f"{path.name}: {len(nodes)} place nodes, {len(relations)} regions, {time.time() - t0:.0f}s", flush=True)
+    for file_path in paths:
+        t0 = time.time()
+        for o in osmium.FileProcessor(str(file_path), osmium.osm.NODE | osmium.osm.RELATION).with_filter(wanted):
+            t = o.tags
+            if o.is_node():
+                if t.get("place") in KEPT and t.get("name"):
+                    nodes[o.id] = ({k: t.get(k) for k in TAGS if t.get(k)}, o.location.lon, o.location.lat)
+            elif t.get("boundary") == "administrative" and t.get("admin_level") in ("4", "5"):
+                relations.append((o.id, {k: t.get(k) for k in TAGS if t.get(k)}, [(m.type, m.ref, m.role) for m in o.members if m.type != "w"]))
+        print(f"{file_path.name}: {len(nodes)} place nodes, {len(relations)} regions, {time.time() - t0:.0f}s", flush=True)
     return nodes, relations
 
 
@@ -226,12 +244,19 @@ def abroad(g, nodes):
     """The labelled places of a country other than China: rank 1 in the order of its list, then
     the others in the order of the table."""
     conf = COUNTRIES[g]
+    evidence_file = ROOT / "data" / "europe_city_names.json"
+    evidence = json.loads(evidence_file.read_text())["countries"].get(g, {}) if evidence_file.exists() else {}
+    if g in EUROPE_FILES and not set(conf["places"]) <= set(evidence):
+        sys.exit(f"nothing written: {g} needs a complete sourced city-name table")
     if len(conf["places"]) != conf["count"] or not set(conf["first"]) <= set(conf["places"]):
         sys.exit(f"nothing written: the table of {g} has {len(conf['places'])} places and is to have {conf['count']}, its rank 1 among them")
     metro = [c["n"] for c in json.loads((ROOT / "data" / conf["metro"]).read_text())] if (ROOT / "data" / conf["metro"]).exists() else []
     out, differs = [], []
     for local in conf["first"] + [name for name in conf["places"] if name not in conf["first"]]:
         own, zh_name, *en = conf["places"][local]          # (an English name where the extract's is another place's)
+        source = evidence.get(local, {})
+        if source and (source["n"] != own or source["nz"] != zh_name):
+            sys.exit(f"nothing written: {g} {local} differs from its sourced name")
         # the place node of that name: a city or a town, and of two the one with more people
         found = [n for n in nodes.values() if n[0]["name"] == local and n[0].get("place") in ("city", "town")]
         if not found or not own or not zh_name:
@@ -240,7 +265,7 @@ def abroad(g, nodes):
         theirs = re.split(r"\s*[/;；]\s*", tags.get("name:zh-Hans") or tags.get("name:zh") or "")[0]
         if theirs and not theirs.startswith(zh_name):
             differs.append(f"{local}: {theirs}, here {zh_name}")
-        out.append(entry(own, x, y, 1 if local in conf["first"] else 2, g=g, side=conf.get("side", {}).get(local, ""), nz=zh_name, ne=next(iter(en), english(tags)) if next(iter(en), english(tags)) != own else "", m=zh_name if zh_name in metro else ""))
+        out.append(entry(own, x, y, 1 if local in conf["first"] else 2, g=g, side=conf.get("side", {}).get(local, ""), nz=zh_name, ne=next(iter(en), english(tags)) if next(iter(en), english(tags)) != own else "", m=zh_name if zh_name in metro else "", name_ref=source.get("ref")))
     if len(out) != conf["count"] or len({e["n"] for e in out}) != len(out):
         sys.exit(f"nothing written: {g} is to have {conf['count']} labels, each of a name of its own")
     known = {e.get("m") for e in out}

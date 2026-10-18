@@ -1,14 +1,16 @@
-// Deterministic contract regression for the country-switch frontend (reads the built index.html).
-// Not a runtime DOM test (no jsdom/maplibre here); it asserts the wiring each required behavior
-// depends on, so a future edit that drops a hook fails the build check. The search is the
-// exception: it is two plain functions that need no page, so they are run, on a small made-up
-// network and on the data files.
+// Build current sources in memory, without modifying index.html, dist or glyphs.
+// Wiring checks are complemented by executable geometry, navigation, legend and search
+// contracts. These are not a browser/MapLibre rendering test.
 import { readFileSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(join(root, 'index.html'), 'utf8');
+const build = site => execFileSync(process.env.PYTHON || '/usr/bin/python3',
+  ['-B', join(root, 'scripts/build.py'), '--stdout', ...(site ? ['--site-json', JSON.stringify(site)] : [])],
+  { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
+const html = build();
 
 const checks = [
   // 1. the route tab is there only in the country the route network covers (2026-10-09; before, an empty state abroad)
@@ -20,7 +22,7 @@ const checks = [
   // 3. a page that was on the route tab opens on the lines in a country abroad
   ['auto-switch route->lines abroad', /FOREIGN\[g\] && onRoute\) showTab\('lines'\)/],
   // 4. the Chinese rows give way to the rows of the country abroad
-  ['Chinese-only rows hidden abroad', /for \(const id of \[\.\.\.HOME\.metro\.map\(\(\[kind\]\) => metroId\('cn', kind\)\), 'border'\]\) rowEls\[id\]\.hidden = !cn;/],
+  ['Chinese-only rows hidden abroad', /for \(const id of HOME\.metro\.map\(\(\[kind\]\) => metroId\('cn', kind\)\)\) rowEls\[id\]\.hidden = !cn;/],
   ['Chinese band rows hidden abroad', /for \(const id of \[\.\.\.FAST, 'unknown'\]\) if \(rowEls\[id\]\) rowEls\[id\]\.hidden = !cn;/],
   // 5. a station abroad does not offer 设为出发/到达
   ['station abroad blocked', /f\.properties\.g == null \|\| FOREIGN\[f\.properties\.g\]/],
@@ -67,7 +69,7 @@ const checks = [
   ['a shared row shows the switch of the country of the card', /box\.checked = rowOn\(id, country\);/],
   // the names of the cities are such a row too (2026-10-09, "城市也加个图层，可以取消显示"): one row, on at
   // the start, shown for every country, each country with its own switch behind it
-  ['city names: a row of the layers tab, shared by the countries', page => /\{ id: 'cities', label: 'row\.cities', sub: '', spd: '', src: 'cities' \},/.test(page) && /const SHARED_ROWS = \['build', 'stations', 'cities'\];/.test(page)
+  ['city names: a row of the layers tab, shared by the countries', page => /\{ id: 'cities', label: 'row\.cities', sub: '', spd: '', src: 'cities' \},/.test(page) && /const SHARED_ROWS = \['build', 'stations', 'cities', 'border'\];/.test(page)
     && !/hideAbroad = \{[^}]*cities/.test(page) && !/for \(const id of \[[^\]]*'cities'[^\]]*\]\) if \(rowEls\[id\]\) rowEls\[id\]\.hidden/.test(page)],
   ['city names: one switch per country, over the dots and the names of every rank', page =>
     /const withCities = everyCountry\.filter\(g => rowOn\('cities', g\)\);\s+for \(const id of \['city-dots', 'city-labels'\]\) set\(id, withCities\.includes\('cn'\)\);\s+set\('place-labels', withCities\.length > 0\);\s+if \(withCities\.length\) map\.setFilter\('place-labels', \['all', \['in', \['get', 'g'\], \['literal', withCities\]\], PLACE_RANKS\]\);/.test(page)
@@ -108,7 +110,7 @@ const checks = [
   ['setCountry updates the colour section', /colourSection\(g\);/],
   // 6e. one search field for everything (2026-10-09): first thing in the card, its results take
   // the place of the tabs, the lines tab has no search of its own, the route fields use the same function
-  ['the search field is the first thing in the card', /<div class="grabber" aria-hidden="true"><\/div>\s+<div class="search-row">\s+<img class="mark" src="mark\.png"[^>]*>\s+<label class="searchbar">[\s\S]{0,400}<input id="query" type="search"/],
+  ['the search field is the first thing in the card', /<div class="grabber" aria-hidden="true"><\/div>\s+<div class="search-row">\s+<button type="button" class="fold" id="fold"[^>]*><img class="mark" src="mark\.png"[^>]*><\/button>\s+<label class="searchbar">[\s\S]{0,400}<input id="query" type="search"/],
   ['three search inputs: the field and the two route fields', page => (page.match(/type="search"/g) || []).length === 3],
   ['the lines tab has no search of its own', /^(?![\s\S]*id="search")(?![\s\S]*search\.value)(?![\s\S]*搜索线路，如)(?![\s\S]*输入关键词缩小范围)/],
   ['the results take the place of the tab, or of the list of countries', /t\.hidden = t\.id !== 'tab-' \+ \(finding \? 'find' : world \? 'world' : shownTab\)/],
@@ -163,6 +165,13 @@ const checks = [
   ['a layer of a country abroad reads that country', /\.\.\.from\('conv', g\),[\s\S]*\.\.\.from\('metro', g\),/],
   ['a layer that mixed countries is one per country in tile mode', /copies\[spec\.id\] = tiles \? everyCountry\.filter\(g => has\(name, g\)\)\.map\(g => \[g === 'cn' \? spec\.id : spec\.id \+ '@' \+ g, g\]\) : \[\[spec\.id, null\]\];/],
   ['the mixed layers', page => ['yards', 'build', 'hl-conv-core', 'stations', 'station-labels', 'depots', 'depot-labels', 'metro-stations', 'metro-station-labels'].every(id => new RegExp(`addMixed\\('[a-z-]+', \\{ id: '${id}',`).test(page))],
+  ['every country\'s light rail and trams use the compact overview, metros do not; stations retain their thresholds', page =>
+    !/NEW_EUROPE/.test(page)
+    && (page.match(/const compact = kind === 'urban', stops = urbanStops\(thin, compact\);/g) || []).length === 3
+    && /addMixed\('stations', \{ id: 'stations', type: 'circle', minzoom: 5,\s+filter: \['any', \['has', 'h'\], \['>=', \['zoom'\], 8\.5\]\],/.test(page)
+    && /addMixed\('station[s]?', \{ id: 'station-labels', type: 'symbol', minzoom: 8,\s+filter: \['any', \['has', 'h'\], \['>=', \['zoom'\], 10\.5\]\],/.test(page)
+    && /addMixed\('metro-stations', \{ id: 'metro-stations', type: 'circle', minzoom: 11,/.test(page)
+    && /addMixed\('metro-stations', \{ id: 'metro-station-labels', type: 'symbol', minzoom: 12\.2,/.test(page)],
   ['each country\'s layer answers to its own switch', /const here = own \? countries\.filter\(g => g === own\) : countries;/],
   ['tiles on: speed bands and lines being built from the note beside the tiles', /FAST\.filter\(band => tiles\[g\]\.bands\.some\(\(\[jk, c\]\) => c === band && jkOf\(g, kind\)\.includes\(jk\)\)\)[\s\S]{0,400}/],
   ['tiles on: the station lists come as columns, once the map is up or a field needs them', /Promise\.all\(everyCountry\.map\(g => getJSON\(`data\/tiles\/\$\{g\}\.stations\.json`\)\)\)[\s\S]{0,900}map\.once\('idle', stationLists\);\s+for \(const field of \[queryEl, odInput\.from, odInput\.to\]\) field\.addEventListener\('focus', stationLists\);/],
@@ -190,7 +199,8 @@ const checks = [
   }],
   ['the words of the credits, with the link to the licence', page =>
     page.includes(`const IMAGERY = 'Imagery © Esri, Maxar, Earthstar Geographics';`)
-    && page.includes("const creditLine = () => `© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> ${t('credits.osm')} | ` + IMAGERY;")
+    && page.includes("const creditLine = () => `© <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> ${t('credits.osm')} | ` + IMAGERY + viewCredit()")
+    && page.includes('https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units')
     && /creditControl = new maplibregl\.AttributionControl\(\{ compact: true, customAttribution: creditLine\(\) \}\);\s+map\.addControl\(creditControl, 'bottom-right'\);/.test(page)
     && /\n\s+attribution: IMAGERY,/.test(page)],
   ['the credits are made again in the language of the moment, folded if they were', /const folded = credits && !credits\.classList\.contains\('maplibregl-compact-show'\);\s+if \(creditControl\) map\.removeControl\(creditControl\);[\s\S]{0,400}if \(folded\) fold\(credits\);\s+\};\s+addCredits\(\);\s+relabelled\.push\(addCredits\);/],
@@ -294,7 +304,9 @@ const checks = [
     && /for \(const c of metroCities\) if \(!c\.g\) for \(const l of c\.lines\) if \(HOME\.byK\[l\.k\]\) l\.jk = HOME\.byK\[l\.k\];/.test(page)
     && /for \(const id of \['suburb-casing', 'suburb'\]\) set\(id, visible\[metroId\('cn', HOME\.beside\)\]\);/.test(page) && !/'row\.suburb'/.test(page)],
   ['light rail is drawn thinner and over the metro, every casing under every line', page =>
-    /thin: \{ urban: 0\.6 \}/.test(page) && /homeMetro\.forEach\(casing\);\s+homeMetro\.forEach\(line\);/.test(page) && /'line-width': ownCasing\(thin\), 'line-offset': beside\(\)/.test(page) && /'line-width': sideWidth\(METRO_STOPS\.map\(\(\[z, v\]\) => \[z, thin \* v\]\), METRO_STOPS\.map\(\(\[z, v\]\) => \[z, thin \* v\]\)\)/.test(page)],      // (2026-10-13: a thin line stays thin in a bundle: 西郊线 at 巴沟)
+    /thin: \{ urban: 0\.6 \}/.test(page) && /homeMetro\.forEach\(casing\);\s+homeMetro\.forEach\(line\);/.test(page)
+    && /'line-width': ownCasing\(compact \? 1 : thin, compact \? TRAM_STOPS : METRO_STOPS\), 'line-offset': beside\(\{ compact \}\)/.test(page)
+    && /'line-width': sideWidth\(stops, stops\)/.test(page)],      // (2026-10-13: a thin line stays thin in a bundle: 西郊线 at 巴沟)
   ['a button for each class on China\'s lines tab', page => /const kindsOf = g => \(FOREIGN\[g\] \? \[\.\.\.FOREIGN\[g\]\.rail, \.\.\.FOREIGN\[g\]\.metro\]\.map\(\(\[id, label\]\) => \[id, label\]\) : \[\['fast', t\('kind\.fast'\)\], \['conv', t\('kind\.conv'\)\], \.\.\.HOME\.metro\]\);/.test(page)
     && /<button type="button" data-kind="subway" aria-pressed="false">地铁<\/button>\s+<button type="button" data-kind="urban" aria-pressed="false">轻轨·电车<\/button>\s+<button type="button" data-kind="suburban" aria-pressed="false">市郊·城际<\/button>/.test(page)],
   ['a class lists its own lines, by city, in every country', page => /const mCities = citiesHere\(\)\.map\(c => \(\{ \.\.\.c, lines: c\.lines\.filter\(l => l\.jk === mjk\) \}\)\)\.filter\(c => c\.lines\.length\);/.test(page)
@@ -303,8 +315,8 @@ const checks = [
     /\.\.\.HOME\.metro\.map\(\(\[kind\]\) => \(\{ id: metroId\('cn', kind\), spd: '', src: 'metro', metro: kind \}\)\),/.test(page)
     && /const \[label, sub\] = c\.metro \? HOME\.row\[c\.metro\] : \[t\(c\.label\), c\.sub && t\(c\.sub\)\]/.test(page)
     && /for \(const \[kind\] of HOME\.metro\) for \(const id of \[metroId\('cn', kind\), metroId\('cn', kind\) \+ '-casing'\]\) set\(id, visible\[metroId\('cn', kind\)\]\);/.test(page)],
-  ['China\'s metro stations go with their lines: a tram stop with the light rail', /const theirLines = \['any', \['!', NOT_ABROAD\], \['case', \['has', 't'\], tramsOn, metroOn\]\];\s+among\('metro-stations', withMetroStations, theirLines\);\s+among\('metro-station-labels', withMetroStations, theirLines\);/],
-  ['selecting and dimming take every class', /for \(const \[id, z0, thin\] of \[\.\.\.metroLayers\.map\(m => \[m\[0\], 4\.5, m\[3\]\]\), \['suburb', 6, 1\]\]\) \{/],
+  ['China\'s metro stations go with their lines: a tram stop with the light rail', /const theirLines = \['any', \['!', NOT_ABROAD\], \['case', \['has', 't'\], tramsOn, metroOn\]\];\s+const stopShown = \['any', \['!', \['has', 't'\]\], \['>=', \['zoom'\], TRAM_STOPS_FROM\]\];\s+among\('metro-stations', withMetroStations, capsulesReady \? \['all',theirLines,stopShown,\['!', \['has','cp'\]\]\] : \['all',theirLines,stopShown\]\);\s+refreshCapsules\(\);\s+among\('metro-station-labels', withMetroStations, \['all', theirLines, stopShown\]\);/],
+  ['selecting and dimming take every class', /for \(const \[id, g, kind, thin\] of \[\.\.\.metroLayers, \['suburb', 'cn', 'suburban', 1\]\]\) \{/],
   ['a tap takes the thin class first', /const PICK = \[\.\.\.FAST, 'shared', \.\.\.\[\.\.\.homeMetroIds\]\.reverse\(\), 'suburb',/],
   ['China\'s figures say every class, a line each, in both languages alike', page => /: HOME\.metro\.map\(\(\[kind, label\]\) => classFacts\(g, kind, label\)\)\);/.test(page)
     && /const metroFacts = g => metroGroups\(g\)\.join\('\\n'\);/.test(page) && /\.grp \{ display: block; \}/.test(page) && /metro\.replaceChildren\(\.\.\.groupsOf\(g\)\);/.test(page)
@@ -323,6 +335,49 @@ const checks = [
   ['chips wrap', /\.segmented\.chips \{ display: flex; flex-wrap: wrap;/],
   // 8. grid children may not stretch the tab beyond the card (overflow clipping the toggles)
   ['tab items can shrink', /\.tab > \* \{ min-width: 0; \}/],
+  // 9. the card tucked into its mark (2026-10-18, "面板收起到标志"): the mark, which did nothing when
+  // clicked, puts the card away into a round button where the mark was, and the button brings it back
+  ['the mark is a button that tucks the card away, the round button one that brings it back, both worded by the table', page =>
+    /<button type="button" class="fold" id="fold" aria-controls="panel" aria-expanded="true" aria-label="收起面板" title="收起面板" data-ta="aria-label:panel\.hide title:panel\.hide"><img class="mark" src="mark\.png"[^>]*alt=""><\/button>/.test(page)
+    && /<\/aside>\n<!--[^\n]*-->\n<button type="button" id="dock" aria-controls="panel" aria-expanded="true" aria-label="展开面板" title="展开面板" data-ta="aria-label:panel\.show title:panel\.show" inert><img src="mark\.png"[^>]*alt=""><\/button>/.test(page)
+    && /foldBtn\.addEventListener\('click', \(\) => tuck\(true\)\);\s+dock\.addEventListener\('click', \(\) => tuck\(false\)\);/.test(page)],
+  ['tucked, the card takes no click and no key; the keyboard goes to the round button, and back to the mark', page =>
+    /#panel\.tucked \{[^}]*opacity: 0; pointer-events: none;/.test(page)
+    && /for \(const b of \[foldBtn, dock\]\) b\.setAttribute\('aria-expanded', String\(!on\)\);\s+const \[shown, gone\] = on \? \[dock, panel\] : \[panel, dock\];\s+shown\.inert = false;\s+\(on \? dock : foldBtn\)\.focus\(\{ preventScroll: true \}\);\s+gone\.inert = true;/.test(page)],
+  ['the tuck moves scale, translate and opacity only, in 360 ms, and opening is the tuck played backwards', page => {
+    const styles = page.slice(page.indexOf('/* ---------- the card tucked into its mark'), page.indexOf('/* gentler equivalents rather than nothing */'));
+    const ease = styles.match(/--tuck-ease: cubic-bezier\(([\d.]+), ([\d.]+), ([\d.]+), ([\d.]+)\)/);
+    const list = re => { const m = styles.match(re); return m && m[1].split(', ').map(item => item.split(' ')); };
+    // [property, start, end] of each move, in ms from the click; the press feedback (transform) is not part of it
+    const spans = moves => moves.filter(([p]) => p !== 'transform').map(([p, ...rest]) => {
+      const [d, delay = 0] = rest.filter(x => /^\d+m?s$/.test(x)).map(x => parseFloat(x) * (x.endsWith('ms') ? 1 : 1000));
+      return [p, delay, delay + d];
+    });
+    const pairs = [[/\n#panel\.tucked \{[^}]*transition: ([^;]*);/, /\n#panel \{ transform-origin: var\(--tuck-o, 0 0\);\n  transition: ([^;]*);/],
+      [/\nbody\.tucked #dock \{[^}]*transition: ([^;]*);/, /\n#dock \{[^}]*transition: ([^;]*);/]].map(([away, back]) => [list(away), list(back)]);
+    if (!ease || pairs.flat().some(m => !m)) return false;
+    const [x1, y1, x2, y2] = ease.slice(1).map(Number), total = 360;
+    const mirrored = pairs.every(([away, back]) => {
+      const a = spans(away), b = Object.fromEntries(spans(back).map(([p, s, e]) => [p, [s, e]]));
+      return a.length === Object.keys(b).length && a.every(([p, s, e]) => b[p] && b[p][0] === total - e && b[p][1] === total - s && e <= total);
+    });
+    return Math.abs(x1 - (1 - x2)) < 1e-9 && Math.abs(y1 - (1 - y2)) < 1e-9 && mirrored
+      && spans(pairs[0][0]).map(([p]) => p).sort().join() === 'opacity,scale,translate'
+      && spans(pairs[0][0]).some(([p, s, e]) => p === 'scale' && s === 0 && e === total) && total >= 300 && total <= 400
+      && /const TUCK_MS = 360, DOCK = 48;/.test(page) && /\n#dock \{[^}]*width: 48px; height: 48px;/.test(styles);
+  }],
+  ['reduced motion: a fade in place, which the card and the round button keep against the page\'s 1 ms rule', /@media \(prefers-reduced-motion: reduce\) \{\s+\/\*[^*]*\*\/\s+#panel\.tucked \{ scale: none; translate: none; \}\s+#panel, #panel\.tucked \{ transition: opacity 200ms ease !important; \}\s+#dock \{ transition: opacity 200ms ease, visibility 0s 200ms !important; \}\s+body\.tucked #dock \{ transition: opacity 200ms ease, visibility 0s !important; \}/],
+  ['tucking and opening frame nothing and move no map; what is framed meanwhile has the whole window', page => {
+    const code = page.slice(page.indexOf('  const tuck = on => {'), page.indexOf('  // The part of the map that can be seen'));
+    return code.length > 0 && !/flyTo|jumpTo|easeTo|fitBounds|frame\(|show\(|resize\(\)|setPadding|sheet\.to/.test(code)
+      && /: tucked \? tuckedRoom\(\) : isPhone\(\)\n/.test(page);
+  }],
+  ['tucked only for this visit: nothing kept, the address untouched, so a fresh page and a ?shot picture have the card out', page => {
+    const code = page.slice(page.indexOf('  // ---- the card tucked into its mark'), page.indexOf('  // The part of the map that can be seen'));
+    return code.length > 0 && !/localStorage|sessionStorage|history\.|location\.|SHOT/.test(code) && /let tucked = false, tuckTimer = 0;/.test(code)
+      && !/class="[^"]*tucked/.test(page.slice(0, page.indexOf('<script>\n(() => {')));
+  }],
+  ['on a phone the scale and the credits come down to the foot of the window, on the right of the round button, the scale shown again', /@media \(max-width: 720px\) \{\s+\/\*[^*]*\*\/\s+body\.tucked \.maplibregl-ctrl-bottom-right \{ transform: translateY\(calc\(-1 \* max\(8px, env\(safe-area-inset-bottom, 0px\) - 8px\)\)\) !important; \}\s+body\.tucking \.maplibregl-ctrl-bottom-right \{ transition: transform 360ms var\(--tuck-ease\); \}\s+body\.tucked\[data-sheet\] \.maplibregl-ctrl-scale \{ display: block; \}/],
 ];
 
 let failed = 0;
@@ -356,8 +411,8 @@ if (tongue) {
   const markup = html.slice(0, html.indexOf('<script>\n(() => {'));
   const inMarkup = [...markup.matchAll(/data-th?="([\w.]+)"/g)].map(m => m[1]).concat([...markup.matchAll(/data-ta="([^"]+)"/g)].flatMap(m => m[1].split(' ').map(pair => pair.split(':')[1])));
   const single = [...outside.matchAll(/\b(?:t|say)\((?:[^()'"]*, )?'([a-z]+)'/g)].map(m => m[1]);          // t('metro'), say(el, 'loading')
-  const config = [...outside.matchAll(/\b(?:name|fastWord): '([a-z.]+)'/g)].map(m => m[1]).concat([...outside.matchAll(/\['(?:subway|urban|hs|semi|main|branch|heritage)', '([a-z.]+)'\]/g)].map(m => m[1]),
-    [...outside.matchAll(/\b(?:subway|urban): '([a-z.]+)'/g)].map(m => m[1])).filter(k => k.includes('.') || ['metro', 'cn', 'jp', 'kr', 'uk'].includes(k));
+  const config = [...outside.matchAll(/\b(?:name|fastWord): '([a-z.]+)'/g)].map(m => m[1]).concat([...outside.matchAll(/\['(?:subway|urban|hs|semi|main|branch|heritage)', '([a-z.]+)'\]/g)].map(m => m[1]).filter(k => k.includes('.') || k === 'metro'),
+    [...outside.matchAll(/\b(?:subway|urban): '([a-z.]+)'/g)].map(m => m[1]));
   // Native UI reads this explicitly exported part of the same table through state.copy.
   const appExport = /const appCopy = \(\) => Object\.fromEntries\(Object\.keys\(TEXT\)\.filter\(k => k\.startsWith\('app\.'\)\)\.map\(k => \[k, t\(k\)\]\)\);/.test(outside)
     ? keys.filter(k => k.startsWith('app.')) : [];
@@ -421,7 +476,7 @@ if (tongue) {
 
 // ---- the page's script compiles: a name declared twice in one scope stops the whole page ----
 {
-  const script = [...readFileSync(join(root, 'index.html'), 'utf8').matchAll(/<script>([\s\S]*?)<\/script>/g)].pop()[1];
+  const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].pop()[1];
   let error = null;
   try { new Function(script); } catch (err) { error = err; }
   report('the page\'s script compiles', !error);
@@ -436,6 +491,49 @@ if (tongue) {
   if (wide.length) console.error('     full-width:', wide.slice(0, 6).join(' | '));
 }
 
+// ---- the card tucked into its mark, run (2026-10-18): the mark stays where it is while the card
+// shrinks about it, and goes straight to the middle of the round button: on a wide screen the mark's
+// own place, on a phone the mark's place with the sheet drawn right down, from any height of the sheet ----
+{
+  const code = html.slice(html.indexOf('  const measureTuck = () => {'), html.indexOf('  // (measured afresh only between moves'));
+  // a card laid out as on the page: the search row at the top of the header, the 32 px mark centred in it
+  const ROW_TOP = 14, ROW_H = 36.3, FOLD_TOP = ROW_TOP + (ROW_H - 32) / 2;
+  // ahead: a sheet still moving, so far from where it is going (it gets there within the move)
+  const run = ({ phone, sheetY, ahead = 0, box, width, height, inner, safeBottom }) => {
+    const vars = {}, dock = { style: {} };
+    const panel = { offsetLeft: box[0], offsetTop: box[1], offsetWidth: width, style: { setProperty: (k, v) => { vars[k] = v; } } };
+    const head = { offsetLeft: 0, offsetTop: 0, offsetParent: panel };
+    const foldBtn = { offsetLeft: 16, offsetTop: FOLD_TOP, offsetWidth: 32, offsetHeight: 32, offsetParent: head };
+    class DOMMatrix { constructor(text) { const m = /^matrix\(([^)]*)\)$/.exec(text); this.m42 = m ? +m[1].split(',')[5] : 0; } }
+    const getComputedStyle = () => ({ transform: sheetY ? `matrix(1, 0, 0, 1, 0, ${sheetY})` : 'none' });
+    new Function('foldBtn', 'dock', 'panel', 'sheet', 'DOMMatrix', 'getComputedStyle', 'isPhone', 'innerHeight', 'safe', 'DOCK', code + '\nmeasureTuck();')(
+      foldBtn, dock, panel, { ahead: () => ahead }, DOMMatrix, getComputedStyle, () => phone, inner, () => safeBottom, 48);
+    const [ox, oy] = vars['--tuck-o'].split(' ').map(parseFloat), [dx, dy] = vars['--tuck-d'].split(' ').map(parseFloat), k = +vars['--tuck-k'];
+    // where the styles put the middle of the mark at a moment p of the move (scale, then the sheet's transform, about the origin)
+    const local = [16 + 16, FOLD_TOP + 16];
+    const markAt = p => { const s = 1 + (k - 1) * p; return [box[0] + ox + p * dx + s * (local[0] - ox), box[1] + oy + p * dy + s * (local[1] + sheetY + ahead * p - oy)]; };
+    const dockMiddle = [parseFloat(dock.style.left) + 24, parseFloat(dock.style.top) + 24];
+    // the mark with the sheet drawn right down: the sheet's lowest stop, H - (search row with equal space above and below) - the gap at the foot
+    const lowest = height - (2 * ROW_TOP + ROW_H) - Math.max(8, safeBottom - 8);
+    const placed = phone ? [box[0] + local[0], box[1] + lowest + local[1]] : [box[0] + local[0], box[1] + local[1]];
+    const near = (a, b) => Math.abs(a[0] - b[0]) < 0.11 && Math.abs(a[1] - b[1]) < 0.11;
+    return { stays: ahead !== 0 || [0.25, 0.5, 0.75].every(p => near(markAt(p), [markAt(0)[0] + p * dx, markAt(0)[1] + p * dy])),
+      from: near(markAt(0), [box[0] + local[0], box[1] + sheetY + local[1]]), lands: near(markAt(1), dockMiddle) && near(dockMiddle, placed),
+      size: Math.abs(k - 48 / width) < 1e-4 };
+  };
+  const cases = {
+    'a wide screen': { phone: false, sheetY: 0, box: [12, 12], width: 360, height: 640, inner: 750, safeBottom: 0 },
+    'a phone, the sheet at rest': { phone: true, sheetY: 515, box: [8, 64], width: 359, height: 748, inner: 812, safeBottom: 0 },
+    'a phone, the sheet at its highest': { phone: true, sheetY: 0, box: [8, 64], width: 359, height: 748, inner: 812, safeBottom: 0 },
+    'a phone with a home indicator, the sheet halfway': { phone: true, sheetY: 360, box: [8, 111], width: 359, height: 701, inner: 812, safeBottom: 34 },
+    'a phone, the sheet still going down from its highest when the mark is pressed': { phone: true, sheetY: 120, ahead: 395, box: [8, 64], width: 359, height: 748, inner: 812, safeBottom: 0 },
+  };
+  for (const [name, c] of Object.entries(cases)) {
+    const r = run(c);
+    report(`tucked into its mark, ${name}: the mark leads, the card shrinks about it, and it lands on the round button`, r.stays && r.from && r.lands && r.size);
+  }
+}
+
 // ---- the search, run: the block of the page between the two marks holds the two functions ----
 const core = html.match(/\/\*SEARCH-CORE\*\/([\s\S]*?)\/\*SEARCH-CORE-END\*\//);
 report('the search functions stand apart from the page', !!core && !/(^|[^.\w])(?:document|window|FOREIGN|map\.|col\()/.test(core[1].replace(/\/\/[^\n]*/g, '')));
@@ -444,12 +542,12 @@ if (core) {
   const named = tongue ? tongue.named : p => p.n, home = g => g || 'cn';
   const point = (n, x, y, more) => ({ type: 'Feature', properties: { n, ...more }, geometry: { type: 'Point', coordinates: [x, y] } });
   const colours = { hsr350: '#c995dd', hsr250: '#2787d5', main: '#d7ecff' };
-  const small = buildSearchIndex({ say,
+  const small = buildSearchIndex({ say, speedBands: ['hsr350', 'hsr250'],
     countries: [{ g: 'cn', name: '中国' },
       { g: 'jp', name: '日本', kindName: { jr: 'JR在来线', shinkansen: '新干线' }, metro: [['subway', '地下铁']] },
       { g: 'uk', name: '英国', kindName: { main: '干线铁路' }, metro: [['subway', '地铁']] }],
     lines: [
-      { n: '京沪高速线', g: 'cn', kind: 'fast', c: 'hsr350', design: [350] },
+      { n: '京沪高速线', g: 'cn', kind: 'fast', c: 'hsr350', design: [350], lc: '#123456' },
       { n: '京沪线', g: 'cn', kind: 'conv', c: 'main', design: [120, 160] },
       { n: 'JR山手線', g: 'jp', jk: 'jr', c: 'main', lc: '#9acd32' },
       { n: '東海道新幹線', g: 'jp', jk: 'shinkansen', c: 'hsr250', d: 260 },
@@ -483,6 +581,7 @@ if (core) {
     jing.every(g => g.results.every(r => same(Object.keys(r), ['kind', 'country', 'name', 'sub', 'colour', 'id']) && typeof r.id === 'string')));
   const line = find('京沪高速', { country: 'cn' })[0].results[0];
   report('search: a line says what it is and has its colour', line.kind === 'line' && line.sub === '动车(含高铁) · 350\u00a0km/h' && line.colour === '#c995dd');
+  report('search: the page supplies its common speed bands, overriding own colour', /speedBands: FAST,/.test(html) && line.colour !== '#123456');
   report('search: a conventional line has no speed', find('京沪线')[0].results[0].sub === '普速铁路');
   const yamanote = find('山手', { country: 'cn' })[0].results[0];
   report('search: a line abroad carries its class and its own colour', yamanote.country === 'jp' && yamanote.sub === 'JR在来线' && yamanote.colour === '#9acd32');
@@ -567,7 +666,7 @@ if (core) {
 
   // The same on the data the page loads, put together as the page does.
   const data = f => JSON.parse(readFileSync(join(root, 'data', f), 'utf8'));
-  const abroad = ['jp', 'kr', 'uk'].filter(g => new RegExp(`\\n    ${g}: \\{ name: `).test(html) && existsSync(join(root, 'data', `${g}_lines.json`)));
+  const abroad = ['jp', 'kr', 'uk', 'de', 'fr', 'ch', 'es'].filter(g => new RegExp(`\\n    ${g}: \\{ name: `).test(html) && existsSync(join(root, 'data', `${g}_lines.json`)));
   if (existsSync(join(root, 'data', 'lines.json'))) {
     const lines = data('lines.json'), cities = data('metro_cities.json');
     const stations = [...data('stations.geojson').features, ...data('metro_stations.geojson').features.map(f => ((f.properties.m = 1), f))];
@@ -576,7 +675,7 @@ if (core) {
       cities.push(...data(`${g}_metro_cities.json`).map(c => ({ ...c, g })));
       stations.push(...data(`${g}_stations.geojson`).features);
     }
-    const names_ = { jp: '日本', kr: '韩国', uk: '英国' };
+    const names_ = { jp: '日本', kr: '韩国', uk: '英国', de: '德国', fr: '法国', ch: '瑞士', es: '西班牙' };
     const places = data('cities.json');
     nameMetroCities(cities, places, home);
     const real = buildSearchIndex({ say, name: named, countries: [{ g: 'cn', name: '中国' }, ...abroad.map(g => ({ g, name: names_[g], kindName: {}, metro: [] }))], lines, cities, places, stations, colours });
@@ -600,7 +699,9 @@ if (core) {
     report('search on the data: no city is listed twice in its country', twice.length === 0);
     if (twice.length) console.error('     twice:', twice.slice(0, 12).map(c => c.n).join(' '));
     // a label that names its metro city names one the metro list has, and that city is then the one entry
-    const strays = here.filter(p => p.m && !(cities.some(c => c.n === p.m && home(c.g) === home(p.g)) && cityRows(p.m, home(p.g)).length === 1 && cityRows(p.m, home(p.g))[0].name === shownAs(p)));
+    // A substring can find another valid city too (帕尔马 also matches 拉斯帕尔马斯).
+    const strays = here.filter(p => p.m && !(cities.some(c => c.n === p.m && home(c.g) === home(p.g)) &&
+      cityRows(p.m, home(p.g)).filter(r => r.name === shownAs(p)).length === 1));
     report('search on the data: a label in two scripts and its metro city are one entry, under the label', strays.length === 0);
     if (strays.length) console.error('     not one:', strays.map(c => c.n).join(' '));
     if (abroad.includes('kr')) report('search on the data: 首尔 and 서울 both find the city, with its metro lines',
@@ -727,8 +828,8 @@ if (core) {
   }
 }
 // ---- lines side by side (2026-10-10, "都要follow 中国平行线的画法，如北京市郊"): China's suburban guest is the drawing
-// for all. Every offset of the page is made by beside(); for each country and class, a line beside another stands
-// as far from it and is as wide as the suburban guest beside its national line, at z6, 9, 12 and 15 ----
+// for all. Every offset of the page is made by beside(); legacy countries and rail use the suburban
+// guest profile, while new European light rail uses the same drawing with a compact overview profile ----
 {
   const offsets = [...html.matchAll(/'line-offset': ([^,}]+?)\s*[,}]/g)].map(m => m[1].trim());
   const made = new Set([...html.matchAll(/const (\w+) = beside\(/g)].map(m => m[1]));
@@ -741,7 +842,7 @@ if (core) {
   const code = (html.match(/\n\s*const slot = \['coalesce', \['get', 'off'\], 0\][^\n]*\n[\s\S]*?\n\s*const railOff = beside\(\{ apart: true \}\);\n/) || [''])[0];
   report('the drawing is one block of the page', !!code);
   if (code) {
-    const rule = new Function('FAST', code + '\nreturn { beside, sideWidth, guestWidth, ownCasing, plainOf, fastOf, METRO_STOPS, GUEST, LINE, railOff };')(['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow']);
+    const rule = new Function('FAST', code + '\nreturn { beside, sideWidth, guestWidth, ownCasing, plainOf, fastOf, METRO_STOPS, TRAM_STOPS, GUEST, TRAM_GUEST, LINE, railOff, urbanStops };')(['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow']);
     const run = (e, p, z) => {
       if (!Array.isArray(e)) return e;
       const [op, ...a] = e;
@@ -791,11 +892,10 @@ if (core) {
       'Japan own-colour pair (山形 / 奥羽)': pairOf(rule.railOff, rule.sideWidth(rule.plainOf), { off: -0.5, c: 'main', lc: '#ee7b28', sh: 1 }, { off: 0.5, c: 'main', lc: '#ff9a3d', sh: 1 }),
       'UK pair in a speed band (tracks of their own)': pairOf(rule.railOff, rule.sideWidth(rule.fastOf), { off: -0.5, c: 'hsr300' }, { off: 0.5, c: 'hsr300' }, apartZooms),
       'Korea main-line pair (tracks of their own)': pairOf(rule.railOff, rule.sideWidth(rule.plainOf), { off: -0.5, c: 'main' }, { off: 0.5, c: 'main' }, apartZooms),
-      'tram pair': pairOf(rule.beside(), rule.sideWidth(tramStops), { off: -0.5 }, { off: 0.5 }),
       'metro pair': pairOf(rule.beside(), rule.sideWidth(metroStops), { off: -0.5 }, { off: 0.5 }),
     };
     const off = Object.entries(cases).filter(([name, v]) => v.some(([d, w], i) => { const r = /their own/.test(name) ? refApart : ref; return Math.abs(d - r[i][0]) > 0.1 || Math.abs(w - r[i][1]) > 0.1; }));
-    report(`every country and class stands and is drawn as the suburban guest at z6, 9, 12 and 15 (${JSON.stringify(ref)} px: step, width)`, off.length === 0);
+    report(`legacy countries and rail use the suburban guest profile at z6, 9, 12 and 15 (${JSON.stringify(ref)} px: step, width)`, off.length === 0);
     if (off.length) console.error('     not as the guest:', JSON.stringify(Object.fromEntries(off)));
     // the host of a bundle, the line of the lowest slot, keeps its own look, as the national line at 沙河 does:
     // its own width; the data's lead mark where it has one, else a negative slot (right for a pair)
@@ -835,8 +935,251 @@ if (core) {
       [rule.beside(), rule.railOff].every(expr =>
         run(expr, { off: 2, goff: 1.5, sh: 1, ap: 1 }, 19) === 4
         && run(expr, { off: 2, goff: 1.5, ap: 1 }, 19) === 0));
-    // present from far out: a bundle is apart at z4 and z6 as the guest is
-    report('a bundle is apart from far out, as the guest is (z4, z6)', [4, 6].every(z => Math.abs(Math.abs(run(rule.railOff, { off: -0.5 }, z) - run(rule.railOff, { off: 0.5 }, z)) - run(rule.beside({ guest: true }), {}, z)) < 0.01));
+    report('light rail and trams stand a quarter of a line width apart in every country; China\'s thin light rail takes the tram width',
+      [10, 12, 14].every(z => Math.abs(Math.abs(run(rule.beside({ compact: true }), { off: 0.5 }, z) - run(rule.beside({ compact: true }), { off: -0.5 }, z))
+        - 1.25 * run(rule.sideWidth(rule.urbanStops(0.6, true), rule.urbanStops(0.6, true)), { off: 0.5 }, z)) < 0.15)
+      && JSON.stringify(rule.urbanStops(0.6, true)) === JSON.stringify(rule.TRAM_STOPS)
+      && JSON.stringify(rule.urbanStops(0.6, false)) === JSON.stringify(rule.METRO_STOPS.map(([z, v]) => [z, 0.6 * v])));
+    report('the light-rail overview stays compact while metros and rail keep their drawing',
+      [[4.5, 0.375], [9, 1], [11, 1.75], [13, 2.25]].every(([z, px]) => Math.abs(run(rule.beside({ guest: true, compact: true }), {}, z) - px) < 1e-9)
+      && run(rule.sideWidth(rule.TRAM_STOPS, rule.TRAM_GUEST.width), {}, 10) === 1.1
+      && run(rule.sideWidth(rule.TRAM_STOPS, rule.TRAM_GUEST.width), {}, 12) === 1.6
+      && run(rule.beside({ guest: true }), {}, 12) === 5
+      && run(rule.guestWidth, {}, 12) === 2.6
+      && run(rule.beside({ guest: true, compact: true }), {}, 16) === 5.625);
   }
 }
+// ---- sourced polygons and country integration, executed from the current build ----
+{
+  const europe = ['de', 'fr', 'ch', 'es', 'nl', 'be', 'it'];
+  const allSite = Object.fromEntries(['uk', 'jp', 'kr', ...europe].map(g => [g, true]));
+  const page = build(allSite);
+  const between = (text, start, end) => {
+    const first = text.indexOf(start), last = text.indexOf(end, first);
+    if (first < 0 || last < 0) throw new Error('missing contract block: ' + start);
+    return text.slice(first, last);
+  };
+  const worded = new Function('t', between(page, '  const worded = c => {', '  // ---- names from the data ----') + '\nreturn worded;')(say);
+  const colour = k => ({ hsr350: '#c995dd', hsr300: '#ee7b28', main: '#d7ecff' })[k] || k;
+  const configFrom = text => new Function('t', 'worded', 'col', 'location',
+    between(text, '  const WITH_UK =', "  document.getElementById('ukSec')") +
+    '\nreturn { FOREIGN, HOME, FAST, DESIGN_LABEL, CLASSES, railColour, VIEW_SHAPES, viewDepth, metroId, jkOf };')
+    (say, worded, colour, { search: '' });
+  const cfg = configFrom(page);
+  const atCode = between(page, '  const countryAt =', '  function loadYards(');
+  const atFor = config => new Function('FOREIGN', 'viewDepth', 'CHINA', atCode + '\nreturn countryAt;')
+    (config.FOREIGN, config.viewDepth, [[73.5, 17.5], [135, 53.6]]);
+  const at = atFor(cfg);
+  const cases = [
+    ['Berlin', 13.405, 52.52, 'de'], ['Paris', 2.3522, 48.8566, 'fr'],
+    ['Zurich', 8.5417, 47.3769, 'ch'], ['Basel', 7.5886, 47.5596, 'ch'],
+    ['Geneva', 6.1432, 46.2044, 'ch'], ['Madrid', -3.7038, 40.4168, 'es'],
+    ['Strasbourg', 7.7521, 48.5734, 'fr'], ['Barcelona', 2.1734, 41.3851, 'es'],
+    ['Amsterdam', 4.895, 52.370, 'nl'], ['Rotterdam', 4.478, 51.922, 'nl'],
+    ['Brussels', 4.351, 50.847, 'be'], ['Antwerp', 4.403, 51.219, 'be'],
+    ['Milan', 9.190, 45.464, 'it'], ['Rome', 12.496, 41.902, 'it'],
+    ['Kehl', 7.815, 48.573, 'de'], ['Saint-Louis', 7.5635, 47.5882, 'fr'],
+    ['Weil am Rhein', 7.6148, 47.5933, 'de'], ['Annemasse', 6.236, 46.194, 'fr'],
+    ['Ferney-Voltaire', 6.108, 46.258, 'fr'], ['Meyrin', 6.080, 46.233, 'ch'],
+    ['Konstanz', 9.175, 47.660, 'de'], ['Kreuzlingen', 9.175, 47.647, 'ch'],
+    ['Irun', -1.789, 43.338, 'es'], ['Hendaye', -1.774, 43.360, 'fr'],
+    ['Le Perthus border FR', 2.865, 42.465, 'fr'], ['Els Limits border ES', 2.866, 42.464, 'es'],
+    ['Busingen enclave', 8.692, 47.696, 'de'], ['Campione exclave', 8.970, 45.970, 'it'],
+    ['Llivia enclave', 1.981, 42.464, 'es'], ['Saillagouse', 2.040, 42.457, 'fr'],
+    ['Corsica', 8.736, 41.919, 'fr'], ['Mallorca', 2.650, 39.570, 'es'],
+    ['Tenerife', -16.250, 28.460, 'es'], ['Ceuta', -5.321, 35.888, 'es'],
+    ['Sicily', 13.361, 38.116, 'it'], ['Sardinia', 9.111, 39.216, 'it'],
+    ['Vienna', 16.374, 48.208, null], ['Lisbon', -9.140, 38.730, null],
+    ['Andorra', 1.521, 42.507, null], ['Luxembourg', 6.131, 49.612, null],
+    ['Calais (legacy UK box overlap)', 1.853, 50.951, 'fr'],
+    ['Shanghai', 121.47, 31.23, 'cn'], ['Tokyo', 139.76, 35.68, 'jp'],
+    ['Seoul', 126.98, 37.57, 'kr'], ['London', -0.1276, 51.5072, 'uk'],
+    ['Dover', 1.313, 51.126, 'uk'], ['Ocean', -12, 46, null],
+  ];
+  for (const [name, x, y, expected] of cases) report('view ownership: ' + name, at(x, y) === expected);
+  report('view ownership: wrapped longitude and invalid coordinates',
+    at(13.405 + 360, 52.52) === 'de' && at(NaN, 48) === null && at(7, Infinity) === null && at(7, 91) === null);
+  const initial = cases.map(([, x, y]) => at(x, y)), reversed = Object.entries(cfg.FOREIGN).reverse();
+  for (const g of Object.keys(cfg.FOREIGN)) delete cfg.FOREIGN[g];
+  for (const [g, c] of reversed) cfg.FOREIGN[g] = c;
+  report('view ownership: independent of configuration order',
+    JSON.stringify(initial) === JSON.stringify(cases.map(([, x, y]) => at(x, y))));
+  const data = JSON.parse(readFileSync(join(root, 'data/view_boundaries.json'), 'utf8'));
+  const decoded = new Function(page.match(/\/\*VIEW-CORE\*\/([\s\S]*?)\/\*VIEW-CORE-END\*\//)[1]
+    + '\nreturn VIEW_BOUNDARIES;')();
+  report('view boundaries: lossless packed rings preserve every source coordinate',
+    europe.every(g => JSON.stringify(decoded[g]) === JSON.stringify(data.countries[g].coordinates)));
+  report('view boundaries: revisions, hashes and licences retained', europe.every(g => {
+    const s = data.sources[g];
+    return /^[a-f0-9]{64}$/.test(s.sha256) && /^https:/.test(s.url) && s.year && s.publisher && s.license && /^https:/.test(s.license_url);
+  }));
+  report('view boundaries: deterministic offline build, no unresolved markers',
+    page === build(allSite) && !/\/\*(?:VIEW_BOUNDARIES|WITH_[A-Z]+|MAPLIBRE_CSS)\*\//.test(page));
+  report('national borders: loaded in both modes and independently switched by country',
+    page.includes("getJSON('data/europe_borders.geojson')")
+    && page.includes("rowEls.border.hidden = !borderCountries.has(country)")
+    && page.includes("rowOn('border', g)"));
+  const baseCfg = configFrom(build({ uk: true, jp: true, kr: true }));
+  report('build flags: original four only, no European fallback rectangles',
+    Object.keys(baseCfg.FOREIGN).join() === 'jp,kr,uk' && atFor(baseCfg)(7.59, 47.56) === null);
+  for (const g of europe) {
+    const only = configFrom(build({ uk: false, [g]: true }));
+    report('build flags: independently enable ' + g,
+      Object.keys(only.FOREIGN).join() === g && Object.keys(only.VIEW_SHAPES).join() === g);
+  }
+  // Geometry fixtures are not synthetic railway assets.
+  const viewCore = page.match(/\/\*VIEW-CORE\*\/([\s\S]*?)\/\*VIEW-CORE-END\*\//)[1]
+    .replace(/const VIEW_BOUNDARIES = [^\n]*;/, 'const VIEW_BOUNDARIES = shapes;');
+  const square = (x, y, wide) => [[x, y], [x + wide, y], [x + wide, y + wide], [x, y + wide], [x, y]];
+  const fixtures = { de: [[square(0, 0, 4), square(1, 1, 1)], [square(10, 10, 1)]], fr: [[square(4, 0, 4)]] };
+  const depth = new Function('shapes', viewCore + '\nreturn viewDepth;')(fixtures);
+  const shapesAt = atFor({ FOREIGN: Object.fromEntries(['de', 'fr'].map(g => [g, { inside: (x, y) => depth(g, x, y) >= 0 }])), viewDepth: depth });
+  report('view rings: multipolygons, holes, vertices, horizontal edges and shared-edge tie',
+    depth('de', .5, .5) >= 0 && depth('de', 1.5, 1.5) < 0 && depth('de', 10.5, 10.5) >= 0
+    && depth('de', 1, 1.5) >= 0 && depth('de', 0, 0) >= 0 && depth('de', 2, 0) >= 0 && shapesAt(4, 2) === 'de');
+
+  // Run the production navigation with UI/map adapters; no browser is needed.
+  const navigation = between(page, '    const lookingAt =', "    toWorld.addEventListener('click'");
+  const harness = new Function('FOREIGN', 'countryAt', `
+    const calls = [];
+    let position = [0, 0], country = 'cn', world = true, kindButtons = [], selMetro = null, selected = null;
+    let framed = null, touched = false, kind = 'fast', shownTab = 'route';
+    const map = { unproject: p => { calls.lastProbe = p; return { lng: position[0], lat: position[1] }; },
+      getCenter: () => ({ lng: position[0], lat: position[1] }), getZoom: () => 12, getBearing: () => 15, getPitch: () => 30 };
+    const padding = () => ({ left: 100, top: 50 }), roomNow = () => [800, 600];
+    const renderHead = () => {}, renderJumps = () => {}, selectMetro = () => {}, select = () => {};
+    const rebuildKindButtons = () => { kindButtons = [{}]; }, setKind = k => { kind = k; };
+    const colourSection = () => {}, routeCleanup = () => {}, relabelLegend = () => {}, applyVisibility = () => {};
+    const showTab = tab => { shownTab = tab; }, frame = what => { calls.push(what); framed = what; };
+    const location = { pathname: '/', search: '' }, history = { replaceState: () => {} };
+    ${navigation}
+    return { setCountry, setWorld, move: p => { position = p; framed = null; }, calls,
+      state: () => ({ country, world, kind, shownTab, leftAt }) };
+  `);
+  for (const [name, x, y, g] of cases.filter(c => c[3])) {
+    const h = harness(cfg.FOREIGN, at);
+    h.move([x, y]); h.setCountry(g, 'auto');
+    report('navigation: keep visible ' + name,
+      h.calls.length === 0 && h.calls.lastProbe.join() === '500,350' && h.state().country === g);
+    h.setCountry(g, 'auto');
+    report('navigation: repeated pick overviews ' + name, h.calls.at(-1)?.country === g);
+  }
+  for (const g of europe) {
+    const [, x, y] = cases.find(c => c[3] === g), h = harness(cfg.FOREIGN, at);
+    h.move([x, y]); h.setCountry(g, 'auto'); h.setWorld();
+    report('navigation: world back keeps ' + g + ' camera', h.calls.length === 0 && h.state().world);
+    h.move([121.47, 31.23]); h.setCountry('cn', false); h.setCountry(g, 'auto');
+    const back = h.calls.at(-1)?.camera;
+    report('navigation: restore ' + g + ' camera and reset rail class',
+      back?.center.join() === [x, y].join() && back.zoom === 12 && back.bearing === 15 && back.pitch === 30
+      && h.state().kind === cfg.FOREIGN[g].rail[0][0] && h.state().shownTab === 'lines');
+  }
+  for (const language of ['zh', 'en']) {
+    tongue.speak(language);
+    for (const g of europe) {
+      const c = cfg.FOREIGN[g];
+      report('country language: ' + g + ' ' + language,
+        c.name === TEXT[g][language === 'zh' ? 0 : 1] && c.hint && c.fastWord
+        && [...c.rail, ...c.metro].every(([id, label]) => label && (c.kindName[id] || c.caption[id])));
+    }
+  }
+  tongue.speak('zh');
+  report('rail list: speed band overrides own colour; conventional own colour or neutral',
+    cfg.railColour({ c: 'hsr350', lc: '#123456' }) === colour('hsr350')
+    && cfg.railColour({ c: 'main', lc: '#123456' }) === '#123456'
+    && cfg.railColour({ c: 'main' }) === colour('main')
+    && cfg.railColour({ grades: ['hsr350', 'hsr300'] }) === 'linear-gradient(90deg,#c995dd,#ee7b28)');
+
+  // Country/place search uses real named places above, no invented railway dataset.
+  const { buildSearchIndex, searchIndex } = new Function(core[1] + '\nreturn { buildSearchIndex, searchIndex };')();
+  for (const language of ['zh', 'en']) {
+    tongue.speak(language);
+    const index = buildSearchIndex({ say, name: tongue.named, colours: {}, lines: [], cities: [], stations: [],
+      countries: [{ g: 'cn', name: say('cn'), names: TEXT.cn }, ...europe.map(g => ({ g, name: say(g), names: TEXT[g] }))],
+      places: cases.slice(0, 14).map(([n, x, y, g]) => ({ n, at: [x, y], g, r: 1 })) });
+    for (const g of europe) {
+      report('search country: ' + g + ' both names in ' + language,
+        TEXT[g].every(q => searchIndex(index, q).some(group => group.country === g && group.results.some(r => r.kind === 'country'))));
+    }
+    report('search places: European cities stay in their own groups in ' + language,
+      cases.slice(0, 14).every(([n, , , g]) => searchIndex(index, n).some(group => group.country === g && group.results.some(r => r.kind === 'city'))));
+  }
+  tongue.speak('zh');
+  // Build and operate actual legend rows through a minimal DOM adapter.
+  const element = () => {
+    const input = { checked: true, addEventListener: (event, fn) => { input[event] = fn; } };
+    return { hidden: false, innerHTML: '', classList: { toggle: () => {} },
+      querySelector: selector => selector === 'input' ? input : { textContent: '' } };
+  };
+  const rowsCode = between(page, '  for (const c of CLASSES) {', '  // The trains (src/trains.mjs)');
+  const legendCode = between(page, '  function abroadRows(', '  // The route network covers China only:');
+  const legend = new Function('FOREIGN', 'HOME', 'FAST', 'CLASSES', 'DESIGN_LABEL', 'metroId', 'col', 'document', `
+    let country = 'cn';
+    const abroadVisible = {}, abroadRowList = [], rowEls = {}, visible = { build: true, stations: true, cities: true };
+    const sharedOff = {}, SHARED_ROWS = ['build', 'stations', 'cities', 'border'], window = {};
+    const borderCountries = new Set(['cn', ...Object.keys(FOREIGN)]);
+    const rowOn = (id, g) => g === 'cn' ? visible[id] : !sharedOff[g + '-' + id];
+    const layersEl = { appendChild: () => {} }, labelRows = () => {}, applyVisibility = () => {};
+    ${rowsCode}
+    ${legendCode}
+    return { abroadRows, abroadVisible, rowEls, sharedOff,
+      show: g => { country = g; relabelLegend(); } };
+  `)(cfg.FOREIGN, cfg.HOME, cfg.FAST, cfg.CLASSES, cfg.DESIGN_LABEL, cfg.metroId, colour, { createElement: element });
+  legend.rowEls.trains = element();
+  for (const g of europe) {
+    cfg.FOREIGN[g].hasBuild = g !== 'ch';
+    legend.abroadRows(g, { hs: ['hsr350'] });
+  }
+  for (const g of europe) {
+    legend.sharedOff[g + '-stations'] = true;
+    legend.show(g);
+    const ids = Object.keys(legend.abroadVisible).filter(id => !legend.rowEls[id].hidden);
+    report('legend rows: ' + g + ' only configured classes and actual speed band',
+      ids.join() === [`${g}-hs-hsr350`, `${g}-main`, `${g}-branch`, `${g}-heritage`, `${g}-subway`, `${g}-urban`].join()
+      && legend.rowEls.build.hidden === (g === 'ch') && !legend.rowEls.border.hidden
+      && !legend.rowEls.stations.querySelector('input').checked);
+    legend.rowEls[g + '-main'].querySelector('input').change({ target: { checked: false } });
+    report('legend switch: ' + g + ' remains independent',
+      !legend.abroadVisible[g + '-main'] && europe.filter(other => other !== g).every(other =>
+        legend.abroadVisible[other + '-hs-hsr350']));
+    legend.rowEls.border.querySelector('input').change({ target: { checked: false } });
+    report('national border switch: ' + g + ' remains independent',
+      legend.sharedOff[g + '-border'] && !legend.sharedOff['cn-border']);
+  }
+  legend.show('cn');
+  report('legend: Chinese rows and switches restored',
+    !legend.rowEls.hsr350.hidden && !legend.rowEls.border.hidden && legend.rowEls.stations.querySelector('input').checked
+    && Object.keys(legend.abroadVisible).every(id => legend.rowEls[id].hidden));
+
+  // Request sentinels test the loader, without inventing railway files or invoking a pipeline.
+  const loaderCode = between(page, '  const dataReady =', '  dataReady.catch(');
+  const load = (foreign, failCode) => new Function('FOREIGN', 'getJSON', 'console', `
+    const tilesReady = Promise.resolve(null), probeLive = () => Promise.resolve(true);
+    const VIEW_BOUNDARIES = Object.fromEntries(Object.keys(FOREIGN).map(g => [g, true]));
+    const unpackBorders = data => data;
+    const unavailableCountries = new Set();
+    ${loaderCode}
+    return dataReady;
+  `)(foreign, file => (Array.isArray(failCode) ? failCode : [failCode]).some(g => file.startsWith('data/' + g + '_'))
+    ? Promise.reject(new Error(file + ' 404')) : Promise.resolve({ requested: file }), { warn: () => {} });
+  for (const g of europe) {
+    const result = await load(cfg.FOREIGN, g);
+    const codes = Object.keys(cfg.FOREIGN);
+    report('optional data failure: ' + g + ' does not block original countries',
+      result[12][codes.indexOf(g)] === null && ['jp', 'kr', 'uk'].every(code => result[12][codes.indexOf(code)] !== null));
+  }
+  const missingEurope = await load(cfg.FOREIGN, europe), configured = Object.keys(cfg.FOREIGN);
+  report('optional data failure: all seven European datasets missing together',
+    europe.every(g => missingEurope[12][configured.indexOf(g)] === null)
+    && ['jp', 'kr', 'uk'].every(g => missingEurope[12][configured.indexOf(g)] !== null));
+  let originalError = null;
+  try { await load(cfg.FOREIGN, 'jp'); } catch (err) { originalError = err; }
+  report('data loader: original-country failures retain the existing error contract', !!originalError);
+  report('unavailable countries: handled after load, warning translated on relabel',
+    /if \(!abroadData\[i\]\) \{[\s\S]*?else delete FOREIGN\[g\];\s+return;/.test(page)
+    && /everyCountry = \['cn', \.\.\.Object\.keys\(FOREIGN\)\];\s+if \(tiles\)/.test(page)
+    && /renderCountries\(\);\s+renderUnavailable\(\);/.test(page)
+    && /map\(g => t\(g\)\)\.join/.test(page));
+}
+console.log(failed ? `${failed} contracts failed` : 'all frontend contracts passed');
 process.exit(failed ? 1 : 0);

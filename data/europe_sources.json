@@ -1,0 +1,415 @@
+{
+  "attribution": "© OpenStreetMap contributors",
+  "license": "ODbL 1.0",
+  "license_url": "https://www.openstreetmap.org/copyright",
+  "countries": {
+    "de": {
+      "scope": "Germany; complete OSM ways may extend slightly across national borders.",
+      "sources": [
+        {
+          "file": "germany-latest.osm.pbf",
+          "url": "https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/germany-latest.osm.pbf",
+          "bytes": 4861635741,
+          "timestamp": "2026-10-15T20:21:00Z",
+          "sha256": "bc6f450cdf91643642681261cbcba6089d347b8813cb0988a97ced5f2645b8d7",
+          "md5": "d84b1a37ac2aa85b4a77a721f2af6df2",
+          "etag": "\"6ad17701-121c6ac9d\"",
+          "last_modified": "Fri, 16 Oct 2026 00:59:45 GMT"
+        }
+      ],
+      "urban_source_notes": [
+        {
+          "g": "de",
+          "n": "EP-Express / Monorail-Bahn",
+          "exclude": true,
+          "osm_relations": [
+            5504331,
+            5504333
+          ],
+          "source": "https://www.europapark.de/de/freizeitpark/attraktionen/ep-express-station-hotels",
+          "note": "Europa-Park Rust monorails serve attractions inside the park and are excluded even when longer than two kilometres."
+        }
+      ],
+      "raw_railway_bounds": [
+        5.934854,
+        47.396826,
+        15.062372,
+        54.921535
+      ],
+      "generated": {
+        "facts": {
+          "km": 41565,
+          "fast_km": 3157,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 25264,
+          "metro": 6271,
+          "build": 48,
+          "stations": 14203,
+          "yards": 135,
+          "depots": 558
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "fr": {
+      "scope": "Metropolitan France including Corsica; no French overseas territories.",
+      "sources": [
+        {
+          "file": "france-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/france.osm.pbf",
+          "bytes": 5873490623,
+          "timestamp": "2026-10-15T01:49:31Z",
+          "sha256": "d926b725c2e42a244850aa0b7c7a2b35f890ee63e93b0029320b1c38c79e0ffe",
+          "md5": "2d418aef589aced13031dd520466c6df",
+          "etag": "\"15e165abf-65dd753c891bd\"",
+          "last_modified": "Thu, 15 Oct 2026 01:54:25 GMT"
+        }
+      ],
+      "urban_source_notes": [],
+      "raw_railway_bounds": [
+        -4.555556,
+        41.927414,
+        9.448986,
+        51.149275
+      ],
+      "generated": {
+        "facts": {
+          "km": 30505,
+          "fast_km": 3786,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsr350",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 10607,
+          "metro": 1008,
+          "build": 42,
+          "stations": 5964,
+          "yards": 74,
+          "depots": 195
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "ch": {
+      "scope": "Switzerland; complete OSM ways may extend slightly across national borders.",
+      "sources": [
+        {
+          "file": "switzerland-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/switzerland.osm.pbf",
+          "bytes": 681296673,
+          "timestamp": "2026-10-15T01:48:27Z",
+          "sha256": "9868a4d2bc71eb9dbcb7ee7a09503a4b66b529a7f416b6be58520cae6d6d6715",
+          "md5": "b2c39c4bf596b0cd6c33e642c2810040",
+          "etag": "\"289bc321-65dd745d6f743\"",
+          "last_modified": "Thu, 15 Oct 2026 01:50:31 GMT"
+        }
+      ],
+      "urban_source_notes": [],
+      "raw_railway_bounds": [
+        5.911176,
+        45.771508,
+        10.289898,
+        47.825288
+      ],
+      "generated": {
+        "facts": {
+          "km": 5596,
+          "fast_km": 180,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 4030,
+          "metro": 693,
+          "build": 5,
+          "stations": 2589,
+          "yards": 30,
+          "depots": 70
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "es": {
+      "scope": "Spain including the Balearic and Canary Islands, Ceuta and Melilla.",
+      "sources": [
+        {
+          "file": "spain-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/spain.osm.pbf",
+          "bytes": 1700584385,
+          "timestamp": "2026-10-15T01:45:27Z",
+          "sha256": "883cbd3f9e049e1afe130eb7c0d4fdd1ca53b43fbf52cf8f406c745172475ea6",
+          "md5": "7a9344592ea3a06ad1e5d4a765fa922f",
+          "etag": "\"655cdbc1-65dd73e428ff3\"",
+          "last_modified": "Thu, 15 Oct 2026 01:48:24 GMT"
+        },
+        {
+          "file": "canarias-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/africa/spain/canarias.osm.pbf",
+          "bytes": 67466861,
+          "timestamp": "2026-10-15T00:44:17Z",
+          "sha256": "6bc7b4295416885a015a4c580f635865be661666c4a270583ec35da976d5f57f",
+          "md5": "70afb970f5b16ebd8d3746bb902c63b7",
+          "etag": "\"405766d-65dd6607e66a6\"",
+          "last_modified": "Thu, 15 Oct 2026 00:46:23 GMT"
+        },
+        {
+          "file": "ceuta-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/africa/spain/ceuta.osm.pbf",
+          "bytes": 746896,
+          "timestamp": "2026-10-15T00:45:21Z",
+          "sha256": "6168e58aa4de1b0f02b879e1ec20ac73fe27e7b32f23f6ad736f7d41a6895e79",
+          "md5": "6cf883cacc24acc8e37ff103296fedeb",
+          "etag": "\"b6590-65dd6610b7beb\"",
+          "last_modified": "Thu, 15 Oct 2026 00:46:32 GMT"
+        },
+        {
+          "file": "melilla-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/africa/spain/melilla.osm.pbf",
+          "bytes": 1495260,
+          "timestamp": "2026-10-15T00:45:21Z",
+          "sha256": "99cd8a9c7bef6d87ac3507a1e0d013274717af1ccd86d8634541c40dd3903d83",
+          "md5": "314708708e17949b8a844dc6e52ea08d",
+          "etag": "\"16d0dc-65dd660d79aa4\"",
+          "last_modified": "Thu, 15 Oct 2026 00:46:29 GMT"
+        }
+      ],
+      "urban_source_notes": [
+        {
+          "g": "es",
+          "network": "MetroTenerife",
+          "n": "Tranvía Línea 1",
+          "colour": "#de010b",
+          "source": "https://metrotenerife.com/recorridos-y-horarios/",
+          "map": "https://metrotenerife.com/wp-content/uploads/2024/03/Mapa-trazado-Tranvia-de-Tenerife-2560-1024x592.png",
+          "osm_relations": [
+            20281633,
+            20281634,
+            20282579
+          ],
+          "note": "Line 1 is red in the operator's network map; RGB sampled from the downloaded map."
+        },
+        {
+          "g": "es",
+          "network": "MetroTenerife",
+          "n": "Tranvía Línea 2",
+          "colour": "#032b73",
+          "source": "https://metrotenerife.com/recorridos-y-horarios/",
+          "map": "https://metrotenerife.com/wp-content/uploads/2024/03/Mapa-trazado-Tranvia-de-Tenerife-2560-1024x592.png",
+          "osm_relations": [
+            1286854,
+            20281470
+          ],
+          "note": "Line 2 is blue in the operator's network map; both direction relations name Línea 2, but only one carries ref=T2."
+        },
+        {
+          "g": "es",
+          "n": "Monorraíl T4",
+          "exclude": true,
+          "osm_relations": [
+            11589012
+          ],
+          "source": "https://www.aena.es/en/adolfo-suarez-madrid-barajas/airport-services/transport-between-terminals.html",
+          "note": "Airside automated shuttle between terminals T4 and T4S, excluded from the public urban-line list."
+        }
+      ],
+      "raw_railway_bounds": [
+        -16.822963,
+        28.095272,
+        3.203111,
+        43.744067
+      ],
+      "generated": {
+        "facts": {
+          "km": 16409,
+          "fast_km": 4082,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 6590,
+          "metro": 327,
+          "build": 89,
+          "stations": 2780,
+          "yards": 16,
+          "depots": 111
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "nl": {
+      "scope": "European Netherlands; no Caribbean territories.",
+      "sources": [
+        {
+          "file": "netherlands-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/netherlands.osm.pbf",
+          "bytes": 1637738650,
+          "timestamp": "2026-10-15T01:48:27Z",
+          "sha256": "5dbab8666359576d21909f44d876bb766f2e1b3a49a2d2682af6f5805acc217a",
+          "md5": "7d88034359f5905ceb29f165ec7eec79",
+          "etag": "\"619de89a-65dd748febccb\"",
+          "last_modified": "Thu, 15 Oct 2026 01:51:24 GMT"
+        }
+      ],
+      "urban_source_notes": [],
+      "raw_railway_bounds": [
+        3.428139,
+        50.678436,
+        7.290623,
+        53.588393
+      ],
+      "generated": {
+        "facts": {
+          "km": 3464,
+          "fast_km": 153,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 2047,
+          "metro": 778,
+          "build": 5,
+          "stations": 1365,
+          "yards": 16,
+          "depots": 83
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "be": {
+      "scope": "Belgium; complete OSM ways may extend slightly across national borders.",
+      "sources": [
+        {
+          "file": "belgium-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/belgium.osm.pbf",
+          "bytes": 822030587,
+          "timestamp": "2026-10-15T01:47:16Z",
+          "sha256": "784102944366a01ed82990552607892f16ca053554dc279aa1a06f547913b7c8",
+          "md5": "94cad99a954682b6b9cd27d06c613c91",
+          "etag": "\"30ff30fb-65dd743c9a295\"",
+          "last_modified": "Thu, 15 Oct 2026 01:49:56 GMT"
+        }
+      ],
+      "urban_source_notes": [
+        {
+          "g": "be",
+          "n": "Métro Ligne 2",
+          "network": "Ilévia",
+          "exclude": true,
+          "osm_relations": [
+            449485,
+            7786749
+          ],
+          "source": "https://www.openstreetmap.org/relation/449485",
+          "note": "The Belgian PBF contains clipping-edge fragments of Lille Métro 2, operated by Keolis Lille Métropole. The full French network remains in France; its fragment is excluded from Belgium's urban-line list."
+        }
+      ],
+      "raw_railway_bounds": [
+        2.581407,
+        49.4833,
+        6.206503,
+        51.529973
+      ],
+      "generated": {
+        "facts": {
+          "km": 3471,
+          "fast_km": 243,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 1519,
+          "metro": 493,
+          "build": 12,
+          "stations": 1488,
+          "yards": 18,
+          "depots": 164
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    },
+    "it": {
+      "scope": "Italy including Sicily and Sardinia.",
+      "sources": [
+        {
+          "file": "italy-latest.osm.pbf",
+          "url": "https://download.openstreetmap.fr/extracts/europe/italy.osm.pbf",
+          "bytes": 2560756596,
+          "timestamp": "2026-10-15T01:11:48Z",
+          "sha256": "ca3eb498f7ba7516fe2276c1b63c7c2f2648b07116b3da732283c5b061d8cc7c",
+          "md5": "2ed99110a2e719f725b63c0ac3e3f5e6",
+          "etag": "\"98a20b74-65dd6c70e460d\"",
+          "last_modified": "Thu, 15 Oct 2026 01:15:04 GMT"
+        }
+      ],
+      "urban_source_notes": [],
+      "raw_railway_bounds": [
+        6.388657,
+        36.710495,
+        18.481229,
+        47.218466
+      ],
+      "generated": {
+        "facts": {
+          "km": 20914,
+          "fast_km": 1494,
+          "bands": [
+            "hsr160",
+            "hsr200",
+            "hsr250",
+            "hsr300",
+            "hsrslow"
+          ]
+        },
+        "feature_counts": {
+          "rail": 8427,
+          "metro": 318,
+          "build": 152,
+          "stations": 4790,
+          "yards": 51,
+          "depots": 116
+        }
+      },
+      "naming": "Local OSM infrastructure names; unnamed track remains unlabelled.",
+      "speeds": "Source design tags and operating maxspeed remain distinct; operating limits are marked e."
+    }
+  }
+}

@@ -1,0 +1,1105 @@
+{
+  "schema": 1,
+  "fragment_country": "it",
+  "base_catalog_sha256": "e8ad8ed5406327bebd8077078acfd710eef5e91b87a571d9c904df3e8400735a",
+  "policy": {
+    "construction": "Native railway=construction remains construction irrespective of project schedule.",
+    "design": "Project-level speed evidence is research only; all design_binding values remain null.",
+    "names": "Only complete original way names or unique infrastructure relation names bind, never adopted names, generic tunnels, partial or mixed project names."
+  },
+  "sources": {
+    "it-av": {
+      "url": "https://www.rfi.it/it/rete/i-nostri-progetti/Per-la-lunga-percorrenza.html",
+      "claim": "RFI describes the Turin–Milan–Rome–Naples–Salerno high-speed network as new infrastructure fully operative from 2009. This does not certify every link or a uniform speed.",
+      "excerpt": "nuove infrastrutture",
+      "scope": "identity",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "title": "Per la lunga percorrenza",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "retrieved_at": "2026-10-17T21:02:01.689966+00:00",
+      "local_sha256": "dc7f159ad892d5f73285cb246a0e8b01b852540d9144fd13f45df868803f1843"
+    },
+    "it-milan": {
+      "url": "https://www.rfi.it/it/rete/i-nostri-progetti/principali-interventi-lavori-programmati/linea-milano---bologna.html",
+      "claim": "RFI identifies the Milan–Bologna AV line separately from the conventional network and its eight interconnections. No design speed is stated.",
+      "excerpt": "La linea Alta Velocità Milano-Bologna",
+      "scope": "identity",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "title": "LINEA MILANO - BOLOGNA AV",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "retrieved_at": "2026-10-17T21:02:01.721808+00:00",
+      "local_sha256": "5af4770ff266e97bf31b86b1390dd7f41452f7f23d8d784fd2b5da0c4b8e574a"
+    },
+    "it-ev-fs-direttissima-history": {
+      "url": "https://www.fsnews.it/it/focus-on/corporate/120-anni-ferrovie-dello-stato-direttissima-roma-firenze-pendolino.html",
+      "title": "Anni ‘70, la rivoluzione della Direttissima",
+      "published": "2025-05-28",
+      "published_basis": "date printed in document",
+      "claim": "Historical construction of the dedicated Direttissima, not its present-day renewal project.",
+      "excerpt": "la prima vera linea ad alta velocità della rete italiana",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "FS News / Gruppo FS",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:02.333165+00:00",
+      "local_sha256": "1b6054458156079f754221fd11645659f882a4fe80e37384b89e01479017aacd"
+    },
+    "it-ev-fs-roma-napoli-history": {
+      "url": "https://www.fsitaliane.it/it/media/eventi/2015/12/21/Alta-velocita-Roma-Napoli-compie-10-anni.html",
+      "title": "L'Alta Velocità Roma - Napoli compie 10 anni",
+      "published": "2015-12-21",
+      "published_basis": "date printed in document",
+      "claim": "Original new Roma-Napoli AV construction and new national AV backbone. Commercial or test speeds are not design proof.",
+      "excerpt": "nuova linea AV Roma-Napoli",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Ferrovie dello Stato Italiane",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:01.056552+00:00",
+      "local_sha256": "0388d3207ad96306fc803169ba30408631c19dd33151bd469b48b3113867483c"
+    },
+    "it-ev-fs-bologna-firenze-engineering": {
+      "url": "https://www.gruppofsengineering.it/en/Our-projects/sectors/civil-works/tunnels.html",
+      "title": "Tunnels",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "Design and construction of Bologna-Florence HS/HC tunnels; new backbone context independently supported by FS history.",
+      "excerpt": "design and construction",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "FS Engineering",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:03.924904+00:00",
+      "local_sha256": "292b234d7ad1a533030ec71343acfe42f382b8baf541b0b6903d6cdad53abfb7"
+    },
+    "it-ev-fs-treviglio-brescia": {
+      "url": "https://www.fsitaliane.it/it/media/comunicati-stampa/2016/12/12/Inaugurazione-della-nuova-linea-AV-AC-Brescia-Treviglio.html",
+      "title": "Inaugurazione della nuova linea AV/AC Brescia - Treviglio",
+      "published": "2016-12-10",
+      "published_basis": "date printed in document",
+      "claim": "New Treviglio-Brescia infrastructure. Does not bind the whole Milano-Verona name to this sub-section.",
+      "excerpt": "La nuova linea Alta Velocità/Alta Capacità Treviglio - Brescia",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Ferrovie dello Stato Italiane",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:03.416660+00:00",
+      "local_sha256": "b9119edf5ca17cfd796210556001cd7e6423aaafd33fb56b738c477880221bf8"
+    },
+    "it-ev-rfi-brescia-padova": {
+      "url": "https://www.rfi.it/content/fsitaliane/it/opere-strategiche/linea-av-ac-brescia-verona-padova.html",
+      "title": "Brescia - Verona - Padova",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "New AV/AC mainline plus node works; stated maximum 250 is not labelled design speed.",
+      "excerpt": "nuova linea ferroviaria Alta Velocità/Alta Capacità Brescia - Verona - Padova",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "RFI / Gruppo FS",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:03.273904+00:00",
+      "local_sha256": "c7bc3939ca88144974c138147d8af5a52ed570f331275d59544ea5317c8c2972"
+    },
+    "it-ev-rfi-napoli-cancello": {
+      "url": "https://www.rfi.it/it/news-e-media/comunicati-stampa-e-news/2026/5/11/rfi---linea-av-ac-napoli-bari--lavori-di-potenziamento-tecnologi.html",
+      "title": "RFI - Linea AV/AC Napoli-Bari: Lavori di potenziamento tecnologico e infrastrutturale per l'attivazione della nuova tratta Napoli-Cancello",
+      "published": "2026-05-11",
+      "published_basis": "date printed in document",
+      "claim": "New variant separate from the disused historical Napoli-Cancello route; no source-based date changes to native operating state.",
+      "excerpt": "attivazione del doppio binario della nuova tratta Napoli – Cancello",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Rete Ferroviaria Italiana",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:03.468948+00:00",
+      "local_sha256": "db6530050d60b5aacd27a939960dd8d346a597261a406c380071e9be8d94f943"
+    },
+    "it-ev-rfi-salerno-reggio": {
+      "url": "https://www.rfi.it/it/news-e-media/comunicati-stampa-e-news/2026/8/10/rfi--av-ac-salerno---reggio-calabria--nuovo-traguardo-per-la-rea.html",
+      "title": "RFI, AV/AC Salerno – Reggio Calabria: nuovo traguardo per la realizzazione della nuova linea",
+      "published": "2026-08-10",
+      "published_basis": "date printed in document",
+      "claim": "New-build proof specifically includes Lot 1A Battipaglia-Romagnano; does not certify every prospective southern phase or old coastal way.",
+      "excerpt": "circa 35 chilometri di nuova linea ferroviaria",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Rete Ferroviaria Italiana",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:04.547833+00:00",
+      "local_sha256": "0fc4e2caed4d360333d8f221cfefbb88335f96ee81aeb8409fb382db64fe6ccf"
+    },
+    "it-ev-rfi-firenze-passante": {
+      "url": "https://www.rfi.it/it/news-e-media/comunicati-stampa-e-news/2026/4/22/rfi---gruppo-fs--avanzano-i-lavori-del-passante-av-di-firenze.html",
+      "title": "RFI - GRUPPO FS: Avanzano i lavori del passante AV di Firenze",
+      "published": "2026-04-22",
+      "published_basis": "date printed in document",
+      "claim": "New urban AV bypass tunnels and new station. Construction forecasts do not activate native construction ways.",
+      "excerpt": "due gallerie a binario singolo",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Rete Ferroviaria Italiana",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:05.330818+00:00",
+      "local_sha256": "8f2058df6f2396c4326a7a998296a4f36a16abfac7526b5035f7dd934f3cdf0d"
+    },
+    "it-ev-bbt-contacts": {
+      "url": "https://www.bbt-se.com/it/su-di-noi/sedi-e-contatti/",
+      "title": "SEDI E CONTATTI",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "Public binational tunnel construction company and Italy-Austria project, distinct from existing Brenner railway.",
+      "excerpt": "fase di costruzione della Galleria di Base del Brennero",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "BBT SE public project company",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:05.907254+00:00",
+      "local_sha256": "eb2a1964fe15375148b4cc848e9573248bfb44bc8819feee7bac3b3a8c2ca97a"
+    },
+    "it-ev-fs-terzo-project": {
+      "url": "https://www.gruppofsengineering.it/en/Our-projects/worldwide/italy/northern-italy/liguria-alps---terzo-valico-dei-giovi-.html",
+      "title": "Third Giovi Pass Base Tunnel and Genoa Hub",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "New Terzo Valico HS/HC line. Design 250 belongs to project research only; Genoa hub upgrade is a separately described part.",
+      "excerpt": "Maximum design speed: 250 km/h",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "FS Engineering",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:48.478169+00:00",
+      "local_sha256": "be3f0108ad54bc590b5afd9c8ba783a9680f7b7f801fb15bc006bb7814083c0e"
+    },
+    "it-ev-rfi-vesuvio": {
+      "url": "https://www.rfi.it/content/dam/rfi/news-e-media/comunicati-stampa/2023/pdf/CS-20230726-RFI-LAVORI%20DI%20POTENZIAMENTO%20INFRASTRUTTURALE%20SULLA%20LINEA%20AV%20NAPOLI%20-%20SALERNO%20MODIFICHE%20AL%20PROGRAMMA%20DI%20CIRCOLAZIONE%20TRENI.pdf",
+      "title": "Lavori sulla linea AV Napoli-Salerno",
+      "published": "2023-07-26",
+      "published_basis": "date printed in document",
+      "claim": "Officially identifies Monte del Vesuvio as AV Napoli-Salerno, but maintenance notice alone does not prove original new-build versus historic upgrade.",
+      "excerpt": "linea Alta Velocità Napoli – Salerno",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Rete Ferroviaria Italiana",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:06.087673+00:00",
+      "local_sha256": "82a49bf188e2e2a9e8285c140a98b3a786533191fec91964eeedc821a51ad5a7"
+    },
+    "it-ev-telt-project": {
+      "url": "https://www.telt.eu/it/progetto/capire-la-torino-lione",
+      "title": "Capire la Torino-Lione",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "New mixed passenger/freight cross-border line and Moncenisio base tunnel, distinct from historical Frejus route.",
+      "excerpt": "La nuova linea ferroviaria Torino-Lione",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "TELT public binational project company",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:07.691530+00:00",
+      "local_sha256": "a9167e3489633b964d87d27b5734aa0fdae57706c1dff0f981104807d550ad10"
+    },
+    "it-ev-rfi-lunga": {
+      "url": "https://www.rfi.it/it/rete/i-nostri-progetti/Per-la-lunga-percorrenza.html",
+      "title": "Per la lunga percorrenza",
+      "published": null,
+      "published_basis": "undated page; retrieval date retained",
+      "claim": "Sections describe new Terzo Valico, mixed Napoli-Bari variants/historical doubling, new Brescia-Verona and Verona-Vicenza mainline with historical rebuild, Florence bypass, Salerno-Reggio new alignment, and Brenner base tunnel passenger design 250. These are project scopes, not automatic native-way bindings.",
+      "excerpt": "velocità di progetto per i treni viaggiatori fino a 250 km/h",
+      "scope": "project_identity_and_separately_scoped_speed_research",
+      "read": "2026-10-18",
+      "publisher": "Rete Ferroviaria Italiana",
+      "publisher_kind": "official",
+      "retrieved_at": "2026-10-17T21:02:01.689966+00:00",
+      "local_sha256": "dc7f159ad892d5f73285cb246a0e8b01b852540d9144fd13f45df868803f1843"
+    }
+  },
+  "records": [
+    {
+      "id": "it-64",
+      "country": "it",
+      "name": "Direttissima Firenze–Roma",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-direttissima-history"
+      ],
+      "exact_names": [
+        "Ferrovia Direttissima Firenze-Roma",
+        "Ferrovia Firenze-Roma Direttissima",
+        "Direttissima Firenze S.M.N. - Roma Termini"
+      ],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Direttissima Firenze–Roma",
+        "aliases": [
+          "Ferrovia Firenze-Roma (direttissima)",
+          "DD Roma-Firenze",
+          "Florence–Rome high-speed railway"
+        ],
+        "osm_names": [
+          "Ferrovia Direttissima Firenze-Roma",
+          "Direttissima Firenze S.M.N. - Roma Termini",
+          "Ferrovia Firenze-Roma Direttissima",
+          "Ferrovia Firenze Roma",
+          "Interconnessione Direttissima Valdarno Sud",
+          "Interconnessione Direttissima Arezzo Nord",
+          "Interconnessione Direttissima Chiusi Nord"
+        ],
+        "osm_names_partial": [
+          "Ferrovia Firenze Roma"
+        ],
+        "from": "Roma (Settebagni)",
+        "to": "Firenze (Rovezzano)",
+        "length_km": 254,
+        "design_kmh": 250,
+        "operating_only": {
+          "segments": [
+            {
+              "from": "Rovezzano",
+              "to": "Arezzo",
+              "kmh": 275
+            },
+            {
+              "from": "Arezzo",
+              "to": "Settebagni",
+              "kmh": 250
+            }
+          ],
+          "note": "Teleborsa 2016: Rovezzano–Arezzo authorised 275 in normal service, rest 250"
+        },
+        "sources": [
+          {
+            "url": "https://it.wikipedia.org/wiki/Ferrovia_Firenze-Roma_(direttissima)",
+            "quote": "Fu completata il 26 maggio 1992",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://structurae.net/fr/ouvrages/lgv-florence-rome",
+            "quote": "vitesse de conception 250 km/h",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://www.teleborsa.it/AMP/News/2016/06/08/da-meta-giugno-test-trenitalia-su-roma-firenze-e-napoli-per-correre-di-piu-129.html",
+            "quote": "alla velocità massima di esercizio di 275 km/h in normale servizio",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "in_service",
+        "notes": "1977–1992. First new HSL in Europe. Design 250 from Structurae, not RFI."
+      },
+      "identity_conclusion": "new_build_dedicated_historical_hsr",
+      "scope_note": "原始1970年建设和1977年首段开通已由FS历史文章确认。RFI当前upgrade是对已建新线的更新，不能倒推成最初由既有线改造。裸Ferrovia Firenze Roma及各interconnection不绑定。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-65",
+      "country": "it",
+      "name": "Linea AV/AC Roma–Napoli",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-roma-napoli-history"
+      ],
+      "exact_names": [
+        "Ferrovia Roma – Napoli (alta velocità)",
+        "Ferrovia Roma-Napoli (alta velocità)"
+      ],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Roma–Napoli",
+        "aliases": [
+          "Ferrovia Roma-Napoli (alta velocità)",
+          "Rome–Naples high-speed railway"
+        ],
+        "osm_names": [
+          "Ferrovia Roma – Napoli",
+          "Ferrovia Roma-Napoli",
+          "Raccordo AV"
+        ],
+        "osm_names_partial": [],
+        "from": "Roma (Prenestina)",
+        "to": "Napoli (Casoria)",
+        "length_km": 204.6,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 300,
+          "note": "commercial speed; builder Condotte calls it a '300 km/h' line without design wording"
+        },
+        "sources": [
+          {
+            "url": "https://it.wikipedia.org/wiki/Ferrovia_Roma-Napoli_(alta_velocità)",
+            "quote": "velocità commerciale di 300 km/h",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://www.condotte1880.com/en/grandi-opere/progetto/design-and-construction-of-the-rome-naples-fast-railway-line/",
+            "quote": "Design and construction work of the Rome-Naples High Speed Railway line (300 km/h)",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "in_service",
+        "notes": "2005/2009. 222 km incl. interconnections."
+      },
+      "identity_conclusion": "new_build",
+      "scope_note": "仅原始name明确带alta velocità的两种完整名绑定。裸Roma-Napoli及Raccordo AV保持未解，Roma-Formia-Napoli和Roma-Cassino-Napoli不是本项。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-66",
+      "country": "it",
+      "name": "Linea a monte del Vesuvio (Napoli–Salerno AV)",
+      "identity": "unresolved",
+      "verified_sources": [
+        "it-ev-rfi-vesuvio"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding",
+        "project_identity_mixed_or_origin_unresolved"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea a monte del Vesuvio (Napoli–Salerno AV)",
+        "aliases": [
+          "Ferrovia Napoli-Salerno (alta velocità)",
+          "Linea AV Napoli–Salerno"
+        ],
+        "osm_names": [
+          "Linea a Monte del Vesuvio"
+        ],
+        "osm_names_partial": [],
+        "from": "Napoli",
+        "to": "Salerno",
+        "length_km": 32,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://it.wikipedia.org/wiki/Linea_a_monte_del_Vesuvio",
+            "quote": "velocità massima di progetto di 250 km/h",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://it.wikipedia.org/wiki/Linea_a_monte_del_Vesuvio",
+            "quote": "Pur non essendo una linea AV in senso stretto",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "in_service",
+        "notes": "2008. it.wiki: not strictly an AV line despite 250 design."
+      },
+      "identity_conclusion": "official_av_identity_confirmed_origin_not_directly_documented",
+      "scope_note": "RFI确认Monte del Vesuvio对应AV Napoli-Salerno，但本次直接官方文件是维护通知，未独立说明最初新建起源，不能把维护upgrade当起源证明。暂不启用112条原way和唯一基础设施关系的名称绑定。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-67",
+      "country": "it",
+      "name": "Linea AV/AC Milano–Bologna",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-milan",
+        "it-av"
+      ],
+      "exact_names": [
+        "Ferrovia Milano-Bologna AV/AC",
+        "Ferrovia ad alta velocità Milano – Bologna"
+      ],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "unnamed_and_structure_ways_not_bound",
+        "cross_border_scope_not_bound"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Milano–Bologna",
+        "aliases": [
+          "Ferrovia Milano-Bologna (alta velocità)",
+          "Milan–Bologna high-speed railway"
+        ],
+        "osm_names": [
+          "Ferrovia Milano-Bologna AV/AC",
+          "Ferrovia ad alta velocità Milano – Bologna",
+          "Galleria Fontanellato",
+          "Galleria Somaglia",
+          "Interconnessione AV/AC Piacenza Est",
+          "Interconnessione AV/AC Piacenza Ovest",
+          "Interconnessione AV/AC Parma est",
+          "Interconnessione Venezia",
+          "TAV"
+        ],
+        "osm_names_partial": [],
+        "from": "Milano (Rogoredo)",
+        "to": "Bologna",
+        "length_km": 205,
+        "design_kmh": 300,
+        "operating_only": {
+          "note": "Modena area limited to 240-260 km/h; Reggio Emilia–Modena raised 250 to 270 in 2017"
+        },
+        "sources": [
+          {
+            "url": "https://it.wikipedia.org/wiki/Ferrovia_Milano-Bologna_(alta_velocità)",
+            "quote": "La velocità base del progetto è stata fissata in 300 km/h.",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "high",
+        "status": "in_service",
+        "notes": "1997 first stretch, full 2008."
+      }
+    },
+    {
+      "id": "it-68",
+      "country": "it",
+      "name": "Linea AV/AC Bologna–Firenze",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-bologna-firenze-engineering",
+        "it-ev-fs-roma-napoli-history"
+      ],
+      "exact_names": [
+        "Bologna-Firenze (alta velocità)",
+        "Ferrovia Bologna-Firenze (alta velocità)"
+      ],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Bologna–Firenze",
+        "aliases": [
+          "Ferrovia Bologna-Firenze (alta velocità)",
+          "Bologna–Florence high-speed railway"
+        ],
+        "osm_names": [
+          "Bologna-Firenze",
+          "Bologna-Firenze Galleria Vaglia",
+          "Bologna-Firenze Galleria Firenzuola",
+          "Bologna-Firenze Galleria Pianoro",
+          "Bologna-Firenze Galleria Raticosa",
+          "Bologna-Firenze Galleria Monte Bibele",
+          "Bologna-Firenze Galleria Bologna",
+          "Bologna-Firenze Galleria Sadurano",
+          "Bologna-Firenze Galleria Scheggianico",
+          "Bologna-Firenze Galleria Morticine",
+          "Bologna-Firenze Galleria Borgo Rinzelli",
+          "Bologna-Firenze Galleria Crocioni Sud",
+          "Bologna-Firenze Galleria Crocioni Nord",
+          "Bologna-Firenze Crocioni Nord",
+          "Ferrovia Bologna-Firenze"
+        ],
+        "osm_names_partial": [
+          "Bologna-Firenze",
+          "Ferrovia Bologna-Firenze"
+        ],
+        "from": "Bologna",
+        "to": "Firenze",
+        "length_km": 78.5,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 300,
+          "note": "it.wiki operating statement only"
+        },
+        "sources": [
+          {
+            "url": "https://it.wikipedia.org/wiki/Ferrovia_Bologna-Firenze_(alta_velocità)",
+            "quote": "i treni possono viaggiare fino a 300 km/h",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://en.wikipedia.org/wiki/Bologna–Florence_high-speed_railway",
+            "quote": "The line is 78.5 kilometres (48.8 mi) long",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "in_service",
+        "notes": "2009. 78.5 / 86 / 91.4 km depending on source."
+      },
+      "identity_conclusion": "new_build",
+      "scope_note": "工程公司证明AV新线隧道设计建设，FS历史证明新骨干。仅明确alta velocità的完整原名/唯一基础设施关系绑定；旧Bologna-Firenze direttissima、裸名及Galleria泛名不绑定。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-69",
+      "country": "it",
+      "name": "Linea AV/AC Torino–Milano",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-roma-napoli-history"
+      ],
+      "exact_names": [
+        "Torino-Milano AV/AC",
+        "Ferrovia Torino-Milano AV/AC",
+        "Milano-Torino AV/AC",
+        "Torino-Milano (Alta Velocità)"
+      ],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Torino–Milano",
+        "aliases": [
+          "Ferrovia Torino-Milano (alta velocità)",
+          "Turin–Milan high-speed railway"
+        ],
+        "osm_names": [
+          "Torino-Milano AV/AC",
+          "Torino-Milano",
+          "Ferrovia Torino-Milano AV/AC",
+          "Milano-Torino AV/AC",
+          "Interconnessione AV/AC Vercellese Ovest"
+        ],
+        "osm_names_partial": [],
+        "from": "Torino (Bivio Stura)",
+        "to": "Milano (Certosa)",
+        "length_km": 125,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 300,
+          "note": "line-specific design figure not found; network-level sources say RFI HSL run at 300"
+        },
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Turin–Milan_high-speed_railway",
+            "quote": "The route is 125 kilometres (78 mi) long",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://it.wikipedia.org/wiki/Ferrovia_Torino-Milano_(alta_velocità)",
+            "quote": "ha raggiunto alla progressiva chilometrica 59 i 352 km/h",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "low",
+        "status": "in_service",
+        "notes": "2006/2009. Speed is low confidence; new-build status is certain."
+      },
+      "identity_conclusion": "new_build",
+      "scope_note": "FS历史将Torino-Milano列入新AV骨干。仅含AV/AC或Alta Velocità的完整原名和基础设施关系绑定，裸Torino-Milano及Vercellese支接线不绑定。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-70",
+      "country": "it",
+      "name": "Linea AV/AC Milano–Verona (tratta Treviglio–Brescia)",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-treviglio-brescia"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Milano–Verona (tratta Treviglio–Brescia)",
+        "aliases": [
+          "Milan–Verona high-speed railway",
+          "AV Treviglio-Brescia"
+        ],
+        "osm_names": [
+          "Ferrovia Milano-Verona AV/AC",
+          "Interconnessione Brescia Ovest"
+        ],
+        "osm_names_partial": [
+          "Ferrovia Milano-Verona AV/AC"
+        ],
+        "from": "Treviglio",
+        "to": "Brescia",
+        "length_km": 39.6,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 300,
+          "note": "ANSF certification for 300 km/h"
+        },
+        "sources": [
+          {
+            "url": "https://en.wikipedia.org/wiki/Milan–Verona_high-speed_railway",
+            "quote": "The dedicated high-speed section between Treviglio and Brescia is 39.6 kilometres (24.6 mi) long.",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://www.railwaygazette.com/europe/testing-begins-on-treviglio-brescia-high-speed-line/43031.article",
+            "quote": "certification for 300km/h operation from the National Authority for Railway Safety",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "in_service",
+        "notes": "2016. Milano–Treviglio (2007) is a quadrupling, excluded."
+      },
+      "identity_conclusion": "new_build_treviglio_brescia_only",
+      "scope_note": "新建Treviglio-Brescia身份已证。但原名Ferrovia Milano-Verona AV/AC同时覆盖其他目录项/阶段，不能整名绑定此39.6km分项；Brescia Ovest支接也未独立绑定。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-71",
+      "country": "it",
+      "name": "Linea AV/AC Napoli–Cancello (1° lotto Napoli–Bari)",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-rfi-napoli-cancello"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Napoli–Cancello (1° lotto Napoli–Bari)",
+        "aliases": [
+          "Itinerario Napoli-Bari, tratta Napoli-Cancello"
+        ],
+        "osm_names": [
+          "Variante Napoli-Cancello"
+        ],
+        "osm_names_partial": [],
+        "from": "Napoli",
+        "to": "Cancello",
+        "length_km": 15.6,
+        "design_kmh": null,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.italiaoggi.it/economia-e-politica/economia-e-finanza/alta-velocita-nel-sud-il-frecciarossa-arriva-a-lecce-qmzlgas0",
+            "quote": "la velocità massima di progetto per la linea è fissata in 250 km/h.",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "low",
+        "status": "in_service",
+        "notes": "Opened 01.07.2026 per agent research. The 250 design figure is stated for the whole Napoli–Bari route, not for this lot, so design_kmh is left empty."
+      },
+      "identity_conclusion": "new_build_napoli_cancello_variant",
+      "scope_note": "RFI直接写新建双线variant，旧线拟停用。研究原名Variante Napoli-Cancello在当前extract中0条，Napoli-Bari总关系范围更大，不能用总名绑定本lot。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-72",
+      "country": "it",
+      "name": "Linea AV/AC Milano–Verona (tratta Brescia Est–Verona)",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-rfi-brescia-padova",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Milano–Verona (tratta Brescia Est–Verona)",
+        "aliases": [
+          "AV/AC Brescia-Verona"
+        ],
+        "osm_names": [
+          "Ferrovia Milano-Verona AV/AC"
+        ],
+        "osm_names_partial": [
+          "Ferrovia Milano-Verona AV/AC"
+        ],
+        "from": "Brescia Est",
+        "to": "Verona",
+        "length_km": 48,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.teleborsa.it/News/2026/06/16/fs-al-via-le-corse-prova-sulla-nuova-linea-av-brescia-verona-173.html",
+            "quote": "entrata in servizio prevista nel primo trimestre del 2027",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://www.italiaoggi.it/economia-e-politica/economia-e-finanza/alta-velocita-al-via-le-prove-sulla-brescia-verona-ghhpc4tv",
+            "quote": "concepita per una velocità massima di 250 km/h",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "under_construction",
+        "notes": "Test runs since June 2026; service Q1 2027. 250 stated for Brescia–Padova as a whole."
+      },
+      "identity_conclusion": "new_build_brescia_est_verona_mainline",
+      "scope_note": "新AV主线已证，节点及Brescia出站quadruplicamento另有范围。与it70共用的原生Milano-Verona AV/AC名不能按整名分到此lot。建设状态保持源标签。",
+      "official_speed_evidence": [
+        {
+          "source": "it-ev-rfi-brescia-padova",
+          "kmh": 250,
+          "basis": "maximum_unspecified_not_design",
+          "scope": "entire Brescia-Verona-Padova project graphic",
+          "native_design_binding": false
+        }
+      ]
+    },
+    {
+      "id": "it-73",
+      "country": "it",
+      "name": "Linea AV/AC Verona–Padova",
+      "identity": "unresolved",
+      "verified_sources": [
+        "it-ev-rfi-brescia-padova",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding",
+        "project_identity_mixed_or_origin_unresolved"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Verona–Padova",
+        "aliases": [
+          "AV/AC Verona-Vicenza-Padova"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Verona (Porta Vescovo)",
+        "to": "Padova",
+        "length_km": null,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.rfi.it/it/rete/i-nostri-progetti/principali-interventi-lavori-programmati/linea-milano---venezia.html",
+            "quote": "(paraphrase) 1st lot ~44.2 km Verona Porta Vescovo–Altavilla Vicentina",
+            "read": "2026-10-17"
+          },
+          {
+            "url": "https://www.italiaoggi.it/economia-e-politica/economia-e-finanza/alta-velocita-al-via-le-prove-sulla-brescia-verona-ghhpc4tv",
+            "quote": "concepita per una velocità massima di 250 km/h",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "low",
+        "status": "under_construction",
+        "notes": "Lot 1 civil works done 30.06.2026; activation not confirmed by 2026-10-17."
+      },
+      "identity_conclusion": "mixed_new_av_mainline_and_historic_rebuild",
+      "scope_note": "官方范围含约44.25km新AV线及约7km既有线重建，另有Verona节点和后续lot。新主线身份已证，但整项混合，未证明原way/关系仅落在新主线，保持未解。",
+      "official_speed_evidence": [
+        {
+          "source": "it-ev-rfi-brescia-padova",
+          "kmh": 250,
+          "basis": "maximum_unspecified_not_design",
+          "scope": "entire Brescia-Verona-Padova project graphic",
+          "native_design_binding": false
+        }
+      ]
+    },
+    {
+      "id": "it-74",
+      "country": "it",
+      "name": "Linea AV/AC Napoli–Bari",
+      "identity": "unresolved",
+      "verified_sources": [
+        "it-ev-rfi-lunga",
+        "it-ev-rfi-napoli-cancello"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding",
+        "project_identity_mixed_or_origin_unresolved"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Napoli–Bari",
+        "aliases": [
+          "Itinerario Napoli-Bari"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Napoli",
+        "to": "Bari",
+        "length_km": 145,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.italiaoggi.it/economia-e-politica/economia-e-finanza/alta-velocita-nel-sud-il-frecciarossa-arriva-a-lecce-qmzlgas0",
+            "quote": "la velocità massima di progetto per la linea è fissata in 250 km/h.",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "under_construction",
+        "notes": "Remainder after Napoli–Cancello; completion ~2029. Mix of new route and doubling of existing line."
+      },
+      "identity_conclusion": "mixed_new_variants_and_upgraded_existing",
+      "scope_note": "RFI逐子项区分新variant、历史线raddoppio/velocizzazione及后续variant，不能把整个Napoli-Bari AV/AC基础设施关系一律当新建高速。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-75",
+      "country": "it",
+      "name": "Linea AV/AC Salerno–Reggio Calabria",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-rfi-salerno-reggio",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Linea AV/AC Salerno–Reggio Calabria",
+        "aliases": [
+          "AV SA-RC",
+          "Lotto 1A Battipaglia-Romagnano"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Battipaglia",
+        "to": "Reggio Calabria",
+        "length_km": null,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 300,
+          "note": "'punte fino a circa 300 km/h' prospective, no design wording (search snippet)"
+        },
+        "sources": [
+          {
+            "url": "https://www.rfi.it/it/news-e-media/comunicati-stampa-e-news/2026/8/10/rfi--av-ac-salerno---reggio-calabria--nuovo-traguardo-per-la-rea.html",
+            "quote": "(search snippet) Lotto 1A Battipaglia-Romagnano: circa 35 chilometri di nuova linea",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "low",
+        "status": "under_construction",
+        "notes": "Only Lot 1A (~35 km) under construction."
+      },
+      "identity_conclusion": "new_build_lot1a_and_project_new_alignment",
+      "scope_note": "新建不同于旧走廊，直接施工证据覆盖Lot1A约35km。没有与本次native way的精确范围绑定，不把计划完成日期转运营。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-76",
+      "country": "it",
+      "name": "Terzo Valico dei Giovi",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-fs-terzo-project",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Terzo Valico dei Giovi",
+        "aliases": [
+          "Linea AV/AC Milano–Genova",
+          "Terzo Valico-Nodo di Genova"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Genova",
+        "to": "Tortona / Novi Ligure",
+        "length_km": 53,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.gruppofsengineering.it/en/Our-projects/worldwide/italy/northern-italy/liguria-alps---terzo-valico-dei-giovi-.html",
+            "quote": "Maximum design speed: 250 km/h.",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "under_construction",
+        "notes": "Opening 2027-2028."
+      },
+      "identity_conclusion": "new_build_terzo_valico_mainline_not_genoa_hub_upgrade",
+      "scope_note": "FS Engineering区分新Terzo Valico主线和Genoa旧枢纽升级。仅新主线身份已证；无当前明确完整原名绑定，不将整个升级枢纽套新建身份。",
+      "official_speed_evidence": [
+        {
+          "source": "it-ev-fs-terzo-project",
+          "kmh": 250,
+          "basis": "explicit_project_maximum_design_speed",
+          "scope": "Terzo Valico new mainline project, not upgraded Genoa hub or every native way",
+          "native_design_binding": false
+        }
+      ]
+    },
+    {
+      "id": "it-77",
+      "country": "it",
+      "name": "Galleria di base del Brennero (lato italiano)",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-bbt-contacts",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Galleria di base del Brennero (lato italiano)",
+        "aliases": [
+          "Brenner Basistunnel",
+          "BBT"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Fortezza",
+        "to": "Innsbruck (AT)",
+        "length_km": 55,
+        "design_kmh": 250,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.fsitaliane.it/content/dam/fsitaliane/Documents/old-media-ed-eventi/comunicati-stampa-e-news/anno-2018/gennaio/COM_STAMPA_FS_ITALIANE_OBB.pdf",
+            "quote": "(search snippet, PDF unreadable) design speed 250 km/h",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "under_construction",
+        "notes": "Opening ~2032."
+      },
+      "identity_conclusion": "new_build_cross_border_base_tunnel",
+      "scope_note": "新建BBT本体身份已证，RFI给旅客设计速度最高250。Italian侧/接入线边界未逐native way核定，Linea del Brennero alta velocità总关系不得整名套BBT本体。",
+      "official_speed_evidence": [
+        {
+          "source": "it-ev-rfi-lunga",
+          "kmh": 250,
+          "basis": "explicit_project_design_for_passenger_trains",
+          "scope": "BBT base tunnel project, not all Italian approaches or every native way",
+          "native_design_binding": false
+        }
+      ]
+    },
+    {
+      "id": "it-78",
+      "country": "it",
+      "name": "Nuova linea Torino–Lione (sezione transfrontaliera)",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-telt-project"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Nuova linea Torino–Lione (sezione transfrontaliera)",
+        "aliases": [
+          "TAV Torino-Lione",
+          "Tunnel di base del Moncenisio"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Susa / Bussoleno",
+        "to": "Saint-Jean-de-Maurienne (FR)",
+        "length_km": 65,
+        "design_kmh": null,
+        "operating_only": {
+          "kmh": 220,
+          "note": "TELT passenger figure via search snippet; also listed under fr"
+        },
+        "sources": [
+          {
+            "url": "https://webuildgroup.com/en/projects/railways-underground/torino-lione-tunnel",
+            "quote": "(paraphrase) 57.5 km base tunnel, 12.5 km in Italy",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "low",
+        "status": "under_construction",
+        "notes": "Mixed freight line, opening ~2033. Same project as the fr record."
+      },
+      "identity_conclusion": "new_build_mixed_passenger_freight_cross_border_section",
+      "scope_note": "TELT区分1871年历史Fréjus与新Moncenisio base tunnel，项目是新建且客货混合，不是既有线提速。没有本次Italian way精确绑定，跨境范围不借法国关系或计划日期。",
+      "official_speed_evidence": []
+    },
+    {
+      "id": "it-79",
+      "country": "it",
+      "name": "Passante AV di Firenze",
+      "identity": "new_build",
+      "verified_sources": [
+        "it-ev-rfi-firenze-passante",
+        "it-ev-rfi-lunga"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "blockers": [
+        "no_official_per_way_design_binding",
+        "no_unambiguous_native_way_scope_binding"
+      ],
+      "research": {
+        "country": "it",
+        "name": "Passante AV di Firenze",
+        "aliases": [
+          "Sottoattraversamento AV Firenze",
+          "Stazione AV Firenze Belfiore"
+        ],
+        "osm_names": [],
+        "osm_names_partial": [],
+        "from": "Firenze Campo di Marte",
+        "to": "Firenze Castello / Rifredi",
+        "length_km": 7,
+        "design_kmh": null,
+        "operating_only": null,
+        "sources": [
+          {
+            "url": "https://www.rfi.it/it/news-e-media/comunicati-stampa-e-news/2026/4/22/rfi---gruppo-fs--avanzano-i-lavori-del-passante-av-di-firenze.html",
+            "quote": "avanzano i lavori del Passante AV di Firenze",
+            "read": "2026-10-17"
+          }
+        ],
+        "confidence": "medium",
+        "status": "under_construction",
+        "notes": "Target 2029-2030."
+      },
+      "identity_conclusion": "new_build_urban_av_bypass",
+      "scope_note": "官方证明新隧道及新AV站，与区域地面网络分流。无本次明确完整原way身份绑定，不能凭Firenze地名或泛隧道名绑定。",
+      "official_speed_evidence": []
+    }
+  ],
+  "exclusions": []
+}

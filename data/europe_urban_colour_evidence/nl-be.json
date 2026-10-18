@@ -1,0 +1,1312 @@
+[
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 1",
+    "colour": "334395",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009643,
+      3009644
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        530,
+        93,
+        561
+      ],
+      "colour": "334395",
+      "exact_colour_pixels": 65145,
+      "crop": "sources/ret-tram-1.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. Official map deliberately repeats the same blue for tram 1 and 11."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 11",
+    "colour": "334395",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3618910,
+      3618913
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        819,
+        93,
+        850
+      ],
+      "colour": "334395",
+      "exact_colour_pixels": 59242,
+      "crop": "sources/ret-tram-11.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. Official map deliberately repeats the same blue for tram 1 and 11."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 2",
+    "colour": "ef7000",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      382709,
+      5955844
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        559,
+        93,
+        590
+      ],
+      "colour": "ef7000",
+      "exact_colour_pixels": 61216,
+      "crop": "sources/ret-tram-2.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 3",
+    "colour": "f3accb",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009641,
+      3009642
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        588,
+        93,
+        619
+      ],
+      "colour": "f3accb",
+      "exact_colour_pixels": 61256,
+      "crop": "sources/ret-tram-3.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 4",
+    "colour": "005723",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009648,
+      3592155
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        646,
+        93,
+        677
+      ],
+      "colour": "005723",
+      "exact_colour_pixels": 62167,
+      "crop": "sources/ret-tram-4.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 5",
+    "colour": "e60035",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009645,
+      3009646
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        675,
+        93,
+        706
+      ],
+      "colour": "e60035",
+      "exact_colour_pixels": 61134,
+      "crop": "sources/ret-tram-5.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 6",
+    "colour": "4bab27",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      18499021,
+      18499022
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        733,
+        93,
+        764
+      ],
+      "colour": "4bab27",
+      "exact_colour_pixels": 60084,
+      "crop": "sources/ret-tram-6.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 7",
+    "colour": "00a0e4",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009649,
+      3009650
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        761,
+        93,
+        792
+      ],
+      "colour": "00a0e4",
+      "exact_colour_pixels": 64061,
+      "crop": "sources/ret-tram-7.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Rotterdam",
+    "n": "Tram 8",
+    "colour": "a0097e",
+    "source": "https://www.ret.nl/home/reizen/kaarten-plattegronden.html",
+    "map": "https://bestanden.ret.nl/user_upload/Documenten/PDF/Kaarten_en_plattegronden/RET_Tramnet_v5.pdf",
+    "osm_relations": [
+      3009651,
+      3009652
+    ],
+    "map_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        48,
+        790,
+        93,
+        821
+      ],
+      "colour": "a0097e",
+      "exact_colour_pixels": 60051,
+      "crop": "sources/ret-tram-8.png",
+      "page": 1,
+      "source_sha256": "1e09eeacf5d4fb94929afe5bc14d0ee5d913985e185e4af631e5045c5d09bd51",
+      "downloaded_at": "2026-10-17T21:10:11.570621+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Current RET download page links this tram map; printed 2025. The current January 2026 schematic uses the same nine regular tram identities. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 1",
+    "colour": "ee3124",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1862707,
+      2615298
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        26,
+        741,
+        43,
+        757
+      ],
+      "colour": "ee3124",
+      "exact_colour_pixels": 17486,
+      "crop": "sources/htm-1.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 10",
+    "colour": "808285",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      18505296,
+      18505297
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        30,
+        445,
+        45,
+        460
+      ],
+      "colour": "808285",
+      "exact_colour_pixels": 14704,
+      "crop": "sources/htm-10.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 11",
+    "colour": "b98c74",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1873670,
+      1873671
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        348,
+        128,
+        361,
+        141
+      ],
+      "colour": "b98c74",
+      "exact_colour_pixels": 13090,
+      "crop": "sources/htm-11.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 12",
+    "colour": "f0b8d4",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1895676,
+      1895677
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        168,
+        145,
+        183,
+        158
+      ],
+      "colour": "f0b8d4",
+      "exact_colour_pixels": 13720,
+      "crop": "sources/htm-12.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 15",
+    "colour": "7f82bf",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1926436,
+      1926437
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        344,
+        620,
+        359,
+        634
+      ],
+      "colour": "7f82bf",
+      "exact_colour_pixels": 14742,
+      "crop": "sources/htm-15.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 16",
+    "colour": "7d3520",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1877714,
+      1877715
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        17,
+        546,
+        32,
+        561
+      ],
+      "colour": "7d3520",
+      "exact_colour_pixels": 14278,
+      "crop": "sources/htm-16.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 17",
+    "colour": "00539b",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1880311,
+      1880312
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        32,
+        546,
+        46,
+        561
+      ],
+      "colour": "00539b",
+      "exact_colour_pixels": 15545,
+      "crop": "sources/htm-17.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 19",
+    "colour": "00a890",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      377434,
+      1937113,
+      21478919,
+      21478920
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        135,
+        715,
+        150,
+        730
+      ],
+      "colour": "00a890",
+      "exact_colour_pixels": 14504,
+      "crop": "sources/htm-19.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 2",
+    "colour": "ffc426",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1920546,
+      1920547
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        17,
+        303,
+        31,
+        317
+      ],
+      "colour": "ffc426",
+      "exact_colour_pixels": 16066,
+      "crop": "sources/htm-2.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 3",
+    "colour": "aa218e",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      112001,
+      2425629
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        17,
+        238,
+        31,
+        252
+      ],
+      "colour": "aa218e",
+      "exact_colour_pixels": 16051,
+      "crop": "sources/htm-3.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 34",
+    "colour": "f1678d",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      11565302,
+      11565303
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        431,
+        742,
+        446,
+        757
+      ],
+      "colour": "f1678d",
+      "exact_colour_pixels": 14995,
+      "crop": "sources/htm-34.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 4",
+    "colour": "f5911d",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      115011,
+      2425396
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        17,
+        378,
+        31,
+        393
+      ],
+      "colour": "f5911d",
+      "exact_colour_pixels": 16331,
+      "crop": "sources/htm-4.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 6",
+    "colour": "00aeef",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      1915160,
+      1915161
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        113,
+        361,
+        128,
+        376
+      ],
+      "colour": "00aeef",
+      "exact_colour_pixels": 15976,
+      "crop": "sources/htm-6.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Rail Haaglanden",
+    "n": "Tram 9",
+    "colour": "8dc73f",
+    "source": "https://www.htm.nl/reizen/kaarten-voor-je-htm-reis/",
+    "map": "https://www.htm.nl/media/gscmjwp4/26010htm_a4haltekrt_aug2026_trambus_web.pdf",
+    "osm_relations": [
+      153659,
+      1923134
+    ],
+    "map_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        17,
+        446,
+        31,
+        460
+      ],
+      "colour": "8dc73f",
+      "exact_colour_pixels": 15506,
+      "crop": "sources/htm-9.png",
+      "page": 1,
+      "source_sha256": "c0927bed6cb596ce9ed0625a6723267351d58ce0f66552e5f545ca5cb394ae21",
+      "downloaded_at": "2026-10-17T21:14:04.016923+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Valid from 5 October 2026, current HTM tram-map link (filename contains aug2026). Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "nl",
+    "network": "Utrecht Binnen",
+    "n": "Tram 20",
+    "colour": "e6001b",
+    "source": "https://www.u-ov.nl/reisinformatie/lijnoverzicht",
+    "map": "https://www.u-ov.nl/getContentAsset/46d3daee-8107-4dd4-80ca-1d62ac80ba90/71abfaf4-b049-4eca-b9fd-4e7b3c2e03a4/U-OV-Kaart_provincie-Utrecht-Zuid.pdf?language=nl",
+    "osm_relations": [
+      2874841,
+      3746000
+    ],
+    "map_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        493,
+        470,
+        500,
+        480
+      ],
+      "colour": "e6001b",
+      "exact_colour_pixels": 2899,
+      "crop": "sources/uov-20.png",
+      "page": 1,
+      "source_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+      "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Lijnennetkaart 2026, valid from 14 December 2025; current U-OV Binnen map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. The official map assigns the same red mode colour to all three U-tram lines 20, 21, 22. No per-line palette invented."
+  },
+  {
+    "g": "nl",
+    "network": "Utrecht Binnen",
+    "n": "Tram 21",
+    "colour": "e6001b",
+    "source": "https://www.u-ov.nl/reisinformatie/lijnoverzicht",
+    "map": "https://www.u-ov.nl/getContentAsset/46d3daee-8107-4dd4-80ca-1d62ac80ba90/71abfaf4-b049-4eca-b9fd-4e7b3c2e03a4/U-OV-Kaart_provincie-Utrecht-Zuid.pdf?language=nl",
+    "osm_relations": [
+      2874840,
+      3746040
+    ],
+    "map_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        499,
+        470,
+        506,
+        480
+      ],
+      "colour": "e6001b",
+      "exact_colour_pixels": 2557,
+      "crop": "sources/uov-21.png",
+      "page": 1,
+      "source_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+      "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Lijnennetkaart 2026, valid from 14 December 2025; current U-OV Binnen map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. The official map assigns the same red mode colour to all three U-tram lines 20, 21, 22. No per-line palette invented."
+  },
+  {
+    "g": "nl",
+    "network": "Utrecht Binnen",
+    "n": "Tram 22",
+    "colour": "e6001b",
+    "source": "https://www.u-ov.nl/reisinformatie/lijnoverzicht",
+    "map": "https://www.u-ov.nl/getContentAsset/46d3daee-8107-4dd4-80ca-1d62ac80ba90/71abfaf4-b049-4eca-b9fd-4e7b3c2e03a4/U-OV-Kaart_provincie-Utrecht-Zuid.pdf?language=nl",
+    "osm_relations": [
+      10396257,
+      10396258
+    ],
+    "map_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        505,
+        470,
+        512,
+        480
+      ],
+      "colour": "e6001b",
+      "exact_colour_pixels": 2236,
+      "crop": "sources/uov-22.png",
+      "page": 1,
+      "source_sha256": "636e98497f68746fd369c895b37b7616823e0798ab895abb0b2acd9bb392c068",
+      "downloaded_at": "2026-10-17T21:10:11.571002+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Lijnennetkaart 2026, valid from 14 December 2025; current U-OV Binnen map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. The official map assigns the same red mode colour to all three U-tram lines 20, 21, 22. No per-line palette invented."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 1",
+    "colour": "883493",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      10409861,
+      10409862
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        237.6,
+        68,
+        251.6
+      ],
+      "colour": "883493",
+      "exact_colour_pixels": 10600,
+      "crop": "sources/antwerp-1.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 10",
+    "colour": "bed62f",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      11194,
+      3420540
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        321.6,
+        68,
+        335.6
+      ],
+      "colour": "bed62f",
+      "exact_colour_pixels": 9503,
+      "crop": "sources/antwerp-10.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 11",
+    "colour": "ffffff",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      20443438,
+      20443439
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        332.1,
+        68,
+        346.1
+      ],
+      "colour": "ffffff",
+      "exact_colour_pixels": 38267,
+      "crop": "sources/antwerp-11.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. Official badge and line core are white with maroon outline. White is not a missing colour.",
+    "source_outline_colour": "842f46",
+    "display_readability": {
+      "status": "separate renderer decision, not applied by this fragment",
+      "recommendation": "Preserve official white line core. A contrasting outline is needed on light backgrounds; official map uses maroon outline."
+    }
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 12",
+    "colour": "ed1b2e",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      11212,
+      3419127
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        342.6,
+        68,
+        356.6
+      ],
+      "colour": "ed1b2e",
+      "exact_colour_pixels": 9662,
+      "crop": "sources/antwerp-12.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 2",
+    "colour": "078e3c",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      11201,
+      2824479,
+      19766075
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        248.1,
+        68,
+        262.1
+      ],
+      "colour": "078e3c",
+      "exact_colour_pixels": 10239,
+      "crop": "sources/antwerp-2.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 24",
+    "colour": "5fc3ad",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      11193,
+      3419129
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        353.1,
+        68,
+        367.1
+      ],
+      "colour": "5fc3ad",
+      "exact_colour_pixels": 9247,
+      "crop": "sources/antwerp-24.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 4",
+    "colour": "00aae5",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      10788,
+      10837
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        269.1,
+        68,
+        283.1
+      ],
+      "colour": "00aae5",
+      "exact_colour_pixels": 10189,
+      "crop": "sources/antwerp-4.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 6",
+    "colour": "ec008b",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      11199,
+      3419911
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        279.6,
+        68,
+        293.6
+      ],
+      "colour": "ec008b",
+      "exact_colour_pixels": 10158,
+      "crop": "sources/antwerp-6.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 7",
+    "colour": "0060ae",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      10834,
+      3420305
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        290.1,
+        68,
+        304.1
+      ],
+      "colour": "0060ae",
+      "exact_colour_pixels": 10450,
+      "crop": "sources/antwerp-7.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram 8",
+    "colour": "f499c1",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      4828587,
+      4828588
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        300.6,
+        68,
+        314.6
+      ],
+      "colour": "f499c1",
+      "exact_colour_pixels": 9985,
+      "crop": "sources/antwerp-8.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram A3",
+    "colour": "fecb03",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      20633269,
+      20633270
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        258.6,
+        68,
+        272.6
+      ],
+      "colour": "fecb03",
+      "exact_colour_pixels": 9089,
+      "crop": "sources/antwerp-A3.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Antwerpen",
+    "n": "Tram A9",
+    "colour": "f5811f",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/2InZRmiwfF6b8TxajLvo2L/d85eac17da7d7e1617b20d0fe0fc04f9/Tramschema_tunnelrenovatie.pdf",
+    "osm_relations": [
+      20633450,
+      20633451
+    ],
+    "map_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        47,
+        311.1,
+        68,
+        325.1
+      ],
+      "colour": "f5811f",
+      "exact_colour_pixels": 9038,
+      "crop": "sources/antwerp-A9.png",
+      "page": 1,
+      "source_sha256": "3f6a79e6905f42951549d1d650bea8bd4584ea44987b77d2ae559b9689765a63",
+      "downloaded_at": "2026-10-17T21:12:28.314854+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramschema Antwerpen, valid from 4 May 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Gent",
+    "n": "Tram T1",
+    "colour": "fecc00",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/5I43q7nQwyN5s49efZ5MzI/23e54156424541e345ed77b296c098c1/A1_tramnet_Gent_140926tot0527.pdf",
+    "osm_relations": [
+      223229,
+      10577035
+    ],
+    "map_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        120,
+        265,
+        175,
+        310
+      ],
+      "colour": "fecc00",
+      "exact_colour_pixels": 182164,
+      "crop": "sources/gent-T1.png",
+      "page": 1,
+      "source_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+      "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramnet vanaf 14 september 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Gent",
+    "n": "Tram T2",
+    "colour": "0e882d",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/5I43q7nQwyN5s49efZ5MzI/23e54156424541e345ed77b296c098c1/A1_tramnet_Gent_140926tot0527.pdf",
+    "osm_relations": [
+      2844991,
+      6667784
+    ],
+    "map_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        120,
+        307,
+        175,
+        350
+      ],
+      "colour": "0e882d",
+      "exact_colour_pixels": 176086,
+      "crop": "sources/gent-T2.png",
+      "page": 1,
+      "source_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+      "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramnet vanaf 14 september 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  },
+  {
+    "g": "be",
+    "network": "VVR Gent",
+    "n": "Tram T3",
+    "colour": "00a6e2",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/5I43q7nQwyN5s49efZ5MzI/23e54156424541e345ed77b296c098c1/A1_tramnet_Gent_140926tot0527.pdf",
+    "osm_relations": [
+      10578337,
+      10578338
+    ],
+    "map_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        120,
+        348,
+        175,
+        392
+      ],
+      "colour": "00a6e2",
+      "exact_colour_pixels": 176105,
+      "crop": "sources/gent-T3.png",
+      "page": 1,
+      "source_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+      "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramnet vanaf 14 september 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching. The map still gives T3 its cyan identity but explicitly marks service temporarily suspended until May 2027. This colour evidence does not establish current operation."
+  },
+  {
+    "g": "be",
+    "network": "VVR Gent",
+    "n": "Tram T4",
+    "colour": "e30421",
+    "source": "https://www.delijn.be/nl/content/netplannen-perronindelingen/",
+    "map": "https://assets.ctfassets.net/32fmeyn9t08i/5I43q7nQwyN5s49efZ5MzI/23e54156424541e345ed77b296c098c1/A1_tramnet_Gent_140926tot0527.pdf",
+    "osm_relations": [
+      16012106,
+      16012107
+    ],
+    "map_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+    "map_page": 1,
+    "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+    "evidence": {
+      "clip_pdf_points": [
+        120,
+        389,
+        175,
+        433
+      ],
+      "colour": "e30421",
+      "exact_colour_pixels": 174908,
+      "crop": "sources/gent-T4.png",
+      "page": 1,
+      "source_sha256": "1ba0c7131c28e25b42fcd5b72bce5830254c28c40a6eb342d1d2ddb7cc76d1a2",
+      "downloaded_at": "2026-10-17T21:12:29.270159+00:00",
+      "method": "MuPDF 12x RGB raster, exact solid fill pixels in line-number badge; not a normative brand RGB specification."
+    },
+    "note": "Tramnet vanaf 14 september 2026, current De Lijn map link. Full official page and labelled crop retained. Native IDs and full normal-entry names are frozen from actual city input, never colour/name-only matching."
+  }
+]

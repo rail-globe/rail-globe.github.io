@@ -72,14 +72,14 @@ LAYERS = {
                  zoom=lambda p: 3 if p.get("c") == "branch" and "g" not in p else 0),
     "shared": dict(cn="rail_shared", keep="c n on d db v e de off sh bn lead", zoom=lambda p: 0),
     "build": dict(cn="rail_build", abroad="build", keep="c n h g d de", zoom=lambda p: 0),
-    "metro": dict(cn="metro", abroad="metro", keep="n ct col k g jk off sh bn lead goff ap zf zn", zoom=lambda p: 4),
+    "metro": dict(cn="metro", abroad="metro", keep="n ct col k g jk network rid off sh bn lead goff ap zf zn", zoom=lambda p: 4),
     # stations on high-speed lines from zoom 5, the others from 8.5; metro stations from 10
     # (a country abroad has one stations file; its metro stations are marked m; t marks a tram stop,
     # which the page's light-rail switch hides with the trams)
-    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n nz ne h g",
+    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n nz ne h g cp",
                      zoom=lambda p: 5 if p.get("h") else 8, label=lambda p: 8 if p.get("h") else 10),
     "metro-stations": dict(cn="metro_stations", abroad="stations", abroad_if=lambda p: bool(p.get("m")),
-                           keep="n nz ne g m t", zoom=lambda p: 10, label=lambda p: 12),
+                           keep="n nz ne g m t cp", zoom=lambda p: 10, label=lambda p: 12),
     "yards": dict(cn="yards", abroad="yards", keep="", zoom=lambda p: 9),
     "depots": dict(cn="depots", abroad="depots", keep="n nz ne", zoom=lambda p: 9, label=lambda p: 10),
 }
@@ -95,7 +95,10 @@ NAMES = ("nz", "ne")
 def countries():
     """China and the countries abroad that the site holds, as scripts/build.py reads them from site.json."""
     site = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
-    return ["cn"] + [g for g, default in (("jp", False), ("kr", False), ("uk", True)) if site.get(g, default)]
+    configured = (("jp", False), ("kr", False), ("uk", True),
+                  ("de", False), ("fr", False), ("ch", False), ("es", False),
+                  ("nl", False), ("be", False), ("it", False))
+    return ["cn"] + [g for g, default in configured if site.get(g, default)]
 
 
 def features(layer, g):
@@ -136,6 +139,8 @@ def tippecanoe_input(g):
 
 
 def cut(g, out, maxzoom=MAXZOOM):
+    from owned_output import require_owned
+    require_owned(out, [f'{g}.pmtiles', f'{g}.json', f'{g}.stations.json'])
     """Cuts one country's tiles into <out>/<g>.pmtiles. Returns the layers it has."""
     out.mkdir(parents=True, exist_ok=True)
     text, layers = tippecanoe_input(g)
@@ -157,6 +162,8 @@ def cut(g, out, maxzoom=MAXZOOM):
 
 
 def beside(g, layers, out):
+    from owned_output import require_owned
+    require_owned(out, [f'{g}.json', f'{g}.stations.json'])
     """<g>.json, a few bytes the page reads before it draws: the tile layers the country has, and
     what the page used to read off the whole files: the [class, speed band] pairs the lines of a
     country abroad have, and how many lines are being built.
@@ -174,7 +181,7 @@ def beside(g, layers, out):
             cols["g"] = [f["properties"].get("g") for f in feats]
         if any(f["properties"].get("h") for f in feats):
             cols["h"] = [1 if f["properties"].get("h") else 0 for f in feats]
-        for key in ("nz", "ne"):
+        for key in ("nz", "ne", "cp"):
             if any(key in f["properties"] for f in feats):
                 cols[key] = [f["properties"].get(key) for f in feats]
         return cols

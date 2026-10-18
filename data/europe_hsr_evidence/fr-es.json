@@ -1,0 +1,3405 @@
+{
+  "schema": 1,
+  "scope": "independent official identity supplement only; catalog and pipeline unchanged",
+  "read": "2026-10-18",
+  "catalog_sha256": "e8ad8ed5406327bebd8077078acfd710eef5e91b87a571d9c904df3e8400735a",
+  "extract_sha256": {
+    "fr": "aa30e6173a53e5dcb519374fdffa9415ebe3de14f0e38bfba701b9be4299e224",
+    "es": "8b941f4e4f4c6d937d34d0e2d9e262a17c294c0800103d3b5a6ea24831775fbb"
+  },
+  "policy": {
+    "original_names_only": true,
+    "adopted_names": false,
+    "structure_aliases": false,
+    "official_design_binding_to_all_ways": false,
+    "unresolved_not_conventional_by_default": true,
+    "construction_never_operational_by_identity": true
+  },
+  "sources": {
+    "fres-fr-national-plan-1992": {
+      "url": "https://temis.documentation.developpement-durable.gouv.fr/docs/Temis/0000/Temis-0000132/3034.pdf",
+      "title": "Schéma directeur national des liaisons ferroviaires à grande vitesse – Rapport de présentation et décret n°92-355",
+      "publication_date": "1992-04-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "lignes nouvelles en service; lignes nouvelles en cours de construction",
+      "supports_scope": "Existing Paris Sud-Est/Atlantique and construction projects Nord, Paris-Lyon extension to Valence and Est Île-de-France interconnection are explicitly new lines.",
+      "location": "PDF pp.10–11 zero based, printed pp.8–9, project list",
+      "access_method": "full_pdf_text",
+      "limitations": "Historical project lengths and commercial speeds are not present-day way boundaries or design values."
+    },
+    "fres-fr-mediterranee-2026": {
+      "url": "https://www.sncf-reseau.com/fr/a/lgv-mediterranee-25-ans-rapprocher-territoires",
+      "title": "LGV Méditerranée : 25 ans à rapprocher les territoires",
+      "publication_date": "2026-06-16",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "250 kilomètres de ligne nouvelle qu’il a fallu construire",
+      "supports_scope": "New LGV Méditerranée Valence–Marseille, inaugurated 7 June 2001.",
+      "location": "Une ligne complètement nouvelle; chronology",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-fr-mediterranee-senat-1999": {
+      "url": "https://www.senat.fr/rap/l98-066323/l98-0663236.html",
+      "title": "Projet de loi de finances pour 1999 : Transports terrestres",
+      "publication_date": "1998",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "travaux entre Valence, Marseille et Nîmes",
+      "supports_scope": "Approved 1995 construction scope Valence–Marseille and Nîmes branch, while Nîmes–Montpellier then remained future land acquisition.",
+      "location": "TGV-Méditerranée subsection",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-fr-est-cour-comptes-2012": {
+      "url": "https://www.ccomptes.fr/sites/default/files/EzPublish/JF00130684_JF_INTERNET1.pdf",
+      "title": "Rapport d’observations définitives – Région Lorraine",
+      "publication_date": "2012-03-06",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La construction de 406 km de voies nouvelles",
+      "supports_scope": "Entire Vaires–Vendenheim LGV Est project, 300 km phase 1 and 106 km phase 2.",
+      "location": "PDF p.69 zero based, printed p.70, §12.1.1",
+      "access_method": "full_pdf_text",
+      "limitations": "Historical construction identity, phase 2 was then under construction. Does not verify legacy 350 km/h design claim."
+    },
+    "fres-fr-rhin-rhone-loti-2018": {
+      "url": "https://www.sncf-reseau.com/medias-publics/2025-10/blan_loti_lgv_rhin-rhone_branche_est_phase_1_0.pdf?VersionId=YADsUbmNL8eyOTLTryiInVs6tV_8yDIH",
+      "title": "Bilan LOTI socio-économique de la LGV Rhin-Rhône branche Est 1re phase – Bilan final",
+      "publication_date": "2018-10",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "construction de la ligne nouvelle à grande vitesse",
+      "supports_scope": "Villers-les-Pots–Petit-Croix dedicated new core. Separate financial items identify existing Besançon–Devecey and classic approach improvements.",
+      "location": "Convention de financement initiale du 3 juillet 2006, items (i)–(iv)",
+      "access_method": "official_search_index_body_pdf_over_fetch_limit",
+      "limitations": "Full PDF exceeds web fetch limit. Existing Besançon–Devecey and classic approaches must not inherit the new-core identity or speed."
+    },
+    "fres-fr-perpignan-treaty-2016": {
+      "url": "https://boe.es/buscar/doc.php?id=BOE-A-2016-12112",
+      "title": "Convenio para la explotación y mantenimiento de la sección internacional de una línea ferroviaria de alta velocidad entre Perpiñán y Figueres",
+      "publication_date": "2016-12-19",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "una nueva línea de alta velocidad, de tráfico mixto",
+      "supports_scope": "2004 concession designed and constructed the new double-track Perpignan–Figueres international route, including Perthus tunnel.",
+      "location": "Preamble, 2004 concession and definitive commissioning 17 January 2013",
+      "access_method": "full_html_text",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-fr-government-projects": {
+      "url": "https://www.ecologie.gouv.fr/politiques-publiques/projets-lignes-grande-vitesse",
+      "title": "Les projets de lignes à grande vitesse",
+      "publication_date": "2023-10-25",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "ligne nouvelle",
+      "supports_scope": "SEA: 302 km new Tours–Bordeaux plus 38 km connections. BPL: 182 km new Le Mans–Rennes. CNM: 80 km including 19 km connections, mixed traffic. Lyon–Turin cross-border project and Roissy new 6.5 km plus existing-network works are separate sections.",
+      "location": "LGV Sud Europe Atlantique; Bretagne–Pays de la Loire; CNM; Lyon–Turin; Roissy–Picardie",
+      "access_method": "full_html_text",
+      "limitations": "Project summaries give infrastructure scope, not per-way design values. Historical status forecasts require separate current commissioning evidence."
+    },
+    "fres-fr-telt-tbm": {
+      "url": "https://www.telt.eu/fr/a-la-une/le-deuxieme-tunnelier-de-telt-entre-en-scene",
+      "title": "Le deuxième tunnelier de TELT entre en scène",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "ouvrage principal de la nouvelle ligne ferroviaire",
+      "supports_scope": "Two 57.5 km Mont-Cenis base-tunnel tubes, new Lyon–Turin freight/passenger line, excavation works.",
+      "location": "project and tunnel-boring-machine description",
+      "access_method": "official_search_index_body",
+      "limitations": "Construction evidence is not commercial commissioning. No safe native exact name found in frozen French extract."
+    },
+    "fres-fr-roissy-2026": {
+      "url": "https://www.sncf-reseau.com/fr/travaux/hauts-france/liaison-ferroviaire-roissy-picardie",
+      "title": "Liaison ferroviaire Roissy-Picardie",
+      "publication_date": "2026-05-13",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "nouvelle section de voie ferrée de 6,5 km; des aménagements sur le réseau existant",
+      "supports_scope": "New 6.5 km connection plus existing network and station capacity works, expected opening December 2028.",
+      "location": "project description, existing-network works and calendar",
+      "access_method": "official_search_index_body",
+      "limitations": "160 km/h is the project section speed, not explicitly design. Whole project mixes new and existing infrastructure."
+    },
+    "fres-es-madrid-sevilla-history": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-madrid-sevilla-historia",
+      "title": "Historia de la línea Madrid-Sevilla",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "esta nueva infraestructura debía construirse según los parámetros de alta velocidad",
+      "supports_scope": "1988 decision to construct the new standard-gauge Madrid–Sevilla line, opened April 1992.",
+      "location": "history: 1988 decision and 1992 opening",
+      "access_method": "official_search_index_body_canonical_fetch_502",
+      "limitations": "Archived official history is valid for construction identity. No design speed inferred from commercial operation."
+    },
+    "fres-es-cordoba-malaga": {
+      "url": "https://www.adifaltavelocidad.es/sobre-adif-av/red-av/cordoba-malaga",
+      "title": "Línea Córdoba-Málaga",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "construcción de la línea de alta velocidad Córdoba-Málaga",
+      "supports_scope": "New Córdoba–Málaga line construction project, separated from Madrid–Sevilla at Almodóvar del Río.",
+      "location": "line construction description",
+      "access_method": "official_search_index_body_canonical_fetch_502",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-loja-variant-2025": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-av-adjudica-las-obras-del-tramo-variante-de-loja-valle-del-genil-por-m%C3%A1s-de-283-millones-de-euros",
+      "title": "Adif AV adjudica las obras del tramo Variante de Loja-Valle del Genil por más de 283 millones de euros",
+      "publication_date": "2025-10-09",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "El nuevo trazado se compone de cuatro tramos",
+      "supports_scope": "19 km new Loja variant still being completed in 2025, including 7.9 km Valle del Genil contract.",
+      "location": "Variante de Loja and Valle del Genil construction",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-loja-conventional-boe-2021": {
+      "url": "https://www.boe.es/buscar/doc.php?id=BOE-A-2021-3203&lang=es",
+      "title": "Resolución de 22 de febrero de 2021: conexión LAV Antequera-Granada con línea convencional Bobadilla-Granada",
+      "publication_date": "2021-02-22",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "con la línea convencional Bobadilla-Granada",
+      "supports_scope": "Riofrío/Loja connection of the AV project to existing conventional railway.",
+      "location": "project description and Riofrío connection",
+      "access_method": "official_search_index_body",
+      "limitations": "Does not provide a full current native-way boundary for adapted Loja sections."
+    },
+    "fres-es-madrid-barcelona-history": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-madrid-barcelona-frontera-historia",
+      "title": "LAV Madrid-Barcelona-Frontera francesa – Historia",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "proyecto de la línea de alta velocidad Madrid-Barcelona",
+      "supports_scope": "New Madrid–Zaragoza–Lleida–Tarragona–Barcelona–Figueres route, constructed in phases, plus separately concession-built Figueres–Perpignan.",
+      "location": "chronology of 2003, 2006, 2008 and 2013 phases",
+      "access_method": "official_search_index_body",
+      "limitations": "Temporary 2010 third-rail freight access on conventional track is separate and not part of the exact high-speed core bindings."
+    },
+    "fres-es-barcelona-figueres": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-madrid-barcelona-frontera-francesa-tramo",
+      "title": "LAV Madrid-Barcelona-Frontera francesa – Tramo Barcelona-Figueres",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "trayecto completo comprendido entre Barcelona y Figueres",
+      "supports_scope": "131 km Barcelona–Figueres new infrastructure, distinct 2010 third-rail conventional freight access.",
+      "location": "Barcelona–Figueres construction and freight-access comparison",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-madrid-barcelona-dossier-2023": {
+      "url": "https://www.adifaltavelocidad.es/documents/34745/14043255/20230220%2BDossier%2B15%2Ba%C3%B1os%2BLAV%2BMadrid-Barcelona.pdf/0345e611-23f4-4c10-ebc5-7fea345be090?download=true&t=1771344472139&version=1.2",
+      "title": "Los primeros 15 años – LAV Madrid-Barcelona",
+      "publication_date": "2023-02-20",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La construcción de la LAV Madrid-Barcelona-Figueras representó",
+      "supports_scope": "Purpose-built Madrid–Barcelona–Figueres project with new engineering works, 1995 construction start and separately opened phases.",
+      "location": "Reto de la ingeniería; 131 km Barcelona–Figueres section",
+      "access_method": "official_search_index_body",
+      "limitations": "Station construction/remodeling is distinguished from the new line. No numeric design value bound."
+    },
+    "fres-es-zaragoza-huesca-boe-2002": {
+      "url": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2002-1086",
+      "title": "Resolución de 18 de diciembre de 2001: plataforma y vía en tres tramos de la línea Zaragoza-Huesca",
+      "publication_date": "2002-01-18",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "implantación sobre la vía actual de un tercer carril",
+      "supports_scope": "Zaragoza–Zuera 31 km and Zuera–Tardienta 28 km parallel duplication of existing route. Tardienta–Huesca adds third rail to existing track.",
+      "location": "description of three project sections",
+      "access_method": "full_html_text",
+      "limitations": "Existing-line corridor upgrade with parallel duplication and third rail. A local replacement Ebro bridge alignment does not establish a purpose-built whole new HSL. No numeric design proof."
+    },
+    "fres-es-madrid-valladolid-inauguration": {
+      "url": "https://www.lamoncloa.gob.es/presidente/intervenciones/Paginas/2007/prdi20071222.aspx",
+      "title": "Intervención en la inauguración de la línea de alta velocidad Madrid-Valladolid",
+      "publication_date": "2007-12-22",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Hoy inauguramos una nueva línea, Madrid-Valladolid",
+      "supports_scope": "New Madrid–Segovia–Valladolid line opened 22 December 2007.",
+      "location": "inauguration speech",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-valladolid-leon-2015": {
+      "url": "https://www.lamoncloa.gob.es/serviciosdeprensa/notasprensa/mfom/paginas/2015/290915inaguracionlineaalt.aspx",
+      "title": "El presidente inaugura la línea de alta velocidad Valladolid-Palencia-León",
+      "publication_date": "2015-09-29",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La nueva conexión amplía en 166 kilómetros la red de alta velocidad",
+      "supports_scope": "New 166 km Valladolid–Palencia–León connection, extension of Madrid–Segovia–Valladolid.",
+      "location": "project scope",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-pajares-2023": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-pondr%C3%A1-a-disposici%C3%B3n-la-infraestructura-de-pajares-en-la-segunda-quincena-de-febrero-para-iniciar-despu%C3%A9s-las-pruebas-de-fiabilidad",
+      "title": "Adif pondrá a disposición la infraestructura de Pajares en la segunda quincena de febrero para iniciar después las pruebas de fiabilidad",
+      "publication_date": "2023-01-19",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La nueva línea será la más versátil de España",
+      "supports_scope": "50 km new double-track La Robla–Pola de Lena route replaces the historical nineteenth-century Pajares ramp.",
+      "location": "new route versus old ramp",
+      "access_method": "official_search_index_body",
+      "limitations": "Historical pre-opening test timetable is not current commissioning proof. León–La Robla is a separate existing-line adaptation."
+    },
+    "fres-es-venta-banos-burgos": {
+      "url": "https://www.adifaltavelocidad.es/sobre-adif-av/red-av/venta-banos-vitoria",
+      "title": "Línea Venta de Baños-Burgos-Vitoria",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "diseñada y preparada para alcanzar una velocidad máxima de 350 km/h",
+      "supports_scope": "86.5 km new Venta de Baños–Burgos standard-gauge section. Explicit design/prepared maximum 350 km/h.",
+      "location": "Venta de Baños–Burgos description",
+      "access_method": "official_search_index_body",
+      "limitations": "Line-level design evidence only. Frozen native names span Madrid–Valladolid–Burgos and cannot be bound to this one record."
+    },
+    "fres-es-madrid-galicia": {
+      "url": "https://www.adifaltavelocidad.es/sobre-adif-av/red-av/madrid-galicia",
+      "title": "Línea Madrid-Galicia",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La nueva línea Madrid-Galicia se ha construido en plataforma para vía doble electrificada",
+      "supports_scope": "434.86 km Olmedo–Santiago project described as new high-speed line, with explicit 350 km/h design maximum.",
+      "location": "line infrastructure description",
+      "access_method": "official_search_index_body",
+      "limitations": "Broad summary does not override official evidence of borrowed historical Ourense approach. No uniform per-way identity or speed."
+    },
+    "fres-es-ourense-santiago": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-madrid-galicia-eje-ourense-santiago",
+      "title": "LAV Madrid-Galicia – Eje Ourense-Santiago",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "mejora integral y electrificación",
+      "supports_scope": "Ourense–Santiago: new 87.5 km AV line. Santiago–A Coruña: improvement and electrification of existing 62 km line.",
+      "location": "separate Ourense–Santiago / Santiago–A Coruña paragraphs",
+      "access_method": "official_search_index_body",
+      "limitations": "No inference of a single physical identity for entire Eje Atlántico or Olmedo–Santiago project."
+    },
+    "fres-es-ourense-annual-2024": {
+      "url": "https://www.adifaltavelocidad.es/documents/34745/10774271/2024_ESTADO_SOSTENIB_ADIF_AV_ESP.pdf",
+      "title": "Informe de Gestión 2024 – Estados de Sostenibilidad. ADIF AV",
+      "publication_date": "2024",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "actual línea en vía única de tres hilos que discurre por el trazado histórico",
+      "supports_scope": "New Taboadela–Rante–Seixalbo variant will replace a historical mixed-gauge single-track Ourense approach.",
+      "location": "printed p.33: Variante de Ourense",
+      "access_method": "official_search_index_body",
+      "limitations": "Describes 2024 state and future replacement, not proof of completion as of October 2026."
+    },
+    "fres-es-ourense-network-2026": {
+      "url": "https://www.adifaltavelocidad.es/documents/34745/50381379/20260126_01%2BDR%2BADIF%2BAV_LIBRO_2026.pdf/1cc6f794-45d8-b19c-9ee8-110676bdcd97?t=1770643234523",
+      "title": "Declaración sobre la Red 2026 – ADIF AV",
+      "publication_date": "2025-12-12",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Variante Exterior de Ourense Fase I",
+      "supports_scope": "2026 program distinguishes Taboadela–Seixalbo infrastructure construction from superstructure electrification / track project stages.",
+      "location": "infrastructure-development program table: Variante Exterior de Ourense",
+      "access_method": "official_search_index_body",
+      "limitations": "Programmed completion dates do not confirm commercial opening, nor complete historical Ourense entry replacement."
+    },
+    "fres-es-eje-atlantico": {
+      "url": "https://www.adifaltavelocidad.es/sobre-adif-av/red-av/eje-atlantico",
+      "title": "Eje Atlántico",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "155,6 km",
+      "supports_scope": "Vigo–A Coruña corridor, shortened versus old route, different opening phases and new southern variants alongside existing northern improvements.",
+      "location": "line description and opening phases",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-eje-vigo-pontevedra-2006": {
+      "url": "https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2006/refc20061020.aspx",
+      "title": "Referencia del Consejo de Ministros: Eje Atlántico Vigo-Pontevedra",
+      "publication_date": "2006-10-20",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "variante de trazado",
+      "supports_scope": "27 km Vigo–Pontevedra new variant, five sections, separate from upgrading existing Santiago–A Coruña.",
+      "location": "Eje Atlántico construction contract item",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-levante-route": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-levante-recorrido",
+      "title": "LAV Levante – Recorrido general de la línea",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "obras más significativas y complejas de la nueva línea",
+      "supports_scope": "Madrid shares existing Madrid–Sevilla HSL to Torrejón de Velasco, then new 223.6 km Torrejón–Motilla and 139 km Motilla–Valencia sections.",
+      "location": "Madrid–Torrejón; Torrejón–Motilla; Motilla–Valencia",
+      "access_method": "official_search_index_body",
+      "limitations": "Archived construction description. Shared approach is itself the purpose-built Madrid–Sevilla HSL. Generic Levante names also span mixed Albacete/Alicante/Murcia branches and are blocked."
+    },
+    "fres-es-albacete-alicante": {
+      "url": "https://www.adifaltavelocidad.es/w/lav-levante-tramo-albacete-alicante",
+      "title": "LAV Levante – Tramo Albacete-Alicante",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Adecuación a alta velocidad del trazado y las instalaciones existentes",
+      "supports_scope": "About 65 km Albacete–Almansa adapted existing route/installation plus about 100 km new Almansa–Alicante AV platform. Some 2003–2006 Iberian-gauge variants reused for AV.",
+      "location": "three types of works and Albacete–Almansa / Almansa–Alicante sections",
+      "access_method": "official_search_index_body",
+      "limitations": "Whole Motilla–Albacete–Alicante is mixed. No native per-section boundary binding available for the shared Madrid-Levante / Alicante-Murcia names."
+    },
+    "fres-es-murcia-inauguration-2022": {
+      "url": "https://www.adifaltavelocidad.es/w/inauguracion-alta-velocidad-murcia",
+      "title": "Adif AV conecta Murcia a la alta velocidad y la posiciona como principal puerta sur del Corredor Mediterráneo",
+      "publication_date": "2022-12-19",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "comparten la misma plataforma; tramos de vía mixta o de tres hilos",
+      "supports_scope": "Beniel–Murcia 16 km AV track alongside conventional line on a common platform, mixed/third rail at Reguerón and Murcia entry, within 65 km Monforte–Murcia connection.",
+      "location": "Beniel–Murcia infrastructure and mixed-gauge sections",
+      "access_method": "official_search_index_body",
+      "limitations": "Whole route includes new AV track and mixed existing-platform infrastructure. Separate native sections are required before new-build binding."
+    },
+    "fres-es-extremadura-electrification-2023": {
+      "url": "https://mptmd.gob.es/portal/delegaciones_gobierno/delegaciones/extremadura/actualidad/2023/12/14-12-2023",
+      "title": "Transportes pone en servicio la electrificación de la línea de alta velocidad entre Plasencia y Badajoz",
+      "publication_date": "2023-12-14",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "150 km de vía de nueva construcción y los tramos de red convencional conectados",
+      "supports_scope": "Plasencia–Cáceres–Mérida–Badajoz: 195 km electrified corridor includes 150 km new construction plus connected conventional line sections.",
+      "location": "corridor scope and electrification inauguration",
+      "access_method": "official_search_index_body",
+      "limitations": "2023 totals are stage-specific. Existing sections and later Mérida bypass must be independently bounded in current native data."
+    },
+    "fres-es-extremadura-electrification-2024": {
+      "url": "https://www.adifaltavelocidad.es/w/pone-tension-34-km-adicionales-catenaria-extremadura",
+      "title": "Adif AV pone en tensión 34,7 km adicionales de catenaria en Extremadura",
+      "publication_date": "2024-08-26",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "vías electrificadas de nueva construcción y los tramos de red convencional conectados",
+      "supports_scope": "2024 extended 230 km Plasencia–Badajoz–Portuguese border electrification remains explicitly mixed new and conventional sections.",
+      "location": "corridor scope paragraph",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-monfrague-plasencia-renewal": {
+      "url": "https://www.adifaltavelocidad.es/w/11-diciembre-2021-11/12/2021-renovaci%C3%B3n-monfrag%C3%BCe-plasencia",
+      "title": "Adif AV finaliza la renovación de la vía entre Monfragüe y Plasencia",
+      "publication_date": "2021-12-11",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "renovación de la infraestructura del tramo Monfragüe-Plasencia",
+      "supports_scope": "Existing Monfragüe–Plasencia adapted for the Madrid–Extremadura HSR connection: rail, sleeper and ballast renewal.",
+      "location": "renewal and AV adaptation paragraphs",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-la-sagra-toledo-2002": {
+      "url": "https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/2002/c2012020.aspx",
+      "title": "Referencia del Consejo de Ministros: nuevo acceso de alta velocidad a Toledo",
+      "publication_date": "2002-12-20",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "La nueva conexión se ha diseñado con parámetros de trazado de alta velocidad",
+      "supports_scope": "New 20.5 km Toledo access: Alameda de la Sagra–Mocejón 8.9 km and Mocejón–Toledo 11.6 km, construction contracts covering both.",
+      "location": "new Toledo access construction authorization",
+      "access_method": "full_html_text",
+      "limitations": "Geometric high-speed design standard is explicit but no numeric design value. Do not inherit Madrid–Sevilla speed."
+    },
+    "fres-es-vandellos-2020": {
+      "url": "https://www.adif.es/w/adif-completa-las-operaciones-para-aumentar-la-velocidad-de-la-variante-vandell%C3%B2s-tarragona-del-corredor-mediterr%C3%A1neo-",
+      "title": "Adif completa las operaciones para aumentar la velocidad de la variante Vandellòs-Tarragona del Corredor Mediterráneo",
+      "publication_date": "2020-09-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "la nueva variante",
+      "supports_scope": "64.1 km new Vandellòs–Tarragona variant including connections, opened January 2020. Iberian-gauge operation 200 km/h, standard-gauge Boella–Camp connection 160 km/h.",
+      "location": "new variant scope and gauge-dependent operating maxima",
+      "access_method": "official_search_index_body",
+      "limitations": "Operating maxima, not design. Broad native València–Boella names extend outside the new variant and remain blocked."
+    },
+    "fres-es-atocha-chamartin": {
+      "url": "https://www.adifaltavelocidad.es/sobre-adif-av/red-av/tunel-atocha-chamartin",
+      "title": "Túnel Atocha-Chamartín",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "nuevo túnel",
+      "supports_scope": "New 7.3 km standard-gauge double-track Atocha–Chamartín HSR interconnection.",
+      "location": "new tunnel project description",
+      "access_method": "official_search_index_body",
+      "limitations": "Does not prove legacy 120 km/h design claim. A new connector can have lower operating speed without becoming an upgraded old line."
+    },
+    "fres-es-burgos-vitoria-2026": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-contrata-segundo-tramo-lav-burgos-vitoria-136-millones",
+      "title": "Adif contrata la construcción de un segundo tramo de la Línea de Alta Velocidad Burgos-Vitoria por 136,6 M€",
+      "publication_date": "2026-07-01",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "nueva Línea de Alta Velocidad (LAV) Burgos-Vitoria",
+      "supports_scope": "New Burgos–Vitoria project: four of seven sections, 54.8 km, mobilized by July 2026. Parallel-to-existing initial section remains new platform.",
+      "location": "project construction status",
+      "access_method": "official_search_index_body",
+      "limitations": "Whole project identity is new construction but not fully commissioned. No safe native exact name in frozen extract."
+    },
+    "fres-es-leon-la-robla-adaptation": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-av-licita-la-instalaci%C3%B3n-pruebas-y-puesta-en-servicio-de-los-detectores-de-ca%C3%ADda-de-objetos-a-v%C3%ADa-dco-del-tramo-le%C3%B3n-la-robla",
+      "title": "Adif AV licita la instalación, pruebas y puesta en servicio de los detectores de caída de objetos a vía del tramo León-La Robla",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "renovación y adaptación de este tramo",
+      "supports_scope": "León–La Robla existing line renewal/adaptation: new rail and sleepers, third rail, catenary adaptation, fencing and level-crossing suppression.",
+      "location": "renewal/adaptation project components",
+      "access_method": "official_search_index_body",
+      "limitations": "Whole segment is upgraded existing, separately from new La Robla–Pola de Lena. No safe native segment name found, so no exact-name promotion."
+    },
+    "fres-es-palencia-alar-reinosa": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-av-impulsa-la-construcci%C3%B3n-del-tramo-osorno-calahorra-de-boedo-con-106-m%E2%82%AC",
+      "title": "Adif AV impulsa la construcción del tramo Osorno-Calahorra de Boedo con 106 M€",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "construcción de una nueva línea de ancho estándar",
+      "supports_scope": "New 78 km Palencia–Alar del Rey core planned to continue to Reinosa. Osorno–Calahorra de Boedo 20.7 km explicitly designed for maximum 350 km/h.",
+      "location": "new core and Osorno section design",
+      "access_method": "official_search_index_body",
+      "limitations": "Cannot extend new-build identity or section design value to the parenthesized Santander end or existing Reinosa–Santander line."
+    },
+    "fres-es-talayuela-plasencia-2024": {
+      "url": "https://www.adifaltavelocidad.es/w/adif-arranca-la-redacci%C3%B3n-del-proyecto-para-tender-v%C3%ADas-entre-talayuela-y-plasencia",
+      "title": "Adif arranca la redacción del proyecto para tender vías entre Talayuela y Plasencia",
+      "publication_date": "2024-03-14",
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "nueva fase en la construcción del segundo tramo",
+      "supports_scope": "70 km Talayuela–Plasencia new platform construction, seven sections, double-track assembly project including connections.",
+      "location": "platform and track-assembly project description",
+      "access_method": "official_search_index_body",
+      "limitations": "Identity only. Operating or project maximum speed does not establish design speed. No per-way speed binding."
+    },
+    "fres-es-toledo-oropesa-study": {
+      "url": "https://cdn.transportes.gob.es/portal-web-transportes/ferroviario/estudios_planificacion/madrid-oropesa-tamos-i-ii/documento_no_tecnico_madrid-oropesa_vf-.pdf",
+      "title": "Estudio informativo LAV Madrid-Extremadura. Madrid-Oropesa. Nuevas propuestas de trazado. Tramos I y II – Documento no técnico",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Nuevas propuestas de trazado",
+      "supports_scope": "Toledo/Torrijos alternatives within Madrid–Oropesa planning, plus separate Talayuela–Plasencia construction evidence.",
+      "location": "document title and studied sections",
+      "access_method": "official_search_index_body",
+      "limitations": "Study scope does not establish the exact whole Toledo–Oropesa catalog segment or current native-way boundaries."
+    },
+    "fres-es-y-vasca": {
+      "url": "https://www.euskadi.eus/web01-a2garrai/es/contenidos/informacion/4429/es_4081/yvasca_introduccion.html",
+      "title": "El proyecto ferroviario – Y vasca",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "Nueva Red Ferroviaria",
+      "supports_scope": "New Basque railway network linking Vitoria, Bilbao and Donostia/San Sebastián, independent from the historical nineteenth-century network.",
+      "location": "project introduction",
+      "access_method": "official_search_index_body",
+      "limitations": "New project identity does not prove commercial commissioning. Frozen native Euskal Y ways are all railway=construction."
+    },
+    "fres-es-murcia-almeria-track-base": {
+      "url": "https://www.adifaltavelocidad.es/w/licitacion-base-montaje-via-librilla-linea-alta-velocidad-murcia-almeria",
+      "title": "Adif moviliza 31,3 millones para impulsar una nueva fase de la LAV Murcia-Almería, el montaje de vías",
+      "publication_date": null,
+      "read": "2026-10-18",
+      "publisher_kind": "official",
+      "excerpt": "desarrollo de la nueva Línea de Alta Velocidad (LAV) Murcia-Almería",
+      "supports_scope": "New Murcia–Almería project, platform sections contracted, under construction or complete, moving toward track assembly.",
+      "location": "new line and construction-stage description",
+      "access_method": "official_search_index_body",
+      "limitations": "Construction-project identity only. No safe native exact name in frozen extract or complete commissioning evidence."
+    }
+  },
+  "records": [
+    {
+      "id": "fr-13",
+      "country": "fr",
+      "name": "LGV Sud-Est",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-national-plan-1992"
+      ],
+      "exact_names": [
+        "LGV Sud-Est"
+      ],
+      "design_binding": null,
+      "supported_scope": "Dedicated Paris Sud-Est LGV, Combs-la-Ville–Sathonay-Camp core",
+      "conclusion": "政府原始规划明确既有项目为新建线路。仅绑定原生 LGV 名称，跨多条 LGV 的 Combs-la-Ville–Saint-Louis 名称和各连接线不收养。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_300_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 270,
+          "scope": "historical commercial maximum in 1992 plan",
+          "source": "fres-fr-national-plan-1992",
+          "basis": "operating_or_project_maximum_not_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "LGV Sud-Est": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            270176
+          ],
+          "native_own_name_examples": []
+        },
+        "Raccordement de Pasilly à Aisy": {
+          "way_count": 54,
+          "railway_counts": {
+            "rail": 54
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Pasilly à Aisy"
+          ]
+        },
+        "Raccordement de Lyon-Saint-Clair": {
+          "way_count": 50,
+          "railway_counts": {
+            "rail": 50
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Lyon-Saint-Clair"
+          ]
+        },
+        "Raccordement LGV de Lyon-Saint-Clair": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            6425490
+          ],
+          "native_own_name_examples": []
+        },
+        "Raccordement Sud de Montereau LGV": {
+          "way_count": 3,
+          "railway_counts": {
+            "rail": 3
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement Sud de Montereau LGV"
+          ]
+        },
+        "Raccordement TGV de Perrigny": {
+          "way_count": 23,
+          "railway_counts": {
+            "rail": 23
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement TGV de Perrigny"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Pasilly à Aisy",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Lyon-Saint-Clair",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement LGV de Lyon-Saint-Clair",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement Sud de Montereau LGV",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement TGV de Perrigny",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-14",
+      "country": "fr",
+      "name": "LGV Atlantique",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-national-plan-1992"
+      ],
+      "exact_names": [
+        "LGV Atlantique"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Atlantique trunk and Le Mans/Tours branches",
+      "conclusion": "政府原始规划明确是新建线路。仅绑定原生基础设施关系 LGV Atlantique。",
+      "operational_status": "in_service",
+      "blockers": [
+        "no_explicit_numeric_design_evidence"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 300,
+          "scope": "historical commercial maximum in 1992 plan",
+          "source": "fres-fr-national-plan-1992",
+          "basis": "operating_or_project_maximum_not_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Raccordement de Monts-Sud": {
+          "way_count": 14,
+          "railway_counts": {
+            "rail": 14
+          },
+          "relation_ids": [
+            18197139
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Monts-Sud"
+          ]
+        },
+        "LGV Atlantique": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            271511
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Monts-Sud",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-15",
+      "country": "fr",
+      "name": "LGV Nord",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-national-plan-1992"
+      ],
+      "exact_names": [
+        "LGV Nord"
+      ],
+      "design_binding": null,
+      "supported_scope": "Paris/Gonesse–Lille–Belgian border and Channel Tunnel branch new LGV core",
+      "conclusion": "政府规划明确 Nord 为新建线路，原生 LGV Nord 名称及关系可作身份键。连接线须另核。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "LGV Nord": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [
+            270121
+          ],
+          "native_own_name_examples": [
+            "LGV Nord"
+          ]
+        },
+        "Raccordement d'Arras Sud": {
+          "way_count": 27,
+          "railway_counts": {
+            "rail": 27
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement d'Arras Sud"
+          ]
+        },
+        "voie 1a du raccordement d'Arras-Sud": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            7257377
+          ],
+          "native_own_name_examples": []
+        },
+        "Raccordement de Fretin": {
+          "way_count": 18,
+          "railway_counts": {
+            "rail": 18
+          },
+          "relation_ids": [
+            18029508
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Fretin"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement d'Arras Sud",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "voie 1a du raccordement d'Arras-Sud",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Fretin",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-16",
+      "country": "fr",
+      "name": "LGV Interconnexion Est",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-national-plan-1992"
+      ],
+      "exact_names": [
+        "LGV Sud-Est - Ligne de Villeneuve-Saint-Georges à Moisenay",
+        "LGV de Villeneuve-Saint-Georges à Moisenay"
+      ],
+      "design_binding": null,
+      "supported_scope": "102 km new Île-de-France Est interconnection project, including Créteil/Valenton–Coubert–Moisenay LGV branch",
+      "conclusion": "政府原始规划明确该 102 km 项目为新建线路。仅启用自有名称明确标示 LGV 的西支原生几何，不扩展到 Massy–Valenton 既有线或车站名。",
+      "operational_status": "in_service",
+      "blockers": [
+        "no_explicit_numeric_design_evidence",
+        "main_eastern_interconnection_name_not_found_in_frozen_extract"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "LGV Sud-Est - Ligne de Villeneuve-Saint-Georges à Moisenay": {
+          "way_count": 95,
+          "railway_counts": {
+            "rail": 95
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LGV Sud-Est - Ligne de Villeneuve-Saint-Georges à Moisenay"
+          ]
+        },
+        "LGV de Villeneuve-Saint-Georges à Moisenay": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LGV de Villeneuve-Saint-Georges à Moisenay"
+          ]
+        },
+        "Raccordement de Vémars": {
+          "way_count": 6,
+          "railway_counts": {
+            "rail": 6
+          },
+          "relation_ids": [
+            7235820
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Vémars"
+          ]
+        },
+        "Raccordement de Messy": {
+          "way_count": 10,
+          "railway_counts": {
+            "rail": 10
+          },
+          "relation_ids": [
+            6042429
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Messy"
+          ]
+        },
+        "Marne la Vallee - Chessy": {
+          "way_count": 55,
+          "railway_counts": {
+            "rail": 55
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Marne la Vallee - Chessy"
+          ]
+        },
+        "Aéroport Charles-de-Gaulle 2 TGV": {
+          "way_count": 10,
+          "railway_counts": {
+            "rail": 10
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Aéroport Charles-de-Gaulle 2 TGV"
+          ]
+        },
+        "Tranchée de Coupvray": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Tranchée de Coupvray"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Vémars",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Messy",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Marne la Vallee - Chessy",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Aéroport Charles-de-Gaulle 2 TGV",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Tranchée de Coupvray",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-17",
+      "country": "fr",
+      "name": "LGV Rhône-Alpes",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-national-plan-1992"
+      ],
+      "exact_names": [
+        "LGV Rhône-Alpes"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Montanay/Lyon bypass–Valence LGV extension",
+      "conclusion": "政府原始规划明确巴黎里昂新线向 Valence 延长线为新建。原生专属关系 LGV Rhône-Alpes 可绑定，跨段主线名不绑定。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_300_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Raccordement de Saint-Marcel-lès-Valence": {
+          "way_count": 11,
+          "railway_counts": {
+            "rail": 11
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Saint-Marcel-lès-Valence"
+          ]
+        },
+        "LGV Rhône-Alpes": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            2418217
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Saint-Marcel-lès-Valence",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-18",
+      "country": "fr",
+      "name": "LGV Méditerranée",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-mediterranee-2026",
+        "fres-fr-mediterranee-senat-1999"
+      ],
+      "exact_names": [
+        "LGV Méditerranée"
+      ],
+      "design_binding": null,
+      "supported_scope": "Valence–Marseille and Angles–Manduel/Nîmes new LGV core, excluding later CNM",
+      "conclusion": "SNCF 明确完全新建线路，参议院建设范围明确包含 Nîmes 支线。不得把后来的 Nîmes–Montpellier 或既有进站线一并套入。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Raccordement branche grand-sud du triangle des Angles (LGV)": {
+          "way_count": 18,
+          "railway_counts": {
+            "rail": 18
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement branche grand-sud du triangle des Angles (LGV)"
+          ]
+        },
+        "LGV Méditerranée": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            6582800
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement branche grand-sud du triangle des Angles (LGV)",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-19",
+      "country": "fr",
+      "name": "LGV Est européenne",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-est-cour-comptes-2012"
+      ],
+      "exact_names": [
+        "LGV Est européenne",
+        "Ligne de Paris à Strasbourg (LGV)"
+      ],
+      "design_binding": null,
+      "supported_scope": "406 km Vaires–Vendenheim LGV, both phases",
+      "conclusion": "官方审计明确整条两期共 406 km 新建轨道。必须保留原生名称中的 (LGV)，不能绑定普通 Paris–Strasbourg 主线名。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "LGV Est européenne": {
+          "way_count": 9,
+          "railway_counts": {
+            "rail": 9
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LGV Est européenne"
+          ]
+        },
+        "Raccordement d'Annet": {
+          "way_count": 22,
+          "railway_counts": {
+            "rail": 22
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement d'Annet"
+          ]
+        },
+        "Ligne de Paris à Strasbourg (LGV)": {
+          "way_count": 932,
+          "railway_counts": {
+            "rail": 932
+          },
+          "relation_ids": [
+            7123152
+          ],
+          "native_own_name_examples": [
+            "Ligne de Paris à Strasbourg (LGV)"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement d'Annet",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-20",
+      "country": "fr",
+      "name": "LGV Rhin-Rhône (branche Est)",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-rhin-rhone-loti-2018"
+      ],
+      "exact_names": [
+        "LGV Rhin-Rhône",
+        "Ligne Rhin-Rhône (LGV)"
+      ],
+      "design_binding": null,
+      "supported_scope": "Villers-les-Pots–Petit-Croix new East-branch core",
+      "conclusion": "官方 LOTI 将新建高速主线与既有 Besançon–Devecey 及经典线改造分列。仅专属 LGV 名称绑定，接入线不收养。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "LGV Rhin-Rhône": {
+          "way_count": 414,
+          "railway_counts": {
+            "rail": 414
+          },
+          "relation_ids": [
+            1745349
+          ],
+          "native_own_name_examples": [
+            "LGV Rhin-Rhône"
+          ]
+        },
+        "Ligne Rhin-Rhône": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Ligne Rhin-Rhône"
+          ]
+        },
+        "Raccordement de Petit-Croix": {
+          "way_count": 14,
+          "railway_counts": {
+            "rail": 14
+          },
+          "relation_ids": [
+            7259641
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Petit-Croix"
+          ]
+        },
+        "Raccordement Ouest Besançon TGV": {
+          "way_count": 12,
+          "railway_counts": {
+            "rail": 12
+          },
+          "relation_ids": [
+            8529115
+          ],
+          "native_own_name_examples": [
+            "Raccordement Ouest Besançon TGV"
+          ]
+        },
+        "Raccordement EST de Besançon TGV": {
+          "way_count": 4,
+          "railway_counts": {
+            "rail": 4
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement EST de Besançon TGV"
+          ]
+        },
+        "Ligne Rhin-Rhône (LGV)": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            146142
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Ligne Rhin-Rhône",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Petit-Croix",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement Ouest Besançon TGV",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement EST de Besançon TGV",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-21",
+      "country": "fr",
+      "name": "LGV Perpignan–Figueras",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-perpignan-treaty-2016"
+      ],
+      "exact_names": [
+        "LGV Perpignan-Figueras",
+        "Ligne à Grande Vitesse Perpignan-Figueras",
+        "LGV Perpignan-Figueres"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Perpignan/Le Soler–Figueres international route and Perthus tunnel",
+      "conclusion": "法西官方运营协定追溯设计施工特许，明确为新建双线混合运输高铁，身份不靠 TGV 服务判断。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "LGV Perpignan-Figueras": {
+          "way_count": 47,
+          "railway_counts": {
+            "rail": 47
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LGV Perpignan-Figueras"
+          ]
+        },
+        "Ligne à Grande Vitesse Perpignan-Figueras": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Ligne à Grande Vitesse Perpignan-Figueras"
+          ]
+        },
+        "LGV Perpignan-Figueres": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            1628397
+          ],
+          "native_own_name_examples": []
+        },
+        "Raccordement TGV du Soler": {
+          "way_count": 21,
+          "railway_counts": {
+            "rail": 21
+          },
+          "relation_ids": [
+            18226533
+          ],
+          "native_own_name_examples": [
+            "Raccordement TGV du Soler"
+          ]
+        },
+        "LGV Perpignan–Figueras": {
+          "way_count": 47,
+          "railway_counts": {
+            "rail": 47
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LGV Perpignan-Figueras"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement TGV du Soler",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-22",
+      "country": "fr",
+      "name": "LGV Sud Europe Atlantique",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-government-projects"
+      ],
+      "exact_names": [
+        "Ligne SEA-Atlantique (LGV)"
+      ],
+      "design_binding": null,
+      "supported_scope": "302 km new Tours–Bordeaux SEA core, connections separately scoped",
+      "conclusion": "法国政府明确新建主线和连接线长度。仅启用原生带 (LGV) 的 SEA 名称，连接线及既有进站线不继承设计值。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Raccordement de Migne-Auxances": {
+          "way_count": 28,
+          "railway_counts": {
+            "rail": 28
+          },
+          "relation_ids": [
+            18197243
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Migne-Auxances"
+          ]
+        },
+        "Raccordement Fontaine Le Comte Sud": {
+          "way_count": 13,
+          "railway_counts": {
+            "rail": 13
+          },
+          "relation_ids": [
+            18197298
+          ],
+          "native_own_name_examples": [
+            "Raccordement Fontaine Le Comte Sud"
+          ]
+        },
+        "Raccordement Fontaine Le Comte Nord": {
+          "way_count": 15,
+          "railway_counts": {
+            "rail": 15
+          },
+          "relation_ids": [
+            18197299
+          ],
+          "native_own_name_examples": [
+            "Raccordement Fontaine Le Comte Nord"
+          ]
+        },
+        "Raccordement de La Couronne": {
+          "way_count": 30,
+          "railway_counts": {
+            "rail": 30
+          },
+          "relation_ids": [
+            18197368
+          ],
+          "native_own_name_examples": [
+            "Raccordement de La Couronne"
+          ]
+        },
+        "Raccordement de Villognon": {
+          "way_count": 6,
+          "railway_counts": {
+            "rail": 6
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Villognon"
+          ]
+        },
+        "Raccordement de La Celle-Saint-Avant V1": {
+          "way_count": 8,
+          "railway_counts": {
+            "rail": 8
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de La Celle-Saint-Avant V1"
+          ]
+        },
+        "Raccordement de Juillé": {
+          "way_count": 7,
+          "railway_counts": {
+            "rail": 7
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Juillé"
+          ]
+        },
+        "Raccordement d'Ambarès-et-Lagrave": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement d'Ambarès-et-Lagrave"
+          ]
+        },
+        "Ligne SEA-Atlantique (LGV)": {
+          "way_count": 711,
+          "railway_counts": {
+            "rail": 711
+          },
+          "relation_ids": [
+            15572775
+          ],
+          "native_own_name_examples": [
+            "Ligne SEA-Atlantique (LGV)"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Migne-Auxances",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement Fontaine Le Comte Sud",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement Fontaine Le Comte Nord",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de La Couronne",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Villognon",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de La Celle-Saint-Avant V1",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Juillé",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement d'Ambarès-et-Lagrave",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-23",
+      "country": "fr",
+      "name": "LGV Bretagne-Pays de la Loire",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-government-projects"
+      ],
+      "exact_names": [
+        "Ligne de Connerré à Rennes (LGV)",
+        "LGV Bretagne-Pays de la Loire"
+      ],
+      "design_binding": null,
+      "supported_scope": "182 km new Connerré/Le Mans–Rennes BPL core",
+      "conclusion": "政府资料明确新建 182 km 主线。原生 LGV 专属名称可绑定，Sablé 等连接线不自动收养。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Raccordement de Sablé-sur-Sarthe": {
+          "way_count": 21,
+          "railway_counts": {
+            "rail": 21
+          },
+          "relation_ids": [
+            18199746
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Sablé-sur-Sarthe"
+          ]
+        },
+        "Raccordement de Laval-Ouest": {
+          "way_count": 30,
+          "railway_counts": {
+            "rail": 30
+          },
+          "relation_ids": [
+            18199815
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Laval-Ouest"
+          ]
+        },
+        "Raccordement de Laval-Est": {
+          "way_count": 14,
+          "railway_counts": {
+            "rail": 14
+          },
+          "relation_ids": [
+            18199777
+          ],
+          "native_own_name_examples": [
+            "Raccordement de Laval-Est"
+          ]
+        },
+        "Raccordement de Connerré-Sud": {
+          "way_count": 21,
+          "railway_counts": {
+            "rail": 21
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de Connerré-Sud"
+          ]
+        },
+        "Raccordement de la Milesse-Voyageurs": {
+          "way_count": 11,
+          "railway_counts": {
+            "rail": 11
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Raccordement de la Milesse-Voyageurs"
+          ]
+        },
+        "Ligne de Connerré à Rennes (LGV)": {
+          "way_count": 277,
+          "railway_counts": {
+            "rail": 277
+          },
+          "relation_ids": [
+            15569463
+          ],
+          "native_own_name_examples": [
+            "Ligne de Connerré à Rennes (LGV)"
+          ]
+        },
+        "LGV Bretagne-Pays de la Loire": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            224214
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Raccordement de Sablé-sur-Sarthe",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Laval-Ouest",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Laval-Est",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de Connerré-Sud",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Raccordement de la Milesse-Voyageurs",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "fr-24",
+      "country": "fr",
+      "name": "Contournement Nîmes–Montpellier",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-government-projects"
+      ],
+      "exact_names": [
+        "Contournement de Nîmes et Montpellier"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Manduel–Lattes mixed-traffic CNM bypass, distinct from Méditerranée Nîmes branch",
+      "conclusion": "政府明确 CNM 新建混合运输绕线。仅原生专属绕线名称绑定，不启用横跨两个目录段的 Angles–Lattes 名称。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Contournement de Nîmes et Montpellier": {
+          "way_count": 14,
+          "railway_counts": {
+            "rail": 14
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Contournement de Nîmes et Montpellier"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "fr-25",
+      "country": "fr",
+      "name": "Tunnel euralpin Lyon–Turin (section transfrontalière)",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-fr-government-projects",
+        "fres-fr-telt-tbm"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New cross-border Lyon–Turin Mont-Cenis base tunnel under construction",
+      "conclusion": "官方建设方明确新建线路的 57.5 km 基础隧道。当前冻结法国输入没有安全专属原生名称，保持施工属性，不计运营高铁。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "no_safe_native_exact_name",
+        "commercial_commissioning_not_proven",
+        "legacy_design_250_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "fr-26",
+      "country": "fr",
+      "name": "Liaison Roissy–Picardie",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-fr-roissy-2026"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole Roissy–Picardie project: 6.5 km new connection plus existing network/station works",
+      "conclusion": "整项目混合新建和既有网改造，不能给整条新建高速身份。缺新建连接线与既有改造段的原生对象边界。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "mixed_new_and_existing_scope",
+        "no_safe_native_exact_name",
+        "160_is_not_explicit_design"
+      ],
+      "partial_identities": [
+        {
+          "scope": "6.5 km new Roissy–Picardie connector",
+          "identity": "new_build",
+          "sources": [
+            "fres-fr-roissy-2026"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "existing network/station capacity works",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-fr-roissy-2026"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 160,
+          "scope": "new 6.5 km connector project speed",
+          "source": "fres-fr-roissy-2026",
+          "basis": "operating_or_project_maximum_not_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-40",
+      "country": "es",
+      "name": "LAV Madrid–Sevilla",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-madrid-sevilla-history"
+      ],
+      "exact_names": [
+        "Línea de alta velocidad Madrid - Sevilla",
+        "LAV Madrid - Sevilla"
+      ],
+      "design_binding": null,
+      "supported_scope": "Purpose-built Madrid–Sevilla HSL core",
+      "conclusion": "ADIF 历史资料明确 1988 决策新建、1992 投用的高速基础设施。泛称 LAV 和未单独核实连接线不绑定。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_300_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Madrid - Sevilla": {
+          "way_count": 492,
+          "railway_counts": {
+            "rail": 492
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid - Sevilla"
+          ]
+        },
+        "LAV Madrid - Sevilla": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid - Sevilla"
+          ]
+        },
+        "LAV": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV"
+          ]
+        },
+        "Línea de alta velocidad Vallecas-Alta Velocidad-aguja km 12,300-Los Gavilanes-aguja km 13,400": {
+          "way_count": 10,
+          "railway_counts": {
+            "rail": 10
+          },
+          "relation_ids": [
+            17684502
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Vallecas-Alta Velocidad-aguja km 12,300-Los Gavilanes-aguja km 13,400"
+          ]
+        },
+        "Línea de alta velocidad Madrid-Sevilla": {
+          "way_count": 492,
+          "railway_counts": {
+            "rail": 492
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid - Sevilla"
+          ]
+        },
+        "LAV Madrid–Sevilla": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid - Sevilla"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "LAV",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de alta velocidad Vallecas-Alta Velocidad-aguja km 12,300-Los Gavilanes-aguja km 13,400",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-41",
+      "country": "es",
+      "name": "LAV Córdoba–Málaga",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-cordoba-malaga"
+      ],
+      "exact_names": [
+        "Línea de alta velocidad Córdoba - Málaga"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Córdoba/Almodóvar del Río–Málaga HSL",
+      "conclusion": "ADIF 明确该高速线路的建设工程，专属自有名称与基础设施关系支持绑定。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Córdoba - Málaga": {
+          "way_count": 222,
+          "railway_counts": {
+            "rail": 222
+          },
+          "relation_ids": [
+            11143233
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Córdoba - Málaga"
+          ]
+        },
+        "Línea de alta velocidad Córdoba-Málaga": {
+          "way_count": 222,
+          "railway_counts": {
+            "rail": 222
+          },
+          "relation_ids": [
+            11143233
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Córdoba - Málaga"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-42",
+      "country": "es",
+      "name": "LAV Antequera–Granada",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-loja-variant-2025",
+        "fres-es-loja-conventional-boe-2021"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole Antequera–Granada route including Loja existing-line connection and new variant",
+      "conclusion": "Loja 新绕线建设与既有 Bobadilla–Granada 接入并存，整线不能统称新建。缺当前已投用新段及既有接入段的原生边界。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_or_partial_native_scope",
+        "current_loja_variant_full_commissioning_not_proven"
+      ],
+      "partial_identities": [
+        {
+          "scope": "new Loja variant project and other dedicated new AV sections",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-loja-variant-2025"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Loja/Riofrío connection to conventional Bobadilla–Granada",
+          "identity": "unresolved",
+          "sources": [
+            "fres-es-loja-conventional-boe-2021"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Antequera-Granada": {
+          "way_count": 174,
+          "railway_counts": {
+            "rail": 172,
+            "construction": 2
+          },
+          "relation_ids": [
+            2869549
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Antequera-Granada",
+            "Línea de Alta Velocidad Antequera-Granada"
+          ]
+        },
+        "LAV Antequera-Granada": {
+          "way_count": 11,
+          "railway_counts": {
+            "construction": 10,
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Antequera-Granada"
+          ]
+        },
+        "LAV Antequera–Granada": {
+          "way_count": 11,
+          "railway_counts": {
+            "construction": 10,
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Antequera-Granada"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de alta velocidad Antequera-Granada",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Antequera-Granada",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Antequera–Granada",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-43",
+      "country": "es",
+      "name": "LAV Madrid–Zaragoza–Barcelona–Frontera francesa",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-madrid-barcelona-history",
+        "fres-es-barcelona-figueres",
+        "fres-es-madrid-barcelona-dossier-2023"
+      ],
+      "exact_names": [
+        "Línea de alta velocidad Madrid-Zaragoza-Barcelona-Frontera francesa",
+        "Línia d'alta velocitat Madrid - Zaragoza - Barcelona - Frontera francesa",
+        "Línia d'Alta Velocitat Madrid-Barcelona-Frontera francesa",
+        "LAV Madrid-Barcelona-Frontera francesa"
+      ],
+      "design_binding": null,
+      "supported_scope": "Purpose-built Madrid–Zaragoza–Barcelona–Figueres/French-border HSL",
+      "conclusion": "ADIF 分期建设历史支持新建线路。2010 常规线第三轨货运接入与 AV 核心不同，AVE 服务名、连接线名不进入 exact_names。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Madrid-Zaragoza-Barcelona-Frontera francesa": {
+          "way_count": 500,
+          "railway_counts": {
+            "rail": 500
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid-Zaragoza-Barcelona-Frontera francesa"
+          ]
+        },
+        "Línia d'alta velocitat Madrid - Zaragoza - Barcelona - Frontera francesa": {
+          "way_count": 1076,
+          "railway_counts": {
+            "rail": 1076
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línia d'alta velocitat Madrid - Zaragoza - Barcelona - Frontera francesa"
+          ]
+        },
+        "Línia d'Alta Velocitat Madrid-Barcelona-Frontera francesa": {
+          "way_count": 56,
+          "railway_counts": {
+            "rail": 56
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línia d'Alta Velocitat Madrid-Barcelona-Frontera francesa"
+          ]
+        },
+        "LAV Madrid-Barcelona-Frontera francesa": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [
+            11082425
+          ],
+          "native_own_name_examples": [
+            "LAV Madrid-Barcelona-Frontera francesa"
+          ]
+        },
+        "AVE Barcelona - França": {
+          "way_count": 9,
+          "railway_counts": {
+            "rail": 9
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "AVE Barcelona - França"
+          ]
+        },
+        "AVE Madrid-Barcelona": {
+          "way_count": 18,
+          "railway_counts": {
+            "rail": 18
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "AVE Madrid-Barcelona"
+          ]
+        },
+        "Línea Bifurcación Canal Imperial-Bifurcación Moncasi": {
+          "way_count": 67,
+          "railway_counts": {
+            "rail": 67
+          },
+          "relation_ids": [
+            11168004
+          ],
+          "native_own_name_examples": [
+            "Línea Bifurcación Canal Imperial-Bifurcación Moncasi"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "AVE Barcelona - França",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "AVE Madrid-Barcelona",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea Bifurcación Canal Imperial-Bifurcación Moncasi",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-44",
+      "country": "es",
+      "name": "LAV Zaragoza–Huesca",
+      "identity": "upgraded_existing",
+      "infrastructure_identity": "upgraded_existing",
+      "verified_sources": [
+        "fres-es-zaragoza-huesca-boe-2002"
+      ],
+      "exact_names": [
+        "Línea Zaragoza-Huesca"
+      ],
+      "design_binding": null,
+      "supported_scope": "Existing Zaragoza–Zuera–Tardienta–Huesca corridor: track duplication and third-rail adaptation",
+      "conclusion": "新确认整线为既有走廊升级：官方正文明确 31+28 km 既有线增轨及 Tardienta–Huesca 既有轨第三轨。附件明确不改变现有走向，Ebro 新桥局部变线不构成整线专门新建高速基础设施。",
+      "operational_status": "in_service",
+      "blockers": [
+        "no_explicit_numeric_design_evidence",
+        "local_ebro_bridge_replacement_not_whole_new_hsl"
+      ],
+      "partial_identities": [
+        {
+          "scope": "Zaragoza–Zuera and Zuera–Tardienta existing-corridor duplication",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-zaragoza-huesca-boe-2002"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Tardienta–Huesca existing-track third-rail adaptation",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-zaragoza-huesca-boe-2002"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea Zaragoza-Huesca": {
+          "way_count": 81,
+          "railway_counts": {
+            "rail": 81
+          },
+          "relation_ids": [
+            9277290
+          ],
+          "native_own_name_examples": [
+            "Línea Zaragoza-Huesca"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-45",
+      "country": "es",
+      "name": "LAV Madrid–Segovia–Valladolid",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-madrid-valladolid-inauguration"
+      ],
+      "exact_names": [
+        "Línea de Alta Velocidad Madrid–Segovia–Valladolid"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Madrid–Segovia–Valladolid HSL",
+      "conclusion": "政府投用资料明确新建线路。跨至 Burgos 的原生长名称不能同时绑定本记录与 Venta de Baños–Burgos。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated",
+        "broader_madrid_valladolid_burgos_names_blocked"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos": {
+          "way_count": 190,
+          "railway_counts": {
+            "rail": 190
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+            "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid–Valladolid-Burgos": {
+          "way_count": 143,
+          "railway_counts": {
+            "rail": 143
+          },
+          "relation_ids": [
+            4777557
+          ],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Valladolid-Burgos"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos": {
+          "way_count": 190,
+          "railway_counts": {
+            "rail": 190
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+            "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid–Segovia–Valladolid": {
+          "way_count": 24,
+          "railway_counts": {
+            "rail": 24
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Segovia–Valladolid",
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid",
+            "Línea de alta velocidad Madrid–Segovia–Valladolid"
+          ]
+        },
+        "Línea de alta velocidad Madrid–Segovia–Valladolid": {
+          "way_count": 24,
+          "railway_counts": {
+            "rail": 24
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Segovia–Valladolid",
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid",
+            "Línea de alta velocidad Madrid–Segovia–Valladolid"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid-Segovia–Valladolid": {
+          "way_count": 24,
+          "railway_counts": {
+            "rail": 24
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Segovia–Valladolid",
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid",
+            "Línea de alta velocidad Madrid–Segovia–Valladolid"
+          ]
+        },
+        "Línea de alta velocidad Madrid-Segovia-Valladolid": {
+          "way_count": 24,
+          "railway_counts": {
+            "rail": 24
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Segovia–Valladolid",
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid",
+            "Línea de alta velocidad Madrid–Segovia–Valladolid"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid–Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-46",
+      "country": "es",
+      "name": "LAV Valladolid–Venta de Baños–Palencia–León",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-valladolid-leon-2015"
+      ],
+      "exact_names": [
+        "Línea de Alta Velocidad Venta de Baños-León",
+        "Línea de Alta Velocidad Valladolid-Venta de Baños"
+      ],
+      "design_binding": null,
+      "supported_scope": "New 166 km Valladolid–Venta de Baños–Palencia–León HSL",
+      "conclusion": "政府明确新增 166 km 连接，专属原生名称支持。施工标签始终由管线保留，不因目录身份转成运营段。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Venta de Baños-León": {
+          "way_count": 168,
+          "railway_counts": {
+            "rail": 159,
+            "construction": 9
+          },
+          "relation_ids": [
+            5546933
+          ],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Venta de Baños-León"
+          ]
+        },
+        "Línea de Alta Velocidad Valladolid-Venta de Baños": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Valladolid-Venta de Baños"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-47",
+      "country": "es",
+      "name": "LAV León–Asturias (Variante de Pajares, La Robla–Pola de Lena)",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-pajares-2023"
+      ],
+      "exact_names": [
+        "Línea de Alta Velocidad La Robla - Pola de Lena",
+        "Línea de Alta Velocidad Pola de Lena - La Robla"
+      ],
+      "design_binding": null,
+      "supported_scope": "New 50 km La Robla–Pola de Lena Pajares variant",
+      "conclusion": "ADIF 明确新线替代十九世纪既有爬坡线。León–La Robla 改造线单独列入 es-59。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad La Robla - Pola de Lena": {
+          "way_count": 99,
+          "railway_counts": {
+            "rail": 99
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad La Robla - Pola de Lena"
+          ]
+        },
+        "Línea de Alta Velocidad Pola de Lena - La Robla": {
+          "way_count": 9,
+          "railway_counts": {
+            "rail": 9
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Pola de Lena - La Robla"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-48",
+      "country": "es",
+      "name": "LAV Venta de Baños–Burgos",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-venta-banos-burgos"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New 86.5 km Venta de Baños–Burgos HSL",
+      "conclusion": "官方明确新建且给出设计准备速度。现有原生名称横跨 Madrid–Valladolid–Burgos，缺本段唯一名称，不能用全走廊名绑定。",
+      "operational_status": "in_service",
+      "blockers": [
+        "no_safe_segment_specific_native_name"
+      ],
+      "partial_identities": [],
+      "design_evidence": [
+        {
+          "kmh": 350,
+          "scope": "Venta de Baños–Burgos 86.5 km core",
+          "source": "fres-es-venta-banos-burgos",
+          "basis": "explicit_official_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos": {
+          "way_count": 190,
+          "railway_counts": {
+            "rail": 190
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+            "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid–Valladolid-Burgos": {
+          "way_count": 143,
+          "railway_counts": {
+            "rail": 143
+          },
+          "relation_ids": [
+            4777557
+          ],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid–Valladolid-Burgos"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos": {
+          "way_count": 190,
+          "railway_counts": {
+            "rail": 190
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+            "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de Alta Velocidad Madrid-Segovia–Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid–Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid-Segovia-Valladolid-Burgos",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-49",
+      "country": "es",
+      "name": "LAV Olmedo–Zamora–Ourense–Santiago de Compostela",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-madrid-galicia",
+        "fres-es-ourense-annual-2024",
+        "fres-es-ourense-network-2026"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Olmedo–Zamora–Ourense–Santiago project including historical Ourense entry",
+      "conclusion": "ADIF 概览称新建主线，但官方报告明确 Ourense 入口借用历史单线三轨，2026 网络声明仍分列新绕线建设。缺当前替代范围、完整投用和原生边界，不把整条统一判新建。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_historical_ourense_approach",
+        "current_full_variant_commissioning_not_proven",
+        "native_scope_not_resolved"
+      ],
+      "partial_identities": [
+        {
+          "scope": "dedicated Olmedo–Galicia new core",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-madrid-galicia"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "historical Taboadela/Ourense mixed-gauge approach",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-ourense-annual-2024"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [
+        {
+          "kmh": 350,
+          "scope": "ADIF broad new-line project description, excludes unproven historical approach",
+          "source": "fres-es-madrid-galicia",
+          "basis": "explicit_official_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Liña de Alta Velocidade Olmedo-Zamora-Santiago de Compostela": {
+          "way_count": 462,
+          "railway_counts": {
+            "rail": 448,
+            "construction": 14
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Liña de Alta Velocidade Olmedo-Zamora-Santiago de Compostela"
+          ]
+        },
+        "Línea de Alta Velocidad Olmedo-Zamora-Santiago de Compostela": {
+          "way_count": 159,
+          "railway_counts": {
+            "rail": 149,
+            "construction": 10
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Olmedo-Zamora-Santiago de Compostela"
+          ]
+        },
+        "Línea de Alta Velocidad Olmedo-Zamora-Galicia": {
+          "way_count": 87,
+          "railway_counts": {
+            "rail": 87
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Olmedo-Zamora-Galicia"
+          ]
+        },
+        "LAV Olmedo-Zamora-Galicia": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            4777980
+          ],
+          "native_own_name_examples": []
+        },
+        "Línea de alta velocidad Olmedo-Zamora-Galicia": {
+          "way_count": 87,
+          "railway_counts": {
+            "rail": 87
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Olmedo-Zamora-Galicia"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Liña de Alta Velocidade Olmedo-Zamora-Santiago de Compostela",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Olmedo-Zamora-Santiago de Compostela",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Olmedo-Zamora-Galicia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Olmedo-Zamora-Galicia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de alta velocidad Olmedo-Zamora-Galicia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-50",
+      "country": "es",
+      "name": "Eje Atlántico de Alta Velocidad (A Coruña–Santiago–Vigo)",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-eje-atlantico",
+        "fres-es-ourense-santiago",
+        "fres-es-eje-vigo-pontevedra-2006"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole A Coruña–Santiago–Vigo Atlantic axis",
+      "conclusion": "官方明确 Santiago–A Coruña 是既有线整体改善和电气化，南段另有新建变线。整走廊混合，Eixo Atlántico 不能作为统一新建身份键。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_new_variants_and_existing_upgrade",
+        "native_section_boundaries_missing"
+      ],
+      "partial_identities": [
+        {
+          "scope": "Santiago–A Coruña existing 62 km",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-ourense-santiago"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Vigo–Pontevedra 27 km new variant",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-eje-vigo-pontevedra-2006"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Eje Atlántico de Alta Velocidad Vigo - A Coruña": {
+          "way_count": 254,
+          "railway_counts": {
+            "rail": 254
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Eje Atlántico de Alta Velocidad Vigo - A Coruña"
+          ]
+        },
+        "Eixo Atlántico": {
+          "way_count": 178,
+          "railway_counts": {
+            "rail": 178
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Eixo Atlántico"
+          ]
+        },
+        "Eixo Atlántico - Viaduto A Sionlla": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Eixo Atlántico - Viaduto A Sionlla"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Eje Atlántico de Alta Velocidad Vigo - A Coruña",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Eixo Atlántico",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Eixo Atlántico - Viaduto A Sionlla",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-51",
+      "country": "es",
+      "name": "LAV Madrid–Levante: Madrid–Cuenca–Valencia",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-madrid-sevilla-history",
+        "fres-es-levante-route"
+      ],
+      "exact_names": [
+        "Línea de Alta Velocidad Madrid - Cuenca - Valencia",
+        "LAV Madrid - Cuenca - Valencia",
+        "Línea de Alta Velocidad Madrid-Cuenca-València",
+        "Línea de Alta Velocidad Madrid-Valencia"
+      ],
+      "design_binding": null,
+      "supported_scope": "Madrid–Cuenca–Valencia dedicated HSL, sharing purpose-built Madrid–Sevilla approach to Torrejón",
+      "conclusion": "ADIF 按段描述新建路线与新隧道、桥梁。共用的 Madrid–Sevilla 入口本身亦是新建高速线。泛称 Levante 关系跨其他混合支线，禁止收养。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_350_not_officially_revalidated",
+        "generic_levante_relation_blocked"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Madrid - Cuenca - Valencia": {
+          "way_count": 535,
+          "railway_counts": {
+            "rail": 535
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid - Cuenca - Valencia"
+          ]
+        },
+        "LAV Madrid - Cuenca - Valencia": {
+          "way_count": 4,
+          "railway_counts": {
+            "rail": 4
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid - Cuenca - Valencia"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid-Cuenca-València": {
+          "way_count": 4,
+          "railway_counts": {
+            "rail": 2,
+            "construction": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Cuenca-València"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid-Valencia": {
+          "way_count": 62,
+          "railway_counts": {
+            "rail": 62
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid-Valencia"
+          ]
+        },
+        "LAV Levante": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            4777536
+          ],
+          "native_own_name_examples": []
+        },
+        "328 - Valencia AV aguja km 396,7 - Cambiador Valencia": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "328 - Valencia AV aguja km 396,7 - Cambiador Valencia"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "LAV Levante",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "328 - Valencia AV aguja km 396,7 - Cambiador Valencia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-52",
+      "country": "es",
+      "name": "LAV Madrid–Levante: Motilla del Palancar–Albacete–Alicante",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-albacete-alicante",
+        "fres-es-levante-route"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole Motilla–Albacete–Almansa–Alicante project",
+      "conclusion": "新确认：ADIF 明确 Albacete–Almansa 约 65 km 是既有线及设施适应高速，Almansa–Alicante 约 100 km 为新建。整线混合，不能按 Madrid-Levante 或 Alicante-Murcia 名称全量新建。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_existing_65km_and_new_100km",
+        "shared_native_name_scope_not_resolved"
+      ],
+      "partial_identities": [
+        {
+          "scope": "Albacete–Almansa approximately 65 km existing route/installation adaptation",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-albacete-alicante"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Almansa–Alicante approximately 100 km new AV platform",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-albacete-alicante"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Motilla–Albacete dedicated new branch",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-levante-route"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Madrid-Levante": {
+          "way_count": 286,
+          "railway_counts": {
+            "rail": 279,
+            "construction": 7
+          },
+          "relation_ids": [
+            11146315
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid-Levante",
+            "Línea de alta velocidad Madrid - Levante",
+            "Línea de alta velocidad Madrid – Levante"
+          ]
+        },
+        "Línea de alta velocidad Madrid - Levante": {
+          "way_count": 286,
+          "railway_counts": {
+            "rail": 279,
+            "construction": 7
+          },
+          "relation_ids": [
+            11146315
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid-Levante",
+            "Línea de alta velocidad Madrid - Levante",
+            "Línea de alta velocidad Madrid – Levante"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia": {
+          "way_count": 155,
+          "railway_counts": {
+            "rail": 155
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia"
+          ]
+        },
+        "LAV Madrid-Alicante-Murcia": {
+          "way_count": 27,
+          "railway_counts": {
+            "rail": 27
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid-Alicante-Murcia"
+          ]
+        },
+        "048 - Bifurcación Vinalopó - Monforte del Cid Alta Velocidad": {
+          "way_count": 4,
+          "railway_counts": {
+            "rail": 4
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "048 - Bifurcación Vinalopó - Monforte del Cid Alta Velocidad"
+          ]
+        },
+        "AVE Cuenca-Albacete": {
+          "way_count": 2,
+          "railway_counts": {
+            "rail": 2
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "AVE Cuenca-Albacete"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de alta velocidad Madrid-Levante",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de alta velocidad Madrid - Levante",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Madrid-Alicante-Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "048 - Bifurcación Vinalopó - Monforte del Cid Alta Velocidad",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "AVE Cuenca-Albacete",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-53",
+      "country": "es",
+      "name": "LAV Madrid–Levante: Monforte del Cid–Elche–Orihuela–Murcia",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-murcia-inauguration-2022"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole Monforte–Elche–Orihuela–Murcia project including common-platform/mixed-gauge entry",
+      "conclusion": "官方明确 Beniel–Murcia 与常规线共平台，Reguerón 及 Murcia 入口包含混合三轨。须分离新轨与既有平台适应段，整线仍待核。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_common_platform_and_mixed_gauge",
+        "native_section_scope_not_resolved"
+      ],
+      "partial_identities": [
+        {
+          "scope": "new AV track toward Murcia",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-murcia-inauguration-2022"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Reguerón/Murcia mixed-gauge/common-platform sections",
+          "identity": "unresolved",
+          "sources": [
+            "fres-es-murcia-inauguration-2022"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de alta velocidad Madrid-Levante": {
+          "way_count": 286,
+          "railway_counts": {
+            "rail": 279,
+            "construction": 7
+          },
+          "relation_ids": [
+            11146315
+          ],
+          "native_own_name_examples": [
+            "Línea de alta velocidad Madrid-Levante",
+            "Línea de alta velocidad Madrid - Levante",
+            "Línea de alta velocidad Madrid – Levante"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia": {
+          "way_count": 155,
+          "railway_counts": {
+            "rail": 155
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia"
+          ]
+        },
+        "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia": {
+          "way_count": 1,
+          "railway_counts": {
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia"
+          ]
+        },
+        "LAV Madrid-Alicante-Murcia": {
+          "way_count": 27,
+          "railway_counts": {
+            "rail": 27
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid-Alicante-Murcia"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de alta velocidad Madrid-Levante",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid - Alacant-Terminal/Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea de Alta Velocidad Madrid - Alacant-Terminal y Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Madrid-Alicante-Murcia",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-54",
+      "country": "es",
+      "name": "LAV Madrid–Extremadura: Plasencia–Badajoz",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-extremadura-electrification-2023",
+        "fres-es-extremadura-electrification-2024",
+        "fres-es-monfrague-plasencia-renewal"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole Plasencia–Cáceres–Mérida–Badajoz connection",
+      "conclusion": "官方明示新建和接入的常规线并存，另明确 Monfragüe–Plasencia 改造。195/230 km 是不同阶段电气化口径，不能当整线新建长度。缺逐段原生边界。",
+      "operational_status": "in_service",
+      "blockers": [
+        "mixed_new_and_conventional_sections",
+        "stage_lengths_not_native_boundaries"
+      ],
+      "partial_identities": [
+        {
+          "scope": "150 km new platform in 2023 corridor statement",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-extremadura-electrification-2023"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Monfragüe–Plasencia existing-line renewal/adaptation",
+          "identity": "upgraded_existing",
+          "sources": [
+            "fres-es-monfrague-plasencia-renewal"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "other conventional sections connected to corridor",
+          "identity": "unresolved",
+          "sources": [
+            "fres-es-extremadura-electrification-2023",
+            "fres-es-extremadura-electrification-2024"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Plasencia-Badajoz": {
+          "way_count": 221,
+          "railway_counts": {
+            "rail": 210,
+            "construction": 11
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de Alta Velocidad Plasencia-Badajoz"
+          ]
+        },
+        "LAV Madrid-Extremadura-Lisboa": {
+          "way_count": 24,
+          "railway_counts": {
+            "construction": 23,
+            "rail": 1
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "LAV Madrid-Extremadura-Lisboa"
+          ]
+        },
+        "Línea Bifurcación El Chaparral-Arroyo de la Herrera": {
+          "way_count": 5,
+          "railway_counts": {
+            "rail": 5
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea Bifurcación El Chaparral-Arroyo de la Herrera"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línea de Alta Velocidad Plasencia-Badajoz",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "LAV Madrid-Extremadura-Lisboa",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línea Bifurcación El Chaparral-Arroyo de la Herrera",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-55",
+      "country": "es",
+      "name": "LAV La Sagra–Toledo",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-la-sagra-toledo-2002"
+      ],
+      "exact_names": [
+        "Línea de La Sagra a Toledo"
+      ],
+      "design_binding": null,
+      "supported_scope": "20.5 km new La Sagra–Mocejón–Toledo access, excluding shared Madrid–Sevilla trunk",
+      "conclusion": "政府建设授权覆盖两个新建区段，身份为新建。只有高速几何标准，未核实任何数字设计速度。",
+      "operational_status": "in_service",
+      "blockers": [
+        "no_explicit_numeric_design_evidence"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de La Sagra a Toledo": {
+          "way_count": 26,
+          "railway_counts": {
+            "rail": 26
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línea de La Sagra a Toledo"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-56",
+      "country": "es",
+      "name": "Corredor Mediterráneo: Variante Vandellòs–Tarragona",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-vandellos-2020"
+      ],
+      "exact_names": [
+        "Línia d'alta velocitat canviador de la Boella - Camp de Tarragona",
+        "Línia d'alta velocitat Cambiador de La Boella - Camp de Tarragona"
+      ],
+      "design_binding": null,
+      "supported_scope": "New 64.1 km Vandellòs–Tarragona variant including Boella–Camp connection",
+      "conclusion": "ADIF 明确新建绕线。只绑定专属 Boella–Camp 原生名称，València–Boella 长走廊名会越出新建范围。200/160 是运营速度，不标设计。",
+      "operational_status": "in_service",
+      "blockers": [
+        "broad_valencia_boella_names_blocked",
+        "legacy_design_220_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [
+        {
+          "kmh": 200,
+          "scope": "Iberian-gauge new variant operating maximum",
+          "source": "fres-es-vandellos-2020",
+          "basis": "operating_or_project_maximum_not_design",
+          "apply_to_native_ways": false
+        },
+        {
+          "kmh": 160,
+          "scope": "standard-gauge Boella–Camp connection operating maximum",
+          "source": "fres-es-vandellos-2020",
+          "basis": "operating_or_project_maximum_not_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "native_original_name_observations": {
+        "Línia d'alta velocitat canviador de la Boella - Camp de Tarragona": {
+          "way_count": 27,
+          "railway_counts": {
+            "rail": 27
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línia d'alta velocitat canviador de la Boella - Camp de Tarragona"
+          ]
+        },
+        "Línia d'alta velocitat Cambiador de La Boella - Camp de Tarragona": {
+          "way_count": 16,
+          "railway_counts": {
+            "rail": 16
+          },
+          "relation_ids": [
+            11088348
+          ],
+          "native_own_name_examples": [
+            "Línia d'alta velocitat Cambiador de La Boella - Camp de Tarragona"
+          ]
+        },
+        "Línia d'alta velocitat València - canviador de la Boella": {
+          "way_count": 22,
+          "railway_counts": {
+            "rail": 22
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línia d'alta velocitat València - canviador de la Boella"
+          ]
+        },
+        "Línia d'alta velocitat València - Cambiador de La Boella": {
+          "way_count": 3,
+          "railway_counts": {
+            "rail": 3
+          },
+          "relation_ids": [],
+          "native_own_name_examples": [
+            "Línia d'alta velocitat València - Cambiador de La Boella"
+          ]
+        }
+      },
+      "blocked_aliases": [
+        {
+          "name": "Línia d'alta velocitat València - canviador de la Boella",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        },
+        {
+          "name": "Línia d'alta velocitat València - Cambiador de La Boella",
+          "reason": "mixed_or_broader_scope_or_structure_or_no_unique_native_proof"
+        }
+      ]
+    },
+    {
+      "id": "es-57",
+      "country": "es",
+      "name": "Túnel de alta velocidad Atocha–Chamartín",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-atocha-chamartin"
+      ],
+      "exact_names": [
+        "Línea de Alta Velocidad Atocha - Chamartín"
+      ],
+      "design_binding": null,
+      "supported_scope": "New 7.3 km Atocha–Chamartín standard-gauge connector tunnel",
+      "conclusion": "ADIF 明确新建高速联络隧道，原生专属 route=railway 关系支持。低速连接段仍可为新建基础设施，不能据速度改判既有升级。",
+      "operational_status": "in_service",
+      "blockers": [
+        "legacy_design_120_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Línea de Alta Velocidad Atocha - Chamartín": {
+          "way_count": 0,
+          "railway_counts": {},
+          "relation_ids": [
+            13488129
+          ],
+          "native_own_name_examples": []
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-58",
+      "country": "es",
+      "name": "LAV Burgos–Vitoria",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-burgos-vitoria-2026"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Burgos–Vitoria HSL construction project",
+      "conclusion": "2026 官方建设通告明确新线项目，不能把规划或施工段计入运营覆盖。冻结输入无安全专属原生名。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "no_safe_native_exact_name",
+        "whole_project_not_commissioned",
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-59",
+      "country": "es",
+      "name": "LAV León–La Robla",
+      "identity": "upgraded_existing",
+      "infrastructure_identity": "upgraded_existing",
+      "verified_sources": [
+        "fres-es-leon-la-robla-adaptation"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Whole León–La Robla existing-line adaptation, distinct from new Pajares variant",
+      "conclusion": "新确认整段为既有线改造：更新轨道、加第三轨、改接触网及信号。当前缺安全专属原生名称，因此先保留身份结论但不按猜测名称绑定。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "no_safe_native_exact_name",
+        "legacy_design_200_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-60",
+      "country": "es",
+      "name": "LAV Palencia–Reinosa (–Santander)",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-palencia-alar-reinosa"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Palencia–Alar del Rey core and planned Reinosa continuation, parenthesized Santander outside proven scope",
+      "conclusion": "官方支持 Palencia–Alar 新建及延至 Reinosa 计划，未支持目录括号中的 Santander 全线同一身份。缺完整精确目录范围和原生边界。",
+      "operational_status": "under_construction_or_planned",
+      "blockers": [
+        "catalog_scope_extends_beyond_proven_new_core",
+        "no_safe_native_exact_name"
+      ],
+      "partial_identities": [
+        {
+          "scope": "Palencia–Alar del Rey 78 km new standard-gauge core",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-palencia-alar-reinosa"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [
+        {
+          "kmh": 350,
+          "scope": "Osorno–Calahorra de Boedo 20.7 km only",
+          "source": "fres-es-palencia-alar-reinosa",
+          "basis": "explicit_official_design",
+          "apply_to_native_ways": false
+        }
+      ],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-61",
+      "country": "es",
+      "name": "LAV Madrid–Extremadura (Toledo–Oropesa, Talayuela–Plasencia)",
+      "identity": "unresolved",
+      "infrastructure_identity": "unresolved",
+      "verified_sources": [
+        "fres-es-talayuela-plasencia-2024",
+        "fres-es-toledo-oropesa-study"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "Toledo–Oropesa planning plus Talayuela–Plasencia construction",
+      "conclusion": "Talayuela–Plasencia 有新建平台证据，Toledo/Torrijos 资料仅所读 I/II 段方案。缺覆盖整条目录范围的建设身份和原生边界，不整线套新建。",
+      "operational_status": "under_construction_or_planned",
+      "blockers": [
+        "whole_toledo_oropesa_scope_not_proven",
+        "no_safe_native_exact_name"
+      ],
+      "partial_identities": [
+        {
+          "scope": "Talayuela–Plasencia approximately 70 km new project",
+          "identity": "new_build",
+          "sources": [
+            "fres-es-talayuela-plasencia-2024"
+          ],
+          "apply_to_native_ways": false
+        },
+        {
+          "scope": "Madrid–Oropesa study tramos I/II alternatives",
+          "identity": "unresolved",
+          "sources": [
+            "fres-es-toledo-oropesa-study"
+          ],
+          "apply_to_native_ways": false
+        }
+      ],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-62",
+      "country": "es",
+      "name": "Y vasca (Vitoria–Bilbao–San Sebastián)",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-y-vasca"
+      ],
+      "exact_names": [
+        "Euskal Y"
+      ],
+      "design_binding": null,
+      "supported_scope": "New Vitoria–Bilbao–Donostia/San Sebastián Basque Y network construction",
+      "conclusion": "巴斯克政府明确新铁路网络。原生 Euskal Y 自有名称及关系可绑定，但全部 549 条自有名对象为施工，管线必须保持施工状态。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "not_commercially_commissioned",
+        "legacy_design_250_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {
+        "Euskal Y": {
+          "way_count": 549,
+          "railway_counts": {
+            "construction": 549
+          },
+          "relation_ids": [
+            5354431
+          ],
+          "native_own_name_examples": [
+            "Euskal Y"
+          ]
+        }
+      },
+      "blocked_aliases": []
+    },
+    {
+      "id": "es-63",
+      "country": "es",
+      "name": "LAV Murcia–Almería",
+      "identity": "new_build",
+      "infrastructure_identity": "new_build",
+      "verified_sources": [
+        "fres-es-murcia-almeria-track-base"
+      ],
+      "exact_names": [],
+      "design_binding": null,
+      "supported_scope": "New Murcia–Almería HSL construction project",
+      "conclusion": "ADIF 明确新建 Murcia–Almería 高速线路及平台转铺轨阶段。冻结输入无专属原生名，未证明整线商业投用。",
+      "operational_status": "under_construction",
+      "blockers": [
+        "no_safe_native_exact_name",
+        "whole_project_not_commissioned",
+        "legacy_design_350_not_officially_revalidated"
+      ],
+      "partial_identities": [],
+      "design_evidence": [],
+      "operating_or_project_vmax_evidence": [],
+      "native_original_name_observations": {},
+      "blocked_aliases": []
+    }
+  ]
+}

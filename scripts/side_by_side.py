@@ -4,8 +4,9 @@ A metro line is drawn on its own track. Where several lines are drawn along one 
 share, or tracks side by side that the corridor pass laid on one path) each gets a slot: -0.5 and
 0.5 for two lines, -1, 0, 1 for three. The map turns the slot (property off) into a sideways shift
 in pixels. Everywhere else the slot is 0, so a line does not leave its track where it runs alone
-and its stations stay on it. Between the two the slot changes in small steps over a few hundred
-metres, so the line moves over the way a train changes track, with no sideways jump.
+and its stations stay on it. With continuous=True the transition is a distance-parametrised
+quintic curve on independent display geometry. Legacy callers retain their frozen feature
+contract; the full-path renderer replaces those quantised steps without moving source geometry.
 """
 import math
 from collections import defaultdict
@@ -16,12 +17,13 @@ from shapely.geometry import LineString
 from shapely.ops import substring
 from shapely.strtree import STRtree
 
+from continuous_offset import chains, encode, profile, source_identity, value_at
+
 NEAR = 0.00015       # ~17 m: two lines this close, running the same way, are drawn in the same place
 STEP = 0.0003        # ~33 m between the points a line is looked at
 MIN_RUN = 0.003      # ~330 m: shorter company is a crossing or a station throat, not a shared stretch
 RAMP = 0.004         # ~440 m over which a line moves to its side
 GRAIN = 0.125        # slots: the line moves over in steps of this size, under a pixel on the map
-MAX_STEPS = 11
 
 
 def alike(a, b):
@@ -64,22 +66,25 @@ def slots(parts, near=NEAR, step=STEP):
             present = company.get(k, [])
             # a line in the same colour is the same line under another name: it takes no slot,
             # but it is there, and may be the one that says which way the bundle runs
-            mates = [m for m in present if not alike(m[0], colour)]
+            explicit = lambda key: isinstance(key, tuple) and key[0] == "source"
+            same = lambda col, key, other_col, other_key: (key == other_key
+                if explicit(key) or explicit(other_key) else alike(col, other_col))
+            mates = [m for m in present if not same(m[0], m[1], colour, line)]
             if not mates:
                 row.append((float(at[k]), 0.0, 1))
                 continue
             # one slot per colour, in a fixed order, so every line keeps its side from one stretch
             # to the next
             classes = []
-            for col in sorted({colour} | {m[0] for m in mates}):
-                if not any(alike(col, c) for c in classes):
-                    classes.append(col)
-            mine = next(x for x, c in enumerate(classes) if alike(c, colour))
+            for col, key in sorted({(colour, line)} | {(m[0], m[1]) for m in mates}, key=lambda pair: (pair[0] or "", str(pair[1]))):
+                if not any(same(col, key, c, k) for c, k in classes):
+                    classes.append((col, key))
+            mine = next(x for x, (c, key) in enumerate(classes) if same(c, key, colour, line))
             # The bundle runs the way most of its lines are written; with as many each way, the
             # way of its first line. Going by the first line alone, every line would change sides
             # where a line written the other way joins the bundle or leaves it.
             ways = sum(m[2] for m in present) + 1
-            way = (1 if ways > 0 else -1) if ways else min(present + [(colour, line, 1)])[2]
+            way = (1 if ways > 0 else -1) if ways else min(present + [(colour, line, 1)], key=lambda m: (m[0] or "", str(m[1])))[2]
             row.append((float(at[k]), way * (mine - (len(classes) - 1) / 2), len(classes)))
         out.append(row)
     return out
@@ -164,37 +169,16 @@ def stretches(row, min_run=MIN_RUN):
 
 
 def eased(runs, ramp=RAMP, grain=GRAIN):
-    """[(from, to, slot)] with every change of slot spread over a ramp of small steps. The ramp
-    lies where there are fewer lines: a line has moved to its side by the time it meets another."""
-    cuts = []                                        # (from, to, slot before, slot after)
-    for a, b in zip(runs, runs[1:]):
-        if a[2] == b[2]:
-            continue
-        room_a, room_b = min(ramp, 0.45 * (a[1] - a[0])), min(ramp, 0.45 * (b[1] - b[0]))
-        if a[3] < b[3]:
-            cuts.append((a[1] - room_a, a[1], a[2], b[2]))
-        elif b[3] < a[3]:
-            cuts.append((b[0], b[0] + room_b, a[2], b[2]))
-        else:
-            cuts.append((a[1] - room_a / 2, a[1] + room_b / 2, a[2], b[2]))
-    out, at = [], runs[0][0]
-    for lo, hi, u, v in cuts:
-        out.append((at, lo, u))
-        steps = max(1, min(MAX_STEPS, math.ceil(abs(v - u) / grain) - 1))
-        for s in range(steps):
-            out.append((lo + (hi - lo) * s / steps, lo + (hi - lo) * (s + 1) / steps, u + (v - u) * (s + 1) / (steps + 1)))
-        at = hi
-    out.append((at, runs[-1][1], runs[-1][2]))
-    return [(a, b, s) for a, b, s in out if b - a > 1e-9]
+    """Continuous profile; grain is accepted for old callers, not quantisation."""
+    return profile(runs, ramp)
 
 
-def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=slots, min_run=MIN_RUN, rings=False):
-    """Rewrite the metro features so that each carries the slot of one stretch of its line: a line
-    becomes a few features, one per slot. Returns the new list; other features pass through.
-    slots_of: slots() for lines drawn along one path, abreast() for lines each on its own track.
-    rings: a part that is a ring is written from the middle of its longest stretch of one slot.
-    A change of slot is spread over a ramp between two stretches of a part; where a ring begins
-    there is no stretch before, and a change of slot there is a step to the side (輕鐵706綫)."""
+def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=slots, min_run=MIN_RUN, rings=False, continuous=False, group_of=None):
+    """Attach seats to metro features. Other features pass through.
+    slots_of: slots() for lines drawn along one path, abreast() for lines on their own track.
+    continuous: exact endpoint chains share an op domain; original vertices and ring starts stay.
+    rings: only legacy mode rotates a ring into its longest constant-seat stretch.
+    group_of: independent continuous seating groups, e.g. surface trams versus subways."""
     parts, where = [], []
     for fi, f in enumerate(features):
         props, g = f["properties"], f["geometry"]
@@ -202,8 +186,79 @@ def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=sl
             continue
         for co in (g["coordinates"] if g["type"] == "MultiLineString" else [g["coordinates"]]):
             if len(co) > 1 and LineString(co).length > 0:
-                parts.append(((props.get("r"), props["n"]), props.get("col"), LineString(co)))
+                parts.append((source_identity(props), props.get("col"), LineString(co)))
                 where.append(fi)
+    if not continuous:
+        return _legacy_features(features, parts, where, slots_of, min_run, rings)
+    joined = chains(parts)
+    whole = [(parts[members[0][0]][0], parts[members[0][0]][1], LineString(co))
+             for co, members in joined]
+    if group_of is None:
+        rows = list(slots_of(whole))
+    else:
+        groups = defaultdict(list)
+        for i, (_, members) in enumerate(joined):
+            groups[group_of(features[where[members[0][0]]]["properties"])].append(i)
+        rows = [None] * len(whole)
+        for indices in groups.values():
+            for i, row in zip(indices, slots_of([whole[i] for i in indices])):
+                rows[i] = row
+    specs = {}
+    for (_, members), (_, _, geom), row in zip(joined, whole, rows):
+        spec = profile(stretches(row, min_run), RAMP, closed=geom.is_ring)
+        for pi, start, direction in members:
+            origin = start if direction == 1 else start + parts[pi][2].length
+            specs[pi] = {**spec, "origin": origin, "direction": direction}
+    by_feature = defaultdict(list)
+    for pi, fi in enumerate(where):
+        by_feature[fi].append(pi)
+    out = []
+    for fi, f in enumerate(features):
+        if fi not in by_feature:
+            out.append(f)
+            continue
+        indices = by_feature[fi]
+        if all(not specs[pi]["base"] and not specs[pi]["ramps"] for pi in indices):
+            props = {k: v for k, v in f["properties"].items() if k not in ("off", "op")}
+            out.append({**f, "properties": props})
+            continue
+        # One scalar JSON profile per original part, with every original vertex
+        # retained. off is a representative seat for legacy width/host styling.
+        for pi in indices:
+            spec, geom = specs[pi], parts[pi][2]
+            props = {k: v for k, v in f["properties"].items() if k not in ("off", "op")}
+            props["off"] = value_at(spec, geom.length / 2)
+            props["op"] = encode(spec, spec["origin"], spec["direction"])
+            if slots_of is abreast:
+                props.setdefault("ap", 1)
+            out.append({**f, "properties": props, "geometry": {
+                "type": "LineString", "coordinates": [list(c) for c in geom.coords]}})
+    return out
+
+
+def _legacy_eased(runs, ramp=RAMP, grain=GRAIN):
+    """Frozen data contract, not the renderer. UK/KR/CN/JP callers stay byte-compatible."""
+    cuts = []
+    for a, b in zip(runs, runs[1:]):
+        if a[2] == b[2]:
+            continue
+        ra, rb = min(ramp, .45 * (a[1] - a[0])), min(ramp, .45 * (b[1] - b[0]))
+        cuts.append((a[1] - ra, a[1], a[2], b[2]) if a[3] < b[3] else
+                    (b[0], b[0] + rb, a[2], b[2]) if b[3] < a[3] else
+                    (a[1] - ra / 2, a[1] + rb / 2, a[2], b[2]))
+    out, at = [], runs[0][0]
+    for lo, hi, u, v in cuts:
+        out.append((at, lo, u))
+        steps = max(1, min(11, math.ceil(abs(v - u) / grain) - 1))
+        for s in range(steps):
+            out.append((lo + (hi - lo) * s / steps, lo + (hi - lo) * (s + 1) / steps,
+                        u + (v - u) * (s + 1) / (steps + 1)))
+        at = hi
+    out.append((at, runs[-1][1], runs[-1][2]))
+    return [(a, b, s) for a, b, s in out if b - a > 1e-9]
+
+
+def _legacy_features(features, parts, where, slots_of, min_run, rings):
     rows = list(slots_of(parts))
     if rings:
         turned = False
@@ -218,9 +273,9 @@ def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=sl
                     turned = True
         if turned:
             rows = list(slots_of(parts))
-    by_slot = defaultdict(lambda: defaultdict(list))             # feature -> slot -> lines
+    by_slot = defaultdict(lambda: defaultdict(list))
     for fi, (_, _, g), row in zip(where, parts, rows):
-        for a, b, slot in eased(stretches(row, min_run)):
+        for a, b, slot in _legacy_eased(stretches(row, min_run)):
             piece = substring(g, a, b)
             if piece.geom_type == "LineString" and piece.length > 0:
                 by_slot[fi][round(slot * 16) / 16].append([[round(x, 7), round(y, 7)] for x, y in piece.coords])
@@ -233,6 +288,6 @@ def side_by_side(features, skip=lambda props: props.get("k") == "s", slots_of=sl
             props = {k: v for k, v in f["properties"].items() if k != "off"}
             if slot:
                 props["off"] = slot
-            out.append({**f, "properties": props,
-                        "geometry": {"type": "LineString", "coordinates": lines[0]} if len(lines) == 1 else {"type": "MultiLineString", "coordinates": lines}})
+            out.append({**f, "properties": props, "geometry": {"type": "LineString", "coordinates": lines[0]}
+                        if len(lines) == 1 else {"type": "MultiLineString", "coordinates": lines}})
     return out

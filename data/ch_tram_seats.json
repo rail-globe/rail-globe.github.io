@@ -1,0 +1,1683 @@
+{
+  "version": 1,
+  "country": "ch",
+  "publication_state": "review-only",
+  "source_rows_sha256": "9a9801449796065fc9b39804ef89ab24da49b5f9aa7e9c57b97c2ef3af335ef7",
+  "source_ways_sha256": "2bf89392beea33b743d425633c3a02138836c06b8aeedcf06b9007902980daf9",
+  "source_manifest_sha256": "be13119bec76eddff3f0e574657ec8d3076f8cda7309abb6b353a8c77e0ced00",
+  "extract_sha256": "bf6beea65dae482d16b188c1bd91107eb7f19f6654d424a5c60f7f289a71a222",
+  "raw_metadata_sha256": "5eaadb7d6ab457775b6eb4baf0fae9a6320f71498f744c95e98ac5a09fcfdcef",
+  "raw_node_coordinates_sha256": "ffcab7fb8f3f95cb8f67aeffa72c51d0924bff0fccfe5736cc8e0d41af2c19b7",
+  "profile_contract": "source-only continuous seat units; full shared seat at ports; exact-node unambiguous independent continuation only; selected/display binding and publication remain OPEN",
+  "seat_contract": "positive seats are right of chain from -> to; fixed corridor order is centred on the source track; no colour aliases; review-only, not production-approved",
+  "corridors": [
+    {
+      "id": "bern-west",
+      "direction": {"from": [7.400909, 46.942017], "to": [7.427343, 46.945631]},
+      "ct": "伯尔尼",
+      "order": [
+        "Tram 7",
+        "Tram 8"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            55441240,
+            57838149,
+            57838157,
+            57890915,
+            57890944,
+            93465534,
+            193110271,
+            196983734,
+            196983737,
+            206511546,
+            206511547
+          ],
+          "lines": [
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.400909,
+            46.942017
+          ],
+          "to": [
+            7.427343,
+            46.945631
+          ]
+        },
+        {
+          "way_ids": [
+            55441241,
+            57838153,
+            57838154,
+            57890912,
+            57890937,
+            193110270,
+            193110273,
+            195736530,
+            195736535,
+            313358788,
+            316352915,
+            317427403,
+            317427404
+          ],
+          "lines": [
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.400963,
+            46.942044
+          ],
+          "to": [
+            7.427313,
+            46.945657
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bern west: the two services share both directional tracks; retain 7 then 8 towards the city.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "bern-centre",
+      "continuous_candidate": true,
+      "direction": {"from": [7.427313, 46.945657], "to": [7.465925, 46.941607]},
+      "chain_directions": [
+        {"from": [7.427313, 46.945657], "to": [7.433895, 46.945887]},
+        {"from": [7.427343, 46.945631], "to": [7.433896, 46.945854]},
+        {"from": [7.447191, 46.947925], "to": [7.465962, 46.941587]},
+        {"from": [7.447203, 46.947955], "to": [7.465925, 46.941607]}
+      ],
+      "enabled": false,
+      "open_reason": "v2 z12/13/16: opposite chain reference directions and new bundle crossings; require continuous branch seating.",
+      "ct": "伯尔尼",
+      "order": [
+        "Tram 6",
+        "Tram 7",
+        "Tram 8"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            55441250,
+            192111132,
+            706333178
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.433895,
+            46.945887
+          ],
+          "to": [
+            7.427313,
+            46.945657
+          ]
+        },
+        {
+          "way_ids": [
+            93465544,
+            192111140,
+            706333179
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.433896,
+            46.945854
+          ],
+          "to": [
+            7.427343,
+            46.945631
+          ]
+        },
+        {
+          "way_ids": [
+            56134292,
+            56181200,
+            56181216,
+            574072180,
+            574072182,
+            574072184,
+            574072185,
+            706333182,
+            706628649
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.447191,
+            46.947925
+          ],
+          "to": [
+            7.465962,
+            46.941587
+          ]
+        },
+        {
+          "way_ids": [
+            56181209,
+            56181211,
+            56181219,
+            201299239,
+            315956061,
+            534220558,
+            574072179,
+            574072181,
+            574072183,
+            574072186
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8"
+          ],
+          "from": [
+            7.447203,
+            46.947955
+          ],
+          "to": [
+            7.465925,
+            46.941607
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bern centre: 6 anchors the three-service bundle; 7 and 8 keep their order across the two separated central runs.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "bern-east",
+      "continuous_candidate": true,
+      "direction": {"from": [7.465925, 46.941607], "to": [7.475735, 46.937237]},
+      "enabled": false,
+      "open_reason": "v2 z12/13: new transition loop at the 7/8 branch; restore baseline until Bern seats are continuous.",
+      "ct": "伯尔尼",
+      "order": [
+        "Tram 6",
+        "Tram 8"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            47071999,
+            574072178,
+            1460118491,
+            1460118493
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            7.475735,
+            46.937237
+          ],
+          "to": [
+            7.465925,
+            46.941607
+          ]
+        },
+        {
+          "way_ids": [
+            44823285,
+            44823286
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            7.475781,
+            46.937183
+          ],
+          "to": [
+            7.465962,
+            46.941587
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bern east: 6 and 8 remain separate after 7 branches; no railway or depot membership is inferred.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "bern-station",
+      "continuous_candidate": true,
+      "direction": {"from": [7.441396, 46.947868], "to": [7.447203, 46.947955]},
+      "enabled": false,
+      "open_reason": "v2 z16: new crossings and segmented ramps at station approach; no visual acceptance.",
+      "ct": "伯尔尼",
+      "order": [
+        "Tram 6",
+        "Tram 7",
+        "Tram 8",
+        "Tram 9"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            56181206,
+            56181212,
+            192111129,
+            192111134,
+            310672632
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8",
+            "Tram 9"
+          ],
+          "from": [
+            7.440963,
+            46.947734
+          ],
+          "to": [
+            7.447191,
+            46.947925
+          ]
+        },
+        {
+          "way_ids": [
+            56134294,
+            192111131,
+            314796665
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 7",
+            "Tram 8",
+            "Tram 9"
+          ],
+          "from": [
+            7.441396,
+            46.947868
+          ],
+          "to": [
+            7.447203,
+            46.947955
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bern station: four route identities, not a colour order; retain each service through the shared station approaches.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "basel-birsig",
+      "direction": {"from": [7.545763, 47.483709], "to": [7.583773, 47.549279]},
+      "ct": "巴塞尔",
+      "order": [
+        "Tram 10",
+        "Tram 17"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            23155412,
+            23155420,
+            23155453,
+            23155455,
+            23155475,
+            23155481,
+            24420743,
+            113860150,
+            154335752,
+            184922761,
+            222385240,
+            222386183,
+            222388630,
+            223154220,
+            381430423,
+            895953640,
+            895953643,
+            895953645,
+            895956370,
+            895956372,
+            895956374,
+            895956376,
+            895956377,
+            895956379,
+            895956381,
+            895959865,
+            895959867,
+            895959869,
+            895959871,
+            895959874,
+            895959875,
+            895959878,
+            895959880,
+            895959881,
+            895959882,
+            895959885,
+            895959886,
+            895959888,
+            895959890,
+            895959892,
+            895961368,
+            895961370,
+            895961372
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 17"
+          ],
+          "from": [
+            7.545763,
+            47.483709
+          ],
+          "to": [
+            7.583773,
+            47.549279
+          ]
+        },
+        {
+          "way_ids": [
+            222387019,
+            222387238,
+            222387679,
+            222388460,
+            222388461,
+            222389050,
+            223151896,
+            223151897,
+            223151898,
+            223152674,
+            223152678,
+            334837402,
+            381430425,
+            865362694,
+            895953641,
+            895953642,
+            895953644,
+            895956369,
+            895956375,
+            895956378,
+            895956380,
+            895956382,
+            895959864,
+            895959866,
+            895959868,
+            895959870,
+            895959876,
+            895959877,
+            895959879,
+            895959883,
+            895959884,
+            895959887,
+            895959889,
+            895959891,
+            895961367,
+            895961369,
+            895961371
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 17"
+          ],
+          "from": [
+            7.54687,
+            47.483741
+          ],
+          "to": [
+            7.583773,
+            47.549279
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Birsig corridor: 10 anchors 17 over exact common route ways; the two directional tracks are not two independent services.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "basel-riehen",
+      "direction": {"from": [7.606704, 47.566284], "to": [7.65067, 47.586415]},
+      "ct": "巴塞尔",
+      "order": [
+        "Tram 2",
+        "Tram 6"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            130282696,
+            195142298,
+            195142299,
+            197565184,
+            197566640,
+            197575346,
+            631359843,
+            631359846,
+            631359847,
+            655358418
+          ],
+          "lines": [
+            "Tram 2",
+            "Tram 6"
+          ],
+          "from": [
+            7.606704,
+            47.566284
+          ],
+          "to": [
+            7.65067,
+            47.586415
+          ]
+        },
+        {
+          "way_ids": [
+            25038996,
+            25038999,
+            26553307,
+            39522364,
+            195142300,
+            197565185,
+            197565818,
+            584786950,
+            631359844,
+            631359845,
+            631359848,
+            655358421,
+            888448707
+          ],
+          "lines": [
+            "Tram 2",
+            "Tram 6"
+          ],
+          "from": [
+            7.606912,
+            47.56648
+          ],
+          "to": [
+            7.65067,
+            47.586415
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Riehen corridor: 2 anchors 6 on the exact shared ways; nearby railway tracks are outside the override.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "basel-aesch",
+      "direction": {"from": [7.602042, 47.505745], "to": [7.591812, 47.485465]},
+      "ct": "巴塞尔",
+      "order": [
+        "Tram 11",
+        "Tram 12"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            148909047,
+            441060275,
+            1516917004
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 12"
+          ],
+          "from": [
+            7.602042,
+            47.505745
+          ],
+          "to": [
+            7.591812,
+            47.485465
+          ]
+        },
+        {
+          "way_ids": [
+            148909040,
+            1516917003
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 12"
+          ],
+          "from": [
+            7.60208,
+            47.505745
+          ],
+          "to": [
+            7.59169,
+            47.485798
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Aesch corridor: 11 and 12 are distinct services, retain their separate seats despite common directional infrastructure.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "basel-dreispitz",
+      "direction": {"from": [7.599001, 47.543624], "to": [7.610906, 47.534462]},
+      "ct": "巴塞尔",
+      "order": [
+        "Tram 10",
+        "Tram 11",
+        "Tram 12"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            130282764,
+            146535733,
+            194639585,
+            321723157
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 11",
+            "Tram 12"
+          ],
+          "from": [
+            7.599001,
+            47.543624
+          ],
+          "to": [
+            7.610906,
+            47.534462
+          ]
+        },
+        {
+          "way_ids": [
+            130282759,
+            194639586,
+            1025434852
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 11",
+            "Tram 12"
+          ],
+          "from": [
+            7.599254,
+            47.543391
+          ],
+          "to": [
+            7.610939,
+            47.534483
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Dreispitz approach: 10, 11 and 12 remain distinct; only their common route ways receive seats.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "basel-marktplatz",
+      "continuous_candidate": true,
+      "direction": {"from": [7.587109, 47.559056], "to": [7.589342, 47.554083]},
+      "enabled": false,
+      "open_reason": "v2 z16: stepped bundle; Tram 8 network identity is absent from display features.",
+      "ct": "巴塞尔",
+      "order": [
+        "Tram 11",
+        "Tram 14",
+        "Tram 15",
+        "Tram 16",
+        "Tram 17",
+        "Tram 6",
+        "Tram 8"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            307611047
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 14",
+            "Tram 15",
+            "Tram 16",
+            "Tram 17",
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            7.587109,
+            47.559056
+          ],
+          "to": [
+            7.589342,
+            47.554083
+          ]
+        },
+        {
+          "way_ids": [
+            132752440,
+            846143849
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 14",
+            "Tram 16",
+            "Tram 17",
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            7.587644,
+            47.559731
+          ],
+          "to": [
+            7.589306,
+            47.554118
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Marktplatz: explicit seven-service order, including 15 only where it owns the common ways. Short junction connectors are not extended.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "geneva-east",
+      "direction": {"from": [6.205461, 46.192382], "to": [6.142979, 46.203522]},
+      "ct": "日内瓦",
+      "order": [
+        "Tram 12",
+        "Tram 17"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            35763616,
+            82805721,
+            139911514,
+            140425303,
+            141742412,
+            701915363,
+            701915367,
+            737354888,
+            961984764,
+            1006093208,
+            1199049165,
+            1199049166,
+            1199049168,
+            1199049170,
+            1199049171,
+            1199049174,
+            1199049175,
+            1199069085,
+            1353093272
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 17"
+          ],
+          "from": [
+            6.205461,
+            46.192382
+          ],
+          "to": [
+            6.142979,
+            46.203522
+          ]
+        },
+        {
+          "way_ids": [
+            82839128,
+            139746292,
+            639680480,
+            642003125,
+            701915365,
+            701915368,
+            951945798,
+            951945799,
+            1199049167,
+            1199049169,
+            1199049172,
+            1199049173,
+            1199049176,
+            1199069086
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 17"
+          ],
+          "from": [
+            6.205519,
+            46.192337
+          ],
+          "to": [
+            6.14303,
+            46.203509
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Geneva east: 12 anchors 17 along common directional ways; separate the services through the shared eastern approach.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "geneva-south",
+      "direction": {"from": [6.130135, 46.17447], "to": [6.143045, 46.198307]},
+      "ct": "日内瓦",
+      "order": [
+        "Tram 12",
+        "Tram 18"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            142576862,
+            145401857,
+            145401865,
+            160566748,
+            294091261,
+            758942077,
+            1422489698,
+            1422489699,
+            1422651489
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 18"
+          ],
+          "from": [
+            6.130135,
+            46.17447
+          ],
+          "to": [
+            6.143045,
+            46.198307
+          ]
+        },
+        {
+          "way_ids": [
+            83481391,
+            139911515,
+            145401854,
+            145401861,
+            294091263,
+            639285574,
+            639285576,
+            1422484515,
+            1422489701
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 18"
+          ],
+          "from": [
+            6.130224,
+            46.17463
+          ],
+          "to": [
+            6.143143,
+            46.199867
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Geneva south: 12 anchors 18 only after the 17 branch; no sharing with nearby train infrastructure.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "geneva-northwest",
+      "direction": {"from": [6.083142, 46.22579], "to": [6.143184, 46.20429]},
+      "ct": "日内瓦",
+      "order": [
+        "Tram 14",
+        "Tram 18"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            5173403,
+            37392251,
+            89043479,
+            141562386,
+            141563618,
+            141563622,
+            141563624,
+            141619405,
+            141619415,
+            141619440,
+            141619442,
+            195760523,
+            617756034,
+            617756035,
+            625916753,
+            626080873,
+            626323131,
+            626323132,
+            627475977,
+            627475978,
+            627475996,
+            627475997,
+            780386669,
+            780386696,
+            789218016,
+            789218018,
+            1198833569,
+            1201560918,
+            1201560919,
+            1201560922,
+            1201560923,
+            1201560924,
+            1206002312,
+            1352195911,
+            1352236086,
+            1352236756,
+            1354373240,
+            1354373242,
+            1354373244,
+            1354373248,
+            1354375151,
+            1354375159,
+            1354409214
+          ],
+          "lines": [
+            "Tram 14",
+            "Tram 18"
+          ],
+          "from": [
+            6.083142,
+            46.22579
+          ],
+          "to": [
+            6.143184,
+            46.20429
+          ]
+        },
+        {
+          "way_ids": [
+            89046615,
+            141562389,
+            141563620,
+            141619391,
+            141619395,
+            141619410,
+            141619439,
+            141674880,
+            146664738,
+            617756036,
+            617756037,
+            625916750,
+            625916752,
+            626080876,
+            626089995,
+            627475975,
+            627475976,
+            627475994,
+            627475995,
+            780386675,
+            789211603,
+            789211604,
+            789240282,
+            897905007,
+            1198833568,
+            1206002311,
+            1352195908,
+            1352236088,
+            1352236758,
+            1354373233,
+            1354373241,
+            1354373245,
+            1354375153,
+            1354375161,
+            1354409204,
+            1354409211,
+            1354410862,
+            1354410865,
+            1356282970,
+            1356282971,
+            1356282972
+          ],
+          "lines": [
+            "Tram 14",
+            "Tram 18"
+          ],
+          "from": [
+            6.08328,
+            46.225838
+          ],
+          "to": [
+            6.142914,
+            46.20398
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Geneva northwest: 14 anchors 18; both directions belong to both route identities.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "geneva-southwest",
+      "direction": {"from": [6.141809, 46.199021], "to": [6.124962, 46.18749]},
+      "ct": "日内瓦",
+      "order": [
+        "Tram 15",
+        "Tram 17"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            142798192,
+            143685749,
+            143685750,
+            143685752,
+            749868581,
+            758942083,
+            1353265250,
+            1353265252
+          ],
+          "lines": [
+            "Tram 15",
+            "Tram 17"
+          ],
+          "from": [
+            6.141809,
+            46.199021
+          ],
+          "to": [
+            6.124962,
+            46.18749
+          ]
+        },
+        {
+          "way_ids": [
+            92165343,
+            92360474,
+            749868585,
+            758942079,
+            1353265251
+          ],
+          "lines": [
+            "Tram 15",
+            "Tram 17"
+          ],
+          "from": [
+            6.141975,
+            46.197867
+          ],
+          "to": [
+            6.125183,
+            46.187464
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Geneva southwest: 15 anchors 17; preserve the branch towards the eastern and southern corridors.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "geneva-belair",
+      "continuous_candidate": true,
+      "direction": {"from": [6.142979, 46.203522], "to": [6.143143, 46.199867]},
+      "enabled": false,
+      "open_reason": "v2 z13/16: 12/17/18 lose stable order at Bel-Air; needs continuous junction seating.",
+      "ct": "日内瓦",
+      "order": [
+        "Tram 12",
+        "Tram 17",
+        "Tram 18"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            579957207
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 17",
+            "Tram 18"
+          ],
+          "from": [
+            6.142979,
+            46.203522
+          ],
+          "to": [
+            6.143143,
+            46.199867
+          ]
+        },
+        {
+          "way_ids": [
+            579957205,
+            628485157,
+            628485158,
+            980256078,
+            1288077463,
+            1288078706
+          ],
+          "lines": [
+            "Tram 12",
+            "Tram 17",
+            "Tram 18"
+          ],
+          "from": [
+            6.14303,
+            46.203509
+          ],
+          "to": [
+            6.143045,
+            46.198307
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bel-Air: retain 12, 17 and 18 as separate services on the exact common central ways.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-limmat",
+      "direction": {"from": [8.523139, 47.390352], "to": [8.53883, 47.391039]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 17",
+        "Tram 50",
+        "Tram 51"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            11054305,
+            27331268,
+            27429404,
+            136214060,
+            217408194,
+            217408199,
+            374068179,
+            525958044,
+            595798546,
+            1279973150,
+            1279973151,
+            1280222610,
+            1280222611
+          ],
+          "lines": [
+            "Tram 17",
+            "Tram 50",
+            "Tram 51"
+          ],
+          "from": [
+            8.523139,
+            47.390352
+          ],
+          "to": [
+            8.53883,
+            47.391039
+          ]
+        },
+        {
+          "way_ids": [
+            217408189,
+            217408195,
+            217408196,
+            217408197,
+            217436836,
+            217436838,
+            217436840,
+            218986594,
+            278182060,
+            1279973152
+          ],
+          "lines": [
+            "Tram 17",
+            "Tram 50",
+            "Tram 51"
+          ],
+          "from": [
+            8.523172,
+            47.390374
+          ],
+          "to": [
+            8.538789,
+            47.391039
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Limmat corridor: 50 and 51 are distinct route masters with different service scope, not aliases merely because both are grey; 17 anchors them.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-glattal",
+      "direction": {"from": [8.571365, 47.452093], "to": [8.556728, 47.420642]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 10",
+        "Tram 12"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            219014593,
+            219937279,
+            219937285,
+            220148628,
+            220148629,
+            220148630,
+            220206032,
+            539455008,
+            1218569293
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 12"
+          ],
+          "from": [
+            8.571365,
+            47.452093
+          ],
+          "to": [
+            8.556728,
+            47.420642
+          ]
+        },
+        {
+          "way_ids": [
+            28959865,
+            28960112,
+            28961222,
+            28961259,
+            28961261,
+            29000746,
+            87528833,
+            1218569294
+          ],
+          "lines": [
+            "Tram 10",
+            "Tram 12"
+          ],
+          "from": [
+            8.569947,
+            47.452163
+          ],
+          "to": [
+            8.55677,
+            47.420624
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Glattal: 10 anchors 12 on the common directional ways; bridge/tunnel tags remain original and do not authorise neighbouring infrastructure.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-limmattal",
+      "direction": {"from": [8.444321, 47.397613], "to": [8.47888, 47.390997]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 2",
+        "Tram 20"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            598060245,
+            598060247
+          ],
+          "lines": [
+            "Tram 2",
+            "Tram 20"
+          ],
+          "from": [
+            8.444321,
+            47.397613
+          ],
+          "to": [
+            8.47888,
+            47.390997
+          ]
+        },
+        {
+          "way_ids": [
+            720164291
+          ],
+          "lines": [
+            "Tram 2",
+            "Tram 20"
+          ],
+          "from": [
+            8.445588,
+            47.39811
+          ],
+          "to": [
+            8.478901,
+            47.39104
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Limmattal: 2 anchors 20 on their shared ways, not along the independent portions of line 20.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-forch",
+      "direction": {"from": [8.554306, 47.36476], "to": [8.581892, 47.351074]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 4",
+        "S18 (Forchbahn)"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            220590557
+          ],
+          "lines": [
+            "S18 (Forchbahn)",
+            "Tram 4"
+          ],
+          "from": [
+            8.554306,
+            47.36476
+          ],
+          "to": [
+            8.581892,
+            47.351074
+          ]
+        },
+        {
+          "way_ids": [
+            220590559
+          ],
+          "lines": [
+            "S18 (Forchbahn)",
+            "Tram 4"
+          ],
+          "from": [
+            8.554334,
+            47.364781
+          ],
+          "to": [
+            8.582064,
+            47.351111
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Forch urban approach: tram 4 and S18 use the same route ways; do not seat S18 on its independent outer railway.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-university",
+      "direction": {"from": [8.571548, 47.381517], "to": [8.550198, 47.374712]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 6",
+        "Tram 8"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            208821533,
+            218971865,
+            1550287263,
+            1550287264,
+            1550287278,
+            1550287279,
+            1550287280,
+            1550287281,
+            1550287282
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            8.571548,
+            47.381517
+          ],
+          "to": [
+            8.550198,
+            47.374712
+          ]
+        },
+        {
+          "way_ids": [
+            12619838,
+            218926429,
+            1550287283,
+            1550287284
+          ],
+          "lines": [
+            "Tram 6",
+            "Tram 8"
+          ],
+          "from": [
+            8.571548,
+            47.381517
+          ],
+          "to": [
+            8.550262,
+            47.37469
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "University: 6 anchors 8 on the common tracks, preserving the branch beyond the common route ways.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-west",
+      "direction": {"from": [8.495231, 47.368164], "to": [8.528522, 47.373296]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 14",
+        "Tram 9"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            237820126,
+            373189609,
+            373189610,
+            496914403,
+            1375886146,
+            1375886147,
+            1375886148,
+            1375886149,
+            1375886150,
+            1375886151,
+            1375886152,
+            1383854689,
+            1383854690
+          ],
+          "lines": [
+            "Tram 14",
+            "Tram 9"
+          ],
+          "from": [
+            8.495231,
+            47.368164
+          ],
+          "to": [
+            8.528522,
+            47.373296
+          ]
+        },
+        {
+          "way_ids": [
+            218322190,
+            237820127,
+            373189611,
+            496914402
+          ],
+          "lines": [
+            "Tram 14",
+            "Tram 9"
+          ],
+          "from": [
+            8.496322,
+            47.36817
+          ],
+          "to": [
+            8.528488,
+            47.373326
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "West: 14 anchors 9 without changing the reference direction when their source ways are reversed.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-north",
+      "direction": {"from": [8.571074, 47.405089], "to": [8.54296296324808, 47.399109454184256]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 7",
+        "Tram 9"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            23649589,
+            33753323,
+            219813431,
+            1284437638,
+            1284437639
+          ],
+          "lines": [
+            "Tram 7",
+            "Tram 9"
+          ],
+          "from": [
+            8.571074,
+            47.405089
+          ],
+          "to": [
+            8.54296296324808,
+            47.399109454184256
+          ]
+        },
+        {
+          "way_ids": [
+            10688370,
+            23649736,
+            60447008,
+            1284437636,
+            1284437637,
+            1423637069
+          ],
+          "lines": [
+            "Tram 7",
+            "Tram 9"
+          ],
+          "from": [
+            8.571074,
+            47.405089
+          ],
+          "to": [
+            8.54296296324808,
+            47.399109454184256
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "North: 7 anchors 9 on common route ways; nearby 51 remains outside unless it owns those same ways.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-bahnhofstrasse",
+      "direction": {"from": [8.539335, 47.375915], "to": [8.539011, 47.370419]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 11",
+        "Tram 13",
+        "Tram 7"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            49991796,
+            1458515365
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 13",
+            "Tram 7"
+          ],
+          "from": [
+            8.539335,
+            47.375915
+          ],
+          "to": [
+            8.539011,
+            47.370419
+          ]
+        },
+        {
+          "way_ids": [
+            217400104
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 13",
+            "Tram 7"
+          ],
+          "from": [
+            8.539203,
+            47.375583
+          ],
+          "to": [
+            8.539026,
+            47.370479
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Bahnhofstrasse: explicit 11, 13, 7 order; short neighbouring junction chains retain the baseline.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-rentenanstalt",
+      "direction": {"from": [8.560692, 47.350733], "to": [8.546704, 47.36609]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 11",
+        "Tram 15"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            1429957996,
+            1445474546
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 15"
+          ],
+          "from": [
+            8.560692,
+            47.350733
+          ],
+          "to": [
+            8.546704,
+            47.36609
+          ]
+        },
+        {
+          "way_ids": [
+            220583817
+          ],
+          "lines": [
+            "Tram 11",
+            "Tram 15"
+          ],
+          "from": [
+            8.56043,
+            47.350586
+          ],
+          "to": [
+            8.547113,
+            47.365757
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Rentenanstalt: 11 anchors 15 on common ways; the red service is not merged with red tram 2 elsewhere.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    },
+    {
+      "id": "zurich-sihl",
+      "direction": {"from": [8.516799, 47.358822], "to": [8.531835, 47.365431]},
+      "ct": "苏黎世",
+      "order": [
+        "Tram 13",
+        "Tram 5"
+      ],
+      "chains": [
+        {
+          "way_ids": [
+            220726221,
+            220728360,
+            237832435,
+            237832437,
+            237832439,
+            237832441,
+            237837288,
+            1495857693,
+            1495857694,
+            1495857704,
+            1495857708
+          ],
+          "lines": [
+            "Tram 13",
+            "Tram 5"
+          ],
+          "from": [
+            8.516799,
+            47.358822
+          ],
+          "to": [
+            8.531835,
+            47.365431
+          ]
+        },
+        {
+          "way_ids": [
+            220726219,
+            220726220,
+            220728359,
+            237832434,
+            237832436,
+            237832442,
+            496914398,
+            1495857697,
+            1495857698,
+            1495857705,
+            1495857709
+          ],
+          "lines": [
+            "Tram 13",
+            "Tram 5"
+          ],
+          "from": [
+            8.516964,
+            47.358817
+          ],
+          "to": [
+            8.531798,
+            47.365442
+          ]
+        }
+      ],
+      "reach_m": 8,
+      "ramp_m": 200,
+      "why": "Sihl approach: 13 anchors 5 using exact common route ways, with no cross-category borrowing.",
+      "asked": "User 2026-10-17: manually seat all Swiss tram networks using source-authorised corridors."
+    }
+  ]
+}

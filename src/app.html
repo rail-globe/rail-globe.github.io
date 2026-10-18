@@ -354,6 +354,56 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   body[data-sheet="large"] .maplibregl-ctrl-scale { display: none; }
   #loading { top: 30%; }
 }
+/* ---------- the card tucked into its mark (2026-10-18, "面板收起到标志") ----------
+   A click on the mark puts the card away into a round button, as a window goes into the Dock:
+   the card shrinks about the mark and is carried to the button, fading as it arrives over the
+   button, which is already there beneath it. The button brings the card back along the same path,
+   in the same time, on the same curve (one that is its own reverse). Only scale, translate and
+   opacity move: they leave the transform to the phone's sheet and lay nothing out, so the map is
+   not touched. The script measures where the mark is and where the button goes (--tuck-o, -k, -d
+   and the button's left and top): on a wide screen the button is on the mark; on a phone it is
+   where the mark is with the sheet drawn right down, by the foot of the window. */
+:root { --tuck-ease: cubic-bezier(0.3, 0.15, 0.7, 0.85); }
+#panel { transform-origin: var(--tuck-o, 0 0);
+  transition: scale 360ms var(--tuck-ease), translate 360ms var(--tuck-ease), opacity 240ms var(--tuck-ease); }
+#panel.tucked { scale: var(--tuck-k, 0.14); translate: var(--tuck-d, 0 0); opacity: 0; pointer-events: none;
+  transition: scale 360ms var(--tuck-ease), translate 360ms var(--tuck-ease), opacity 240ms var(--tuck-ease) 120ms; }
+#panel.still { transition: none; }
+.search-row .fold { flex: none; display: grid; place-items: center; width: 32px; height: 32px; margin: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+#dock { position: fixed; z-index: 1; left: 20px; top: 22px; width: 48px; height: 48px; margin: 0; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: var(--material-thin); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%); box-shadow: var(--edge), 0 4px 14px rgba(0, 0, 0, 0.3);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: transform 100ms ease-out, opacity 120ms var(--tuck-ease) 240ms, visibility 0s 360ms; }
+body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
+  transition: transform 100ms ease-out, opacity 120ms var(--tuck-ease), visibility 0s; }
+#dock img { width: 32px; height: 32px; }
+@media (hover: hover) {
+  .search-row .fold:hover { box-shadow: 0 0 0 3px var(--fill); }
+  #dock:hover { background: rgba(72, 72, 76, 0.7); }
+}
+@media (max-width: 720px), (pointer: coarse) {
+  .search-row .fold { position: relative; }
+  .search-row .fold::after { content: ""; position: absolute; inset: -6px -5px -6px -6px; }
+}
+@media (max-width: 720px) {
+  /* the scale and the credits come down from the sheet's edge to the foot of the window, on the right of it */
+  body.tucked .maplibregl-ctrl-bottom-right { transform: translateY(calc(-1 * max(8px, env(safe-area-inset-bottom, 0px) - 8px))) !important; }
+  body.tucking .maplibregl-ctrl-bottom-right { transition: transform 360ms var(--tuck-ease); }
+  body.tucked[data-sheet] .maplibregl-ctrl-scale { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* in place, a fade (the page's own rule below cuts every transition to 1ms: this one stays) */
+  #panel.tucked { scale: none; translate: none; }
+  #panel, #panel.tucked { transition: opacity 200ms ease !important; }
+  #dock { transition: opacity 200ms ease, visibility 0s 200ms !important; }
+  body.tucked #dock { transition: opacity 200ms ease, visibility 0s !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #dock { background: var(--solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  #dock:not(:focus-visible) { outline: 1px solid rgba(255, 255, 255, 0.5); outline-offset: -1px; }
+}
 /* gentler equivalents rather than nothing */
 @media (prefers-reduced-motion: reduce) {
   *, *::before { animation-duration: 1ms !important; transition-duration: 1ms !important; }
@@ -377,7 +427,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   <div class="head">
     <div class="grabber" aria-hidden="true"></div>
     <div class="search-row">
-    <img class="mark" src="mark.png" width="28" height="28" alt="Rail Globe">
+    <button type="button" class="fold" id="fold" aria-controls="panel" aria-expanded="true" aria-label="收起面板" title="收起面板" data-ta="aria-label:panel.hide title:panel.hide"><img class="mark" src="mark.png" width="28" height="28" alt=""></button>
     <label class="searchbar">
       <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <input id="query" type="search" placeholder="车站、线路、城市，如 上海虹桥" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="搜索车站、线路、城市、国家" data-ta="aria-label:search.label" aria-controls="tab-find">
@@ -413,6 +463,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     <div class="tab" id="tab-find" role="region" aria-label="搜索结果" data-ta="aria-label:found.label" hidden></div>
     <div class="tab" id="tab-world" role="region" aria-label="国家" data-ta="aria-label:world.label">
       <ul class="group linelist countries" id="countryList"></ul>
+      <p class="hint" id="countryUnavailable" role="status" hidden></p>
     </div>
     <div class="tab" id="tab-route" role="tabpanel" hidden>
       <div id="routeCn">
@@ -482,9 +533,14 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     </div>
   </div>
 </aside>
+<!-- the card tucked away: the mark as a round button, where the mark was (see "tucked into its mark") -->
+<button type="button" id="dock" aria-controls="panel" aria-expanded="true" aria-label="展开面板" title="展开面板" data-ta="aria-label:panel.show title:panel.show" inert><img src="mark.png" width="32" height="32" alt=""></button>
 
 <script type="module" src="src/trains.mjs?v=20261013-14"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.9.0/maplibre-gl.js" integrity="sha384-81ppUWZZO+pveTPk4qU9cZuScEFULHfuOMHVJHFZ7xVBlWQTG1zsPrVIMGAl1WMb" crossorigin="anonymous"></script>
+<script>
+/*CONTINUOUS_OFFSET_JS*/
+</script>
 <script>
 (() => {
   const css = getComputedStyle(document.documentElement);
@@ -537,6 +593,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'start.failed': ['初始化失败：{reason}', 'The page could not start: {reason}'],
     'jumps.label': ['快速定位', 'Quick jumps'],
     'panel.label': ['搜索、国家、路线、线路与图层', 'Search, countries, route, lines and layers'],
+    'panel.hide': ['收起面板', 'Hide the panel'],
+    'panel.show': ['展开面板', 'Show the panel'],
     'lang.label': ['语言：中文 / English', 'Language: 中文 / English'],
     'search.placeholder': ['车站、线路、城市，如 {example}', 'Station, line, city: {example}'],
     'search.label': ['搜索车站、线路、城市、国家', 'Search stations, lines, cities and countries'],
@@ -649,6 +707,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'imagery.note': ['Esri World Imagery 在线影像，放大到车站级别可以看清站房和股道。', 'Esri World Imagery, fetched as you go. Zoomed in on a station it shows the buildings and the tracks.'],
     'imagery.offline': ['在线卫星影像加载不了，请检查网络后刷新页面。线路和车站仍可正常查看。', 'The satellite imagery cannot be loaded. Check the connection and reload the page. Lines and stations still show.'],
     'credits.osm': ['贡献者', 'contributors'],
+    'credits.eurogeographics': ['行政边界：© <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units" target="_blank" rel="noopener">EuroGeographics</a>',
+      '© <a href="https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units" target="_blank" rel="noopener">EuroGeographics</a> for the administrative boundaries'],
     'credits.data': ['线路与车站：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> 贡献者(ODbL)，Geofabrik 2026-10-05 提取(日本、韩国为 2026-10-06，英国为 2026-10-03)；地铁线路名称与颜色取自 OSM 线路关系。铁路按区段设计时速分级，参考 <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">中国动车组 · 线路资料</a>(2026-10-07 核查)。优先采用线下设计标准，缺失时采用轨道设计标准。设计速度与运行速度分别标注。没有设计时速资料的线路列为普速；动车线路里还缺资料的区段暂按轨道限速归档。卫星影像：Esri World Imagery (Esri, Maxar, Earthstar Geographics)。营业里程为 2025 年末数据，来自交通运输部《2025年交通运输行业发展统计公报》。',
       'Lines and stations: © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors (ODbL), Geofabrik extracts of 2026-10-05 (Japan and Korea 2026-10-06, the United Kingdom 2026-10-03). Metro line names and colours are from OSM route relations. Railways are graded section by section by design speed, after <a href="https://www.china-emu.cn/RailRoads/" target="_blank" rel="noopener">China EMU · line data</a> (checked 2026-10-07): the design standard of the line where it is known, of the track otherwise. Design speed and running speed are told apart. A line with no design speed on record is listed as conventional; sections of EMU lines still without one are filed by the track’s speed limit for now. Imagery: Esri World Imagery (Esri, Maxar, Earthstar Geographics). Operating lengths are those of the end of 2025, from the Ministry of Transport’s statistical bulletin for 2025.'],
     'row.fast': ['动车组线路', 'EMU lines'],
@@ -663,6 +723,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'row.stations.note': ['白点为按设计时速上色的线路沿线车站', 'White dots are stations on lines coloured by design speed'],
     'row.cities': ['城市', 'Cities'],
     'row.border': ['国界', 'National boundary'],
+    'countries.unavailable': ['数据暂不可用：{countries}', 'Data unavailable: {countries}'],
+    'credits.boundaries': ['数据许可', 'Data licences'],
     'class.metro': ['地铁', 'Metro'],
     'class.conv': ['普速铁路', 'Conventional railway'],
     'class.build': ['在建线路', 'Line being built'],
@@ -710,6 +772,29 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     'uk.subway': ['地铁', 'Underground'],
     'uk.urban': ['轻轨·有轨电车', 'Light rail & trams'],
     'uk.urban.caption': ['轻轨与有轨电车', 'Light rail and trams'],
+    'de': ['德国', 'Germany'],
+    'de.hint': ['Berlin', 'Berlin'],
+    'de.fastWord': ['高速铁路', 'high-speed'],
+    'fr': ['法国', 'France'],
+    'fr.hint': ['Paris', 'Paris'],
+    'fr.fastWord': ['高速铁路', 'high-speed'],
+    'ch': ['瑞士', 'Switzerland'],
+    'ch.hint': ['Zürich', 'Zurich'],
+    'ch.fastWord': ['高速铁路', 'high-speed'],
+    'es': ['西班牙', 'Spain'],
+    'es.hint': ['Madrid', 'Madrid'],
+    'es.fastWord': ['高速铁路', 'high-speed'],
+    'nl': ['荷兰', 'Netherlands'],
+    'nl.hint': ['Amsterdam', 'Amsterdam'],
+    'nl.fastWord': ['高速铁路', 'high-speed'],
+    'be': ['比利时', 'Belgium'],
+    'be.hint': ['Bruxelles', 'Brussels'],
+    'be.fastWord': ['高速铁路', 'high-speed'],
+    'it': ['意大利', 'Italy'],
+    'it.hint': ['Roma', 'Rome'],
+    'it.fastWord': ['高速铁路', 'high-speed'],
+    'eu.urban': ['轻轨·有轨电车', 'Light rail & trams'],
+    'eu.urban.caption': ['轻轨与有轨电车', 'Light rail and trams'],
     'rail.hs': ['高速铁路', 'High-speed'],
     'rail.semi': ['准高速铁路', 'Semi-high-speed'],
     'rail.main': ['干线铁路', 'Main lines'],
@@ -823,6 +908,72 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const WITH_UK = /*WITH_UK*/true;      // set from site.json by scripts/build.py
   const WITH_KR = /*WITH_KR*/true;      // South Korea: data/kr_*.json, written by scripts/process_kr.py
   const WITH_JP = /*WITH_JP*/true;      // Japan: data/jp_*.json, written by scripts/process_jp.py
+  const WITH_DE = /*WITH_DE*/true;
+  const WITH_FR = /*WITH_FR*/true;
+  const WITH_CH = /*WITH_CH*/true;
+  const WITH_ES = /*WITH_ES*/true;
+  const WITH_NL = /*WITH_NL*/true;
+  const WITH_BE = /*WITH_BE*/true;
+  const WITH_IT = /*WITH_IT*/true;
+  /*VIEW-CORE*/
+  // Pinned, sourced WGS84 polygons, inlined offline by build.py. Boxes only reject
+  // distant points; ownership uses outer rings and holes, including offshore islands.
+  const unpackViewRing = ring => {
+    if (Array.isArray(ring)) return ring;
+    if (ring && typeof ring === 'object' && typeof ring.f64 === 'string') {
+      const bytes = Uint8Array.from(atob(ring.f64), c => c.charCodeAt(0));
+      if (!bytes.length || bytes.length % 16) throw new Error('Invalid float64 boundary ring');
+      const data = new DataView(bytes.buffer);
+      const points = [];
+      for (let at = 0; at < bytes.length; at += 16) points.push([data.getFloat64(at, true), data.getFloat64(at + 8, true)]);
+      return points;
+    }
+    if (typeof ring !== 'string' || !ring.length) throw new Error('Invalid encoded boundary ring');
+    const points = [];
+    let at = 0, x = 0, y = 0;
+    const read = () => {
+      let number = 0, shift = 0, byte;
+      do { byte = ring.charCodeAt(at++) - 63; number += (byte & 31) * 2 ** shift; shift += 5; } while (byte >= 32);
+      return number % 2 ? -(number + 1) / 2 : number / 2;
+    };
+    while (at < ring.length) { x += read(); y += read(); points.push([x / 1e6, y / 1e6]); }
+    return points;
+  };
+  const VIEW_BOUNDARIES = Object.fromEntries(Object.entries(/*VIEW_BOUNDARIES*/{}).map(([g, polygons]) => [g, polygons.map(rings => rings.map(unpackViewRing))]));
+  const VIEW_SHAPES = Object.fromEntries(Object.entries(VIEW_BOUNDARIES).map(([g, polygons]) => [g, polygons.map(rings => {
+    const box = rings[0].reduce(([west, south, east, north], [x, y]) =>
+      [Math.min(west, x), Math.min(south, y), Math.max(east, x), Math.max(north, y)], [Infinity, Infinity, -Infinity, -Infinity]);
+    return { rings, box };
+  })]));
+  const ringAt = (ring, lng, lat) => {
+    let inside = false, distance = Infinity;
+    const scale = Math.cos(lat * Math.PI / 180);
+    for (let i = 1; i < ring.length; i++) {
+      const [ax, ay] = ring[i - 1], [bx, by] = ring[i];
+      if ((ay > lat) !== (by > lat) && lng < ax + (lat - ay) * (bx - ax) / (by - ay)) inside = !inside;
+      const dx = (bx - ax) * scale, dy = by - ay, px = (lng - ax) * scale, py = lat - ay;
+      const fraction = dx || dy ? Math.max(0, Math.min(1, (px * dx + py * dy) / (dx * dx + dy * dy))) : 0;
+      distance = Math.min(distance, (px - fraction * dx) ** 2 + (py - fraction * dy) ** 2);
+    }
+    return { inside, distance };
+  };
+  const viewDepth = (g, lng, lat) => {
+    let depth = -1;
+    for (const { rings, box: [west, south, east, north] } of VIEW_SHAPES[g] || []) {
+      if (lng < west || lng > east || lat < south || lat > north) continue;
+      const outer = ringAt(rings[0], lng, lat);
+      if (!outer.inside && outer.distance > 1e-18) continue;
+      let distance = outer.distance, excluded = false;
+      for (const hole of rings.slice(1)) {
+        const result = ringAt(hole, lng, lat);
+        if (result.inside && result.distance > 1e-18) { excluded = true; break; }
+        distance = Math.min(distance, result.distance);
+      }
+      if (!excluded) depth = Math.max(depth, distance);
+    }
+    return depth;
+  };
+  /*VIEW-CORE-END*/
   // Tile mode: every country's layers come as vector tiles from one archive per country
   // (data/tiles/<country>.pmtiles, cut by scripts/build_tiles.py), so only what is in view is
   // fetched, instead of every GeoJSON file whole at the start. site.json sets the default;
@@ -852,6 +1003,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const metroId = (g, kind) => (g !== 'cn' ? `${g}-${kind}` : kind === HOME.metro[0][0] ? 'metro' : kind);
   const FAST = ['hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow'];
   const DESIGN_LABEL = { hsr400: '>350', hsr350: '350', hsr300: '300', hsr250: '250', hsr200: '200', hsr160: '160', hsrslow: '<160' };
+  const railColour = l => l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})`
+    : FAST.includes(l.c) ? col(l.c) : l.lc || col(l.c || 'main');
   const CLASSES = [
     // (label and sub are keys of TEXT; the rows of China's urban rail take their words from HOME.row)
     ...FAST.map(id => ({ id, label: 'row.fast', sub: id === 'hsr400' ? 'row.fast.note' : '', spd: DESIGN_LABEL[id] + '\u00a0km/h', src: 'hsr' })),
@@ -908,6 +1061,62 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       caption: { subway: 'uk.subway', urban: 'uk.urban.caption' },
       kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
       hint: 'uk.hint' },
+    de: { name: 'de', on: WITH_DE, optional: true, bounds: [[5.5, 47.2], [15.6, 55.2]],
+      inside: (lng, lat) => viewDepth('de', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'de.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'de.hint' },
+    fr: { name: 'fr', on: WITH_FR, optional: true, bounds: [[-5.3, 41.2], [9.8, 51.2]],
+      inside: (lng, lat) => viewDepth('fr', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'fr.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'fr.hint' },
+    ch: { name: 'ch', on: WITH_CH, optional: true, bounds: [[5.8, 45.7], [10.6, 47.9]],
+      inside: (lng, lat) => viewDepth('ch', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'ch.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'ch.hint' },
+    es: { name: 'es', on: WITH_ES, optional: true, bounds: [[-18.2, 27.5], [4.4, 43.9]],
+      inside: (lng, lat) => viewDepth('es', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'es.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'es.hint' },
+    nl: { name: 'nl', on: WITH_NL && !!VIEW_BOUNDARIES.nl, optional: true, boundaryOnly: true, bounds: [[3.2, 50.7], [7.3, 53.7]],
+      inside: (lng, lat) => viewDepth('nl', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'nl.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'nl.hint' },
+    be: { name: 'be', on: WITH_BE && !!VIEW_BOUNDARIES.be, optional: true, boundaryOnly: true, bounds: [[2.5, 49.4], [6.5, 51.6]],
+      inside: (lng, lat) => viewDepth('be', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'be.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'be.hint' },
+    it: { name: 'it', on: WITH_IT && !!VIEW_BOUNDARIES.it, optional: true, boundaryOnly: true, bounds: [[6.5, 35.4], [18.7, 47.2]],
+      inside: (lng, lat) => viewDepth('it', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'it.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch'], ['heritage', 'rail.heritage']],
+      metro: [['subway', 'metro'], ['urban', 'eu.urban']],
+      caption: { subway: 'metro', urban: 'eu.urban.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
+      hint: 'it.hint' },
   };
   for (const g of Object.keys(FOREIGN)) if (FOREIGN[g].on) worded(FOREIGN[g]); else delete FOREIGN[g];
   const abroad = g => (FOREIGN[g] ? g : 'cn');     // the country a feature or a list row belongs to
@@ -927,11 +1136,34 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // and is left by its way back. Dragging the map changes neither. While the card is at the
   // world, country is the one whose page was open last (its lists stay as they were left).
   let world = true;
-  // Three rows of the layers tab are the same for every country, lines being built, stations and
-  // the names of the cities, but each country has a switch of its own behind them: the row
+  // Shared rows use each country's own switch; a boundary row appears only where data exists.
+  // Lines being built, stations, cities and boundaries use the same row across countries.
+  // Each country has a switch of its own behind them: the row
   // shows, and changes, the switch of the country the card is about. China's are in visible,
   // like its other classes.
-  const SHARED_ROWS = ['build', 'stations', 'cities'];
+  const SHARED_ROWS = ['build', 'stations', 'cities', 'border'];
+  const borderCountries = new Set(['cn']);
+  const BORDER_LINES = ['border-halo', 'border-casing', 'border'];
+  const emptyBorders = () => ({ type: 'FeatureCollection', features: [] });
+  const unpackBorders = data => {
+    if (data?.encoding !== 'polyline6-xy') throw new Error('Unsupported boundary encoding');
+    if (data.type !== 'FeatureCollection' || !Array.isArray(data.features)) throw new Error('Invalid national boundary');
+    const features = data.features.map(feature => {
+      const geometry = feature?.geometry;
+      if (feature?.type !== 'Feature' || !['LineString', 'MultiLineString'].includes(geometry?.type)
+        || feature.properties?.k !== 'land') throw new Error('Invalid national boundary');
+      const parts = geometry.type === 'LineString' ? [geometry.coordinates] : geometry.coordinates;
+      if (!Array.isArray(parts) || !parts.length) throw new Error('Invalid national boundary');
+      const coordinates = parts.map(unpackViewRing);
+      if (coordinates.some(line => line.length < 2 || line.some(p =>
+        !Array.isArray(p) || p.length !== 2 || !p.every(Number.isFinite)
+        || Math.abs(p[0]) > 180 || Math.abs(p[1]) > 90)
+        || !line.some(p => p[0] !== line[0][0] || p[1] !== line[0][1]))) throw new Error('Invalid national boundary');
+      return { ...feature, geometry: { ...geometry,
+        coordinates: geometry.type === 'LineString' ? coordinates[0] : coordinates } };
+    });
+    return { type: 'FeatureCollection', features };
+  };
   // which of the cities outside the hand-made ones show at a zoom, by their rank (see 'place-labels')
   const PLACE_RANKS = ['any', ['==', ['get', 'r'], 1], ['all', ['==', ['get', 'r'], 2], ['>=', ['zoom'], 4.6]], ['>=', ['zoom'], 6]];
   const sharedOff = {};          // 'jp-build', 'uk-stations': the row is off for that country abroad
@@ -978,7 +1210,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       if (at && !c.nl && !c.ne) Object.assign(c, at.n !== c.n ? { nl: at.n } : {}, at.ne ? { ne: at.ne } : {});
     }
   }
-  function buildSearchIndex({ countries, lines, cities, places = [], stations, colours, say, name = p => p.n }) {
+  function buildSearchIndex({ countries, lines, cities, places = [], stations, colours, speedBands = [], say, name = p => p.n }) {
     const cfg = Object.fromEntries(countries.map(c => [c.g, c]));
     const home = g => (cfg[g] ? g : countries[0].g);
     const entries = [], byId = new Map();
@@ -1028,7 +1260,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const what = l.jk ? (cfg[g].kindName || {})[l.jk] || say('rail.of', { country: cfg[g].name }) : l.kind === 'fast' ? say('sub.fast') : say('sub.conv');
       const speed = l.jk && l.d ? l.d : l.design && l.design.length && (l.jk || l.kind === 'fast')
         ? (l.design.length > 1 ? say('range', { from: Math.min(...l.design), to: Math.max(...l.design) }) : l.design[0]) : null;
-      add('line', g, name(l, g), what + (speed ? ` · ${speed}\u00a0km/h` : ''), l.lc || colours[l.c], l.n, { ref: l, also: forms(l) });
+      add('line', g, name(l, g), what + (speed ? ` · ${speed}\u00a0km/h` : ''), speedBands.includes(l.c) ? colours[l.c] : l.lc || colours[l.c], l.n, { ref: l, also: forms(l) });
     }
     for (const f of stations) {
       const p = f.properties, g = home(p.g), [x, y] = f.geometry.coordinates;
@@ -1207,7 +1439,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // speed bands only those it has are shown (they are among its own rows).
     const cn = country === 'cn';
     for (const id of [...FAST, 'unknown']) if (rowEls[id]) rowEls[id].hidden = !cn;
-    for (const id of [...HOME.metro.map(([kind]) => metroId('cn', kind)), 'border']) rowEls[id].hidden = !cn;
+    for (const id of HOME.metro.map(([kind]) => metroId('cn', kind))) rowEls[id].hidden = !cn;
+    rowEls.border.hidden = !borderCountries.has(country);
     rowEls.build.hidden = !cn && !(FOREIGN[country] && FOREIGN[country].hasBuild);
     rowEls.trains.hidden = !cn || !!window.__app;         // (the trains are China's, and not in the app)
     for (const id of Object.keys(abroadVisible)) rowEls[id].hidden = !id.startsWith(country + '-');
@@ -1408,7 +1641,8 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     head.addEventListener('click', e => { if (e.timeStamp - draggedAt < 400) { draggedAt = -1e9; e.preventDefault(); e.stopPropagation(); } }, true);
     addEventListener('resize', layout);
     layout();
-    return { to, layout, detent: () => at, visible: () => H - stops()[at === 'large' ? 'mid' : at], whenSettled: fn => { onSettle = fn; } };
+    // (ahead: how far the sheet still has to go to the height it is moving to, for the card tucked away on its way)
+    return { to, layout, detent: () => at, visible: () => H - stops()[at === 'large' ? 'mid' : at], whenSettled: fn => { onSettle = fn; }, ahead: () => (isPhone() ? stops()[at] - y : 0) };
   })();
 
   // ---- the search field and the on-screen keyboard ----
@@ -1442,10 +1676,68 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // the clear button empties the field without taking the focus, and so the keyboard, away from it
   queryClear.addEventListener('mousedown', e => e.preventDefault());
 
+  // ---- the card tucked into its mark (2026-10-18, "面板收起到标志") ----
+  // The mark did nothing when clicked; now it puts the card away into a round button, and the
+  // button brings it back (the styles under "tucked into its mark" do the moving). Measured here:
+  // the mark's middle in the card as laid out, which the card shrinks about, and where the button
+  // goes, which the card is carried to. On a wide screen that is the mark itself; on a phone it is
+  // where the mark is with the sheet drawn right down, by the foot of the window, from whatever
+  // height (the sheet comes back at that height; one still moving is taken where it is going). Tucked, the card takes no click and no key: the
+  // keyboard goes to the button, and back to the mark when the card comes out. Only for this visit:
+  // a page opened afresh, and so every ?shot picture, has the card out.
+  const foldBtn = document.getElementById('fold'), dock = document.getElementById('dock');
+  const TUCK_MS = 360, DOCK = 48;          // as in the styles
+  let tucked = false, tuckTimer = 0;
+  const measureTuck = () => {
+    let mx = foldBtn.offsetWidth / 2, my = foldBtn.offsetHeight / 2;
+    for (let el = foldBtn; el && el !== panel; el = el.offsetParent) { mx += el.offsetLeft; my += el.offsetTop; }
+    const sheetY = new DOMMatrix(getComputedStyle(panel).transform).m42 + sheet.ahead();     // a phone's sheet, where it is going; 0 elsewhere
+    const x = panel.offsetLeft + mx, y = panel.offsetTop + sheetY + my;         // the mark on the screen
+    const to = [x, isPhone() ? innerHeight - Math.max(8, safe('Bottom') - 8) - my : y];
+    panel.style.setProperty('--tuck-o', `${mx}px ${my + sheetY}px`);
+    panel.style.setProperty('--tuck-k', (DOCK / panel.offsetWidth).toFixed(4));
+    panel.style.setProperty('--tuck-d', `${(to[0] - x).toFixed(1)}px ${(to[1] - y).toFixed(1)}px`);
+    dock.style.left = (to[0] - DOCK / 2).toFixed(1) + 'px';
+    dock.style.top = (to[1] - DOCK / 2).toFixed(1) + 'px';
+  };
+  // (measured afresh only between moves, and then taken at once: a move turned back halfway goes
+  // back from where it is)
+  const settledTuck = () => !document.body.classList.contains('tucking');
+  const measureStill = () => {
+    panel.classList.add('still');
+    measureTuck();
+    getComputedStyle(panel).getPropertyValue('scale');
+    panel.classList.remove('still');
+  };
+  const tuck = on => {
+    if (on === tucked) return;
+    tucked = on;
+    // a field in use lets go first (the sheet may then go back down: the card is measured for where it is going)
+    if (on && panel.contains(document.activeElement)) document.activeElement.blur();
+    if (settledTuck()) measureStill();
+    clearTimeout(tuckTimer);
+    document.body.classList.add('tucking');
+    tuckTimer = setTimeout(() => document.body.classList.remove('tucking'), TUCK_MS);
+    panel.classList.toggle('tucked', on);
+    document.body.classList.toggle('tucked', on);
+    for (const b of [foldBtn, dock]) b.setAttribute('aria-expanded', String(!on));
+    const [shown, gone] = on ? [dock, panel] : [panel, dock];
+    shown.inert = false;
+    (on ? dock : foldBtn).focus({ preventScroll: true });
+    gone.inert = true;
+  };
+  foldBtn.addEventListener('click', () => tuck(true));
+  dock.addEventListener('click', () => tuck(false));
+  addEventListener('resize', () => { if (tucked && settledTuck()) measureStill(); });
+  // Tucked, the map has the window to itself but for the bands the buttons keep: what is framed
+  // meanwhile (a quick jump) is framed in all of it. Tucking and opening frame nothing again.
+  const tuckedRoom = () => (isPhone() ? { top: 64 + safe('Top'), bottom: 64 + safe('Bottom'), left: 16, right: 16 }
+    : { top: 64, bottom: 40, left: 24 + safe('Left'), right: 60 + safe('Right') });
+
   // The part of the map that can be seen: on a phone between the row of quick jumps and the sheet
-  // (with the credits riding on it), beside the card otherwise.
+  // (with the credits riding on it), beside the card otherwise; the whole window with the card tucked away.
   let appCovered = { top: 0, left: 0, bottom: 0, right: 0 };
-  const padding = () => window.__app ? Object.fromEntries(Object.entries(appCovered).map(([edge, px]) => [edge, px + 12])) : isPhone()
+  const padding = () => window.__app ? Object.fromEntries(Object.entries(appCovered).map(([edge, px]) => [edge, px + 12])) : tucked ? tuckedRoom() : isPhone()
     ? { top: 64 + safe('Top'), bottom: Math.min(sheet.visible() + 44, Math.round(innerHeight * 0.62)), left: 16, right: 16 }
     : { top: 64, bottom: 40, left: 396 + safe('Left'), right: 60 + safe('Right') };
 
@@ -1473,21 +1765,28 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const SHOT = new URLSearchParams(location.search).has('shot');
   // A page that is not on screen gets no animation frames, and the map neither starts nor draws
   // without them: there, screenshot mode hands out frames by the clock instead.
-  if (SHOT && document.hidden) {
-    const pending = new Map(), beat = new MessageChannel();
-    let next = 0, last = 0;
-    beat.port1.onmessage = () => {
-      const now = performance.now();
-      if (now - last >= 16) {
-        last = now;
-        const due = [...pending.values()];
-        pending.clear();
-        for (const frame of due) frame(now);
-      }
-      if (pending.size) beat.port2.postMessage(0);
+  if (SHOT) {
+    const nativeFrame = window.requestAnimationFrame.bind(window), cancelNative = window.cancelAnimationFrame.bind(window);
+    const pending = new Map();
+    let next = 0, timer = 0, frameId = 0;
+    const draw = now => {
+      timer = frameId = 0;
+      const due = [...pending.values()];
+      pending.clear();
+      for (const frame of due) frame(now);
     };
-    window.requestAnimationFrame = frame => { pending.set(++next, frame); if (pending.size === 1) beat.port2.postMessage(0); return next; };
+    const schedule = () => {
+      if (timer || frameId || !pending.size) return;
+      if (document.hidden) timer = setTimeout(() => draw(performance.now()), 16);
+      else frameId = nativeFrame(draw);
+    };
+    window.requestAnimationFrame = frame => { pending.set(++next, frame); schedule(); return next; };
     window.cancelAnimationFrame = id => pending.delete(id);
+    document.addEventListener('visibilitychange', () => {
+      clearTimeout(timer); cancelNative(frameId);
+      timer = frameId = 0;
+      schedule();
+    });
   }
   const map = new maplibregl.Map({
     container: 'map',
@@ -1653,7 +1952,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // (The control puts its credits in order of length, and the link makes the first the longer:
   // the whole line is given as one, and the imagery's own credit, being part of it, is not said twice.)
   const IMAGERY = 'Imagery © Esri, Maxar, Earthstar Geographics';
-  const creditLine = () => `© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> ${t('credits.osm')} | ` + IMAGERY;
+  const viewCredit = () => Object.keys(VIEW_BOUNDARIES).length ? ` | <a href="https://www.geoboundaries.org/" target="_blank" rel="noopener">geoBoundaries</a> / BKG / ©swisstopo / IGN · <a href="${abs('data/view_boundaries.json')}" target="_blank" rel="noopener">${t('credits.boundaries')}</a>` : '';
+  const creditLine = () => `© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> ${t('credits.osm')} | ` + IMAGERY + viewCredit()
+    + (Object.keys(VIEW_BOUNDARIES).length ? ` | ${t('credits.eurogeographics')}` : '');
   // (a control keeps the words it was made with: when the language changes it is made again,
   // folded if it was)
   const fold = el => { el.classList.remove('maplibregl-compact-show'); el.removeAttribute('open'); };
@@ -1705,10 +2006,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   // the page says so in the console and is as with the switch off, drawn from the whole files,
   // rather than a globe with no lines. The lists of the card (lines, cities, figures) are small
   // and always come whole.
-  const everyCountry = ['cn', ...Object.keys(FOREIGN)];
+  let everyCountry = ['cn', ...Object.keys(FOREIGN)];
+  const unavailableCountries = new Set();
   // the layers that draw a layer of several countries: [[layer id, its country, or null for all in one]]
   const copies = {};
   const each = id => copies[id] || [];
+  let refreshCapsules = () => {}, capsulesReady = false;
+  // Tram and light-rail stops (t) and capsules of trams alone show from TRAM_STOPS_FROM, metro
+  // stations from z11: at a city's scale every 300 m stop of a tram network was a dot ("感觉站点太
+  // 密了，拉远后站点消失", Turin at z13, 2026-10-18), as Apple Maps shows trams' stops only nearer.
+  // (Here, beside capsulesReady: applyVisibility() and the capsules both read it.)
+  const TRAM_STOPS_FROM = 14;
+  // Railway stations keep their dots below RAIL_CAPSULES_FROM and show their capsules from it, as
+  // metro capsules do: at z9 Tokyo's capsules were heavy white bars over the whole city (2026-10-18).
+  const RAIL_CAPSULES_FROM = 11;
   const script = src => new Promise((ok, fail) => {
     const tag = document.createElement('script');
     tag.src = abs(src);
@@ -1743,8 +2054,19 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       Promise.all(Object.keys(FOREIGN).map(g => Promise.all([
         whole(`data/${g}_rail.geojson`), whole(`data/${g}_metro.geojson`), whole(`data/${g}_stations.geojson`),
         getJSON(`data/${g}_lines.json`), getJSON(`data/${g}_metro_cities.json`), getJSON(`data/${g}_facts.json`),
-        ...(FOREIGN[g].build ? [whole(`data/${g}_build.geojson`)] : [])]))),
+        ...(FOREIGN[g].build ? [whole(`data/${g}_build.geojson`)] : [])]).catch(err => {
+          if (!FOREIGN[g].optional) throw err;
+          unavailableCountries.add(g);
+          console.warn(`Country data unavailable: ${g}`, err);
+          return null;
+        }))),
       tiles,
+      Object.keys(FOREIGN).some(g => VIEW_BOUNDARIES[g]) ? getJSON('data/europe_borders.packed.json').then(unpackBorders)
+        .catch(() => getJSON('data/europe_borders.geojson')).catch(err => {
+        console.warn('European boundaries unavailable; railway data remains usable.', err);
+        return emptyBorders();
+      })
+        : Promise.resolve(emptyBorders()),
     ]);
   });
   dataReady.catch(err => { const note = document.getElementById('loading'); note.removeAttribute('data-t'); say(note, 'loading.failed', { reason: err.message }); });
@@ -1754,7 +2076,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   window.__bootStage = 'map-load';
   try {
     window.__bootStage = 'data-ready';
-    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, live, shared, metroCities, abroadData, tiles] = await dataReady;
+    const [hsr, build, conv, stations, lines, cities, border, metro, metroStations, live, shared, metroCities, abroadData, tiles, europeBorders] = await dataReady;
     // Tile mode: a vector source per country ('tiles-cn', 'tiles-jp', ...), each reading its own
     // archive. from('conv', 'jp') is what a layer says to draw Japan's lines from, in either mode;
     // has() says whether a country's archive holds a layer at all.
@@ -1773,11 +2095,17 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // data has them its names in Chinese and English (nz, ne) and the mark of a tram stop (t). See stationLists().
     const listed = (cols, more) => cols.n.map((n, i) => ({ type: 'Feature',
       properties: { n, ...(cols.g && cols.g[i] != null ? { g: cols.g[i] } : {}), ...(cols.h && cols.h[i] ? { h: 1 } : {}),
-        ...Object.fromEntries(['nz', 'ne', 't'].filter(k => cols[k] && cols[k][i]).map(k => [k, cols[k][i]])), ...more },
+        ...Object.fromEntries(['nz', 'ne', 't', 'cp'].filter(k => cols[k] && cols[k][i]).map(k => [k, cols[k][i]])), ...more },
       geometry: { type: 'Point', coordinates: [cols.x[i] / 1e5, cols.y[i] / 1e5] } }));
     // A country abroad comes as layers of its own with the same properties, and joins the layers drawn here.
     const facts = {};
     Object.keys(FOREIGN).forEach((g, i) => {
+      if (!abroadData[i]) {
+        if (FOREIGN[g].boundaryOnly && europeBorders.features.some(f => f.properties.g === g)) {
+          FOREIGN[g].dataUnavailable = true;
+        } else delete FOREIGN[g];
+        return;
+      }
       const [rail, itsMetro, itsStations, itsLines, itsCities, itsFacts, itsBuild] = abroadData[i];
       for (const f of rail.features) conv.features.push(f);      // all on conv, told apart by g and jk
       for (const f of itsMetro.features) metro.features.push(f);
@@ -1797,6 +2125,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         // and the lines of a fast class in no band (the mini-shinkansen), from its list of lines: a row of their own
         Object.fromEntries(FOREIGN[g].fast.map(kind => [kind, itsLines.filter(l => l.mini && jkOf(g, kind).includes(l.jk))])));
     });
+    everyCountry = ['cn', ...Object.keys(FOREIGN)];
     if (tiles) for (const g of everyCountry) map.addSource('tiles-' + g, { type: 'vector', url: 'pmtiles://' + archiveOf(g) });
 
     // ---- imagery ----
@@ -1822,6 +2151,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       paint: { 'line-color': col('border-halo'), 'line-width': lineW([3, 4, 6, 8, 10]), 'line-blur': lineW([2, 3, 4, 6, 8]), 'line-opacity': 0.5 } });
     map.addLayer({ id: 'border-sea', type: 'fill', source: 'border', filter: SEA,
       paint: { 'fill-color': col('border'), 'fill-opacity': 0.9 } });
+    map.addSource('europe-border', { type: 'geojson', data: europeBorders, tolerance: 0.3 });
+    const boundaryStyles = map.getStyle().layers.filter(layer => BORDER_LINES.includes(layer.id));
+    for (const g of everyCountry.filter(g => europeBorders.features.some(f => f.properties.g === g))) {
+      borderCountries.add(g);
+      for (const layer of boundaryStyles) map.addLayer({
+        ...layer, id: `${layer.id}@${g}`, source: 'europe-border',
+        filter: ['all', LAND, ['==', ['get', 'g'], g]],
+      });
+    }
 
     // ---- rail ----
     whole('conv', { data: conv, tolerance: 0.45 });
@@ -1864,6 +2202,177 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       return addLayer0({ ...layer, filter: layer.filter ? ['all', layer.filter, SIDE] : SIDE }, before);
     };
     map.setFilter = (id, filter, ...rest) => setFilter0(id, twice.has(id) ? (filter ? ['all', filter, SIDE] : SIDE) : filter, ...rest);
+    // Full-path display curves are built before MapLibre clips them into tiles.
+    // Source geometry stays available to routing, stations and source audits.
+    const offsetManifest = /*CONTINUOUS_OFFSET_MANIFEST*/{};
+    const offsetSpecs = new Map(), offsetCopies = new Map(), offsetLoaded = new Map();
+    const offsetAdd = map.addLayer.bind(map), offsetFilter = map.setFilter.bind(map);
+    const offsetPaint = map.setPaintProperty.bind(map), offsetLayout = map.setLayoutProperty.bind(map);
+    const offsetQuery = map.queryRenderedFeatures.bind(map);
+    const offsetAddSource = map.addSource.bind(map), offsetDynamic = new Map();
+    map.addSource = (id, options) => {
+      const result = offsetAddSource(id, options);
+      if (['route', 'cn-train-route'].includes(id)) {
+        const source = map.getSource(id), setData = source.setData.bind(source);
+        const update = data => {
+          const input = data.type === 'FeatureCollection' ? data.features : [data];
+          const groups = ['rail', 'metro', 'guest', 'plain'].map(kind => ({
+            kind, features: input.filter(f => (f.properties.kind || 'plain') === kind) }));
+          offsetDynamic.set(id, groups);
+          const features = groups.flatMap(group => group.kind === 'plain' ? group.features
+            : ContinuousOffset.renderStrokes(group.features, map.getZoom(), group.kind).features);
+          return setData({ type: 'FeatureCollection', features });
+        };
+        source.setData = update;
+        offsetDynamic.set(id, []);
+      }
+      return result;
+    };
+    // Old MVT lacks r/network/rid. This exclusion key replaces all siblings;
+    // ContinuousOffset.identity keeps their actual network/rid separate.
+    const offsetKey = p => ['g', 'ct', 'n', 'col', 'zf', 'zn'].map(k => p[k] ?? '').join('\u001f');
+    const offsetKeyExpr = ['concat', ...['g', 'ct', 'n', 'col', 'zf', 'zn'].flatMap((k, i) =>
+      [...(i ? ['\u001f'] : []), ['to-string', ['coalesce', ['get', k], '']]])];
+    const offsetSourceOf = layer => {
+      if (layer.source?.startsWith('tiles-')) return layer.source.slice(6) + ':' + layer['source-layer'];
+      if (['conv', 'hsr', 'metro', 'shared'].includes(layer.source)) return 'whole:' + layer.source;
+      return null;
+    };
+    const offsetMode = layer => ['shared', 'suburb', 'suburb-casing'].includes(layer.id) ? 'guest'
+      : ['conv', 'hsr'].includes(layer['source-layer'] || layer.source) ? 'rail' : 'metro';
+    const offsetExcluded = (spec, keys) => {
+      const excluded = ['!', ['in', offsetKeyExpr, ['literal', keys]]];
+      return spec.filter ? ['all', spec.filter, excluded] : excluded;
+    };
+    const offsetDisplayFilter = spec => writtenTwice(spec)
+      ? spec.filter ? ['all', spec.filter, SIDE] : SIDE : spec.filter;
+    const offsetBounds = () => {
+      const b = map.getBounds(), dx = (b.getEast() - b.getWest()) * .3, dy = (b.getNorth() - b.getSouth()) * .3;
+      return [b.getWest() - dx, b.getSouth() - dy, b.getEast() + dx, b.getNorth() + dy];
+    };
+    const offsetView = () => {
+      const b = map.getBounds();
+      return [b.getWest(), b.getSouth(), b.getEast(), b.getNorth()];
+    };
+    const offsetContains = (outer, inner) => outer && outer[0] <= inner[0] && outer[1] <= inner[1]
+      && outer[2] >= inner[2] && outer[3] >= inner[3];
+    const offsetInstall = (key, data) => {
+      const keys = [...new Set(data.features.map(f => offsetKey(f.properties)))];
+      const chains = ContinuousOffset.prepare(data.features);
+      const loaded = { keys, chains, features: data.features, selected: null, sources: new Map(),
+        bounds: offsetBounds(), zoom: map.getZoom(), empty: false };
+      offsetLoaded.set(key, loaded);
+      for (const [id, spec] of offsetSpecs) if (offsetSourceOf(spec) === key) {
+        const mode = offsetMode(spec), source = `continuous-${key}-${mode}`, copy = id + '~continuous';
+        if (!loaded.sources.has(mode)) {
+          const display = ContinuousOffset.render(chains, loaded.zoom, mode, loaded.bounds);
+          loaded.empty = !display.features.length;
+          map.addSource(source, { type: 'geojson', data: display, tolerance: 0, buffer: 256, maxzoom: 18 });
+          loaded.sources.set(mode, source);
+        }
+        const { 'source-layer': ignored, ...layer } = spec;
+        offsetAdd({ ...layer, id: copy, source, filter: offsetDisplayFilter(spec), paint: { ...spec.paint, 'line-offset': beside() } }, id);
+        offsetCopies.set(id, copy);
+        offsetFilter(id, offsetExcluded(spec, keys));
+      }
+      const rails = ['cn:hsr', 'cn:conv', 'whole:hsr', 'whole:conv']
+        .filter(k => k.startsWith(key.split(':')[0] + ':')).map(k => offsetLoaded.get(k)).filter(Boolean);
+      if (rails.length > 1) {
+        const joined = ContinuousOffset.prepare(rails.flatMap(rail => rail.features));
+        for (const rail of rails) {
+          const own = new Set(rail.features), selected = new Map();
+          for (const chain of joined) {
+            const members = chain.members.filter(m => own.has(m.f)).map(member => ({
+              member, start: member.start, end: member.end, f: member.f }));
+            if (members.length) selected.set(chain, members);
+          }
+          rail.chains = [...selected.keys()];
+          rail.selected = selected;
+          rail.bounds = offsetBounds(); rail.zoom = map.getZoom();
+          for (const [mode, source] of rail.sources) map.getSource(source).setData(
+            ContinuousOffset.render(rail.chains, rail.zoom, mode, rail.bounds, selected));
+        }
+      }
+    };
+    map.addLayer = (layer, before) => {
+      const result = offsetAdd(layer, before);
+      if (layer.type === 'line' && layer.paint?.['line-offset'] && offsetSourceOf(layer)) offsetSpecs.set(layer.id, layer);
+      return result;
+    };
+    map.setFilter = (id, filter, ...rest) => {
+      const spec = offsetSpecs.get(id), copy = offsetCopies.get(id);
+      if (spec) spec.filter = filter;
+      if (copy) {
+        offsetFilter(copy, offsetDisplayFilter(spec), ...rest);
+        return offsetFilter(id, offsetExcluded(spec, offsetLoaded.get(offsetSourceOf(spec)).keys), ...rest);
+      }
+      return offsetFilter(id, filter, ...rest);
+    };
+    map.setPaintProperty = (id, property, value, ...rest) => {
+      const spec = offsetSpecs.get(id), copy = offsetCopies.get(id);
+      if (spec) spec.paint[property] = value;
+      if (copy && property !== 'line-offset') offsetPaint(copy, property, value, ...rest);
+      return offsetPaint(id, property, value, ...rest);
+    };
+    map.setLayoutProperty = (id, property, value, ...rest) => {
+      const spec = offsetSpecs.get(id), copy = offsetCopies.get(id);
+      if (spec) spec.layout = { ...spec.layout, [property]: value };
+      if (copy) offsetLayout(copy, property, value, ...rest);
+      return offsetLayout(id, property, value, ...rest);
+    };
+    map.queryRenderedFeatures = (geometry, options) => {
+      const expanded = options?.layers ? { ...options, layers: options.layers.flatMap(id => offsetCopies.has(id) ? [id, offsetCopies.get(id)] : [id]) } : options;
+      return offsetQuery(geometry, expanded).map(f => {
+        if (!f.layer.id.endsWith('~continuous')) return f;
+        const id = f.layer.id.slice(0, -11), spec = offsetSpecs.get(id);
+        // Preserve the public layer/source identity used by picking and hover.
+        f.layer = { ...f.layer, id, source: spec.source, 'source-layer': spec['source-layer'] };
+        f.source = spec.source;
+        f.sourceLayer = spec['source-layer'];
+        return f;
+      });
+    };
+    let offsetTimer = 0, offsetZoom = null;
+    const offsetRefresh = () => {
+      offsetTimer = 0;
+      const zoom = map.getZoom(), view = offsetView(), bounds = offsetBounds();
+      for (const loaded of offsetLoaded.values()) {
+        if (zoom === loaded.zoom && offsetContains(loaded.bounds, view)) continue;
+        let empty = true;
+        for (const [mode, source] of loaded.sources) {
+          const display = ContinuousOffset.render(loaded.chains, zoom, mode, bounds, loaded.selected);
+          if (display.features.length || !loaded.empty) map.getSource(source).setData(display);
+          empty = empty && !display.features.length;
+        }
+        loaded.bounds = bounds; loaded.zoom = zoom; loaded.empty = empty;
+      }
+      if (zoom !== offsetZoom) for (const [id, groups] of offsetDynamic) {
+        if (groups.some(group => group.features.length)) map.getSource(id).setData(
+          { type: 'FeatureCollection', features: groups.flatMap(group => group.features) });
+      }
+      offsetZoom = zoom;
+    };
+    const offsetPending = new Set();
+    const offsetLoad = () => {
+      if (!tiles) return;
+      const bounds = map.getBounds();
+      for (const [key, info] of Object.entries(offsetManifest)) {
+        if (offsetPending.has(key)) continue;
+        const [w, s, e, n] = info.bbox;
+        if (e < bounds.getWest() || w > bounds.getEast() || n < bounds.getSouth() || s > bounds.getNorth()) continue;
+        offsetPending.add(key);
+        fetch(abs(info.url)).then(response => {
+          if (!response.ok) throw Error(`Continuous offsets: ${response.status} ${key}`);
+          return new Response(response.body.pipeThrough(new DecompressionStream('gzip'))).json();
+        }).then(features => {offsetInstall(key, { features }); refreshCapsules();})
+          .catch(error => console.warn('Continuous display unavailable; original geometry retained.', error));
+      }
+    };
+    map.on('movestart', () => { clearTimeout(offsetTimer); offsetTimer = 0; });
+    map.on('moveend', () => {
+      clearTimeout(offsetTimer);
+      offsetTimer = setTimeout(() => { offsetRefresh(); offsetLoad(); }, 40);
+    });
     const EMPTY = { type: 'FeatureCollection', features: [] };
     // Yard and depot tracks sit under everything else and only appear once zoomed in.
     // (from the tiles they come with the view; as whole files they are fetched by loadYards)
@@ -1897,6 +2406,15 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const guestLook = ['all', ['any', ['!=', slot, 0], ['>=', ['coalesce', ['get', 'bn'], 0], 2]], ['!', host]];
     const WIDTH_ZOOMS = [3, 6, 9, 12, 16], LINE = { fast: [1.1, 1.8, 2.6, 3.4, 5], main: [0.5, 0.9, 1.6, 2.3, 3.2], branch: [0.35, 0.6, 1.1, 1.7, 2.6], own: [0.9, 1.4, 2.1, 3, 4.4] };
     const METRO_STOPS = [[4.5, 0.4], [6, 0.5], [9, 1.3], [12, 2.6], [16, 4.5]];
+    // Light rail and trams, in every country: as on Apple Maps (the user's reference,
+    // 2026-10-17), the lines of a corridor stay side by side at every zoom, touching, so a far
+    // view shows a narrow bundle of thin lines rather than one trace or a loose clump (Rome at
+    // z11.55 was "太不明显" at 0.5 px; the opened seats then "间隙太大"). First made for the seven
+    // new European countries; Hong Kong's trams, drawn as China's metro is, stood loose beside
+    // them ("还有香港的有轨电车"), and the user chose every country's ("算了都改一下", 2026-10-18).
+    // thin as Apple Maps draws them ("感觉还是apple map好看", 2026-10-18), but not under about 1.4 px
+    // at a city's scale: at 1 px on the imagery they read as faint ("变的很淡", 2026-10-18)
+    const TRAM_STOPS = [[4.5, 0.3], [9, 0.8], [10, 1.1], [11, 1.4], [12, 1.6], [13, 1.8], [14, 2.1], [15, 3], [16, 4.5]];
     // a width as the map draws it, interpolated by ['exponential', 1.5] between its stops, at a zoom
     const widthAt = (stops, z) => {
       if (z <= stops[0][0]) return stops[0][1];
@@ -1905,42 +2423,136 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       return +(v0 + (v1 - v0) * (1.5 ** (z - z0) - 1) / (1.5 ** (z1 - z0) - 1)).toFixed(3);
     };
     const GUEST = {
-      step: [[6, 1.8], [9, 3.2], [12, 5], [16, 8]],            // px from the line beside it, linear between
+      step: [[6, 1.8], [9, 3.2], [12, 5], [16, 8]],
       width: METRO_STOPS,                                       // its own width
     };
-    const stepAt = z => (z <= 6 ? 1.8 : z >= 16 ? 8 : (([[z0, v0], [z1, v1]]) => +(v0 + (v1 - v0) * (z - z0) / (z1 - z0)).toFixed(4))(GUEST.step.slice(GUEST.step.findIndex(([at]) => at > z) - 1)));
+    // Light-rail seats a quarter of a line width apart: the earlier 1.2 to 3.5 px gaps read as
+    // loose ("轻轨排座间隙太大了", 2026-10-17), lines touching ran together ("不同的线路又有点重叠到
+    // 一起了，感觉要找一个平衡点"); of touching, a quarter and a half, the user chose a quarter
+    // (2026-10-18). From z13 the white casing fills the gap, a thin white rule between the lines.
+    const TRAM_GAP = 1.25;
+    const TRAM_GUEST = {
+      step: TRAM_STOPS.map(([z, v]) => [z, +(TRAM_GAP * v).toFixed(4)]),
+      width: TRAM_STOPS,
+    };
+    const stepAt = (z, steps = GUEST.step) => (z <= steps[0][0] ? steps[0][1] : z >= steps.at(-1)[0] ? steps.at(-1)[1]
+      : (([[z0, v0], [z1, v1]]) => +(v0 + (v1 - v0) * (z - z0) / (z1 - z0)).toFixed(4))(steps.slice(steps.findIndex(([at]) => at > z) - 1)));
     const curve = (stops, kind = ['linear']) => ['interpolate', kind, ['zoom'], ...stops.flat()];
     // the offset of a line: a guest (no slot of its own) one step beside its host; a line of a
     // bundle slot steps from its middle; apart: on tracks of its own, back onto them by z16.5
-    const beside = ({ guest = false, apart = false } = {}) => {
+    const beside = ({ guest = false, apart = false, compact = false } = {}) => {
+      const steps = compact ? TRAM_GUEST.step : GUEST.step;
+      const displayed = expression => [...expression.slice(0, 3), ...expression.slice(3).map((v, i) =>
+        i % 2 ? ['case', ['==', ['get', '_continuous'], 1], 0, v] : v)];
       // (a guest stands one step aside, or as many as the data seats it: a corridor laid out by hand, scripts/seat_overrides.py)
-      if (guest) return curve(GUEST.step.map(([z, px]) => [z, ['*', ['coalesce', ['get', 'off'], 1], px]]));
-      const at = z => ['*', slot, stepAt(z)];
+      if (guest) return displayed(curve(steps.map(([z, px]) => [z, ['*', ['coalesce', ['get', 'off'], 1], px]])));
+      const at = z => ['*', slot, stepAt(z, steps)];
+      // (the tram steps change at more zooms than the metro's, and are taken at each)
+      const far = (compact ? [4.5, 9, 10, 11, 12, 13, 14, 14.5] : [6, 9, 12, 14.5]).map(z => [z, at(z)]);
       // Shared services retain their spacing; independent tracks return to their source geometry.
       // A cross-category displacement is independent even when the internal group shares track.
       const mixed = (z, separate) => {
-        const step = ['+', ['*', oneTrack, stepAt(z)], ['*', ['-', 1, oneTrack], separate]];
+        const step = ['+', ['*', oneTrack, stepAt(z, steps)], ['*', ['-', 1, oneTrack], separate]];
         return ['-', ['*', slot, step], ['*', groupSlot, ['-', step, separate]]];
       };
       if (!apart) {
         // Keep the established within-category spacing. Only the extra displacement of an
         // independent neighbouring category fades back onto its physical track.
         const grouped = (z, separate) => ['case', ['==', ['get', 'ap'], 1], mixed(z, separate),
-          ['-', at(z), ['*', groupSlot, stepAt(z) - separate]]];
-        return curve([[6, at(6)], [9, at(9)], [12, at(12)], [14.5, at(14.5)],
-          [16, grouped(16, +(stepAt(14.5) * 0.25).toFixed(4))], [16.5, grouped(16.5, 0)]]);
+          ['-', at(z), ['*', groupSlot, stepAt(z, steps) - separate]]];
+        return displayed(curve([...far,
+          [16, grouped(16, +(stepAt(14.5, steps) * 0.25).toFixed(4))], [16.5, grouped(16.5, 0)]]));
       }
       // sh fades at the ends of a proven shared track, independently of a slot that may continue
       // along a neighbouring track. Both transitions remain continuous when zoomed onto the rails.
-      return ['interpolate', ['linear'], ['zoom'], 6, at(6), 9, at(9), 12, at(12), 14.5, at(14.5),
-        16, mixed(16, +(stepAt(14.5) * 0.25).toFixed(4)), 16.5, mixed(16.5, 0)];
+      return displayed(curve([...far,
+        [16, mixed(16, +(stepAt(14.5, steps) * 0.25).toFixed(4))], [16.5, mixed(16.5, 0)]]));
     };
     // the width of a line that may stand in a bundle: the guest's where it is a guest there, its own (stops) where it is alone or the host
-    const sideWidth = (own, guest = GUEST.width) => ['interpolate', ['exponential', 1.5], ['zoom'], ...[...new Set([...WIDTH_ZOOMS, ...METRO_STOPS.map(([z]) => z)])].sort((x, y) => x - y)
-      .flatMap(z => [z, ['case', guestLook, widthAt(guest, z), typeof own === 'function' ? own(z) : widthAt(own, z)]])];
+    const sideWidth = (own, guest = GUEST.width) => ['interpolate', ['exponential', 1.5], ['zoom'], ...[...new Set([...WIDTH_ZOOMS, ...METRO_STOPS.map(([z]) => z), ...TRAM_STOPS.map(([z]) => z)])].sort((x, y) => x - y)
+      .flatMap(z => [z, ['case', guestLook, typeof guest === 'function' ? guest(z) : widthAt(guest, z), typeof own === 'function' ? own(z) : widthAt(own, z)]])];
     const guestWidth = curve(GUEST.width, ['exponential', 1.5]);
     // the white casing a metro, tram or suburban line has of its own: 1.75 times its width, whatever stands beside it
-    const ownCasing = thin => curve(METRO_STOPS.map(([z, v]) => [z, +(1.75 * thin * v).toFixed(3)]), ['exponential', 1.5]);
+    const ownCasing = (thin, stops = METRO_STOPS) => curve(stops.map(([z, v]) => [z, +(1.75 * thin * v).toFixed(3)]), ['exponential', 1.5]);
+    // a metro or light-rail line's own widths: a tram's (thin does not apply: they are already under
+    // the metro's, as China's thin light rail was), else thin times the metro's
+    const urbanStops = (thin, compact) => (compact ? TRAM_STOPS : METRO_STOPS.map(([z, v]) => [z, thin * v]));
+    const METRO_CASING_STOPS = [[4.5, 0.4], [9, 0.9]];
+    const TRAM_CASING_STOPS = [[4.5, 0], [12.5, 0], [13, 0.25], [14, 0.65], [15, 0.9]];
+    // Zoomed out, metro and light-rail lines are only a blur inside a city ("拉远……地铁/轻轨等
+    // 可以不显示", 2026-10-18): both fade in between z8 and z9, together, since light rail gone
+    // where the metro still shows read as missing ("地铁线路还在，但是轻轨却看不见了"). A chosen
+    // line stays drawn at every zoom. Suburban lines of China's metro companies run between
+    // cities and keep showing.
+    const METRO_FADE = { subway: [[8, 0], [9, 1]], urban: [[8, 0], [9, 1]] };
+    const fadeOf = kind => METRO_FADE[kind] || [[0, 1], [24, 1]];
+    const linearAt = (stops, z) => (z <= stops[0][0] ? stops[0][1] : z >= stops.at(-1)[0] ? stops.at(-1)[1]
+      : (([[z0, v0], [z1, v1]]) => v0 + (v1 - v0) * (z - z0) / (z1 - z0))(stops.slice(stops.findIndex(([at]) => at > z) - 1)));
+    // two zoom curves multiplied, as one curve over the zooms of both (a zoom may only be the input of a top-level curve)
+    const times = (a, b) => [...new Set([...a, ...b].map(([z]) => z))].sort((x, y) => x - y)
+      .map(z => [z, +(linearAt(a, z) * linearAt(b, z)).toFixed(4)]);
+    const opacityStops = kind => fadeOf(kind);
+    const casingStops = (kind, compact) => times(fadeOf(kind), compact ? TRAM_CASING_STOPS : METRO_CASING_STOPS);
+    // EVIDENCED_SERVICE_STYLES_BEGIN
+    // Source receipts: remaining-urban-cases and colours-nl-be. These are separate
+    // services/levels, not shared tracks. Only paint and scoped picking change.
+    const evidencedServices = {
+      sevilleMetro: { g: 'es', network: 'Metro de Sevilla', n: 'Línea 1', rid: ['255088,7781388', '7781388,255088'] },
+      sevilleTram: { g: 'es', network: 'Tussam', n: 'Tussam T1', rid: ['36937,20188918', '20188918,36937'] },
+      antwerpWhite: { g: 'be', network: 'VVR Antwerpen', n: 'Tram 11', rid: ['20443438,20443439', '20443439,20443438'] },
+    };
+    const evidencedMatch = (p, service) => p && ['g', 'network', 'n'].every(k => p[k] === service[k]) && service.rid.includes(p.rid);
+    const evidencedFilter = service => ['all', ...['g', 'network', 'n'].map(k => ['==', ['get', k], service[k]]),
+      ['in', ['get', 'rid'], ['literal', service.rid]]];
+    // Keep legacy highlighting elsewhere, but never boost a special source for a
+    // same-name selection whose country/network/full native route set differs.
+    const evidencedSelection = (on, selection) => on ? ['all', on, ['case',
+      ...Object.values(evidencedServices).flatMap(service => [evidencedFilter(service), evidencedMatch(selection, service)]), true]] : on;
+    // Keep zoom as the top-level interpolation input, including selection widths.
+    const evidencedCurve = (expression, value) => [...expression.slice(0, 3), ...expression.slice(3).map((v, i) =>
+      i % 2 ? value(v, expression[i + 2]) : v)];
+    const readableMetroWidth = (expression, g, kind, casing = false) => {
+      if (g !== 'es' || !['subway', 'urban'].includes(kind)) return expression;
+      const service = kind === 'subway' ? evidencedServices.sevilleMetro : evidencedServices.sevilleTram;
+      return evidencedCurve(expression, v => ['case', evidencedFilter(service), kind === 'subway'
+        ? casing ? ['+', ['/', v, 1.75], 3.4] : ['+', v, 2.2]
+        : casing ? ['+', ['min', 2.4, ['/', v, 1.75]], 0.6] : ['min', v, 2.4], v]);
+    };
+    const readableCasingColour = (g, kind) => g === 'be' && kind === 'urban'
+      ? ['case', evidencedFilter(evidencedServices.antwerpWhite), '#842f46', '#ffffff'] : '#ffffff';
+    const readableCasingOpacity = (expression, g, kind, on = null, fade = false) => {
+      if (g !== 'be' || kind !== 'urban') return expression;
+      return evidencedCurve(expression, (v, z) => {
+        const alpha = +(0.85 * linearAt(fadeOf('urban'), z)).toFixed(4);
+        const shown = on ? ['case', on, 0.9, +(0.25 * alpha).toFixed(4)] : fade ? +(0.25 * alpha).toFixed(4) : alpha;
+        return ['case', evidencedFilter(evidencedServices.antwerpWhite), shown, v];
+      });
+    };
+    // A wide metro under-stroke must not steal a click on the thin tram's core.
+    // Query results already obey layer visibility and continuous-display geometry.
+    const evidencedPick = (features, point, project, zoom, selection = null) => {
+      const tram = features.find(f => evidencedMatch(f.properties, evidencedServices.sevilleTram));
+      const metro = features.find(f => evidencedMatch(f.properties, evidencedServices.sevilleMetro));
+      if (!tram || !metro) return null;
+      const distance = feature => {
+        const parts = feature.geometry.type === 'LineString' ? [feature.geometry.coordinates]
+          : feature.geometry.type === 'MultiLineString' ? feature.geometry.coordinates : [];
+        let best = Infinity;
+        for (const part of parts) for (let i = 1; i < part.length; i++) {
+          const a = project(part[i - 1]), b = project(part[i]), dx = b.x - a.x, dy = b.y - a.y;
+          const t = Math.max(0, Math.min(1, ((point.x - a.x) * dx + (point.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+          best = Math.min(best, Math.hypot(point.x - a.x - t * dx, point.y - a.y - t * dy));
+        }
+        return best;
+      };
+      const td = distance(tram), md = distance(metro);
+      const tw = Math.min(widthAt(TRAM_STOPS, zoom), 2.4) * (evidencedMatch(selection, evidencedServices.sevilleTram) ? 1.7 : 1);
+      const mw = (widthAt(METRO_STOPS, zoom) + 2.2) * (evidencedMatch(selection, evidencedServices.sevilleMetro) ? 1.7 : 1);
+      if (td <= tw / 2 + 0.35) return tram;
+      if (md <= mw / 2 + 0.35) return metro;
+      return td <= md ? tram : metro;
+    };
+    // EVIDENCED_SERVICE_STYLES_END
     const byCase = (cases, otherwise) => z => cases.length ? ['case', ...cases.flatMap(([cond, values]) => [cond, widthAt(WIDTH_ZOOMS.map((at, i) => [at, values[i]]), z)]), widthAt(WIDTH_ZOOMS.map((at, i) => [at, otherwise[i]]), z)] : widthAt(WIDTH_ZOOMS.map((at, i) => [at, otherwise[i]]), z);
     // a railway line's own width: in its own colour (abroad) fuller, a main line, a branch; a speed band
     const plainOf = byCase([[['has', 'lc'], LINE.own], [['==', ['get', 'c'], 'main'], LINE.main]], LINE.branch), fastOf = byCase([], LINE.fast);
@@ -1996,11 +2608,26 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       ? ['all', NOT_ABROAD, ['!=', ['get', 'k'], 's'], ['==', ['match', ['get', 'k'], ...Object.entries(HOME.byK).flat(), ['coalesce', ['get', 'jk'], HOME.metro[0][0]]], kind],
         ['any', ['==', ['get', 'k'], 'm'], ['>=', ['zoom'], 6]]]
       : ['all', ['==', ['get', 'g'], g], ['!=', ['get', 'k'], 's'], ['==', ['get', 'jk'], kind]]);
-    const casing = ([id, g, kind, thin]) => map.addLayer({ id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
-      paint: { 'line-color': '#ffffff', 'line-width': ownCasing(thin), 'line-offset': beside(), 'line-opacity': ['interpolate', ['linear'], ['zoom'], 4.5, 0.4, 9, 0.9] } });
-    const line = ([id, g, kind, thin]) => map.addLayer({ id, type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
-      // (a thin line stays thin where it stands in a bundle: 西郊线 beside 10 号线 at 巴沟 was drawn at a metro's width there, over its own casing)
-      paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')], 'line-width': sideWidth(METRO_STOPS.map(([z, v]) => [z, thin * v]), METRO_STOPS.map(([z, v]) => [z, thin * v])), 'line-offset': beside() } });
+    const casing = ([id, g, kind, thin]) => {
+      const compact = kind === 'urban', stops = urbanStops(thin, compact);
+      const layer = { id: id + '-casing', type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
+        paint: { 'line-color': '#ffffff', 'line-width': ownCasing(compact ? 1 : thin, compact ? TRAM_STOPS : METRO_STOPS), 'line-offset': beside({ compact }),
+          'line-opacity': curve(casingStops(kind, compact)) } };
+      layer.paint['line-color'] = readableCasingColour(g, kind);
+      layer.paint['line-width'] = readableMetroWidth(layer.paint['line-width'], g, kind, true);
+      layer.paint['line-opacity'] = readableCasingOpacity(layer.paint['line-opacity'], g, kind);
+      map.addLayer(layer);
+    };
+    const line = ([id, g, kind, thin]) => {
+      const compact = kind === 'urban', stops = urbanStops(thin, compact);
+      const layer = { id, type: 'line', ...from('metro', g), minzoom: 4.5, filter: classOf(g, kind), layout: round,
+        // (a thin line stays thin where it stands in a bundle: 西郊线 beside 10 号线 at 巴沟 was drawn at a metro's width there, over its own casing)
+        paint: { 'line-color': ['coalesce', ['get', 'col'], col('metro')],
+          'line-width': sideWidth(stops, stops),
+          'line-offset': beside({ compact }), 'line-opacity': curve(opacityStops(kind)) } };
+      layer.paint['line-width'] = readableMetroWidth(layer.paint['line-width'], g, kind);
+      map.addLayer(layer);
+    };
     // China's: every casing under every line, so that a thin line over a wide one leaves the wide
     // one's colour in sight on both sides (a tram above a metro tunnel: 沈阳, 大连, 香港).
     const homeMetro = metroLayers.filter(m => m[1] === 'cn');
@@ -2078,16 +2705,211 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.4 } });
     window.__bootStage = 'after-layers';
 
+    // PARIS_DEPOT_LABELS_BEGIN
+    // Browser evidence: paris-depot-density-before-z11.png. Use the existing
+    // Paris city-list bounds, not a new France-wide threshold or deleted facility.
+    function parisDepotLabelScope(cities, sourceCountry = null) {
+      const bbox = cities.find(c => c.g === 'fr' && c.n === '\u5df4\u9ece')?.bbox;
+      if (!Array.isArray(bbox) || bbox.length !== 4 || !bbox.every(Number.isFinite)
+        || bbox[0] >= bbox[2] || bbox[1] >= bbox[3]) return false;
+      const [w, s, e, n] = bbox;
+      // Depot MVT omits g; its country archive is already proven by each().
+      const french = sourceCountry === null ? ['==', ['get', 'g'], 'fr'] : sourceCountry === 'fr'
+        ? ['any', ['!', ['has', 'g']], ['==', ['get', 'g'], 'fr']] : false;
+      return ['all', french, ['within', { type: 'Polygon',
+        coordinates: [[[w, s], [e, s], [e, n], [w, n], [w, s]]] }]];
+    }
+    const parisDepotLabelFilter = scope => ['any', ['!', scope], ['>=', ['zoom'], 12]];
+    const parisDepotLabelOpacity = scope => ['interpolate', ['linear'], ['zoom'],
+      12, ['case', scope, 0, 1], 12.5, 1];
+    const parisDepotScope = parisDepotLabelScope(metroCities);
+    function bindParisDepotLabels(cities) {
+      for (const [layer, sourceCountry] of each('depot-labels')) if (sourceCountry) {
+        const scope = parisDepotLabelScope(cities, sourceCountry);
+        map.setFilter(layer, parisDepotLabelFilter(scope));
+        map.setPaintProperty(layer, 'text-opacity', parisDepotLabelOpacity(scope));
+      }
+    }
+    // PARIS_DEPOT_LABELS_END
     addMixed('depots', { id: 'depots', type: 'circle', minzoom: 9.5,
       paint: { 'circle-color': col('yard'), 'circle-radius': ['interpolate', ['linear'], ['zoom'], 9.5, 2, 14, 4.5],
         'circle-stroke-color': '#0b1418', 'circle-stroke-width': 1.2 } });
-    addMixed('depots', { id: 'depot-labels', type: 'symbol', minzoom: 10.5,
+    addMixed('depots', { id: 'depot-labels', type: 'symbol', minzoom: 10.5, filter: parisDepotLabelFilter(parisDepotScope),
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 10.5, 11, 15, 13],
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
-      paint: { 'text-color': col('yard'), 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.4 } });
-    addMixed('metro-stations', { id: 'metro-stations', type: 'circle', minzoom: 10,
-      paint: { 'circle-color': '#ffffff', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 1.4, 13, 3.2, 16, 5.5],
-        'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 10, 0.6, 14, 1.6] } });
+      paint: { 'text-color': col('yard'), 'text-halo-color': 'rgba(8,14,18,0.92)', 'text-halo-width': 1.4,
+        'text-opacity': parisDepotLabelOpacity(parisDepotScope) } });
+    bindParisDepotLabels(metroCities);
+    // CAPSULE_GEOMETRY_BEGIN
+    // Screen geometry follows each service's own source anchor and actual offset contract.
+    // This function never writes a station coordinate back to the routing/search data.
+    function stationCapsuleGeometry(properties, zoom, project, unproject, width, shown = () => true) {
+      let capsule;
+      try { capsule = typeof properties.cp === 'string' ? JSON.parse(properties.cp) : properties.cp; } catch { return null; }
+      if (capsule?.v !== 1 || !Array.isArray(capsule.m) || capsule.m.length < 2) return null;
+      const members = capsule.m.filter(shown);
+      if (!members.length) return null;
+      const valid = p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite);
+      if (!valid(capsule.a) || !valid(capsule.t)) return null;
+      const origin = project(capsule.a), tip = project(capsule.t);
+      const dx = tip.x-origin.x, dy = tip.y-origin.y, length = Math.hypot(dx,dy);
+      if (!(length > 1e-8)) return null;
+      const ux=dx/length, uy=dy/length, nx=-uy, ny=ux;
+      const points=[];
+      for (const member of members) {
+        if (!valid(member.a) || !valid(member.t)) return null;
+        const point=project(member.a), tangent=project(member.t);
+        const tx=tangent.x-point.x, ty=tangent.y-point.y, norm=Math.hypot(tx,ty);
+        if (!(norm>1e-8)) return null;
+        // a railway member is offset as its rail layer is (back onto its own track by z16.5), a
+        // guest (China's suburban trains) one step beside its host; a metro member as before
+        const offset=ContinuousOffset.pixels(member,zoom,member.mode==='rail' ? 'rail' : member.mode==='guest' ? 'guest' : 'metro');
+        const x=point.x-ty/norm*offset, y=point.y+tx/norm*offset;
+        const transverse=(x-origin.x)*nx+(y-origin.y)*ny;
+        const half=width(member,zoom)/2;
+        if (![transverse,half,offset].every(Number.isFinite)) return null;
+        points.push({x,y,transverse,half});
+      }
+      points.sort((a,b)=>a.transverse-b.transverse);
+      const first=points[0],last=points.at(-1), span=Math.hypot(last.x-first.x,last.y-first.y);
+      const ax=span>1e-8 ? (last.x-first.x)/span : nx, ay=span>1e-8 ? (last.y-first.y)/span : ny;
+      const cx=(first.x+last.x)/2,cy=(first.y+last.y)/2;
+      let low=Infinity,high=-Infinity;
+      for (const p of points) {const at=(p.x-cx)*ax+(p.y-cy)*ay;low=Math.min(low,at-p.half-1);high=Math.max(high,at+p.half+1);}
+      const radius=zoom<=11 ? 1.1 : zoom<=13 ? 1.1+(2.4-1.1)*(zoom-11)/2
+        : zoom<=16 ? 2.4+(5.5-2.4)*(zoom-13)/3 : 5.5;
+      // the straight part spans every line, the round ends lie outside the outermost two ("线路应该只穿过
+      // 胶囊的平边，胶囊的圆边应该在线的外面", 2026-10-18; the ends had been drawn within that span)
+      const middle=(low+high)/2, halfSpan=Math.max(.025,(high-low)/2);
+      const point=distance=>unproject({x:cx+ax*distance,y:cy+ay*distance});
+      return { coordinates:[point(middle-halfSpan),point(middle+halfSpan)], radius,
+        extent:[low,high], centre:[cx+ax*middle,cy+ay*middle],
+        dots:points.map(p=>({at:unproject({x:p.x,y:p.y}),half:p.half})) };
+    }
+    // CAPSULE_GEOMETRY_END
+    capsulesReady = !tiles;
+    // Zoomed in, a capsule gives way to a dot on each line that stops there, on that line and about
+    // its width ("如果放大之后胶囊要消失", then "按每条线各一个圆点改", 2026-10-18): the bundles of
+    // trams stay side by side when zoomed in, and one dot at the stop's own point covered half of
+    // one and said nothing of which lines stop. Capsules below CAPSULE_UNTIL, the dots from it; the
+    // station's single dot only where the lines' places cannot be worked out.
+    const CAPSULE_UNTIL = 16;
+    const capsuleMembers = new WeakMap();
+    const capsuleOffsetMember = member => {
+      if (!member.id || !member.ends) return member;
+      for (const loaded of offsetLoaded.values()) {
+        let index=capsuleMembers.get(loaded.chains);
+        if (!index) {
+          index=new Map();
+          for (const chain of loaded.chains) for (const part of chain.members) {
+            const key=part.key+JSON.stringify([part.coords[0],part.coords.at(-1)]);
+            index.set(key,{chain,part});
+          }
+          capsuleMembers.set(loaded.chains,index);
+        }
+        const found=index.get(member.id+JSON.stringify(member.ends));
+        if (!found) continue;
+        const {chain,part}=found, at=part.sign===1 ? part.start+member.d : part.end-member.d;
+        const resolved=ContinuousOffset.properties(chain,part,at);
+        return {...member,off:resolved.off*part.sign,goff:resolved.goff*part.sign,sh:resolved.sh};
+      }
+      return member;
+    };
+    // Railway stations (2026-10-18, "铁路站也要胶囊"): a capsule across the railway lines that stop
+    // there and run side by side (scripts/station_capsules.py annotate_rail), drawn where the
+    // station's dot would be, from RAIL_CAPSULES_FROM, and in its colours;
+    // its members are offset as their rail layers are and are as wide as those lines.
+    const RAIL_CAPSULE_FROM = () => RAIL_CAPSULES_FROM;
+    const railRadius = (p, z) => {
+      const [a, b, c] = p.h ? [1.6, 3.6, 6] : [1, 2.2, 4];
+      return z <= 5 ? a : z <= 9 ? a+(b-a)*(z-5)/4 : z <= 14 ? b+(c-b)*(z-9)/5 : c;
+    };
+    const capsuleWidth = (member, z) => {
+      if (member.mode==='guest' || member.gl) return widthAt(METRO_STOPS,z);       // GUEST.width
+      if (member.mode==='rail') return widthAt(WIDTH_ZOOMS.map((at,i)=>[at,(LINE[member.wc] || LINE.main)[i]]),z);
+      const country=typeof member.g==='string' ? member.g : 'cn', kind=member.jk || HOME.metro[0][0];
+      return widthAt(kind==='urban' ? TRAM_STOPS : METRO_STOPS,z)*(kind==='urban' ? 1 : ((land(country).thin || {})[kind] || 1));
+    };
+    // a stretch written twice (zf along the spine, zn on its track) is a member in the copy shown at this zoom
+    const twinShown = (member, zoom) => (member.zf ? zoom<SWAP : member.zn ? zoom>=SWAP : true);
+    const capsuleData = () => {
+      const zoom=map.getZoom(), features=[];
+      if (zoom<5) return {type:'FeatureCollection',features};
+      const dots=zoom>=CAPSULE_UNTIL;
+      const bounds=map.getBounds();
+      for (const f of stations.features) {
+        const p=f.properties, code=typeof p.g==='string' ? p.g : 'cn';
+        if (!p.cp || zoom<RAIL_CAPSULE_FROM(p) || !bounds.contains(f.geometry.coordinates) || !rowOn('stations',code)) continue;
+        let capsule;
+        try { capsule=JSON.parse(p.cp); } catch { continue; }
+        if (!Array.isArray(capsule.m)) continue;
+        capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
+        const shown=member => twinShown(member,zoom);
+        const fill=p.h ? col('station') : '#c9dbe6';
+        const station={...p,_station:JSON.stringify(f.geometry.coordinates),_rail:1,_fill:fill};
+        const shape=stationCapsuleGeometry({...p,cp:capsule},zoom,at=>map.project(at),point=>map.unproject(point).toArray(),capsuleWidth,shown);
+        if (dots) {
+          if (shape) for (const dot of shape.dots) features.push({type:'Feature',properties:{...station,_radius:+(dot.half+.6).toFixed(3)},
+            geometry:{type:'Point',coordinates:dot.at}});
+          else features.push({type:'Feature',properties:{...station,_radius:railRadius(p,zoom)},geometry:f.geometry});
+          continue;
+        }
+        const radius=railRadius(p,zoom);
+        const coordinates=shape ? shape.coordinates : (at => [map.unproject({x:at.x-.025,y:at.y}).toArray(),map.unproject({x:at.x+.025,y:at.y}).toArray()])(map.project(f.geometry.coordinates));
+        features.push({type:'Feature',properties:{...station,_radius:radius},geometry:{type:'LineString',coordinates}});
+      }
+      if (zoom<11) return {type:'FeatureCollection',features};
+      for (const f of metroStations.features) {
+        const p=f.properties, code=typeof p.g==='string' ? p.g : 'cn';
+        if (!p.cp || !bounds.contains(f.geometry.coordinates)) continue;
+        if (code!=='cn' && !rowOn('stations',code)) continue;
+        let capsule;
+        try { capsule=JSON.parse(p.cp); } catch { continue; }
+        if (!Array.isArray(capsule.m)) continue;
+        if (zoom<TRAM_STOPS_FROM && (p.t || capsule.m.every(m => m.jk==='urban'))) continue;
+        capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
+        const shown = member => {
+          if (member.mode) return twinShown(member,zoom);          // a railway member of a metro station's capsule (Stratford)
+          const g=typeof member.g==='string' ? member.g : 'cn', kind=member.jk || HOME.metro[0][0];
+          return Boolean(g==='cn' ? visible[metroId(g,kind)] : abroadVisible[metroId(g,kind)]);
+        };
+        if (code==='cn' && !capsule.m.some(shown)) continue;
+        let shape=stationCapsuleGeometry({...p,cp:capsule},zoom,at=>map.project(at),point=>map.unproject(point).toArray(),
+          capsuleWidth,shown);
+        if (dots) {
+          const station={...p,_station:JSON.stringify(f.geometry.coordinates)};
+          if (shape) for (const dot of shape.dots) features.push({type:'Feature',properties:{...station,_radius:+(dot.half+.6).toFixed(3)},
+            geometry:{type:'Point',coordinates:dot.at}});
+          else features.push({type:'Feature',properties:{...station,_radius:5.5},geometry:f.geometry});
+          continue;
+        }
+        if (!shape) {
+          const at=map.project(f.geometry.coordinates);
+          shape={coordinates:[map.unproject({x:at.x-.025,y:at.y}).toArray(),map.unproject({x:at.x+.025,y:at.y}).toArray()],
+            radius:zoom<=13 ? 1.1+1.3*(zoom-11)/2 : zoom<=16 ? 2.4+3.1*(zoom-13)/3 : 5.5};
+        }
+        if (shape) features.push({type:'Feature',properties:{...p,_station:JSON.stringify(f.geometry.coordinates),_radius:shape.radius},
+          geometry:{type:'LineString',coordinates:shape.coordinates}});
+      }
+      return {type:'FeatureCollection',features};
+    };
+    map.addSource('station-capsules',{type:'geojson',data:{type:'FeatureCollection',features:[]},tolerance:0,maxzoom:18});
+    const capsuleShape=['==',['geometry-type'],'LineString'];
+    map.addLayer({id:'station-capsules-border',type:'line',source:'station-capsules',minzoom:5,maxzoom:CAPSULE_UNTIL,filter:capsuleShape,layout:round,
+      paint:{'line-color':'#0b1418','line-width':['+', ['*',2,['get','_radius']],2.8]}});
+    map.addLayer({id:'station-capsules',type:'line',source:'station-capsules',minzoom:5,maxzoom:CAPSULE_UNTIL,filter:capsuleShape,layout:round,
+      paint:{'line-color':['coalesce',['get','_fill'],'#ffffff'],'line-width':['*',2,['get','_radius']]}});
+    map.addLayer({id:'station-capsule-dots',type:'circle',source:'station-capsules',minzoom:CAPSULE_UNTIL,filter:['==',['geometry-type'],'Point'],
+      paint:{'circle-color':['coalesce',['get','_fill'],'#ffffff'],'circle-radius':['get','_radius'],'circle-stroke-color':'#0b1418','circle-stroke-width':1.4}});
+    refreshCapsules=()=>map.getSource('station-capsules').setData(capsuleData());
+    map.on('move',refreshCapsules);
+    // (from z11, with the light rail and trams: the data does not tell a tram stop from a metro
+    // station, and a stop of a line not yet drawn is a dot in the middle of nothing)
+    addMixed('metro-stations', { id: 'metro-stations', type: 'circle', minzoom: 11,
+      paint: { 'circle-color': '#ffffff', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 11, 1.1, 13, 2.4, 16, 5.5],
+        'circle-stroke-color': '#0b1418', 'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 14, 1.4] } });
+    // the railway stations' names over the railway capsules, as the metro stations' are over theirs
+    for (const [id] of each('station-labels')) map.moveLayer(id, each('metro-stations')[0][0]);
     addMixed('metro-stations', { id: 'metro-station-labels', type: 'symbol', minzoom: 12.2,
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 12, 10.5, 16, 13],
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
@@ -2218,7 +3040,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     const nameOf = g => land(g).name;
     // (two pieces, the whole length and the fast lines' part, that a narrow line breaks between)
     // (the fast class's whole length where the figures give it, shinkansen_km with the mini-shinkansen, else the length in its speed bands)
-    const railGroups = g => { const of = FOREIGN[g] ? facts[g] : HOME.facts, fast = (FOREIGN[g] && of[FOREIGN[g].fast[0] + '_km']) || of.fast_km; return [kmText(of.km), `${land(g).fastWord} ${kmText(fast)}`]; };
+    const railGroups = g => {
+      if (FOREIGN[g]?.dataUnavailable) return [t('countries.unavailable', { countries: nameOf(g) })];
+      const of = FOREIGN[g] ? facts[g] : HOME.facts, fast = (FOREIGN[g] && of[FOREIGN[g].fast[0] + '_km']) || of.fast_km;
+      return [kmText(of.km), `${land(g).fastWord} ${kmText(fast)}`];
+    };
     const railFacts = g => railGroups(g).join(' · ');
     const railLine = g => railGroups(g).flatMap((text, i) => [...(i ? [' · '] : []), Object.assign(document.createElement('span'), { className: 'nobr', textContent: text })]);
     // China's two classes are counted apart ("地铁 47 城 368 条 · 轻轨 29 城 74 条"); abroad one figure covers both
@@ -2228,7 +3054,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       return HOME.linesOnly.includes(kind) ? t('facts.lines', { name: label, lines }) : t('facts.class', { name: label, cities: t('n.cities', { n: realCitiesOf(g).filter(has).length }), lines }); };
     // The classes' figures are a line each: a class's name may hold a dot (轻轨·电车), so no mark
     // parts them, and the lines are as many in either language (the app gets them as lines too).
-    const metroGroups = g => (FOREIGN[g] ? [t('facts.metro', { cities: t('n.cities', { n: realCitiesOf(g).length }), lines: t('n.linesLong', { n: citiesOf(g).reduce((n, c) => n + c.lines.length, 0) }) })]
+    const metroGroups = g => FOREIGN[g]?.dataUnavailable ? [] : (FOREIGN[g] ? [t('facts.metro', { cities: t('n.cities', { n: realCitiesOf(g).length }), lines: t('n.linesLong', { n: citiesOf(g).reduce((n, c) => n + c.lines.length, 0) }) })]
       : HOME.metro.map(([kind, label]) => classFacts(g, kind, label)));
     const metroFacts = g => metroGroups(g).join('\n');
     const groupsOf = g => metroGroups(g).map(text => Object.assign(document.createElement('span'), { className: 'grp', textContent: text }));
@@ -2314,7 +3140,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         cap.textContent = FOREIGN[country] ? labelOf(kind) : t(CAPTION[kind]);
         count.textContent = t('n.lines', { n: listed.length });
         total = listed.length;
-        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${l.grades && l.grades.length > 1 ? `linear-gradient(90deg,${l.grades.map(g => col(g)).join(',')})` : l.lc || col(l.c)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + '\u00a0km/h' : l.mini ? '—' : l.design?.length > 1 ? t('list.sections') : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? t('list.sections') : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || t('list.conv')}</span>`,
+        rows = listed.slice(0, LIMIT).map(l => row(`<i style="background:${railColour(l)}"></i><span class="nm"></span><span class="kmh">${FOREIGN[l.g] ? (l.d ? l.d + '\u00a0km/h' : l.mini ? '—' : l.design?.length > 1 ? t('list.sections') : String(l.o || '').replace(/[&<>"]/g, '')) : (l.design && l.design.length > 1) || (l.design && l.design.length === 1 && l.plain > 0.05) ? t('list.sections') : l.design && l.design.length ? l.design[0] : DESIGN_LABEL[l.c] || t('list.conv')}</span>`,
           named(l, abroad(l.g)), () => select(l.n, true), selected === l.n, 'line:' + l.n));
       } else {
         // a class of urban rail (jk: metro or light rail in China, underground or trams abroad): its cities, or the lines of one city
@@ -2368,7 +3194,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       metro.replaceChildren(...groupsOf(g));
       return li;
     }));
+    const renderUnavailable = () => {
+      const note = document.getElementById('countryUnavailable');
+      note.hidden = unavailableCountries.size === 0;
+      note.textContent = note.hidden ? '' : t('countries.unavailable', { countries: [...unavailableCountries].map(g => t(g)).join(' · ') });
+    };
     renderCountries();
+    renderUnavailable();
     // ---- where the map goes when the country changes ----
     // A reader who has gone to a place to look at its railways keeps it when the card changes
     // country. The country the map shows is the one under the middle of the part of the map that
@@ -2477,17 +3309,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     // Metro and suburban layers: the selected line is drawn wider and the others fade; they all
     // fade when a railway line is selected.
     function styleMetro() {
-      const on = selMetro && ['all', ['==', ['get', 'n'], selMetro.n], ['==', ['get', 'ct'], selMetro.ct]];
+      const on = evidencedSelection(selMetro && ['all', ['==', ['get', 'n'], selMetro.n], ['==', ['get', 'ct'], selMetro.ct]], selMetro);
       const fade = !!selected || trainLit || routeLit;
       const pick = (lit, dim, plain) => (on ? ['case', on, lit, dim] : fade ? dim : plain);
       // (a line in a bundle is drawn as the guest is, see GUEST; the selected one wider)
       const lit = expr => (on ? [...expr.slice(0, 3), ...expr.slice(3).map((v, i) => (i % 2 ? ['case', on, ['*', 1.7, v], v] : v))] : expr);
-      const width = (k, guest) => lit(sideWidth(METRO_STOPS.map(([z, v]) => [z, k * v]), guest));
-      for (const [id, z0, thin] of [...metroLayers.map(m => [m[0], 4.5, m[3]]), ['suburb', 6, 1]]) {
-        map.setPaintProperty(id, 'line-width', width(thin, GUEST.width));
-        map.setPaintProperty(id, 'line-opacity', pick(1, 0.3, 1));
-        map.setPaintProperty(id + '-casing', 'line-width', lit(ownCasing(thin)));
-        map.setPaintProperty(id + '-casing', 'line-opacity', ['interpolate', ['linear'], ['zoom'], z0, pick(0.7, 0.1, 0.4), 9, pick(1, 0.22, 0.9)]);
+      const width = (stops, g, kind) => lit(readableMetroWidth(sideWidth(stops, stops), g, kind));
+      for (const [id, g, kind, thin] of [...metroLayers, ['suburb', 'cn', 'suburban', 1]]) {
+        const compact = kind === 'urban', stops = urbanStops(thin, compact);
+        // the zoom curve stays on top; a chosen line is lit at every zoom, the others dimmed
+        const faded = (stops, litAt, dimBy) => curve(stops.map(([z, v]) => [z, pick(litAt, +(dimBy * v).toFixed(4), v)]));
+        map.setPaintProperty(id, 'line-width', width(stops, g, kind));
+        map.setPaintProperty(id, 'line-opacity', faded(opacityStops(kind), 1, 0.3));
+        map.setPaintProperty(id + '-casing', 'line-width', lit(readableMetroWidth(ownCasing(compact ? 1 : thin, compact ? TRAM_STOPS : METRO_STOPS), g, kind, true)));
+        map.setPaintProperty(id + '-casing', 'line-opacity', readableCasingOpacity(faded(casingStops(kind, compact), 0.9, 0.25), g, kind, on, fade));
       }
     }
     addEventListener('rail:dim', e => { trainLit = !!e.detail; styleMetro(); styleRail(); });
@@ -2535,7 +3370,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     function selectMetro(c, l, fly) {
       if (c && l) enter(abroad(c.g));
       if (selected) select(null);
-      selMetro = l ? { ct: c.n, n: l.n } : null;
+      selMetro = l ? { ct: c.n, n: l.n, g: abroad(c.g), network: l.network, rid: l.rid } : null;
       styleMetro();
       styleRail();
       selBox.hidden = !selMetro;
@@ -2571,7 +3406,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       for (const r of [1.5, 5]) {
         const fs = map.queryRenderedFeatures([[pt.x - r, pt.y - r], [pt.x + r, pt.y + r]], { layers });
         fs.sort((a, b) => PICK.indexOf(a.layer.id) - PICK.indexOf(b.layer.id));
-        if (fs.length) return fs[0];
+        if (fs.length) return evidencedPick(fs, pt, coordinate => map.project(coordinate), map.getZoom(), selMetro) || fs[0];
       }
       return undefined;
     };
@@ -2648,6 +3483,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         places: cities,
         stations: [...stations.features, ...metroStations.features],
         colours: Object.fromEntries([...FAST, 'main', 'branch'].map(id => [id, col(id)])),
+        speedBands: FAST,
       });
     };
     listStations();
@@ -2810,6 +3646,13 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const lines = [...new Set(lineOf.filter(li => li >= 0))], none = new Map();
       const [hsr, conv, metro] = await Promise.all([lines.some(li => !urban(li)) ? drawnPieces('hsr') : none,
         lines.some(li => !urban(li)) ? drawnPieces('conv') : none, lines.some(urban) ? drawnPieces('metro') : none]);
+      const contextFeatures = [...new Set([hsr, conv, metro].flatMap(pool => lines.flatMap(li =>
+        pool.get(g.lines[li][0]) || [])))].map(piece => ({
+          type: 'Feature', properties: piece.props, geometry: { type: 'LineString', coordinates: piece.pts }, piece }));
+      const contexts = new Map();
+      for (const chain of ContinuousOffset.prepare(contextFeatures)) for (const member of chain.members) {
+        contexts.set(member.f.piece, { chain, member });
+      }
       const place = (pts, x, y, k) => {              // the nearest point of a polyline: [metres, segment, share of it, point]
         let best = [Infinity, 1, 0, pts[0]];
         for (let i = 1; i < pts.length; i++) {
@@ -2827,6 +3670,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
           if (x < piece.box[0] || y < piece.box[1] || x > piece.box[2] || y > piece.box[3]) continue;
           const at = place(piece.pts, x, y, k);
           if (at[0] <= SECTION_M) out.push({ id: piece.id, pts: piece.pts, colour: colourOf(piece), at,
+            context: contexts.get(piece),
             props: { ...piece.props, kind: piece.layer !== 'metro' ? 'rail' : piece.props.k === 's' ? 'guest' : 'metro' } });
         }
         if (out.length) return out;
@@ -2846,7 +3690,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const end = () => {
         if (!run) return;
         const coords = along(run.track.pts, run.lo, run.hi);
-        if (lengthOf(coords) > 0) strokes.push({ coords, props: run.track.props });
+        let props = { ...run.track.props };
+        const distanceTo = at => {
+          const before = [...run.track.pts.slice(0, at[1]), at[3]];
+          return before.slice(1).reduce((sum, p, i) => sum + Math.hypot(p[0] - before[i][0], p[1] - before[i][1]), 0);
+        };
+        if (run.track.context) {
+          const { chain, member } = run.track.context;
+          ContinuousOffset.bindStroke(props, chain, member, distanceTo(run.lo), distanceTo(run.hi));
+        }
+        if (props.op) {
+          const spec = JSON.parse(props.op);
+          props.op = JSON.stringify({ ...spec, origin: (spec.origin || 0) + (spec.direction || 1) * distanceTo(run.lo) });
+        }
+        if (lengthOf(coords) > 0) strokes.push({ coords, props });
         run = null;
       };
       for (let i = 0; i < samples.length; i++) {
@@ -3284,6 +4141,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         stationsIn = true;
         listStations();
         if (finding) renderFound();
+        capsulesReady=true; refreshCapsules(); applyVisibility();
         for (const again of whenStations) again();        // the route fields list what was typed meanwhile
       }).catch(() => { stationsAsked = false; });       // asked again the next time a field is used
       return stationPromise;
@@ -3312,6 +4170,12 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
         offerStation(stationOf(stations.features, st));
         return;
       }
+      const capsule=map.queryRenderedFeatures(e.point,{layers:['station-capsules','station-capsules-border','station-capsule-dots']})[0];
+      if (capsule) {
+        const point={...capsule,geometry:{type:'Point',coordinates:JSON.parse(capsule.properties._station)}};
+        offerStation(stationOf(capsule.properties._rail ? stations.features : metroStations.features,point));
+        return;
+      }
       const ms = shown('metro-stations').length
         && map.queryRenderedFeatures([[e.point.x - 4, e.point.y - 4], [e.point.x + 4, e.point.y + 4]], { layers: shown('metro-stations') })[0];   // a tight target: the dots are close together and the line between them is clickable too
       if (ms) {
@@ -3338,6 +4202,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       renderHead();
       renderJumps();
       renderCountries();
+      renderUnavailable();
       rebuildKindButtons();
       setKind(kind);
       relabelLegend();
@@ -3357,7 +4222,7 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
       const textAt = selector => (document.querySelector(selector)?.textContent || '').trim();
       const coloursAt = el => [...new Set((el?.getAttribute('style') || '').match(/#[\da-f]{6}\b|#[\da-f]{3}\b/gi) || [])]
         .map(c => c.length === 4 ? '#' + [...c.slice(1)].map(x => x + x).join('') : c);
-      const coloursFor = l => l ? (l.grades?.length > 1 ? l.grades.map(col) : [l.col || l.lc || col(l.c || 'main')]) : [];
+      const coloursFor = l => l ? (l.grades?.length > 1 ? l.grades.map(col) : [l.col || (FAST.includes(l.c) ? col(l.c) : l.lc || col(l.c || 'main'))]) : [];
       const entryFor = f => searchData.entries.filter(e => e.kind === 'station' && e.ref.properties.n === f.properties.n
         && abroad(e.ref.properties.g) === abroad(f.properties.g))
         .map(e => [e, Math.hypot(e.at[0] - f.geometry.coordinates[0], e.at[1] - f.geometry.coordinates[1])])
@@ -3483,6 +4348,11 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     }
     // APP-BRIDGE-END
     applyVisibility();
+    if (tiles) offsetLoad();
+    else for (const [key, data] of Object.entries({ conv, hsr, metro, shared })) {
+      const affected = new Set(data.features.filter(f => f.properties.op || f.properties.off || f.properties.goff).map(f => ContinuousOffset.identity(f.properties)));
+      if (affected.size) offsetInstall('whole:' + key, { features: data.features.filter(f => affected.has(ContinuousOffset.identity(f.properties))) });
+    }
     window.__bootStage = 'after-render';
     // CHINA-TRAINS-INTEGRATION: optional web overlay, no timetable fetch until its tab opens.
     Object.assign(window.__rail, { map, showTab, frame, sheet, padding, ready: true, linesAlong, snapToLine, strokeLayers: litLayers,
@@ -3523,11 +4393,18 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
   const YARD_ZOOM = 9.5;
   const yardsAsked = new Set();                      // countries whose files have been asked for
   const yardData = { yards: [], depots: [] };        // what has arrived, every country together
-  const countryAt = (lng, lat) => Object.keys(FOREIGN).find(g => FOREIGN[g].inside(lng, lat))
-    || (lng > CHINA[0][0] && lng < CHINA[1][0] && lat > CHINA[0][1] && lat < CHINA[1][1] ? 'cn' : null);
+  const countryAt = (lng, lat) => {
+    if (!Number.isFinite(lng) || !Number.isFinite(lat) || Math.abs(lat) > 90) return null;
+    lng = ((lng + 180) % 360 + 360) % 360 - 180;
+    const matches = Object.keys(FOREIGN).filter(g => FOREIGN[g].inside(lng, lat));
+    // Source vintages can disagree near borders. Prefer the deeper interior; on
+    // an exact shared edge, break the tie by code, never configuration order.
+    matches.sort((a, b) => viewDepth(b, lng, lat) - viewDepth(a, lng, lat) || a.localeCompare(b));
+    return matches[0] || (lng > CHINA[0][0] && lng < CHINA[1][0] && lat > CHINA[0][1] && lat < CHINA[1][1] ? 'cn' : null);
+  };
   function loadYards(everywhere) {
     if (!map.getSource('yards')) return;
-    let wanted = ['cn', ...Object.keys(FOREIGN)];
+    let wanted = ['cn', ...Object.keys(FOREIGN).filter(g => !FOREIGN[g].dataUnavailable)];
     if (!everywhere) {
       if (!visible.yards || map.getZoom() < YARD_ZOOM - 0.5) return;
       // the countries under the middle and the four corners of the view
@@ -3564,6 +4441,9 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     for (const [kind] of HOME.metro) for (const id of [metroId('cn', kind), metroId('cn', kind) + '-casing']) set(id, visible[metroId('cn', kind)]);
     for (const id of ['suburb-casing', 'suburb']) set(id, visible[metroId('cn', HOME.beside)]);
     for (const id of ['border-halo', 'border-casing', 'border', 'border-sea-halo', 'border-sea']) set(id, visible.border);
+    for (const g of borderCountries) if (g !== 'cn') {
+      for (const id of BORDER_LINES) set(`${id}@${g}`, rowOn('border', g));
+    }
     set('hsr-glow', FAST.some(id => visible[id]));
     set('shared', [...FAST, 'main', 'branch'].some(id => visible[id]));
     map.setFilter('shared', ['in', ['get', 'c'], ['literal', [...FAST, 'main', 'branch'].filter(id => visible[id])]]);
@@ -3582,15 +4462,20 @@ h1 { margin: 0; font-size: 1.0625rem; line-height: 1.25; font-weight: 600; lette
     };
     among('build', everyCountry.filter(g => rowOn('build', g) && (g === 'cn' || FOREIGN[g].hasBuild)));
     const withStations = everyCountry.filter(g => rowOn('stations', g));
-    among('stations', withStations, ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]]);
+    // (a railway station with a capsule is drawn by the capsule layers instead, from RAIL_CAPSULES_FROM)
+    among('stations', withStations, capsulesReady ? ['all', ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
+      ['any', ['!', ['has', 'cp']], ['<', ['zoom'], RAIL_CAPSULES_FROM]]]
+      : ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]]);
     among('station-labels', withStations, ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]]);
     // Metro stations go with the stations switch abroad. In China they go with their lines: a
     // tram stop (t in the data) with the light rail, every other with the metro.
     const [metroOn, tramsOn] = HOME.metro.map(([kind]) => visible[metroId('cn', kind)]);
     const withMetroStations = everyCountry.filter(g => (g === 'cn' ? metroOn || tramsOn : rowOn('stations', g)));
     const theirLines = ['any', ['!', NOT_ABROAD], ['case', ['has', 't'], tramsOn, metroOn]];
-    among('metro-stations', withMetroStations, theirLines);
-    among('metro-station-labels', withMetroStations, theirLines);
+    const stopShown = ['any', ['!', ['has', 't']], ['>=', ['zoom'], TRAM_STOPS_FROM]];
+    among('metro-stations', withMetroStations, capsulesReady ? ['all',theirLines,stopShown,['!', ['has','cp']]] : ['all',theirLines,stopShown]);
+    refreshCapsules();
+    among('metro-station-labels', withMetroStations, ['all', theirLines, stopShown]);
     // The names of the cities, with their dots: China's hand-made ones are two layers of their
     // own, the rest of China's and every other country's share one, filtered to the countries
     // whose switch is on.

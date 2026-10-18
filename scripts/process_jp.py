@@ -967,7 +967,11 @@ def main():
         print(f"{name}: {p.stat().st_size / 1e6:.2f} MB", flush=True)
     write("jp_rail.geojson", {"type": "FeatureCollection", "features": rail_feats})
     write("jp_metro.geojson", {"type": "FeatureCollection", "features": metro_feats})
+    from station_capsules import station_display                # capsules across side-by-side lines at their stations
+    stations = station_display(stations, metro_feats, ex)
     write("jp_stations.geojson", {"type": "FeatureCollection", "features": stations})
+    from station_capsules import rail_display                   # and across the railway lines that stop there (jp_rail is final)
+    rail_display("jp", ROOT)
     build_feats = being_built(ways, "jp", plain_name, build_fast=lambda name: "新幹線" in name, names=names)
     build_feats = annotate_build(build_feats)
     write("jp_build.geojson", {"type": "FeatureCollection", "features": build_feats})

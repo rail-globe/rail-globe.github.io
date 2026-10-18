@@ -29,11 +29,19 @@ HAND = [["北京", 116.40, 39.90, 1], ["天津", 117.20, 39.08, 1], ["上海", 1
         ["怀化", 110.00, 27.57, 2], ["柳州", 109.42, 24.33, 2]]
 HAND = [{"n": n, "at": [x, y], "r": r} for n, x, y, r in HAND]
 # Where a country lies: every one of its cities is in there.
-BOX = {"cn": (73, 15, 136, 54), "jp": (122, 24, 146, 46), "kr": (124, 33, 131, 39), "uk": (-9, 49, 2, 61)}
+BOX = {"cn": (73, 15, 136, 54), "jp": (122, 24, 146, 46), "kr": (124, 33, 131, 39), "uk": (-9, 49, 2, 61),
+       "de": (5.5, 47.2, 15.6, 55.2), "fr": (-5.3, 41.2, 9.8, 51.2),
+       "ch": (5.8, 45.7, 10.6, 47.9), "es": (-18.2, 27.5, 4.4, 43.9),
+       "nl": (3.2, 50.6, 7.4, 53.7), "be": (2.4, 49.4, 6.5, 51.6),
+       "it": (6.5, 35.4, 18.7, 47.2)}
 # Abroad: how many cities, and how many of rank 1 (the capital and the cities the world knows).
-ABROAD = {"jp": (47, 6), "kr": (16, 2), "uk": (7, 5)}
+ABROAD = {"jp": (47, 6), "kr": (16, 2), "uk": (7, 5),
+          "de": (18, 5), "fr": (14, 5), "ch": (26, 5), "es": (21, 5),
+          "nl": (14, 3), "be": (4, 3), "it": (20, 6)}
 country = lambda e: e.get("g", "cn")
-FIELDS = ("n", "at", "r", "g", "side", "nz", "ne", "m")
+FIELDS = ("n", "at", "r", "g", "side", "nz", "ne", "m", "name_ref")
+EUROPE_SOURCE = json.loads((ROOT / "data/europe_city_names.json").read_text())
+EUROPE_NAMES = EUROPE_SOURCE["countries"]
 
 
 class Cities(unittest.TestCase):
@@ -59,6 +67,10 @@ class Cities(unittest.TestCase):
             self.assertEqual([round(x, 2), round(y, 2)], e["at"], e)
             # an English name is given only where it is another (a Chinese one abroad always: 大阪 is 大阪)
             self.assertNotEqual(e["n"], e.get("ne"), e)
+            if "name_ref" in e:
+                self.assertIn(country(e), EUROPE_NAMES)
+                source = next(c for c in EUROPE_NAMES[country(e)].values() if c["nz"] == e["nz"])
+                self.assertEqual(e["name_ref"], source["ref"])
 
     def test_one_label_of_a_name_in_a_country(self):
         twice = [k for k, n in Counter((country(e), e["n"]) for e in CITIES).items() if n > 1]
@@ -93,11 +105,27 @@ class Cities(unittest.TestCase):
         self.assertEqual(rank1["kr"], [("서울", "首尔"), ("부산", "釜山")])
         self.assertEqual(rank1["uk"], [("London", "伦敦"), ("Edinburgh", "爱丁堡"), ("Manchester", "曼彻斯特"), ("Birmingham", "伯明翰"), ("Glasgow", "格拉斯哥")])
 
+    def test_europe_rank2_labels_are_first_level_administrative_seats(self):
+        for g, regions in (("de", 16), ("fr", 13), ("ch", 26), ("es", 19),
+                           ("nl", 12), ("be", 3), ("it", 20)):
+            source = EUROPE_SOURCE["administrative_seats"][g]
+            self.assertTrue(source["ref"].startswith("https://"))
+            self.assertEqual(len({seat["region"] for seat in source["seats"]}), regions)
+            seats = {seat["n"] for seat in source["seats"]}
+            first = set(EUROPE_SOURCE["rank1"][g])
+            there = [c for c in CITIES if country(c) == g]
+            self.assertEqual({c["n"] for c in there}, seats | first)
+            self.assertTrue(all(c["n"] in seats for c in there if c["r"] == 2))
+            self.assertEqual({c["n"] for c in there if c["r"] == 1}, first)
+
     def test_the_names_abroad_are_in_their_form(self):
         han = r"[一-鿿]+"
         for e in CITIES:
             g = country(e)
-            if g != "cn":                             # every place abroad has its Chinese name, from the script's table
+            if g in EUROPE_NAMES:
+                source = next(c for c in EUROPE_NAMES[g].values() if c["n"] == e["n"])
+                self.assertEqual(e["nz"], source["nz"])  # includes sourced bilingual names and hyphens
+            elif g != "cn":                           # every place abroad has its Chinese name, from the script's table
                 self.assertRegex(e["nz"], f"^{han}$", e)
             if g == "jp":                             # its own name in kanji or kana
                 self.assertRegex(e["n"], r"^[一-鿿ぁ-んァ-ン]+$", e)
@@ -107,15 +135,19 @@ class Cities(unittest.TestCase):
                 self.assertRegex(e["n"], r"^[A-Z][A-Za-z -]*[a-z]$", e)
                 self.assertNotIn("ne", e)
             if "ne" in e:                             # English: Latin letters, words that begin with a capital
-                self.assertRegex(e["ne"], r"^[A-Z][A-Za-z'’-]*( [A-Z][A-Za-z'’-]*)*$", e)
+                if g in EUROPE_NAMES:
+                    self.assertTrue(all(ch.isalpha() or ch in " '’/-–." for ch in e["ne"]), e)
+                else:
+                    self.assertRegex(e["ne"], r"^[A-Z][A-Za-z'’-]*( [A-Z][A-Za-z'’-]*)*$", e)
         # a name that keeps to one side of its dot (Japan's view: 京都 just above 大阪, 名古屋 to its right)
         self.assertEqual({e["n"]: e["side"] for e in CITIES if "side" in e}, {"大阪": "left", "京都": "above-left"})
         # every place outside China and nearly every one inside has its English name (the extract has none for a few)
-        without = sorted(e["n"] for e in CITIES if "ne" not in e and country(e) != "uk")
+        without = sorted(e["n"] for e in CITIES if "ne" not in e and country(e) in ("cn", "jp", "kr"))
         self.assertLessEqual(len(without), 8, without)
 
     def test_a_city_with_a_metro_is_named_as_the_metro_list_names_it(self):
-        for g, file in (("cn", "metro_cities.json"), ("jp", "jp_metro_cities.json"), ("kr", "kr_metro_cities.json"), ("uk", "uk_metro_cities.json")):
+        files = [("cn", "metro_cities.json")] + [(g, f"{g}_metro_cities.json") for g in ABROAD]
+        for g, file in files:
             metro = {c["n"] for c in json.loads((ROOT / "data" / file).read_text())}
             for e in CITIES:
                 if country(e) != g:

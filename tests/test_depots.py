@@ -214,7 +214,7 @@ class GeneratedDepotsTest(unittest.TestCase):
         rows = json.loads(D.TABLE.read_text())
         self.assertTrue(rows)
         for row in rows:
-            self.assertIn(row["g"], ("cn", "jp", "kr", "uk"))
+            self.assertIn(row["g"], ("cn", "jp", "kr", "uk", "de", "fr", "ch", "es", "nl", "be", "it"))
             self.assertTrue(row["n"] and row["source"], row)
             self.assertEqual(len(row["at"]), 2)
 

@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from country import Country, run
+from station_capsules import station_display
 
 # A tunnel or a bridge named for itself is part of the line on either side of it.
 STRUCTURE = re.compile(r"(터널|교량|철교|대교|고가|고가교|교)$")
@@ -102,6 +103,7 @@ def speed_of(name, jk, tags_km):
 
 KR = Country(
     code="kr", plain_name=plain_name, stretch_of=stretch_of, kind_of=kind_of, speed_of=speed_of, cities=CITIES, elsewhere="韩国其他",
+    urban_station_display=station_display, rail_capsules=True,
     fast_kinds=("hs", "semi"), main_kinds=("main",),
     rail=frozenset({"rail"}), urban=frozenset({"subway", "light_rail", "monorail", "tram"}),
     skip_usage=frozenset({"industrial", "military", "test", "freight", "tourism"}),

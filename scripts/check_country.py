@@ -1,7 +1,7 @@
 """Checks on the layers of a country abroad, one for every kind of fault met so far.
 Run after the country's script; a line marked !! needs a look.
 
-    python3 scripts/check_country.py jp|uk|kr [...]
+    python3 scripts/check_country.py jp|uk|kr|de|fr|ch|es [...]
 
 Writes output/check_<code>.json with what it found.
 """
@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA, RAW, OUT = ROOT / "data", ROOT / "data" / "raw", ROOT / "output"
 FAST = ("hsr400", "hsr350", "hsr300", "hsr250", "hsr200", "hsr160", "hsrslow")
 MINI_LINES = {"jp": 2}       # Japan's mini-Shinkansen, 山形 and 秋田: in the Shinkansen class, outside its speed band
-FILES = ("rail.geojson", "metro.geojson", "stations.geojson", "lines.json", "metro_cities.json", "facts.json", "yards.geojson", "depots.geojson")
+FILES = ("rail.geojson", "metro.geojson", "build.geojson", "stations.geojson", "lines.json", "metro_cities.json", "facts.json", "yards.geojson", "depots.geojson")
 NEAR, FAR = 0.0003, 0.02          # ends closer than about 30 m are joined; a break is a gap of up to about 2 km
 # names that say which track, not which line
 TRACK_NAME = re.compile(r"^(Up|Down)\b|\b(Up|Down) (&|and) (Up|Down)\b|\b(Up|Down) (Goods )?Loop$|\bGoods( Loop)?$|\b(Fast|Slow|Relief|Sidings?|Reception|Headshunt)$|^\d+번선|^[上下]り|番線$")
@@ -47,6 +47,8 @@ def breaks(by_line, track):
     drawn = STRtree([LineString(co) for parts in by_line.values() for co in parts])
     found = []
     for name, parts in by_line.items():
+        if not name:
+            continue        # coverage without an identity is not one disconnected line
         geoms = [LineString(co) for co in parts]
         tree = STRtree(geoms)
         ends = [(i, Point(co[k])) for i, co in enumerate(parts) for k in (0, -1)]
@@ -72,7 +74,7 @@ def twice(by_line, step=0.002, near=0.00035):
     """Stretches where two pieces of one line run side by side: the line is drawn twice there."""
     found = []
     for name, parts in by_line.items():
-        if len(parts) < 2:
+        if not name or len(parts) < 2:
             continue
         geoms = [LineString(co) for co in parts]
         tree = STRtree(geoms)
@@ -129,6 +131,8 @@ def check(code):
     for f in rail:
         by_line[f["properties"]["n"]].extend(parts_of(f))
     drawn_km = sum(km(co) for parts in by_line.values() for co in parts)
+    report["unnamed_rail"] = {"parts": len(by_line.get("", [])),
+                              "km": round(sum(km(co) for co in by_line.get("", [])), 2)}
     say(abs(drawn_km - facts["km"]) > 0.01 * facts["km"], f"railway drawn: {drawn_km:.0f} km in {len(by_line)} lines (the card says {facts['km']})")
     # written locally by scripts/extract_osm.py, so loading it is safe here
     ex = pickle.load(open(RAW / f"extract_{code}.pkl", "rb"))
@@ -196,6 +200,17 @@ def check(code):
     say(len(plain) > 0.2 * max(sum(len(c["lines"]) for c in cities), 1), f"metro lines: {sum(len(c['lines']) for c in cities)} in {len(cities)} cities; without a colour of their own: {len(plain)} {sorted(plain)[:6]}")
     nowhere = [l["n"] for c in cities if c["n"].endswith("其他") for l in c["lines"]]
     say(False, f"metro lines outside the listed cities: {len(nowhere)} {nowhere[:8]}")
+    # a line another country draws too: a tram network across a border is in both extracts whole
+    # (Basel's in France's and Germany's); it is drawn twice, out of step (2026-10-18)
+    mine = {r: l["n"] for c in cities for l in c["lines"] for r in str(l.get("rid") or "").split(",") if r}
+    twins = []
+    for other in sorted(DATA.glob("*_metro_cities.json")):
+        g = other.name.split("_")[0]
+        if g == code or not mine:
+            continue
+        theirs = {r for c in json.loads(other.read_text()) for l in c["lines"] for r in str(l.get("rid") or "").split(",") if r}
+        twins += sorted({f"{mine[r]} ({g})" for r in set(mine) & theirs})
+    say(twins, f"metro lines another country draws too: {len(twins)} {twins[:8]}")
 
     # ---- stations
     say(not stations, f"stations: {len(stations)} ({sum(1 for f in stations if f['properties'].get('m'))} on metros and trams)")
@@ -204,6 +219,21 @@ def check(code):
     alone = [f for f in stations if id(f) not in served]
     say(alone, f"stations with no drawn line passing them: {len(alone)} ({sum(1 for f in alone if f['properties'].get('m'))} of them metro stations or tram stops) "
         + str([f["properties"]["n"] for f in alone[:8]]))
+
+    # ---- the names on the yards and depots layer (scripts/depots.py)
+    if code in {'de','fr','ch','es','nl','be','it'}:
+        from metro_source_audit import audit as audit_metro_sources
+        from process_europe import COUNTRIES
+        from europe_urban_policy import load_relations
+        source_relations = load_relations(code, RAW / f'extract_{code}.pkl',
+                          {i:(t,m) for i,t,m in ex['relations']},ex.get('relation_tag_schema',()))
+        source_context = {**ex,'relations':[(i,t,m) for i,(t,m) in source_relations.items()]}
+        own_source = audit_metro_sources(metro, source_context,
+                         approved_service_way=COUNTRIES[code].urban_service_way)
+        report['metro_own_source'] = own_source
+        candidates = [r for r in own_source['rows'] if r['status'] == 'review_candidate']
+        missing_source = [r for r in own_source['rows'] if r['status'].startswith('insufficient_')]
+        say(candidates or missing_source, f"metro own-source coverage: {len(candidates)} candidates, {len(missing_source)} insufficient identities")
 
     # ---- the names on the yards and depots layer (scripts/depots.py)
     found, depot_audit = depot_check(code, DATA, ex)

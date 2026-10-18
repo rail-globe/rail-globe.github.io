@@ -1,11 +1,12 @@
 # Downloaded OSM extracts and intermediate files (about 4 GB); rebuild with the scripts
 data/raw/
-# Build variant without a document skeleton, not used by the site
-dist/
+# Build variant without a document skeleton, not used by the site (dist/offsets/ is: the page reads it)
+dist/index.html
 __pycache__/
 .DS_Store
 # Working reports, logs and screenshots written by the scripts and checks; regenerated on each run
 output/
+data/audit/
 .playwright-cli/
 # A local test environment left by another tool; its interpreter is a link to another machine
 .venv/

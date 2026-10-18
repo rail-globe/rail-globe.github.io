@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from country import Country, line_colours, line_of_route, run     # line_colours, line_of_route: for the tests
+from station_capsules import station_display
 
 # A tunnel, viaduct or bridge named for itself is part of the line on either side of it.
 STRUCTURE = re.compile(r"(Tunnels?|Viaduct|Bridge|Flyover|Underpass|Dive-?under|Portal)$", re.I)
@@ -66,7 +67,7 @@ def kind_of(name, tags_km):
 
 UK = Country(
     code="uk", plain_name=plain_name, kind_of=kind_of, speed_of=lambda name, jk, tags_km: HIGH_SPEED.get(name),
-    cities=CITIES, elsewhere="英国其他", colour_networks=LINE_COLOURS,
+    cities=CITIES, elsewhere="英国其他", colour_networks=LINE_COLOURS, urban_station_display=station_display, rail_capsules=True,
     build_name=lambda name: "High Speed 2" if re.match(r"HS2|High Speed 2", name) else name,
     build_fast=lambda name: name == "High Speed 2",        # drawn in the colour of high-speed lines being built
 )
