@@ -2627,7 +2627,7 @@ const ContinuousOffset = (() => {
     // data has them its names in Chinese and English (nz, ne) and the mark of a tram stop (t). See stationLists().
     const listed = (cols, more) => cols.n.map((n, i) => ({ type: 'Feature',
       properties: { n, ...(cols.g && cols.g[i] != null ? { g: cols.g[i] } : {}), ...(cols.h && cols.h[i] ? { h: 1 } : {}),
-        ...Object.fromEntries(['nz', 'ne', 't', 'cp'].filter(k => cols[k] && cols[k][i]).map(k => [k, cols[k][i]])), ...more },
+        ...Object.fromEntries(['nz', 'ne', 't', 'cp', 'hd', 'lf'].filter(k => cols[k] && cols[k][i]).map(k => [k, cols[k][i]])), ...more },
       geometry: { type: 'Point', coordinates: [cols.x[i] / 1e5, cols.y[i] / 1e5] } }));
     // A country abroad comes as layers of its own with the same properties, and joins the layers drawn here.
     const facts = {};
@@ -3364,6 +3364,32 @@ const ContinuousOffset = (() => {
     };
     // a stretch written twice (zf along the spine, zn on its track) is a member in the copy shown at this zoom
     const twinShown = (member, zoom) => (member.zf ? zoom<SWAP : member.zn ? zoom>=SWAP : true);
+    // a railway member (or a metro one of a railway station's capsule) is in the capsule while its class
+    // is switched on: China's by its band or class, a guest with the suburban trains, abroad by its row
+    // (the capsule had stayed across lines switched off, 2026-10-19)
+    const memberOn = member => {
+      const g = typeof member.g === 'string' ? member.g : 'cn';
+      if (member.mode === 'guest') return g === 'cn' ? Boolean(visible[metroId('cn', HOME.beside)]) : true;
+      if (member.mode !== 'rail') return Boolean(g === 'cn' ? visible[metroId(g, member.jk || HOME.metro[0][0])] : abroadVisible[metroId(g, member.jk || HOME.metro[0][0])]);
+      if (g === 'cn') return member.c in visible ? Boolean(visible[member.c]) : true;
+      for (const id of [`${g}-${member.jk}-${member.c}`, `${g}-${member.jk}-mini`, `${g}-${member.jk}`]) if (id in abroadVisible) return Boolean(abroadVisible[id]);
+      return true;
+    };
+    // A station with a capsule (lf, scripts/station_capsules.py) has its name written beyond the
+    // capsule's end nearer the station, instead of under the station, where it lay on the capsule
+    // (Cornbrook) or far from it (Stratford, 秋葉原: "站名挪到胶囊旁", 2026-10-19). Ends about as near
+    // as each other give the eastern one (then the southern), so the name does not jump sides as the map moves.
+    const besideCapsule = (properties, kind, ends, radius, node) => {
+      const [a, b] = ends.map(at => map.project(at)), here = map.project(node);
+      const da = Math.hypot(a.x-here.x,a.y-here.y), db = Math.hypot(b.x-here.x,b.y-here.y);
+      const first = Math.abs(da-db) > 4 ? da < db : (Math.abs(a.x-b.x) > .5 ? a.x > b.x : a.y >= b.y);
+      const [end, other] = first ? [a, b] : [b, a];
+      const length = Math.hypot(end.x-other.x,end.y-other.y);
+      const [ux, uy] = length > 1e-6 ? [(end.x-other.x)/length,(end.y-other.y)/length] : [0, 1];
+      const at = map.unproject({x:end.x+ux*(radius+6),y:end.y+uy*(radius+6)}).toArray();
+      const anchor = Math.abs(ux) >= Math.abs(uy) ? (ux > 0 ? 'left' : 'right') : (uy > 0 ? 'top' : 'bottom');
+      return {type:'Feature',properties:{...properties,_label:kind,_anchor:anchor},geometry:{type:'Point',coordinates:at}};
+    };
     const capsuleData = () => {
       const zoom=map.getZoom(), features=[];
       if (zoom<5) return {type:'FeatureCollection',features};
@@ -3376,7 +3402,7 @@ const ContinuousOffset = (() => {
         try { capsule=JSON.parse(p.cp); } catch { continue; }
         if (!Array.isArray(capsule.m)) continue;
         capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
-        const shown=member => twinShown(member,zoom);
+        const shown=member => twinShown(member,zoom) && memberOn(member);
         const fill=p.h ? col('station') : '#c9dbe6';
         const station={...p,_station:JSON.stringify(f.geometry.coordinates),_rail:1,_fill:fill};
         const shape=stationCapsuleGeometry({...p,cp:capsule},zoom,at=>map.project(at),point=>map.unproject(point).toArray(),capsuleWidth,shown);
@@ -3384,11 +3410,13 @@ const ContinuousOffset = (() => {
           if (shape) for (const dot of shape.dots) features.push({type:'Feature',properties:{...station,_radius:+(dot.half+.6).toFixed(3)},
             geometry:{type:'Point',coordinates:dot.at}});
           else features.push({type:'Feature',properties:{...station,_radius:railRadius(p,zoom)},geometry:f.geometry});
+          if (shape && p.lf) features.push(besideCapsule(p,'rail',[shape.dots[0].at,shape.dots.at(-1).at],Math.max(...shape.dots.map(d => d.half+.6)),f.geometry.coordinates));
           continue;
         }
         const radius=railRadius(p,zoom);
         const coordinates=shape ? shape.coordinates : (at => [map.unproject({x:at.x-.025,y:at.y}).toArray(),map.unproject({x:at.x+.025,y:at.y}).toArray()])(map.project(f.geometry.coordinates));
         features.push({type:'Feature',properties:{...station,_radius:radius},geometry:{type:'LineString',coordinates}});
+        if (shape && p.lf) features.push(besideCapsule(p,'rail',coordinates,radius,f.geometry.coordinates));
       }
       if (zoom<11) return {type:'FeatureCollection',features};
       for (const f of metroStations.features) {
@@ -3401,7 +3429,7 @@ const ContinuousOffset = (() => {
         if (zoom<TRAM_STOPS_FROM && (p.t || capsule.m.every(m => m.jk==='urban'))) continue;
         capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
         const shown = member => {
-          if (member.mode) return twinShown(member,zoom);          // a railway member of a metro station's capsule (Stratford)
+          if (member.mode) return twinShown(member,zoom) && memberOn(member);   // a railway member of a metro station's capsule (Stratford)
           const g=typeof member.g==='string' ? member.g : 'cn', kind=member.jk || HOME.metro[0][0];
           return Boolean(g==='cn' ? visible[metroId(g,kind)] : abroadVisible[metroId(g,kind)]);
         };
@@ -3413,6 +3441,7 @@ const ContinuousOffset = (() => {
           if (shape) for (const dot of shape.dots) features.push({type:'Feature',properties:{...station,_radius:+(dot.half+.6).toFixed(3)},
             geometry:{type:'Point',coordinates:dot.at}});
           else features.push({type:'Feature',properties:{...station,_radius:5.5},geometry:f.geometry});
+          if (shape && p.lf) features.push(besideCapsule(p,'metro',[shape.dots[0].at,shape.dots.at(-1).at],Math.max(...shape.dots.map(d => d.half+.6)),f.geometry.coordinates));
           continue;
         }
         if (!shape) {
@@ -3422,6 +3451,7 @@ const ContinuousOffset = (() => {
         }
         if (shape) features.push({type:'Feature',properties:{...p,_station:JSON.stringify(f.geometry.coordinates),_radius:shape.radius},
           geometry:{type:'LineString',coordinates:shape.coordinates}});
+        if (shape && p.lf && shape.dots) features.push(besideCapsule(p,'metro',shape.coordinates,shape.radius,f.geometry.coordinates));
       }
       return {type:'FeatureCollection',features};
     };
@@ -3431,8 +3461,16 @@ const ContinuousOffset = (() => {
       paint:{'line-color':'#0b1418','line-width':['+', ['*',2,['get','_radius']],2.8]}});
     map.addLayer({id:'station-capsules',type:'line',source:'station-capsules',minzoom:5,maxzoom:CAPSULE_UNTIL,filter:capsuleShape,layout:round,
       paint:{'line-color':['coalesce',['get','_fill'],'#ffffff'],'line-width':['*',2,['get','_radius']]}});
-    map.addLayer({id:'station-capsule-dots',type:'circle',source:'station-capsules',minzoom:CAPSULE_UNTIL,filter:['==',['geometry-type'],'Point'],
+    map.addLayer({id:'station-capsule-dots',type:'circle',source:'station-capsules',minzoom:CAPSULE_UNTIL,filter:['all',['==',['geometry-type'],'Point'],['!',['has','_label']]],
       paint:{'circle-color':['coalesce',['get','_fill'],'#ffffff'],'circle-radius':['get','_radius'],'circle-stroke-color':'#0b1418','circle-stroke-width':1.4}});
+    map.addLayer({id:'station-capsule-labels',type:'symbol',source:'station-capsules',filter:['==',['get','_label'],'rail'],
+      layout:{'text-field':['get','n'],'text-font':['sans'],'text-size':['interpolate',['linear'],['zoom'],8,11,14,14],
+        'text-anchor':['get','_anchor'],'text-optional':true},
+      paint:{'text-color':'#ffffff','text-halo-color':'rgba(8,14,18,0.9)','text-halo-width':1.4}});
+    map.addLayer({id:'station-capsule-metro-labels',type:'symbol',source:'station-capsules',filter:['==',['get','_label'],'metro'],
+      layout:{'text-field':['get','n'],'text-font':['sans'],'text-size':['interpolate',['linear'],['zoom'],12,10.5,16,13],
+        'text-anchor':['get','_anchor'],'text-optional':true},
+      paint:{'text-color':'#eaf4fb','text-halo-color':'rgba(8,14,18,0.9)','text-halo-width':1.3}});
     refreshCapsules=()=>map.getSource('station-capsules').setData(capsuleData());
     map.on('move',refreshCapsules);
     // (from z11, with the light rail and trams: the data does not tell a tram stop from a metro
@@ -3446,6 +3484,8 @@ const ContinuousOffset = (() => {
       layout: { 'text-field': ['get', 'n'], 'text-font': ['sans'], 'text-size': ['interpolate', ['linear'], ['zoom'], 12, 10.5, 16, 13],
         'text-offset': [0, 0.8], 'text-anchor': 'top', 'text-optional': true },
       paint: { 'text-color': '#eaf4fb', 'text-halo-color': 'rgba(8,14,18,0.9)', 'text-halo-width': 1.3 } });
+    // the names beside the capsules over the stations' dots, as the stations' own names are
+    for (const id of ['station-capsule-labels', 'station-capsule-metro-labels']) map.moveLayer(id);
 
     // The other cities. Rank 1 shows at every zoom and rank 2 from 4.6, as China's own do; rank 3
     // from 6, where a province fills the window and its cities have room: smaller and a little
@@ -3514,7 +3554,7 @@ const ContinuousOffset = (() => {
       const abroadToo = Object.keys(FOREIGN).flatMap(c => [c, as(howNamed(c, kind, NAMES.map))]);
       return abroadToo.length ? ['match', ['to-string', ['get', 'g']], ...abroadToo, as(howNamed('cn', kind, NAMES.map))] : as(howNamed('cn', kind, NAMES.map));
     };
-    const NAMED_LAYERS = [['station-labels', 'other', true], ['metro-station-labels', 'other', true], ['depot-labels', 'other', true], ['place-labels', 'city', false], ['city-labels', 'city', false]];
+    const NAMED_LAYERS = [['station-labels', 'other', true], ['metro-station-labels', 'other', true], ['station-capsule-labels', 'other', true], ['station-capsule-metro-labels', 'other', true], ['depot-labels', 'other', true], ['place-labels', 'city', false], ['city-labels', 'city', false]];
     // (the reader's name under a dot is given room for two words on its line, Shanghai Hongqiao,
     // where a Chinese name keeps the width it always had)
     const nameTheMap = () => {
@@ -4528,7 +4568,9 @@ const ContinuousOffset = (() => {
       say(routeNote, 'route.help');
     };
     // clicking a station offers it as origin or destination
-    const stationPop = new maplibregl.Popup({ className: 'tip station-pop', closeButton: false, offset: 10, maxWidth: '240px' });
+    // (closed by the map's own click handler: closing on any click closed the card the same tap had just
+    // opened on another station, which then took a second tap, 2026-10-19)
+    const stationPop = new maplibregl.Popup({ className: 'tip station-pop', closeButton: false, closeOnClick: false, offset: 10, maxWidth: '240px' });
     let reportStation = null;
     const offerStation = f => {
       if (reportStation) { reportStation(f); return; }
@@ -4695,6 +4737,7 @@ const ContinuousOffset = (() => {
       return best;
     };
     map.on('click', e => {
+      stationPop.remove();
       if (map.getLayer('cn-trains-hit') && map.queryRenderedFeatures(e.point, { layers: ['cn-trains-hit'] }).length) return;
       const shown = id => each(id).map(c => c[0]).filter(layer => map.getLayoutProperty(layer, 'visibility') !== 'none');
       const st = shown('stations').length && map.queryRenderedFeatures([[e.point.x - 7, e.point.y - 7], [e.point.x + 7, e.point.y + 7]], { layers: shown('stations') })[0];
@@ -4994,20 +5037,26 @@ const ContinuousOffset = (() => {
     };
     among('build', everyCountry.filter(g => rowOn('build', g) && (g === 'cn' || FOREIGN[g].hasBuild)));
     const withStations = everyCountry.filter(g => rowOn('stations', g));
-    // (a railway station with a capsule is drawn by the capsule layers instead, from RAIL_CAPSULES_FROM)
+    // (a railway station with a capsule is drawn by the capsule layers instead, from RAIL_CAPSULES_FROM;
+    // a stop drawn twice is drawn once, at the station with the capsule: hd marks the others)
+    const notTwin = ['!', ['has', 'hd']];
     among('stations', withStations, capsulesReady ? ['all', ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]],
-      ['any', ['!', ['has', 'cp']], ['<', ['zoom'], RAIL_CAPSULES_FROM]]]
-      : ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]]);
-    among('station-labels', withStations, ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]]);
+      ['any', ['!', ['has', 'cp']], ['<', ['zoom'], RAIL_CAPSULES_FROM]], notTwin]
+      : ['all', ['any', ['has', 'h'], ['>=', ['zoom'], 8.5]], notTwin]);
+    among('station-labels', withStations, capsulesReady ? ['all', ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]], notTwin,
+      ['any', ['!', ['has', 'lf']], ['<', ['zoom'], RAIL_CAPSULES_FROM]]]
+      : ['all', ['any', ['has', 'h'], ['>=', ['zoom'], 10.5]], notTwin]);
     // Metro stations go with the stations switch abroad. In China they go with their lines: a
     // tram stop (t in the data) with the light rail, every other with the metro.
     const [metroOn, tramsOn] = HOME.metro.map(([kind]) => visible[metroId('cn', kind)]);
     const withMetroStations = everyCountry.filter(g => (g === 'cn' ? metroOn || tramsOn : rowOn('stations', g)));
     const theirLines = ['any', ['!', NOT_ABROAD], ['case', ['has', 't'], tramsOn, metroOn]];
     const stopShown = ['any', ['!', ['has', 't']], ['>=', ['zoom'], TRAM_STOPS_FROM]];
-    among('metro-stations', withMetroStations, capsulesReady ? ['all',theirLines,stopShown,['!', ['has','cp']]] : ['all',theirLines,stopShown]);
+    among('metro-stations', withMetroStations, capsulesReady ? ['all',theirLines,stopShown,['!', ['has','cp']],notTwin] : ['all',theirLines,stopShown,notTwin]);
     refreshCapsules();
-    among('metro-station-labels', withMetroStations, ['all', theirLines, stopShown]);
+    // (a capsule of trams alone, lf 2, shows from TRAM_STOPS_FROM, the others from z11)
+    const nameAtStation = ['any', ['!', ['has', 'lf']], ['<', ['zoom'], ['case', ['any', ['has', 't'], ['==', ['get', 'lf'], 2]], TRAM_STOPS_FROM, 11]]];
+    among('metro-station-labels', withMetroStations, capsulesReady ? ['all', theirLines, stopShown, notTwin, nameAtStation] : ['all', theirLines, stopShown, notTwin]);
     // The names of the cities, with their dots: China's hand-made ones are two layers of their
     // own, the rest of China's and every other country's share one, filtered to the countries
     // whose switch is on.

@@ -76,10 +76,10 @@ LAYERS = {
     # stations on high-speed lines from zoom 5, the others from 8.5; metro stations from 10
     # (a country abroad has one stations file; its metro stations are marked m; t marks a tram stop,
     # which the page's light-rail switch hides with the trams)
-    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n nz ne h g cp",
+    "stations": dict(cn="stations", abroad="stations", abroad_if=lambda p: not p.get("m"), keep="n nz ne h g cp hd lf",
                      zoom=lambda p: 5 if p.get("h") else 8, label=lambda p: 8 if p.get("h") else 10),
     "metro-stations": dict(cn="metro_stations", abroad="stations", abroad_if=lambda p: bool(p.get("m")),
-                           keep="n nz ne g m t cp", zoom=lambda p: 10, label=lambda p: 12),
+                           keep="n nz ne g m t cp hd lf", zoom=lambda p: 10, label=lambda p: 12),
     "yards": dict(cn="yards", abroad="yards", keep="", zoom=lambda p: 9),
     "depots": dict(cn="depots", abroad="depots", keep="n nz ne", zoom=lambda p: 9, label=lambda p: 10),
 }
@@ -181,7 +181,7 @@ def beside(g, layers, out):
             cols["g"] = [f["properties"].get("g") for f in feats]
         if any(f["properties"].get("h") for f in feats):
             cols["h"] = [1 if f["properties"].get("h") else 0 for f in feats]
-        for key in ("nz", "ne", "cp"):
+        for key in ("nz", "ne", "cp", "hd", "lf"):
             if any(key in f["properties"] for f in feats):
                 cols[key] = [f["properties"].get(key) for f in feats]
         return cols

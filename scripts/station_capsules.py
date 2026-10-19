@@ -114,7 +114,171 @@ def _calls(station, ids, line_stops):
     return evidence
 
 
-def annotate(stations, metro, *, stopping=None, relations=(), audit=None):
+END_M = .5          # a member's anchor this close to an end of its part: the station projects past that end
+SLACK_M = 2.0       # an end this far beyond the capsule's cross line is still under the capsule
+INSIDE_M = 3.0      # a moved capsule crosses the shortest member this far within its end
+SHIFT_M = 45.0      # and moves no further than this
+
+
+def _end_of(member, reference, coslat):
+    """(where along the reference direction a member's part ends, +1 or -1: the side it is drawn on)
+    for a member anchored at an end of its part (the station projects past that end); None when the
+    part is drawn on both sides of the station."""
+    ends = member.get('ends') or ()
+    if len(ends) != 2:
+        return None
+    start, end = metres(member['a'], ends[0]) <= END_M, metres(member['a'], ends[1]) <= END_M
+    if start == end:
+        return None                       # drawn on both sides of the station, or a part shorter than END_M
+    def vector(a, b):
+        return ((b[0]-a[0])*coslat*111320, (b[1]-a[1])*111320)
+    vx, vy = vector(reference['a'], reference['t']); norm = math.hypot(vx, vy)
+    ux, uy = vx/norm, vy/norm
+    dx, dy = vector(reference['a'], member['a'])
+    tx, ty = vector(member['a'], member['t'])
+    inward = (tx*ux + ty*uy) * (1 if start else -1)
+    return (dx*ux + dy*uy, 1 if inward > 0 else -1) if inward else None
+
+
+def _reaches(member, reference, coslat):
+    """The member is drawn across the reference's cross line (within SLACK_M of its end)."""
+    end = _end_of(member, reference, coslat)
+    return end is None or (end[0] <= SLACK_M if end[1] > 0 else end[0] >= -SLACK_M)
+
+
+def _common_shift(members, reference, coslat):
+    """Where along the bundle the capsule crosses every member, in metres from the reference anchor:
+    0 when it already does, None when no stretch has them all.
+
+    The page draws a capsule across its outermost members; a member ending short of the station
+    (Rotterdam Centraal's Tram 5, 2026-10-19: "胶囊把 Tram 5 算作成员，但没盖到它") is anchored at
+    its end, so one in the middle of the bundle is off the capsule's cross line. The capsule moves
+    to where every member is drawn; where none has them all, the members drawn short of the
+    station leave the capsule (their lines end beside it)."""
+    lo, hi = -math.inf, math.inf
+    for member in members:
+        end = _end_of(member, reference, coslat)
+        if end is None:
+            continue
+        if end[1] > 0:
+            lo = max(lo, end[0])
+        else:
+            hi = min(hi, end[0])
+    if lo - SLACK_M <= 0 <= hi + SLACK_M:
+        return 0.0
+    if lo + 2*INSIDE_M > hi:
+        return None
+    shift = lo + INSIDE_M if lo > 0 else hi - INSIDE_M
+    return shift if abs(shift) <= SHIFT_M else None
+
+
+def _moved(at, reference, shift, coslat):
+    """The station's point moved `shift` metres along the reference member's direction."""
+    vx, vy = (reference['t'][0]-reference['a'][0])*coslat, reference['t'][1]-reference['a'][1]
+    norm = math.hypot(vx, vy)
+    return [at[0] + vx/norm*shift/111320/coslat, at[1] + vy/norm*shift/111320]
+
+
+def _metro_member(f, geom, at):
+    """A metro line's capsule member where the point `at` projects onto this part of it."""
+    props = f['properties']
+    coslat = max(.1, math.cos(math.radians(at[1])))
+    metric = LineString([(x*coslat,y) for x,y in geom.coords])
+    md, nearest = project_line(list(metric.coords), [at[0]*coslat,at[1]])
+    anchor = [nearest[0]/coslat,nearest[1]]
+    d, _ = project_line(list(geom.coords), anchor)
+    room = min(metric.length, 10 / 111320)
+    lo, hi = max(0, md - room), min(metric.length, md + room)
+    a, b = metric.interpolate(lo), metric.interpolate(hi)
+    if a.distance(b) < 1e-12:
+        return None
+    tangent = [anchor[0] + (b.x - a.x)/coslat, anchor[1] + b.y - a.y]
+    off = props.get('off', 0)
+    if props.get('op'):
+        profile = props['op']
+        if isinstance(profile, str):
+            profile = json.loads(profile)
+        off = value_at(profile, d)
+    member = {k: props[k] for k in ('jk', 'sh', 'ap', 'goff', 'g', 'r', 'k') if k in props}
+    display_id = json.dumps([props.get(k) for k in ('g','r','ct','network','rid','n','col','zf','zn')], ensure_ascii=False, separators=(',', ':'))
+    member.update(a=anchor, t=tangent, off=off, id=display_id, ends=[list(geom.coords[0]),list(geom.coords[-1])], d=d)
+    return member
+
+
+TWIN_M = 120        # same-named stations this close whose capsules share a line are one stop drawn twice
+LABEL_M = 0         # a station this far from its capsule has its name drawn beside the capsule: every one
+
+
+def _capsule_lines(p):
+    return {row.get('line') for row in p.get('cpe') or ()} - {None}
+
+
+def _finish(result, eligible, recompute, hidden):
+    """One capsule for a stop drawn twice, and the name beside a capsule far from its station.
+
+    Same-named stations within TWIN_M whose capsules share a line (a tram stop's two platforms either
+    side of a crossing; Manchester's St Peter's Square, two capsules and fourteen dots, 2026-10-19:
+    "同名站合并成一个胶囊") get one capsule, worked out at the point between them and kept on the
+    station nearest that point; the others are marked hd (not drawn; still searched and routed). A
+    station with a capsule is marked lf: the page writes its name beside the capsule, not under the
+    station, where it lay on the capsule (Cornbrook) or far from it (Stratford, 秋葉原: "站名挪到胶囊旁",
+    2026-10-19, for every capsule the same day); lf 2: a capsule of trams alone, shown from the trams' zoom.
+    recompute(stations) annotates station copies at other points; hidden is the hd value to write."""
+    # (a name as its stop's: Geneva's "Bel-Air (A)" and "Bel-Air (B)", 3 m apart, are one stop)
+    by_name = defaultdict(list)
+    for i in eligible:
+        if result[i]['properties'].get('cp'):
+            by_name[_stop_name(result[i]['properties'].get('n', ''))].append(i)
+    clusters = []
+    for name, indices in sorted(by_name.items(), key=lambda kv: kv[1][0]):
+        parent = {i: i for i in indices}
+        def root(i):
+            while parent[i] != i:
+                i = parent[i]
+            return i
+        for x, a in enumerate(indices):
+            for b in indices[x + 1:]:
+                if (metres(result[a]['geometry']['coordinates'], result[b]['geometry']['coordinates']) <= TWIN_M
+                        and _capsule_lines(result[a]['properties']) & _capsule_lines(result[b]['properties'])):
+                    parent[root(b)] = root(a)
+        groups = defaultdict(list)
+        for i in indices:
+            groups[root(i)].append(i)
+        clusters += [g for g in groups.values() if len(g) >= 2]
+    middles, keep = [], []
+    for group in clusters:
+        points = [result[i]['geometry']['coordinates'] for i in group]
+        middle = [sum(q[0] for q in points) / len(points), sum(q[1] for q in points) / len(points)]
+        kept = min(group, key=lambda i: (metres(result[i]['geometry']['coordinates'], middle), i))
+        station = copy.deepcopy(result[kept])
+        station['geometry']['coordinates'] = middle
+        middles.append(station)
+        keep.append(kept)
+    again = recompute(middles) if middles else []
+    for group, kept, station in zip(clusters, keep, again):
+        size = lambda p: len(json.loads(p['cp'])['m']) if p.get('cp') else 0
+        best = max(group, key=lambda i: (size(result[i]['properties']), -i))
+        source = station['properties'] if size(station['properties']) >= size(result[best]['properties']) else result[best]['properties']
+        cp, cpe = source['cp'], source['cpe']
+        for i in group:
+            q = result[i]['properties']
+            if i == kept:
+                q['cp'], q['cpe'] = cp, cpe
+            else:
+                q.pop('cp', None)
+                q.pop('cpe', None)
+                q['hd'] = hidden
+    for i in eligible:
+        q = result[i]['properties']
+        if q.get('cp'):
+            members = json.loads(q['cp'])['m']
+            middle = [sum(m['a'][0] for m in members) / len(members), sum(m['a'][1] for m in members) / len(members)]
+            if metres(result[i]['geometry']['coordinates'], middle) >= LABEL_M:
+                q['lf'] = 2 if all(m.get('jk') == 'urban' for m in members) else 1
+    return result
+
+
+def annotate(stations, metro, *, stopping=None, relations=(), audit=None, merge=True):
     """Return station copies with display metadata; preserve count, order and geometry.
 
     All metadata is rebuilt, making repeated builds idempotent. Ambiguous nearby
@@ -153,7 +317,7 @@ def annotate(stations, metro, *, stopping=None, relations=(), audit=None):
     for original in stations:
         station = copy.deepcopy(original)
         p = station['properties']
-        for key in ('cp', 'cpe', 'cap', 'cc', 'rot', 'ck'):
+        for key in ('cp', 'cpe', 'cap', 'cc', 'rot', 'ck', 'hd', 'lf'):
             p.pop(key, None)
         at = station['geometry']['coordinates']
         entry = {'station': p.get('n'), 'at': at[:], 'status': 'dot', 'reason': 'no_proven_bundle'}
@@ -183,22 +347,10 @@ def annotate(stations, metro, *, stopping=None, relations=(), audit=None):
                            and metres(anchor, project(row['at'])[1]) <= SAME_STOP_M]
             if not local_calls:
                 continue
-            room = min(metric.length, 10 / 111320)
-            lo, hi = max(0, md - room), min(metric.length, md + room)
-            a, b = metric.interpolate(lo), metric.interpolate(hi)
-            if a.distance(b) < 1e-12:
+            member = _metro_member(f, geom, at)
+            if member is None:
                 continue
-            tangent = [anchor[0] + (b.x - a.x)/coslat, anchor[1] + b.y - a.y]
-            off = props.get('off', 0)
-            if props.get('op'):
-                profile = props['op']
-                if isinstance(profile, str):
-                    profile = json.loads(profile)
-                off = value_at(profile, d)
-            member = {k: props[k] for k in ('jk', 'sh', 'ap', 'goff', 'g', 'r', 'k') if k in props}
-            display_id = json.dumps([props.get(k) for k in ('g','r','ct','network','rid','n','col','zf','zn')], ensure_ascii=False, separators=(',', ':'))
-            member.update(a=anchor, t=tangent, off=off, id=display_id, ends=[list(geom.coords[0]),list(geom.coords[-1])], d=d)
-            row = (distance, member, {'line': key, 'calls': local_calls})
+            row = (distance, member, {'line': key, 'calls': local_calls}, (f, geom))
             if key not in candidates or distance < candidates[key][0]:
                 candidates[key] = row
         rows = sorted(candidates.values(), key=lambda row: (row[0], row[2]['line']))
@@ -221,8 +373,27 @@ def annotate(stations, metro, *, stopping=None, relations=(), audit=None):
                 # A coincident unseated service is a single screen track, not a capsule.
                 spread = max(metres(a[1]['a'], b[1]['a']) for a in accepted for b in accepted)
                 seats = [row[1]['off'] * (1 if sum(a*b for a,b in zip(vector(row[1]['a'], row[1]['t']), (ux,uy))) >= 0 else -1) for row in accepted]
+                members = []
                 if spread >= .3 or max(seats)-min(seats) >= .1:
-                    payload = {'v': 1, 'a': reference['a'], 't': reference['t'], 'm': [row[1] for row in accepted]}
+                    members = [row[1] for row in accepted]
+                    shift = _common_shift(members, reference, coslat)
+                    if shift:
+                        point = _moved(at, reference, shift, coslat)
+                        moved = [_metro_member(*row[3], point) for row in accepted]
+                        first = accepted.index(rows[0])          # the reference is always among them
+                        if None not in moved and _common_shift(moved, moved[first], coslat) == 0:
+                            members, reference = moved, moved[first]
+                            entry['moved_m'] = round(shift, 1)
+                            shift = 0.0
+                    if shift != 0:
+                        # no stretch has them all: the members drawn short of the station leave
+                        entry['short'] = [row[2]['line'] for row in accepted if not _reaches(row[1], reference, coslat)]
+                        accepted = [row for row in accepted if _reaches(row[1], reference, coslat)]
+                        members = [row[1] for row in accepted]
+                        if len(members) < 2 or _common_shift(members, reference, coslat) != 0:
+                            members = []
+                if members:
+                    payload = {'v': 1, 'a': reference['a'], 't': reference['t'], 'm': members}
                     p['cp'] = json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
                     p['cpe'] = [row[2] for row in accepted]
                     entry.update(status='capsule', reason='parallel_local_paths_and_route_stops',
@@ -232,6 +403,9 @@ def annotate(stations, metro, *, stopping=None, relations=(), audit=None):
         if audit is not None:
             audit.append(entry)
         result.append(station)
+    if merge:
+        result = _finish(result, range(len(result)), lambda copies: annotate(copies, metro, stopping=stopping,
+                                                                               relations=relations, merge=False), 1)
     return result
 
 
@@ -391,7 +565,7 @@ def _line_key(mode, props):
     return json.dumps([mode, *(props.get(k) for k in ('g', 'r', 'ct', 'network', 'rid', 'n', 'col'))], ensure_ascii=False)
 
 
-def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
+def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None, merge=True, among=None):
     """Railway station copies with capsule metadata; count, order and geometry are kept.
 
     lines: [(feature, mode)], mode 'rail' (a railway line, drawn in the page's rail mode) or 'guest'
@@ -455,7 +629,7 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
     tree = STRtree([geom for _, _, geom in records]) if records else None
     urban = defaultdict(list)             # metro stations by name: a railway station beside one leaves its metro to it
     railway = defaultdict(list)           # and railway stations by name: a metro station beside one leaves the railway to it
-    for f in stations:
+    for f in among or stations:
         for k in ('n', 'nz', 'ne'):
             if f['properties'].get(k):
                 (urban if f['properties'].get('m') else railway)[_stop_name(f['properties'][k])].append(f['geometry']['coordinates'])
@@ -466,7 +640,7 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
         if skip and skip(p):
             result.append(station)
             continue
-        for key in ('cp', 'cpe'):
+        for key in ('cp', 'cpe', 'hd', 'lf'):
             p.pop(key, None)
         at = station['geometry']['coordinates']
         entry = {'station': p.get('n'), 'at': at[:], 'status': 'dot', 'reason': 'no_parallel_stopping_lines'}
@@ -548,7 +722,8 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
                 continue
             spine = sorted((r for r in near[key] if r[1]['properties'].get('zf')), key=lambda r: r[0])
             twin = _member(spine[0][1], spine[0][3], at, spine[0][2]) if spine and spine[0][0] <= RAIL_SEARCH_M else None
-            candidates.append((made[0], made[1], twin[1] if twin else None, {'line': key, 'services': evidence[key]}))
+            sources = ((rows[0][1], rows[0][3], rows[0][2]), (spine[0][1], spine[0][3], spine[0][2]) if twin else None)
+            candidates.append((made[0], made[1], twin[1] if twin else None, {'line': key, 'services': evidence[key]}, sources))
         candidates.sort(key=lambda row: (row[0], row[3]['line']))
         if len(candidates) >= 2:
             def vector(a, b):
@@ -572,8 +747,30 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
                 spread = max(metres(a[1]['a'], b[1]['a']) for a in accepted for b in accepted)
                 seats = [(row[1].get('off') or 0) * (1 if sum(a * b for a, b in zip(vector(row[1]['a'], row[1]['t']), (ux, uy))) >= 0 else -1)
                          for row in accepted]
+                members = []
                 if spread >= .3 or max(seats) - min(seats) >= .1:
                     members = [m for row in accepted for m in (row[1], row[2]) if m]
+                    shift = _common_shift(members, reference, coslat)
+                    if shift:
+                        point = _moved(at, reference, shift, coslat)
+                        again = lambda source: (_member(*source[:2], point, source[2]) or (None, None))[1] if source else None
+                        moved = [(again(row[4][0]), again(row[4][1])) for row in accepted]
+                        first = next(i for i, row in enumerate(accepted) if row[1] is reference)
+                        flat = [m for main, twin in moved for m in (main, twin) if m]
+                        if all(main for main, _ in moved) and all(bool(twin) == bool(row[2]) for (_, twin), row in zip(moved, accepted)) \
+                                and _common_shift(flat, moved[first][0], coslat) == 0:
+                            members, reference = flat, moved[first][0]
+                            entry['moved_m'] = round(shift, 1)
+                            shift = 0.0
+                    if shift != 0:
+                        # no stretch has them all: the lines drawn short of the station leave
+                        reach = lambda row: all(_reaches(m, reference, coslat) for m in (row[1], row[2]) if m)
+                        entry['short'] = [row[3]['line'] for row in accepted if not reach(row)]
+                        accepted = [row for row in accepted if reach(row)]
+                        members = [m for row in accepted for m in (row[1], row[2]) if m]
+                        if len(accepted) < 2 or _common_shift(members, reference, coslat) != 0:
+                            members = []
+                if members:
                     payload = {'v': 1, 'a': reference['a'], 't': reference['t'], 'm': members}
                     p['cp'] = json.dumps(payload, ensure_ascii=False, separators=(',', ':'))
                     p['cpe'] = [row[3] for row in accepted]
@@ -584,6 +781,10 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None):
             entry['reason'] = 'one_line_stops_here'
         if audit is not None:
             audit.append(entry)
+    if merge:
+        eligible = [i for i, f in enumerate(stations) if not (skip and skip(f['properties']))]
+        result = _finish(result, eligible, lambda copies: annotate_rail(copies, lines, extract, metro=metro, merge=False,
+                                                                        among=stations), 2)
     return result
 
 
@@ -613,7 +814,7 @@ def rail_display(code, root=ROOT, audit=None):
         ex = pickle.load(stream)
     # a metro station keeps its metro capsule; one without may get a railway capsule (Stratford)
     stations['features'] = annotate_rail(stations['features'], rail_lines(code, root), ex, metro=metro,
-                                         skip=lambda p: bool(p.get('m') and p.get('cp') and '"mode":' not in p['cp']),
+                                         skip=lambda p: p.get('hd') == 1 or bool(p.get('m') and p.get('cp') and '"mode":' not in p['cp']),
                                          audit=audit)
     path.write_text(json.dumps(stations, ensure_ascii=False, separators=(',', ':')) + '\n')
     return stations

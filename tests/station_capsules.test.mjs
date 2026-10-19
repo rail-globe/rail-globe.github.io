@@ -66,13 +66,13 @@ test('page keeps authoritative station coordinates and capsule picking precedes 
   assert.match(app,/offerStation\(stationOf\(capsule\.properties\._rail \? stations\.features : metroStations\.features,point\)\)/);
   assert.ok(app.indexOf("const capsule=map.queryRenderedFeatures")<app.indexOf("      const f = pick(e.point);",app.indexOf("const capsule=map.queryRenderedFeatures")));
   assert.match(app,/whenStations/);
-  assert.match(app,/capsulesReady \? \['all',theirLines,stopShown,\['!', \['has','cp'\]\]\] : \['all',theirLines,stopShown\]/);
+  assert.match(app,/capsulesReady \? \['all',theirLines,stopShown,\['!', \['has','cp'\]\],notTwin\] : \['all',theirLines,stopShown,notTwin\]/);
 });
 
 test('tram stops and tram-only capsules show from TRAM_STOPS_FROM, metro stations from z11',()=>{
   assert.match(app,/const TRAM_STOPS_FROM = 14;/);
   assert.match(app,/const stopShown = \['any', \['!', \['has', 't'\]\], \['>=', \['zoom'\], TRAM_STOPS_FROM\]\];/);
-  assert.match(app,/among\('metro-station-labels', withMetroStations, \['all', theirLines, stopShown\]\);/);
+  assert.match(app,/among\('metro-station-labels', withMetroStations, capsulesReady \? \['all', theirLines, stopShown, notTwin, nameAtStation\] : \['all', theirLines, stopShown, notTwin\]\);/);
   assert.match(app,/if \(zoom<TRAM_STOPS_FROM && \(p\.t \|\| capsule\.m\.every\(m => m\.jk==='urban'\)\)\) continue;/);
 });
 
@@ -81,7 +81,7 @@ test('zoomed in, a capsule gives way to a dot on each line that stops, on that l
   // (from z5 for the railway stations' capsules; the metro stations' still from z11)
   assert.equal((app.match(/minzoom:5,maxzoom:CAPSULE_UNTIL,filter:capsuleShape,/g)||[]).length,2);
   assert.match(app,/if \(zoom<11\) return \{type:'FeatureCollection',features\};\s+for \(const f of metroStations\.features\)/);
-  assert.match(app,/id:'station-capsule-dots',type:'circle',source:'station-capsules',minzoom:CAPSULE_UNTIL,filter:\['==',\['geometry-type'\],'Point'\]/);
+  assert.match(app,/id:'station-capsule-dots',type:'circle',source:'station-capsules',minzoom:CAPSULE_UNTIL,filter:\['all',\['==',\['geometry-type'\],'Point'\],\['!',\['has','_label'\]\]\]/);
   assert.match(app,/layers:\['station-capsules','station-capsules-border','station-capsule-dots'\]/);
   const members=[member(-1,'urban'),member(1,'urban')];
   const shape=geometry(properties(members),16.5,project,unproject,()=>4.5);
@@ -115,10 +115,23 @@ test('a guest without a seat stands one step beside its host, as the suburb laye
   }
 });
 
+test('a stop drawn twice is drawn once, and a far station has its name beside its capsule',()=>{
+  // 2026-10-19 ("同名站合并成一个胶囊、站名挪到胶囊旁"): hd stations are neither dots nor names;
+  // an lf station's name is written beside its capsule while the capsule is drawn, in the card's language
+  assert.match(app,/const notTwin = \['!', \['has', 'hd'\]\];/);
+  assert.match(app,/\['any', \['!', \['has', 'lf'\]\], \['<', \['zoom'\], RAIL_CAPSULES_FROM\]\]/);
+  assert.match(app,/if \(shape && p\.lf\) features\.push\(besideCapsule\(p,'rail',coordinates,radius,f\.geometry\.coordinates\)\);/);
+  assert.match(app,/\['station-capsule-labels', 'other', true\], \['station-capsule-metro-labels', 'other', true\]/);
+  assert.match(app,/\['nz', 'ne', 't', 'cp', 'hd', 'lf'\]/);
+  // a tap on another station while a card is open opens that one: the card does not close itself on the same tap
+  assert.match(app,/const stationPop = new maplibregl\.Popup\(\{ className: 'tip station-pop', closeButton: false, closeOnClick: false,/);
+  assert.match(app,/map\.on\('click', e => \{\s+stationPop\.remove\(\);/);
+});
+
 test('the page draws railway capsules over the stations layer and hides their dots',()=>{
   // below RAIL_CAPSULES_FROM a railway station keeps its dot; the constant is at the top level, where
   // applyVisibility() reads it (TRAM_STOPS_FROM once stopped the page from a function's scope)
-  assert.match(app,/among\('stations', withStations, capsulesReady \? \['all', \['any', \['has', 'h'\], \['>=', \['zoom'\], 8\.5\]\],\s+\['any', \['!', \['has', 'cp'\]\], \['<', \['zoom'\], RAIL_CAPSULES_FROM\]\]\]/);
+  assert.match(app,/among\('stations', withStations, capsulesReady \? \['all', \['any', \['has', 'h'\], \['>=', \['zoom'\], 8\.5\]\],\s+\['any', \['!', \['has', 'cp'\]\], \['<', \['zoom'\], RAIL_CAPSULES_FROM\]\], notTwin\]/);
   assert.match(app,/\n  const TRAM_STOPS_FROM = 14;\n(?:  \/\/.*\n)*  const RAIL_CAPSULES_FROM = 11;\n/);
   assert.match(app,/for \(const f of stations\.features\) \{\s+const p=f\.properties, code=typeof p\.g==='string' \? p\.g : 'cn';\s+if \(!p\.cp \|\| zoom<RAIL_CAPSULE_FROM\(p\)/);
   assert.match(app,/ContinuousOffset\.pixels\(member,zoom,member\.mode==='rail' \? 'rail' : member\.mode==='guest' \? 'guest' : 'metro'\)/);
