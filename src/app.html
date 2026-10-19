@@ -793,15 +793,34 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     'it': ['意大利', 'Italy'],
     'it.hint': ['Roma', 'Rome'],
     'it.fastWord': ['高速铁路', 'high-speed'],
+    'la': ['老挝', 'Laos'],
+    'la.hint': ['ວຽງຈັນ', 'Vientiane'],
+    'la.fastWord': ['快速铁路', 'fast railways'],
+    'my': ['马来西亚', 'Malaysia'],
+    'my.hint': ['KL Sentral', 'KL Sentral'],
+    'my.fastWord': ['快速铁路', 'fast railways'],
+    'sg': ['新加坡', 'Singapore'],
+    'sg.hint': ['Dhoby Ghaut', 'Dhoby Ghaut'],
+    'sg.fastWord': ['快速铁路', 'fast railways'],
+    'th': ['泰国', 'Thailand'],
+    'th.hint': ['สยาม', 'Siam'],
+    'th.fastWord': ['高速铁路', 'high-speed'],
+    'id': ['印度尼西亚', 'Indonesia'],
+    'id.hint': ['Manggarai', 'Manggarai'],
+    'id.fastWord': ['高速铁路', 'high-speed'],
+    'id.commuter': ['通勤铁路', 'Commuter rail'],
+    'id.commuter.caption': ['通勤铁路', 'Commuter rail'],
     'eu.urban': ['轻轨·有轨电车', 'Light rail & trams'],
     'eu.urban.caption': ['轻轨与有轨电车', 'Light rail and trams'],
     'rail.hs': ['高速铁路', 'High-speed'],
     'rail.semi': ['准高速铁路', 'Semi-high-speed'],
+    'rail.fast': ['快速铁路', 'Fast railways'],
     'rail.main': ['干线铁路', 'Main lines'],
     'rail.branch': ['支线铁路', 'Branch lines'],
     'rail.heritage': ['遗产铁路', 'Heritage'],
     'rail.hs.line': ['高速铁路', 'High-speed railway'],
     'rail.semi.line': ['准高速铁路', 'Semi-high-speed railway'],
+    'rail.fast.line': ['快速铁路', 'Fast railway'],
     'rail.main.line': ['干线铁路', 'Main line'],
     'rail.branch.line': ['支线铁路', 'Branch line'],
     'rail.heritage.line': ['遗产铁路', 'Heritage railway'],
@@ -898,11 +917,20 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
   // reader the UK's.
   const READS = { zh: { cn: 'local', jp: { city: 'reader', other: 'local' } }, en: { uk: 'local' } };
   const howNamed = (g, kind, choice) => { const r = READS[lang][g]; return !r ? choice : typeof r === 'string' ? r : r[kind] || r.other; };
+  // Countries whose own writing few readers read (Lao, Thai): a Chinese reader is given the
+  // English name where there is no Chinese one, ລາວ (English), as the owner set (2026-10-19).
+  const ENGLISH_AFTER = { la: true, th: true };
+  const readerKeys = g => (lang === 'zh' ? (ENGLISH_AFTER[g] ? ['nz', 'ne'] : ['nz']) : ['ne']);
+  // Countries whose writing the map has no glyphs for: on the map their names are given in the
+  // reader's language alone, the card (which the browser draws) keeps both. data/glyphs.json has
+  // Latin and punctuation, and Thai and Lao (U+0E00-0EFF, scripts/sea_glyphs.py, from Noto Sans
+  // Thai and Lao); Chinese, Japanese and Korean are drawn by the system's fonts. None is left.
+  const NO_GLYPHS = {};
   const formsOf = p => (p.nl ? [p.nl, p.n, p.ne] : [p.n, p.nz, p.ne]);          // local, Chinese, English
   const halfWidth = v => (v ? v.replace(/（/g, '(').replace(/）/g, ')') : v);
   // p: the thing; g: its country; kind: 'city' for a city, else what it is does not matter
   const named = (p, g = 'cn', kind = 'other', choice = NAMES.card) => {
-    const [local, zh, en] = formsOf(p).map(halfWidth), reader = lang === 'zh' ? zh : en, how = howNamed(g, kind, choice);
+    const [local, zh, en] = formsOf(p).map(halfWidth), reader = lang === 'zh' ? zh || (ENGLISH_AFTER[g] ? en : null) : en, how = howNamed(g, kind, choice);
     return how === 'local' || !reader || reader === local ? local : how === 'reader' ? reader : `${local} (${reader})`;
   };
   const WITH_UK = /*WITH_UK*/true;      // set from site.json by scripts/build.py
@@ -915,6 +943,11 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
   const WITH_NL = /*WITH_NL*/true;
   const WITH_BE = /*WITH_BE*/true;
   const WITH_IT = /*WITH_IT*/true;
+  const WITH_LA = /*WITH_LA*/true;      // Laos: data/la_*.json, written by scripts/process_sea.py (South-East Asia)
+  const WITH_MY = /*WITH_MY*/true;      // Malaysia
+  const WITH_SG = /*WITH_SG*/true;      // Singapore
+  const WITH_TH = /*WITH_TH*/true;      // Thailand
+  const WITH_ID = /*WITH_ID*/true;      // Indonesia
   /*VIEW-CORE*/
   // Pinned, sourced WGS84 polygons, inlined offline by build.py. Boxes only reject
   // distant points; ownership uses outer rings and holes, including offshore islands.
@@ -1117,6 +1150,54 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       caption: { subway: 'metro', urban: 'eu.urban.caption' },
       kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line', heritage: 'rail.heritage.line' },
       hint: 'it.hint' },
+    // South-East Asia (scripts/process_sea.py): a country is its own land, its outline inlined
+    // by build.py from data/<g>_view.json. The 160 km/h class is 快速铁路 wherever it is.
+    la: { name: 'la', on: WITH_LA && !!VIEW_BOUNDARIES.la, bounds: [[100.08, 13.9], [107.7, 22.5]],
+      inside: (lng, lat) => viewDepth('la', lng, lat) >= 0,
+      fast: ['fast'], fastWord: 'la.fastWord', fastMin: 0, build: true,
+      rail: [['fast', 'rail.fast'], ['branch', 'rail.branch']],      // (only the classes it has: no main line in Laos)
+      metro: [],
+      caption: {},
+      kindName: { fast: 'rail.fast.line', branch: 'rail.branch.line' },
+      hint: 'la.hint' },
+    // Malaysia: no fast line runs yet (the ECRL, 160 km/h, is being built), so no fast class and no
+    // speed figure on the card; KTM Komuter and the KLIA lines are metro lines over the railway.
+    my: { name: 'my', on: WITH_MY && !!VIEW_BOUNDARIES.my, bounds: [[99.6, 0.85], [119.3, 7.4]],
+      inside: (lng, lat) => viewDepth('my', lng, lat) >= 0,
+      fast: [], fastWord: 'my.fastWord', fastMin: 0, build: true,
+      rail: [['main', 'rail.main'], ['branch', 'rail.branch']],
+      metro: [['subway', 'metro'], ['urban', 'kr.urban']],
+      caption: { subway: 'metro', urban: 'kr.urban.caption' },
+      kindName: { main: 'rail.main.line', branch: 'rail.branch.line' },
+      hint: 'my.hint' },
+    // Singapore: its metro and light rail, and Malaysia's West Coast Line from the Causeway to Woodlands
+    sg: { name: 'sg', on: WITH_SG && !!VIEW_BOUNDARIES.sg, bounds: [[103.6, 1.2], [104.05, 1.48]],
+      inside: (lng, lat) => viewDepth('sg', lng, lat) >= 0,
+      fast: [], fastWord: 'sg.fastWord', fastMin: 0, build: true,
+      rail: [['main', 'rail.main']],
+      metro: [['subway', 'metro'], ['urban', 'kr.urban']],
+      caption: { subway: 'metro', urban: 'kr.urban.caption' },
+      kindName: { main: 'rail.main.line' },
+      hint: 'sg.hint' },
+    // Thailand: no fast line runs yet (the China–Thailand high-speed railway is being built); the
+    // Airport Rail Link and the Red Lines are Bangkok's metro lines over the railway
+    th: { name: 'th', on: WITH_TH && !!VIEW_BOUNDARIES.th, bounds: [[97.3, 5.6], [105.7, 20.5]],
+      inside: (lng, lat) => viewDepth('th', lng, lat) >= 0,
+      fast: [], fastWord: 'th.fastWord', fastMin: 0, build: true,
+      rail: [['main', 'rail.main'], ['branch', 'rail.branch']],
+      metro: [['subway', 'metro'], ['urban', 'kr.urban']],
+      caption: { subway: 'metro', urban: 'kr.urban.caption' },
+      kindName: { main: 'rail.main.line', branch: 'rail.branch.line' },
+      hint: 'th.hint' },
+    // Indonesia: Whoosh in the 350 band; Jakarta's KRL lines and the airport trains a class of their own
+    id: { name: 'id', on: WITH_ID && !!VIEW_BOUNDARIES.id, bounds: [[95.0, -11.0], [141.0, 6.0]],
+      inside: (lng, lat) => viewDepth('id', lng, lat) >= 0,
+      fast: ['hs'], fastWord: 'id.fastWord', fastMin: 0, build: true,
+      rail: [['hs', 'rail.hs'], ['main', 'rail.main'], ['branch', 'rail.branch']],
+      metro: [['subway', 'metro'], ['urban', 'kr.urban'], ['commuter', 'id.commuter']],
+      caption: { subway: 'metro', urban: 'kr.urban.caption', commuter: 'id.commuter.caption' },
+      kindName: { hs: 'rail.hs.line', main: 'rail.main.line', branch: 'rail.branch.line' },
+      hint: 'id.hint' },
   };
   for (const g of Object.keys(FOREIGN)) if (FOREIGN[g].on) worded(FOREIGN[g]); else delete FOREIGN[g];
   const abroad = g => (FOREIGN[g] ? g : 'cn');     // the country a feature or a list row belongs to
@@ -3015,12 +3096,14 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       return ['let', v, text, ['let', i, ['index-of', from, ['var', v]], ['case', ['>=', ['var', i], 0], ['concat', ['slice', ['var', v], 0, ['var', i]], to, ['slice', ['var', v], ['+', ['var', i], 1]]], ['var', v]]]]; };
     const halfWidthOf = text => swap(swap(swap(swap(text, '（', '('), '（', '('), '）', ')'), '）', ')');
     const namedField = (kind, under, g) => {
-      const key = lang === 'zh' ? 'nz' : 'ne', n = ['get', 'n'], shown = halfWidthOf(n), plain = ['format', shown, {}];
-      const as = how => (how === 'local' ? plain : how === 'reader' ? ['format', halfWidthOf(['coalesce', ['get', key], n]), {}]
-        : ['case', ['all', ['has', key], ['!=', ['get', key], n]], ['format', shown, {}, ['concat', under ? '\n(' : ' (', halfWidthOf(['get', key]), ')'], { 'font-scale': under ? 0.86 : 1 }], plain]);
-      if (g) return as(howNamed(g, kind, NAMES.map));
-      const abroadToo = Object.keys(FOREIGN).flatMap(c => [c, as(howNamed(c, kind, NAMES.map))]);
-      return abroadToo.length ? ['match', ['to-string', ['get', 'g']], ...abroadToo, as(howNamed('cn', kind, NAMES.map))] : as(howNamed('cn', kind, NAMES.map));
+      const n = ['get', 'n'], shown = halfWidthOf(n), plain = ['format', shown, {}];
+      const as = (how, c) => { const keys = readerKeys(c), key = keys[0], reader = keys.length > 1 ? ['coalesce', ...keys.map(k => ['get', k])] : ['get', key];
+        if (NO_GLYPHS[c] && how !== 'local') how = 'reader';
+        return how === 'local' ? plain : how === 'reader' ? ['format', halfWidthOf(['coalesce', reader, n]), {}]
+          : ['case', ['all', keys.length > 1 ? ['any', ...keys.map(k => ['has', k])] : ['has', key], ['!=', reader, n]], ['format', shown, {}, ['concat', under ? '\n(' : ' (', halfWidthOf(reader), ')'], { 'font-scale': under ? 0.86 : 1 }], plain]; };
+      if (g) return as(howNamed(g, kind, NAMES.map), g);
+      const abroadToo = Object.keys(FOREIGN).flatMap(c => [c, as(howNamed(c, kind, NAMES.map), c)]);
+      return abroadToo.length ? ['match', ['to-string', ['get', 'g']], ...abroadToo, as(howNamed('cn', kind, NAMES.map), 'cn')] : as(howNamed('cn', kind, NAMES.map), 'cn');
     };
     const NAMED_LAYERS = [['station-labels', 'other', true], ['metro-station-labels', 'other', true], ['station-capsule-labels', 'other', true], ['station-capsule-metro-labels', 'other', true], ['depot-labels', 'other', true], ['place-labels', 'city', false], ['city-labels', 'city', false]];
     // (the reader's name under a dot is given room for two words on its line, Shanghai Hongqiao,
@@ -3083,7 +3166,8 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     const railGroups = g => {
       if (FOREIGN[g]?.dataUnavailable) return [t('countries.unavailable', { countries: nameOf(g) })];
       const of = FOREIGN[g] ? facts[g] : HOME.facts, fast = (FOREIGN[g] && of[FOREIGN[g].fast[0] + '_km']) || of.fast_km;
-      return [kmText(of.km), `${land(g).fastWord} ${kmText(fast)}`];
+      // (a country with no fast class, Malaysia, Singapore: its whole length alone)
+      return FOREIGN[g] && !FOREIGN[g].fast.length ? [kmText(of.km)] : [kmText(of.km), `${land(g).fastWord} ${kmText(fast)}`];
     };
     const railFacts = g => railGroups(g).join(' · ');
     const railLine = g => railGroups(g).flatMap((text, i) => [...(i ? [' · '] : []), Object.assign(document.createElement('span'), { className: 'nobr', textContent: text })]);
@@ -3094,7 +3178,7 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       return HOME.linesOnly.includes(kind) ? t('facts.lines', { name: label, lines }) : t('facts.class', { name: label, cities: t('n.cities', { n: realCitiesOf(g).filter(has).length }), lines }); };
     // The classes' figures are a line each: a class's name may hold a dot (轻轨·电车), so no mark
     // parts them, and the lines are as many in either language (the app gets them as lines too).
-    const metroGroups = g => FOREIGN[g]?.dataUnavailable ? [] : (FOREIGN[g] ? [t('facts.metro', { cities: t('n.cities', { n: realCitiesOf(g).length }), lines: t('n.linesLong', { n: citiesOf(g).reduce((n, c) => n + c.lines.length, 0) }) })]
+    const metroGroups = g => FOREIGN[g]?.dataUnavailable || (FOREIGN[g] && !FOREIGN[g].metro.length) ? [] : (FOREIGN[g] ? [t('facts.metro', { cities: t('n.cities', { n: realCitiesOf(g).length }), lines: t('n.linesLong', { n: citiesOf(g).reduce((n, c) => n + c.lines.length, 0) }) })]
       : HOME.metro.map(([kind, label]) => classFacts(g, kind, label)));
     const metroFacts = g => metroGroups(g).join('\n');
     const groupsOf = g => metroGroups(g).map(text => Object.assign(document.createElement('span'), { className: 'grp', textContent: text }));

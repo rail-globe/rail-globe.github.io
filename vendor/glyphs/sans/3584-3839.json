@@ -1,0 +1,54 @@
+{
+ "range": "3584-3839",
+ "size_px": 24,
+ "border_px": 3,
+ "radius_px": 8,
+ "cutoff": 0.25,
+ "ascent_px": 26,
+ "fonts": [
+  {
+   "file": "NotoSansThai-Regular.ttf",
+   "sha256": "61cf814eec46b294d6ea4401ac295d0cecd5207bd2331dcc5a15e7301d30ee44",
+   "name": "Noto Sans Thai Regular",
+   "version": "Version 2.002; ttfautohint (v1.8.4.7-5d5b)",
+   "license": "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL"
+  },
+  {
+   "file": "NotoSansLao-Regular.ttf",
+   "sha256": "0a86e5e1ccfe34ca78c43fac6829dc751b42bcc469272a9a55325aae587bfbe7",
+   "name": "Noto Sans Lao Regular",
+   "version": "Version 2.003; ttfautohint (v1.8.4.7-5d5b)",
+   "license": "This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL"
+  }
+ ],
+ "high_tone_marks": {
+  "U+0E48": "uni0E48.small",
+  "U+0E49": "uni0E49.small",
+  "U+0E4A": "uni0E4A.small",
+  "U+0E4B": "uni0E4B.small",
+  "U+0EC8": "uni0EC8.small",
+  "U+0EC9": "uni0EC9.small",
+  "U+0ECA": "uni0ECA.small",
+  "U+0ECB": "uni0ECB.small"
+ },
+ "mark_shifts": {
+  "U+0EB1": -404,
+  "U+0EB4": -582,
+  "U+0EB5": -582,
+  "U+0EB6": -582,
+  "U+0EB7": -582,
+  "U+0EB8": -276,
+  "U+0EB9": -431,
+  "U+0EBB": -405,
+  "U+0EBC": -492,
+  "U+0EC8": -226,
+  "U+0EC9": -341,
+  "U+0ECA": -385,
+  "U+0ECB": -290,
+  "U+0ECC": -358,
+  "U+0ECD": -432,
+  "U+0ECE": -383
+ },
+ "glyphs": 170,
+ "sha256": "6ace6c063e43e0d1e1e14d5482a1fad055c58ede395a4fde353a0812268082cf"
+}

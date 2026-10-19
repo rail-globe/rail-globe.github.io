@@ -112,6 +112,91 @@ class Country:
     rail_capsules: bool = False                 # capsules at railway stations across the parallel railway lines that stop there
     urban_drawn: Callable = None               # code/network/name/rids/ways/relations/default drawn -> reviewed native paths
     urban_service_way: Callable = None         # exact source-qualified passenger service-track exception
+    prepare: Callable = None                   # the extract as loaded -> the extract the pipeline reads (South-East Asia:
+                                               # clipped to the country's own land, scripts/process_sea.py)
+    urban_trains: Callable = None              # (route=train relation's tags, its route_master's) -> drawn as a metro line?
+    urban_train_kind: str = "subway"           # ... and its class: a metro line's ("subway"), or one of its own
+
+
+PLATFORM_SIDING_KM = 2.0     # a station's platform track, not a yard
+PLATFORM_GAP_M = 30          # the route has no running track of its own this near the siding's middle
+
+
+def platform_siding(code, rid, wid, ways, relations, _taken={}):
+    """Whether a siding a city line's route relation runs over is that line's platform track at a
+    station (country.Country.urban_service_way). Bangkok's Dark Red Line stops at Don Mueang on
+    two tracks tagged service=siding, and leaving them out cut the line for 790 m (2026-10-19).
+    Only where the relation itself would otherwise break. The relation's siding members that meet
+    end to end away from its running track are one run (Medan's Srilelawangsa line passes a station
+    on two, 87 m and 717 m); a run is taken when both its outer ends are on the relation's own running
+    track, it is under PLATFORM_SIDING_KM, and none of the relation's running track passes within
+    PLATFORM_GAP_M of its middle (a platform loop beside a through track the route also uses is left
+    out, as are crossovers, yards and spurs)."""
+    key = (code, rid)
+    if key not in _taken:
+        _taken[key] = set()
+        if rid in relations:
+            from shapely.geometry import MultiLineString
+            from shapely.ops import linemerge
+            members = [w for kind, w in relations[rid][1] if kind == "w" and w in ways and len(ways[w][1]) > 1]
+            lines = [ways[w][1] for w in members if not ways[w][0].get("service")]
+            if lines:
+                nodes, running = {tuple(p) for line in lines for p in line}, MultiLineString(lines)
+                sidings = sorted({w for w in members if ways[w][0].get("service") == "siding"})
+                group = {w: w for w in sidings}
+                def root(w):
+                    while group[w] != w:
+                        w = group[w]
+                    return w
+                at = defaultdict(list)
+                for w in sidings:
+                    for end in (tuple(ways[w][1][0]), tuple(ways[w][1][-1])):
+                        at[end].append(w)
+                for end, ws in at.items():
+                    if end not in nodes:                 # sidings meeting off the running track are one run
+                        for w in ws[1:]:
+                            group[root(w)] = root(ws[0])
+                runs = defaultdict(list)
+                for w in sidings:
+                    runs[root(w)].append(w)
+                for run in runs.values():
+                    count = Counter(end for w in run for end in (tuple(ways[w][1][0]), tuple(ways[w][1][-1])))
+                    outer = [end for end, n in count.items() if n == 1]
+                    if len(outer) != 2 or not all(end in nodes for end in outer) \
+                            or sum(km(ways[w][1]) for w in run) > PLATFORM_SIDING_KM:
+                        continue
+                    merged = linemerge([ways[w][1] for w in run])
+                    if merged.geom_type != "LineString":
+                        continue
+                    if running.distance(merged.interpolate(0.5, normalized=True)) * 111320 > PLATFORM_GAP_M:
+                        _taken[key].update(run)
+    return wid in _taken[key]
+
+
+def capsule_display(stations, metro, extract):
+    """Capsules at a country's metro stations (scripts/station_capsules.py station_display)."""
+    from station_capsules import station_display
+    return station_display(stations, metro, extract)
+
+
+# How a country is drawn since Europe, in one place ("处理欧洲的经验要沉淀下来", 2026-10-19).
+# South-East Asia had been set up like the UK and Korea, the older way: Bangkok's Northern line
+# was moved across the Dark Red Line and back and drawn on both sides of it, and no station had a
+# capsule. Every country added from now on is Country(**LIKE_EUROPE, ...); the UK, Korea and
+# Japan keep their own settings (tests/test_country_pipeline.py).
+# - rail_seats off: every railway is drawn on its own track. Abroad each line is its own track a
+#   few metres from the next; moving them apart by seats put one line on both sides of another.
+# - merge_urban_by_colour off: each city line is its own, seated by class (jk), continuously; a
+#   tram does not take part in the seats of the metro under it.
+# - urban_bundles: light rail and trams on shared centre lines, the far view folded into one
+#   corridor (scripts/line_bundles.py); the order kept at junctions only in the cities listed in
+#   scripts/endpoint_sources.py ENDPOINT_CITIES, each once compared with its drawing without the order.
+# - urban_station_display: capsules across the lines that stop at a metro station, the name
+#   beside the capsule, one capsule for two same-named stations of one interchange.
+# A country whose train services are drawn as city lines over its railways (Korea's 首都圈电铁,
+# Bangkok's Red Lines, KTM Komuter, Jakarta's KRL) also sets rail_capsules=True.
+LIKE_EUROPE = dict(rail_seats=False, merge_urban_by_colour=False, urban_bundles=True,
+                   urban_station_display=capsule_display)
 
 
 def line_colours(routes, networks=None, many=5, brand=1 / 4):
@@ -303,6 +388,8 @@ def run(cfg, *, rail_only=False):
     extract_path = RAW / f"extract_{cfg.code}.pkl"
     with extract_path.open("rb") as stream:
         ex = pickle.load(stream)
+    if cfg.prepare:
+        ex = cfg.prepare(ex)
     if cfg.urban_preflight:
         cfg.urban_preflight(ex)
     ways = {wid: (t, co) for wid, t, co in ex["ways"]}
@@ -447,7 +534,11 @@ def run(cfg, *, rail_only=False):
     routes = defaultdict(lambda: {"ways": set(), "kinds": Counter(), "en": [], "relations": []})     # (network, line, colour) -> its track
     post_layout_exclusions = set()
     for rid, (t, members) in relations.items():
-        if t.get("type") != "route" or t.get("route") not in cfg.urban:
+        # A train route may be an urban line of its own (cfg.urban_trains: Kuala Lumpur's KTM
+        # Komuter, the airport lines): drawn over the railway it runs on, as a metro line.
+        as_metro = (cfg.urban_trains is not None and t.get("type") == "route" and t.get("route") == "train"
+                    and cfg.urban_trains(t, master_of.get(rid, {})))
+        if t.get("type") != "route" or t.get("route") not in cfg.urban and not as_metro:
             continue
         if cfg.urban_policy:
             excluded = route_exclusion(cfg.code, rid, t, master_of.get(rid, {}),
@@ -476,7 +567,7 @@ def run(cfg, *, rail_only=False):
                     and (not ways[ref][0].get("service") or cfg.urban_service_way
                          and cfg.urban_service_way(cfg.code,rid,ref,ways,relations))):
                 line["ways"].add(ref)
-                line["kinds"][t.get("route")] += length[ref]
+                line["kinds"][cfg.urban_train_kind if as_metro else t.get("route")] += length[ref]
     # The services of one network in one colour are one line (the five DLR services, both
     # directions of a circle): named after the network where there are several.
     merged = urban_groups(cfg, routes)
@@ -492,6 +583,10 @@ def run(cfg, *, rail_only=False):
         if not wids:
             continue
         light = kinds["subway"] < sum(v for k, v in kinds.items() if k != "subway")
+        # train routes drawn as a class of their own (Jakarta's KRL: cfg.urban_train_kind "commuter")
+        own_class = cfg.urban_train_kind if cfg.urban_train_kind != "subway" and kinds[cfg.urban_train_kind] * 2 >= sum(kinds.values()) else None
+        if own_class:
+            light = False
         source_relations = sorted({rid for _, line in parts for rid in line["relations"]})
         if cfg.urban_policy:
             decision = cfg.urban_policy(cfg.code, wids, ways, length, source_relations,
@@ -512,7 +607,7 @@ def run(cfg, *, rail_only=False):
         if not simp or sum(km(co) for co in simp) < minimum:
             continue
         covered.update(wids)
-        jk = "urban" if light else "subway"
+        jk = own_class or ("urban" if light else "subway")
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
         if cfg.urban_nearest_city:
             from europe_urban_policy import nearest_city

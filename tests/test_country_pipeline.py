@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from country import (line_colours, railway_properties, railway_tracks, urban_groups,
+from country import (LIKE_EUROPE, line_colours, platform_siding, railway_properties, railway_tracks, urban_groups,
                      whole_line_rows)
 from process_europe import COUNTRIES
 from process_jp import adopt_unnamed
@@ -211,6 +211,46 @@ class EuropeanPipelineContractTest(unittest.TestCase):
                 groups = urban_groups(cfg, routes)
                 self.assertEqual(len(groups), 2)
                 self.assertEqual({parts[0][0] for parts in groups.values()}, {"Line 1", "Line 2"})
+
+
+class LikeEuropeTest(unittest.TestCase):
+    """2026-10-19: South-East Asia was set up the older way (seats on the railways, no capsules);
+    every country added since Europe is drawn with Europe's settings (country.LIKE_EUROPE)."""
+
+    def test_europe_is_drawn_as_the_preset_says(self):
+        for cfg in COUNTRIES.values():
+            for key, value in LIKE_EUROPE.items():
+                if key != "urban_station_display":       # Europe's own hook: the same capsules, plus Italy's names
+                    self.assertEqual(getattr(cfg, key), value, (cfg.code, key))
+            self.assertIsNotNone(cfg.urban_station_display)
+
+    def test_the_countries_added_after_europe_take_the_preset(self):
+        import process_sea
+        for code in process_sea.SEA:
+            cfg = process_sea.configure(code)
+            for key, value in LIKE_EUROPE.items():
+                self.assertEqual(getattr(cfg, key), value, (code, key))
+            self.assertTrue(cfg.rail_capsules)           # commuter trains drawn as city lines over the railway
+
+    def test_a_platform_siding_is_taken_only_where_the_route_would_break(self):
+        # Don Mueang: the Dark Red Line's route runs over a siding between its two running tracks
+        ways = {1: ({"railway": "rail"}, [(100.0, 13.0), (100.0, 13.001)]),
+                2: ({"railway": "rail", "service": "siding"}, [(100.0, 13.001), (100.0002, 13.005), (100.0, 13.009)]),
+                3: ({"railway": "rail"}, [(100.0, 13.009), (100.0, 13.01)]),
+                4: ({"railway": "rail", "service": "crossover"}, [(100.0, 13.001), (100.0, 13.009)]),
+                5: ({"railway": "rail"}, [(100.0, 13.001), (100.0, 13.009)])}
+        route = lambda *wids: {"tags": {}, "members": [("w", w) for w in wids]}
+        rel = lambda r: {7: ({}, r["members"])}
+        self.assertTrue(platform_siding("t1", 7, 2, ways, rel(route(1, 2, 3))))
+        self.assertFalse(platform_siding("t2", 7, 4, ways, rel(route(1, 4, 3))))       # a crossover
+        self.assertFalse(platform_siding("t3", 7, 2, ways, rel(route(1, 2, 3, 5))))    # a loop beside the route's own through track
+        self.assertFalse(platform_siding("t4", 7, 2, ways, rel(route(1, 2))))          # one end off the route's running track
+        # Medan: the route passes a station on two sidings that meet end to end
+        ways[6] = ({"railway": "rail", "service": "siding"}, [(100.0, 13.001), (100.0003, 13.004)])
+        ways[7] = ({"railway": "rail", "service": "siding"}, [(100.0003, 13.004), (100.0, 13.009)])
+        self.assertTrue(platform_siding("t5", 7, 6, ways, rel(route(1, 6, 7, 3))))
+        self.assertTrue(platform_siding("t5", 7, 7, ways, rel(route(1, 6, 7, 3))))
+        self.assertFalse(platform_siding("t6", 7, 6, ways, rel(route(1, 6, 3))))       # half a run leaves it open at one end
 
 
 class LegacyCountryCompatibilityTest(unittest.TestCase):

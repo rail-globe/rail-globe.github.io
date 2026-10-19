@@ -77,7 +77,7 @@ const checks = [
   // the names on the map come from the same rule as the card's, and are set again in another language
   ['the map\'s labels are named by the rule of the card', page => /const NAMED_LAYERS = \[\['station-labels', 'other', true\], \['metro-station-labels', 'other', true\], \['station-capsule-labels', 'other', true\], \['station-capsule-metro-labels', 'other', true\], \['depot-labels', 'other', true\], \['place-labels', 'city', false\], \['city-labels', 'city', false\]\];/.test(page)
     && /map\.setLayoutProperty\(id, 'text-field', namedField\(kind, under, g\)\)/.test(page) && /listStations\(\);\s+nameTheMap\(\);/.test(page)
-    && /if \(g\) return as\(howNamed\(g, kind, NAMES\.map\)\);/.test(page)],
+    && /if \(g\) return as\(howNamed\(g, kind, NAMES\.map\), g\);/.test(page)],
   ['the card names lines, cities and stations by the same rule', page => /const cityName = c => named\(c, abroad\(c\.g\), 'city'\);/.test(page)
     && /addJump\(cityName\(c\), /.test(page) && /, cityName\(c\), \(\) => openCity\(c, true\), false, 'city:' \+ c\.n\);/.test(page) && /named\(l, abroad\(c\.g\)\), \(\) => selectMetro\(c, l, true\)/.test(page)
     && /named\(l, abroad\(l\.g\)\), \(\) => select\(l\.n, true\), selected === l\.n, 'line:' \+ l\.n\)/.test(page) && /hubName = new Map\(routable\.map\(f => \[f\.properties\.g, named\(f\.properties\)\]\)\);/.test(page)

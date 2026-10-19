@@ -174,5 +174,26 @@ class GermanModePrefixTests(unittest.TestCase):
         self.assertNotEqual(_stop_name("Sonnenallee"), _stop_name("onnenallee"))
 
 
+class StopNameTests(unittest.TestCase):
+    """2026-10-19: Kuala Lumpur's Plaza Rakyat had no capsule. Its routes' stops carry name:zh
+    人民广场 and the station has no Chinese name of its own (only the country's table gives one),
+    so the stop's Chinese name matched none of the station's names."""
+
+    setUp = StationCapsuleTests.setUp
+
+    def test_a_stop_is_matched_by_any_of_its_names(self):
+        for ref in (11, 12):
+            self.routes['nodes'][ref] = ({'name': 'Interchange', 'name:zh': '换乘站'}, 6, 46)
+        out = annotate([self.station], self.lines, stopping=self.routes)[0]['properties']
+        self.assertIn('cp', out)
+        self.assertEqual({row['stop'] for row in json.loads(json.dumps(out['cpe']))[0]['calls']}, {'换乘站'})
+        self.assertNotIn('_names', json.dumps(out['cpe']))      # the evidence written is as before
+
+    def test_a_stop_of_another_name_still_does_not_match(self):
+        for ref in (11, 12):
+            self.routes['nodes'][ref] = ({'name': 'Elsewhere', 'name:zh': '别处'}, 6, 46)
+        self.assertNotIn('cp', annotate([self.station], self.lines, stopping=self.routes)[0]['properties'])
+
+
 if __name__ == '__main__':
     unittest.main()

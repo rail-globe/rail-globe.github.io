@@ -1,0 +1,115 @@
+kind	name	lon	lat	name_zh	tier	source	note
+station	สามเสน	100.52994	13.77944	三森	A	https://zh.wikipedia.org/zh-cn/%E4%B8%89%E6%A3%AE%E7%AB%99_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Sam Sen railway station (24 m from the station); zh-cn title 三森站 (泰国)
+station	อยุธยา	100.5832	14.35671	大城	A	https://zh.wikipedia.org/zh-cn/%E5%A4%A7%E5%9F%8E%E7%AB%99_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Ayutthaya railway station (22 m from the station); zh-cn title 大城站 (泰国)
+station	พิษณุโลก	100.2657	16.81498	彭世洛	A	https://zh.wikipedia.org/zh-cn/%E5%BD%AD%E4%B8%96%E6%B4%9B	en.wikipedia Phitsanulok (242 m from the station); zh-cn title 彭世洛; matched by its first words
+station	สุรศักดิ์	100.52146	13.71927	素拉刹	A	https://zh.wikipedia.org/zh-cn/%E7%B4%A0%E6%8B%89%E5%88%B9%E7%AB%99	en.wikipedia Surasak BTS station (7 m from the station); zh-cn title 素拉刹站
+station	ช่องนนทรี	100.52933	13.7238	冲暖诗	A	https://zh.wikipedia.org/zh-cn/%E5%86%B2%E6%9A%96%E8%AF%97%E7%AB%99	en.wikipedia Chong Nonsi BTS station (12 m from the station); zh-cn title 冲暖诗站
+station	ราชดำริ	100.53945	13.73947	拉差丹利	A	https://zh.wikipedia.org/zh-cn/%E6%8B%89%E5%B7%AE%E4%B8%B9%E5%88%A9%E7%AB%99	en.wikipedia Ratchadamri BTS station (31 m from the station); zh-cn title 拉差丹利站
+station	สะพานตากสิน	100.51422	13.71881	郑皇桥	A	https://zh.wikipedia.org/zh-cn/%E9%83%91%E7%9A%87%E6%A1%A5%E7%AB%99	en.wikipedia Saphan Taksin BTS station (13 m from the station); zh-cn title 郑皇桥站
+station	หัวลำโพง	100.51713	13.73757	华喃峰	A	https://zh.wikipedia.org/zh-cn/%E5%8D%8E%E5%96%83%E5%B3%B0%E7%AB%99	en.wikipedia Hua Lamphong MRT station (99 m from the station); zh-cn title 华喃峰站
+station	พระราม 9	100.56528	13.75782	拉玛九世	A	https://zh.wikipedia.org/zh-cn/%E6%8B%89%E7%8E%9B%E4%B9%9D%E4%B8%96%E7%AB%99	en.wikipedia Phra Ram 9 MRT station (67 m from the station); zh-cn title 拉玛九世站
+station	ศูนย์การประชุมแห่งชาติสิริกิติ์	100.55991	13.72267	诗丽吉王后国家会议中心	A	https://zh.wikipedia.org/zh-cn/%E8%AF%97%E4%B8%BD%E5%90%89%E7%8E%8B%E5%90%8E%E5%9B%BD%E5%AE%B6%E4%BC%9A%E8%AE%AE%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Queen Sirikit National Convention Centre MRT station (49 m from the station); zh-cn title 诗丽吉王后国家会议中心站
+station	ลุมพินี	100.54572	13.72561	是乐园	A	https://zh.wikipedia.org/zh-cn/%E6%98%AF%E4%B9%90%E5%9B%AD%E7%AB%99	en.wikipedia Lumphini MRT station (30 m from the station); zh-cn title 是乐园站
+station	ห้วยขวาง	100.57357	13.77869	汇权	A	https://zh.wikipedia.org/zh-cn/%E6%B1%87%E6%9D%83%E7%AB%99	en.wikipedia Huai Khwang MRT station (48 m from the station); zh-cn title 汇权站
+station	สุทธิสาร	100.57408	13.78949	素铁讪	A	https://zh.wikipedia.org/zh-cn/%E7%B4%A0%E9%93%81%E8%AE%AA%E7%AB%99	en.wikipedia Sutthisan MRT station (57 m from the station); zh-cn title 素铁讪站
+station	รัชดาภิเษก	100.57455	13.79897	叻猜拉披色	A	https://zh.wikipedia.org/zh-cn/%E5%8F%BB%E7%8C%9C%E6%8B%89%E6%8A%AB%E8%89%B2%E7%AB%99	en.wikipedia Ratchadaphisek MRT station (51 m from the station); zh-cn title 叻猜拉披色站
+station	ศูนย์วัฒนธรรมแห่งประเทศไทย	100.57012	13.76616	泰国文化中心	A	https://zh.wikipedia.org/zh-cn/%E6%B3%B0%E5%9B%BD%E6%96%87%E5%8C%96%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Thailand Cultural Centre MRT station (15 m from the station); zh-cn title 泰国文化中心站
+station	ลาดพร้าว	100.57287	13.8065	叻抛	A	https://zh.wikipedia.org/zh-cn/%E5%8F%BB%E6%8A%9B%E7%AB%99	en.wikipedia Lat Phrao MRT station (18 m from the station); zh-cn title 叻抛站
+station	พหลโยธิน	100.56146	13.81288	拍凤裕庭	A	https://zh.wikipedia.org/zh-cn/%E6%8B%8D%E5%87%A4%E8%A3%95%E5%BA%AD%E7%AB%99	en.wikipedia Phahon Yothin MRT station (58 m from the station); zh-cn title 拍凤裕庭站
+station	สวนจตุจักร	100.55328	13.80296	乍都节公园	A	https://zh.wikipedia.org/zh-cn/%E4%B9%8D%E9%83%BD%E8%8A%82%E5%85%AC%E5%9B%AD%E7%AB%99	en.wikipedia Chatuchak Park MRT station (83 m from the station); zh-cn title 乍都节公园站
+station	กำแพงเพชร	100.54788	13.79795	甘烹碧	A	https://zh.wikipedia.org/zh-cn/%E7%94%98%E7%83%B9%E7%A2%A7%E7%AB%99	en.wikipedia Kamphaeng Phet MRT station (59 m from the station); zh-cn title 甘烹碧站
+station	คลองเตย	100.55437	13.72213	孔提	A	https://zh.wikipedia.org/zh-cn/%E5%AD%94%E6%8F%90%E7%AB%99	en.wikipedia Khlong Toei MRT station (50 m from the station); zh-cn title 孔提站
+station	วงเวียนใหญ่	100.49516	13.72108	大罗斗圈	A	https://zh.wikipedia.org/zh-cn/%E5%A4%A7%E7%BD%97%E6%96%97%E5%9C%88%E7%AB%99	en.wikipedia Wongwian Yai station (13 m from the station); zh-cn title 大罗斗圈站
+station	บ้านทับช้าง	100.68874	13.73294	班塔昌	A	https://zh.wikipedia.org/zh-cn/%E7%8F%AD%E5%A1%94%E6%98%8C%E7%AB%99	en.wikipedia Ban Thap Chang station (256 m from the station); zh-cn title 班塔昌站
+station	ศาลาแดง	100.53434	13.72857	沙拉铃	A	https://zh.wikipedia.org/zh-cn/%E6%B2%99%E6%8B%89%E9%93%83%E7%AB%99	en.wikipedia Sala Daeng BTS station (23 m from the station); zh-cn title 沙拉铃站
+station	วงเวียนใหญ่	100.49123	13.72439	大罗斗圈	A	https://zh.wikipedia.org/zh-cn/%E5%A4%A7%E7%BD%97%E6%96%97%E5%9C%88%E7%AB%99	en.wikipedia Wongwian Yai station (570 m from the station); zh-cn title 大罗斗圈站
+station	หนองคาย	102.73097	17.86446	廊开	A	https://zh.wikipedia.org/zh-cn/%E5%BB%8A%E5%BC%80%E7%AB%99	en.wikipedia Nong Khai railway station (21 m from the station); zh-cn title 廊开站
+station	อุดรธานี	102.80557	17.40417	乌隆他尼	A	https://zh.wikipedia.org/zh-cn/%E4%B9%8C%E9%9A%86%E4%BB%96%E5%B0%BC%E7%AB%99	en.wikipedia Udon Thani railway station (8 m from the station); zh-cn title 乌隆他尼站
+station	อุตรดิตถ์	100.09726	17.62036	程逸	A	https://zh.wikipedia.org/zh-cn/%E7%A8%8B%E9%80%B8	en.wikipedia Uttaradit (336 m from the station); zh-cn title 程逸; matched by its first words
+station	สะพานควาย	100.54971	13.79382	水牛桥	A	https://zh.wikipedia.org/zh-cn/%E6%B0%B4%E7%89%9B%E6%A1%A5%E7%AB%99	en.wikipedia Saphan Khwai BTS station (3 m from the station); zh-cn title 水牛桥站
+station	นครราชสีมา	102.0789	14.97227	那空叻差是玛	A	https://zh.wikipedia.org/zh-cn/%E9%82%A3%E7%A9%BA%E5%8F%BB%E5%B7%AE%E6%98%AF%E7%8E%9B%E7%AB%99	en.wikipedia Nakhon Ratchasima railway station (19 m from the station); zh-cn title 那空叻差是玛站
+station	สยาม	100.53422	13.74562	暹罗	A	https://zh.wikipedia.org/zh-cn/%E6%9A%B9%E7%BD%97%E8%BD%A6%E7%AB%99	en.wikipedia Siam BTS station (1 m from the station); zh-cn title 暹罗车站
+station	พญาไท	100.53319	13.75701	拍耶泰	A	https://zh.wikipedia.org/zh-cn/%E6%8B%8D%E8%80%B6%E6%B3%B0%E7%AB%99	en.wikipedia Phaya Thai station (71 m from the station); zh-cn title 拍耶泰站
+station	ลาดกระบัง	100.74855	13.72751	莱卡邦	A	https://zh.wikipedia.org/zh-cn/%E8%8E%B1%E5%8D%A1%E9%82%A6%E7%AB%99	en.wikipedia Lat Krabang station (14 m from the station); zh-cn title 莱卡邦站
+station	พัทยา	100.90942	12.9402	芭达雅	A	https://zh.wikipedia.org/zh-cn/%E8%8A%AD%E8%BE%BE%E9%9B%85%E7%AB%99	en.wikipedia Pattaya railway station (13 m from the station); zh-cn title 芭达雅站
+station	ศิลาอาสน์	100.10104	17.63927	西拉耶特	A	https://zh.wikipedia.org/zh-cn/%E8%A5%BF%E6%8B%89%E8%80%B6%E7%89%B9%E7%AB%99	en.wikipedia Sila At railway station (55 m from the station); zh-cn title 西拉耶特站
+station	บางขุนนนท์	100.4733	13.76333	曼坤暖	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E5%9D%A4%E6%9A%96%E7%AB%99	en.wikipedia Bang Khun Non MRT station (11 m from the station); zh-cn title 曼坤暖站
+station	หัวหิน	99.95517	12.56462	华欣	A	https://zh.wikipedia.org/zh-cn/%E5%8D%8E%E6%AC%A3%E7%AB%99	en.wikipedia Hua Hin railway station (76 m from the station); zh-cn title 华欣站
+station	ชุมทางตลิ่งชัน	100.44008	13.78927	打邻仓	A	https://zh.wikipedia.org/zh-cn/%E6%89%93%E9%82%BB%E4%BB%93%E7%AB%99	en.wikipedia Taling Chan railway station (84 m from the station); zh-cn title 打邻仓站; matched by its first words
+station	จรัญฯ 13	100.47071	13.74017	乍伦13	A	https://zh.wikipedia.org/zh-cn/%E4%B9%8D%E4%BC%A613%E7%AB%99	en.wikipedia Charan 13 MRT station (4 m from the station); zh-cn title 乍伦13站
+station	บางพลัด	100.50489	13.79241	挽拍	A	https://zh.wikipedia.org/zh-cn/%E6%8C%BD%E6%8B%8D%E7%AB%99	en.wikipedia Bang Phlat MRT station (10 m from the station); zh-cn title 挽拍站
+station	บางยี่ขัน	100.48526	13.77738	曼益康	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E7%9B%8A%E5%BA%B7%E7%AB%99	en.wikipedia Bang Yi Khan MRT station (9 m from the station); zh-cn title 曼益康站
+station	บางอ้อ	100.50979	13.79898	曼奥	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E5%A5%A5%E7%AB%99	en.wikipedia Bang O MRT station (13 m from the station); zh-cn title 曼奥站
+station	บางแค	100.42234	13.71194	挽坑	A	https://zh.wikipedia.org/zh-cn/%E6%8C%BD%E5%9D%91%E7%AB%99	en.wikipedia Bang Khae MRT station (59 m from the station); zh-cn title 挽坑站
+station	บางโพ	100.52101	13.8064	曼坡	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E5%9D%A1%E7%AB%99	en.wikipedia Bang Pho MRT station (12 m from the station); zh-cn title 曼坡站
+station	ภาษีเจริญ	100.43433	13.71291	帕世乍能	A	https://zh.wikipedia.org/zh-cn/%E5%B8%95%E4%B8%96%E4%B9%8D%E8%83%BD%E7%AB%99	en.wikipedia Phasi Charoen MRT station (93 m from the station); zh-cn title 帕世乍能站
+station	หลักสอง	100.40948	13.71088	叻松	A	https://zh.wikipedia.org/zh-cn/%E5%8F%BB%E6%9D%BE%E7%AB%99	en.wikipedia Lak Song MRT station (9 m from the station); zh-cn title 叻松站
+station	เพชรเกษม 48	100.44545	13.71556	碧甲盛48	A	https://zh.wikipedia.org/zh-cn/%E7%A2%A7%E7%94%B2%E7%9B%9B48%E7%AB%99	en.wikipedia Phetkasem 48 MRT station (4 m from the station); zh-cn title 碧甲盛48站
+station	คลองบางไผ่	100.40822	13.89243	空曼派	A	https://zh.wikipedia.org/zh-cn/%E7%A9%BA%E6%9B%BC%E6%B4%BE%E7%AB%99	en.wikipedia Khlong Bang Phai MRT station (13 m from the station); zh-cn title 空曼派站
+station	ตลาดบางใหญ่	100.40929	13.88101	曼艾市场	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%89%BE%E5%B8%82%E5%9C%BA%E7%AB%99	en.wikipedia Talad Bang Yai MRT station (14 m from the station); zh-cn title 曼艾市场站
+station	สามแยกบางใหญ่	100.41936	13.87467	曼艾三岔路口	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%89%BE%E4%B8%89%E5%B2%94%E8%B7%AF%E5%8F%A3%E7%AB%99	en.wikipedia Sam Yaek Bang Yai MRT station (18 m from the station); zh-cn title 曼艾三岔路口站
+station	หมอชิต	100.55379	13.8026	莫奇	A	https://zh.wikipedia.org/zh-cn/%E8%8E%AB%E5%A5%87%E7%AB%99	en.wikipedia Mo Chit BTS station (5 m from the station); zh-cn title 莫奇站
+station	อารีย์	100.54462	13.77971	阿里	A	https://zh.wikipedia.org/zh-cn/%E9%98%BF%E9%87%8C%E7%AB%99	en.wikipedia Ari BTS station (2 m from the station); zh-cn title 阿里站
+station	พญาไท	100.53382	13.75696	拍耶泰	A	https://zh.wikipedia.org/zh-cn/%E6%8B%8D%E8%80%B6%E6%B3%B0%E7%AB%99	en.wikipedia Phaya Thai station (3 m from the station); zh-cn title 拍耶泰站
+station	ราชเทวี	100.53155	13.75186	拉差贴威	A	https://zh.wikipedia.org/zh-cn/%E6%8B%89%E5%B7%AE%E8%B4%B4%E5%A8%81%E7%AB%99	en.wikipedia Ratchathewi station (3 m from the station); zh-cn title 拉差贴威站
+station	สนามเป้า	100.54207	13.77262	沙楠包	A	https://zh.wikipedia.org/zh-cn/%E6%B2%99%E6%A5%A0%E5%8C%85%E7%AB%99	en.wikipedia Sanam Pao BTS station (2 m from the station); zh-cn title 沙楠包站
+station	แบริ่ง	100.60181	13.66118	北宁	A	https://zh.wikipedia.org/zh-cn/%E5%8C%97%E5%AE%81%E7%AB%99_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Bearing BTS station (221 m from the station); zh-cn title 北宁站 (泰国)
+station	บางนา	100.60466	13.66814	挽那	A	https://zh.wikipedia.org/zh-cn/%E6%8C%BD%E9%82%A3%E7%AB%99	en.wikipedia Bang Na BTS station (8 m from the station); zh-cn title 挽那站
+station	พระโขนง	100.59124	13.71517	拍昆仑	A	https://zh.wikipedia.org/zh-cn/%E6%8B%8D%E6%98%86%E4%BB%91%E7%AB%99	en.wikipedia Phra Khanong BTS station (5 m from the station); zh-cn title 拍昆仑站
+station	อนุสาวรีย์ชัยสมรภูมิ	100.53705	13.76276	胜利纪念碑	A	https://zh.wikipedia.org/zh-cn/%E8%83%9C%E5%88%A9%E7%BA%AA%E5%BF%B5%E7%A2%91%E7%AB%99	en.wikipedia Victory Monument BTS station (4 m from the station); zh-cn title 胜利纪念碑站
+station	อุดมสุข	100.60947	13.67987	乌东素	A	https://zh.wikipedia.org/zh-cn/%E4%B9%8C%E4%B8%9C%E7%B4%A0%E7%AB%99	en.wikipedia Udom Suk BTS station (54 m from the station); zh-cn title 乌东素站
+station	ปุณณวิถี	100.609	13.68928	布纳威提	A	https://zh.wikipedia.org/zh-cn/%E5%B8%83%E7%BA%B3%E5%A8%81%E6%8F%90%E7%AB%99	en.wikipedia Punnawithi BTS station (46 m from the station); zh-cn title 布纳威提站
+station	บางจาก	100.60534	13.69676	挽节	A	https://zh.wikipedia.org/zh-cn/%E6%8C%BD%E8%8A%82%E7%AB%99	en.wikipedia Bang Chak BTS station (16 m from the station); zh-cn title 挽节站
+station	อ่อนนุช	100.601	13.70562	安努	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E5%8A%AA%E7%AB%99	en.wikipedia On Nut BTS station (9 m from the station); zh-cn title 安努站
+station	อโศก	100.56036	13.73704	阿索克	A	https://zh.wikipedia.org/zh-cn/%E9%98%BF%E7%B4%A2%E5%85%8B%E7%AB%99	en.wikipedia Asok BTS station (6 m from the station); zh-cn title 阿索克站
+station	ทองหล่อ	100.57851	13.72423	通罗	A	https://zh.wikipedia.org/zh-cn/%E9%80%9A%E7%BD%97%E7%AB%99	en.wikipedia Thong Lo BTS station (5 m from the station); zh-cn title 通罗站
+station	พร้อมพงษ์	100.56971	13.73043	鹏蓬	A	https://zh.wikipedia.org/zh-cn/%E9%B9%8F%E8%93%AC%E7%AB%99	en.wikipedia Phrom Phong BTS station (2 m from the station); zh-cn title 鹏蓬站
+station	นานา	100.55543	13.74054	那那	A	https://zh.wikipedia.org/zh-cn/%E9%82%A3%E9%82%A3%E7%AB%99	en.wikipedia Nana BTS station (8 m from the station); zh-cn title 那那站
+station	เพลินจิต	100.54898	13.74307	奔集	A	https://zh.wikipedia.org/zh-cn/%E5%A5%94%E9%9B%86%E7%AB%99	en.wikipedia Phloen Chit BTS station (4 m from the station); zh-cn title 奔集站
+station	ชิดลม	100.54307	13.7441	七隆	A	https://zh.wikipedia.org/zh-cn/%E4%B8%83%E9%9A%86%E7%AB%99	en.wikipedia Chit Lom BTS station (3 m from the station); zh-cn title 七隆站
+station	สุขุมวิท	100.5615	13.73747	素坤逸	A	https://zh.wikipedia.org/zh-cn/%E7%B4%A0%E5%9D%A4%E9%80%B8%E7%AB%99	en.wikipedia Sukhumvit MRT station (117 m from the station); zh-cn title 素坤逸站
+station	เอกมัย	100.58511	13.71954	亿甲迈	A	https://zh.wikipedia.org/zh-cn/%E4%BA%BF%E7%94%B2%E8%BF%88%E7%AB%99	en.wikipedia Ekkamai BTS station (7 m from the station); zh-cn title 亿甲迈站
+station	คลองตัน	100.58952	13.74434	空丹	A	https://zh.wikipedia.org/zh-cn/%E7%A9%BA%E4%B8%B9%E7%AB%99	en.wikipedia Khlong Tan railway station (21 m from the station); zh-cn title 空丹站
+station	ปู่เจ้า	100.59201	13.63728	普昭	A	https://zh.wikipedia.org/zh-cn/%E6%99%AE%E6%98%AD%E7%AB%99	en.wikipedia Pu Chao BTS station (13 m from the station); zh-cn title 普昭站
+station	สิรินธร	100.49333	13.78387	诗琳通	A	https://zh.wikipedia.org/zh-cn/%E8%AF%97%E7%90%B3%E9%80%9A%E7%AB%99	en.wikipedia Sirindhorn MRT station (9 m from the station); zh-cn title 诗琳通站
+station	พิพิธภัณฑ์กองทัพอากาศ	100.62169	13.91797	泰国皇家空军博物馆	A	https://zh.wikipedia.org/zh-cn/%E6%B3%B0%E5%9B%BD%E7%9A%87%E5%AE%B6%E7%A9%BA%E5%86%9B%E5%8D%9A%E7%89%A9%E9%A6%86	en.wikipedia Royal Thai Air Force Museum (204 m from the station); zh-cn title 泰国皇家空军博物馆; matched by its first words
+station	สุวรรณภูมิ	100.7513	13.6943	素万那普	A	https://zh.wikipedia.org/zh-cn/%E7%B4%A0%E4%B8%87%E9%82%A3%E6%99%AE%E7%AB%99	en.wikipedia Suvarnabhumi station (24 m from the station); zh-cn title 素万那普站
+station	รามคำแหง	100.60015	13.74299	兰甘亨	A	https://zh.wikipedia.org/zh-cn/%E5%85%B0%E7%94%98%E4%BA%A8%E7%AB%99	en.wikipedia Ramkhamhaeng station (19 m from the station); zh-cn title 兰甘亨站
+station	มักกะสัน	100.56114	13.75091	玛卡珊	A	https://zh.wikipedia.org/zh-cn/%E7%8E%9B%E5%8D%A1%E7%8F%8A%E7%AB%99	en.wikipedia Makkasan station (Airport Rail Link) (20 m from the station); zh-cn title 玛卡珊站
+station	ราชปรารภ	100.54212	13.75511	叻猜巴洛	A	https://zh.wikipedia.org/zh-cn/%E5%8F%BB%E7%8C%9C%E5%B7%B4%E6%B4%9B%E7%AB%99	en.wikipedia Ratchaprarop station (101 m from the station); zh-cn title 叻猜巴洛站
+station	ไฟฉาย	100.46932	13.7558	发彩	A	https://zh.wikipedia.org/zh-cn/%E5%8F%91%E5%BD%A9%E7%AB%99	en.wikipedia Fai Chai MRT station (11 m from the station); zh-cn title 发彩站
+station	ด่านพรมแดนบ้านคลองลึก	102.54845	13.66287	班克隆路边境	A	https://zh.wikipedia.org/zh-cn/%E7%8F%AD%E5%85%8B%E9%9A%86%E8%B7%AF%E8%BE%B9%E5%A2%83%E7%AB%99	en.wikipedia Ban Klong Luk Border railway station (13 m from the station); zh-cn title 班克隆路边境站
+station	บางหว้า	100.45779	13.72079	曼瓦	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E7%93%A6%E7%AB%99	en.wikipedia Bang Wa station (20 m from the station); zh-cn title 曼瓦站
+station	เตาปูน	100.53078	13.80616	岛本	A	https://zh.wikipedia.org/zh-cn/%E5%B2%9B%E6%9C%AC%E7%AB%99_%28%E6%9B%BC%E8%B0%B7%29	en.wikipedia Tao Poon MRT station (5 m from the station); zh-cn title 岛本站 (曼谷)
+station	เชียงใหม่	99.01682	18.78352	清迈	A	https://zh.wikipedia.org/zh-cn/%E6%B8%85%E8%BF%88%E7%AB%99	en.wikipedia Chiang Mai railway station (16 m from the station); zh-cn title 清迈站
+station	ชุมทางหาดใหญ่	100.46732	7.00387	合艾	A	https://zh.wikipedia.org/zh-cn/%E5%90%88%E8%89%BE%E7%AB%99	en.wikipedia Hat Yai Junction railway station (20 m from the station); zh-cn title 合艾站
+station	ลาดพร้าว 101	100.62984	13.77463	乐抛101	A	https://zh.wikipedia.org/zh-cn/%E4%B9%90%E6%8A%9B101%E7%AB%99	en.wikipedia Lat Phrao 101 MRT station (9 m from the station); zh-cn title 乐抛101站
+station	สนามกีฬาแห่งชาติ	100.52909	13.74651	国家运动场	A	https://zh.wikipedia.org/zh-cn/%E5%9B%BD%E5%AE%B6%E8%BF%90%E5%8A%A8%E5%9C%BA%E7%AB%99	en.wikipedia National Stadium BTS station (2 m from the station); zh-cn title 国家运动场站
+station	สีลม	100.53707	13.7292	是隆	A	https://zh.wikipedia.org/zh-cn/%E6%98%AF%E9%9A%86%E7%AB%99	en.wikipedia Si Lom MRT station (46 m from the station); zh-cn title 是隆站
+station	วัดมังกร	100.50991	13.74221	龙莲寺	A	https://zh.wikipedia.org/zh-cn/%E9%BE%99%E8%8E%B2%E5%AF%BA%E7%AB%99	en.wikipedia Wat Mangkon MRT station (347 m from the station); zh-cn title 龙莲寺站
+station	สามยอด	100.5023	13.747	三峰	A	https://zh.wikipedia.org/zh-cn/%E4%B8%89%E5%B3%B0%E7%AB%99_%28%E6%9B%BC%E8%B0%B7%29	en.wikipedia Sam Yot MRT station (108 m from the station); zh-cn title 三峰站 (曼谷)
+station	สนามไชย	100.49462	13.74433	沙南猜	A	https://zh.wikipedia.org/zh-cn/%E6%B2%99%E5%8D%97%E7%8C%9C%E7%AB%99	en.wikipedia Sanam Chai MRT station (51 m from the station); zh-cn title 沙南猜站
+station	สามย่าน	100.53012	13.73206	三养	A	https://zh.wikipedia.org/zh-cn/%E4%B8%89%E5%85%BB%E7%AB%99	en.wikipedia Sam Yan MRT station (108 m from the station); zh-cn title 三养站
+station	อิสรภาพ	100.4857	13.73836	伊沙拉帕	A	https://zh.wikipedia.org/zh-cn/%E4%BC%8A%E6%B2%99%E6%8B%89%E5%B8%95%E7%AB%99	en.wikipedia Itsaraphap MRT station (43 m from the station); zh-cn title 伊沙拉帕站
+station	เพชรบุรี	100.56342	13.74919	碧武里	A	https://zh.wikipedia.org/zh-cn/%E7%A2%A7%E6%AD%A6%E9%87%8C%E7%AB%99	en.wikipedia Phetchaburi MRT station (47 m from the station); zh-cn title 碧武里站
+station	กรุงเทพอภิวัฒน์	100.54171	13.80403	曼谷阿皮瓦中央	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E9%98%BF%E7%9A%AE%E7%93%A6%E4%B8%AD%E5%A4%AE%E7%AB%99	the zh.wikipedia article of Krung Thep Aphiwat Central Terminal, zh-cn title 曼谷阿皮瓦中央站
+rail line	สายเหนือ			北线	A	https://zh.wikipedia.org/zh-cn/%E5%8C%97%E7%BA%BF_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Northern Line (Thailand); zh-cn title 北线 (泰国)
+rail line	สายตะวันออกเฉียงเหนือ			东北线	A	https://zh.wikipedia.org/zh-cn/%E4%B8%9C%E5%8C%97%E7%BA%BF_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Northeastern Line (Thailand); zh-cn title 东北线 (泰国)
+rail line	สายตะวันออก			东线	A	https://zh.wikipedia.org/zh-cn/%E4%B8%9C%E7%BA%BF_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Eastern Line (Thailand); zh-cn title 东线 (泰国)
+rail line	สายใต้			南线	A	https://zh.wikipedia.org/zh-cn/%E5%8D%97%E7%BA%BF_%28%E6%B3%B0%E5%9B%BD%29	en.wikipedia Southern Line (Thailand); zh-cn title 南线 (泰国)
+rail line	สายแม่กลอง			美功铁路	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E5%8A%9F%E9%93%81%E8%B7%AF	en.wikipedia Maeklong Railway; zh-cn title 美功铁路
+rail line	รถไฟฟ้าเอราวัน			机场快线	A	https://zh.wikipedia.org/zh-cn/%E6%9C%BA%E5%9C%BA%E5%BF%AB%E7%BA%BF_%28%E6%9B%BC%E8%B0%B7%29	en.wikipedia Airport Rail Link (Bangkok); zh-cn title 机场快线 (曼谷)
+rail line	รถไฟฟ้าชานเมืองสายสีแดงเข้ม			曼谷城郊铁路暗红线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9F%8E%E9%83%8A%E9%93%81%E8%B7%AF%E6%9A%97%E7%BA%A2%E7%BA%BF	en.wikipedia Dark Red Line (Bangkok); zh-cn title 曼谷城郊铁路暗红线
+rail line	รถไฟฟ้าชานเมืองสายสีแดงอ่อน			曼谷城郊铁路浅红线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9F%8E%E9%83%8A%E9%93%81%E8%B7%AF%E6%B5%85%E7%BA%A2%E7%BA%BF	en.wikipedia Light Red Line (Bangkok); zh-cn title 曼谷城郊铁路浅红线
+line being built	รถไฟความเร็วสูง สายกรุงเทพฯ-นครราชสีมา			曼谷—廊开高速铁路	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E2%80%94%E5%BB%8A%E5%BC%80%E9%AB%98%E9%80%9F%E9%93%81%E8%B7%AF	en.wikipedia Bangkok–Nong Khai high-speed railway; zh-cn title 曼谷—廊开高速铁路
+line being built	รถไฟฟ้ามหานคร สายสีส้ม			曼谷地铁橙线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9C%B0%E9%93%81%E6%A9%99%E7%BA%BF	en.wikipedia Orange Line (Bangkok); zh-cn title 曼谷地铁橙线
+metro line	รถไฟฟ้าบีทีเอส สายสุขุมวิท			素坤逸线	A	https://zh.wikipedia.org/zh-cn/%E7%B4%A0%E5%9D%A4%E9%80%B8%E7%BA%BF	en.wikipedia Sukhumvit Line; zh-cn title 素坤逸线
+metro line	รถไฟฟ้าบีทีเอส สายสีลม			是隆线	A	https://zh.wikipedia.org/zh-cn/%E6%98%AF%E9%9A%86%E7%BA%BF	en.wikipedia Silom Line; zh-cn title 是隆线
+metro line	รถไฟฟ้ามหานคร สายสีน้ำเงิน			曼谷地铁蓝线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9C%B0%E9%93%81%E8%93%9D%E7%BA%BF	en.wikipedia Blue Line (Bangkok); zh-cn title 曼谷地铁蓝线
+metro line	รถไฟฟ้ามหานคร สายสีม่วง			曼谷地铁紫线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9C%B0%E9%93%81%E7%B4%AB%E7%BA%BF	en.wikipedia Purple Line (Bangkok); zh-cn title 曼谷地铁紫线
+metro line	รถไฟฟ้าสายสีเหลือง			曼谷单轨铁路黄线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%8D%95%E8%BD%A8%E9%93%81%E8%B7%AF%E9%BB%84%E7%BA%BF	en.wikipedia Yellow Line (Bangkok); zh-cn title 曼谷单轨铁路黄线
+metro line	รถไฟฟ้ามหานคร สายสีชมพู			曼谷单轨铁路粉红线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%8D%95%E8%BD%A8%E9%93%81%E8%B7%AF%E7%B2%89%E7%BA%A2%E7%BA%BF	en.wikipedia Pink Line (Bangkok); zh-cn title 曼谷单轨铁路粉红线
+metro line	รถไฟฟ้าสายสีทอง			曼谷旅客捷运金线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E6%97%85%E5%AE%A2%E6%8D%B7%E8%BF%90%E9%87%91%E7%BA%BF	en.wikipedia Gold Line (Bangkok); zh-cn title 曼谷旅客捷运金线
+metro line	รถไฟฟ้าเชื่อมท่าอากาศยานสุวรรณภูมิ			机场快线	A	https://zh.wikipedia.org/zh-cn/%E6%9C%BA%E5%9C%BA%E5%BF%AB%E7%BA%BF_%28%E6%9B%BC%E8%B0%B7%29	en.wikipedia Airport Rail Link (Bangkok); zh-cn title 机场快线 (曼谷)
+metro line	สายสีแดงเข้ม			曼谷城郊铁路暗红线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9F%8E%E9%83%8A%E9%93%81%E8%B7%AF%E6%9A%97%E7%BA%A2%E7%BA%BF	en.wikipedia Dark Red Line (Bangkok); zh-cn title 曼谷城郊铁路暗红线
+metro line	สายสีแดงอ่อน			曼谷城郊铁路浅红线	A	https://zh.wikipedia.org/zh-cn/%E6%9B%BC%E8%B0%B7%E5%9F%8E%E9%83%8A%E9%93%81%E8%B7%AF%E6%B5%85%E7%BA%A2%E7%BA%BF	en.wikipedia Light Red Line (Bangkok); zh-cn title 曼谷城郊铁路浅红线

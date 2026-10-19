@@ -100,6 +100,13 @@ def _stop_name(name):
     return canon(re.sub(r'\s*\([A-Za-z0-9]{1,3}\)$', '', name))
 
 
+def _stop_names(tags, stopping, ref):
+    """Every name a stop is called by. Its Chinese name in OSM is not the station's: a station's
+    Chinese name comes only from the country's table, so Kuala Lumpur's Plaza Rakyat (OSM 人民广场,
+    none in the table) matched none of its routes' stops and had no capsule (2026-10-19)."""
+    return tuple(n for n in (tags.get('name:zh'), tags.get('name'), tags.get('name:en'), stopping['areas'].get(ref)) if n)
+
+
 def _calls(station, ids, line_stops):
     at = station['geometry']['coordinates']
     names = {_stop_name(station['properties'].get(k, '')) for k in ('n', 'nz', 'ne')}
@@ -109,8 +116,9 @@ def _calls(station, ids, line_stops):
         for stop in line_stops.get(rid, ()):
             name, x, y = stop['name'], *stop['at']
             distance = metres(at, (x, y))
-            if _stop_name(name) in names and distance <= SAME_STOP_M:
-                evidence.append({**stop, 'rid': rid, 'stop': name, 'distance_m': round(distance, 3)})
+            if names & {_stop_name(n) for n in stop.get('_names', (name,))} and distance <= SAME_STOP_M:
+                evidence.append({**{k: v for k, v in stop.items() if k != '_names'}, 'rid': rid, 'stop': name,
+                                 'distance_m': round(distance, 3)})
     return evidence
 
 
@@ -299,7 +307,8 @@ def annotate(stations, metro, *, stopping=None, relations=(), audit=None, merge=
                     or tags.get('railway') in {'stop', 'tram_stop', 'platform'}):
                 continue
             name = tags.get('name:zh') or tags.get('name') or stopping['areas'].get(ref, '')
-            line_stops[rid].append({'name': name, 'at': [x,y], 'type': kind, 'ref': ref, 'role': role})
+            line_stops[rid].append({'name': name, 'at': [x,y], 'type': kind, 'ref': ref, 'role': role,
+                                    '_names': _stop_names(tags, stopping, ref)})
     records = []
     for f in metro:
         p = f['properties']
@@ -436,6 +445,7 @@ MATCH_M = 6.0            # a service runs on a drawn line when its tracks lie th
 TIE_M = 1.5              # lines this close to each other about the service's tracks are one track
 DECISIVE = .6            # otherwise the nearest line must be this much nearer than the next one
 RAIL_LONGITUDINAL_M = 40
+SAME_LINE_M = 6.0        # the two tracks of a double line, about 5 m apart, are one line on the map
 RAIL_TRANSVERSE_M = 90
 FAST = ('hsr400', 'hsr350', 'hsr300', 'hsr250', 'hsr200', 'hsr160', 'hsrslow')
 
@@ -617,7 +627,8 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None, 
                     or tags.get('railway') in {'stop', 'tram_stop', 'platform'}):
                 continue
             metro_stops[rid].append({'name': tags.get('name:zh') or tags.get('name') or stopping['areas'].get(ref, ''),
-                                     'at': [x, y], 'type': kind, 'ref': ref, 'role': role})
+                                     'at': [x, y], 'type': kind, 'ref': ref, 'role': role,
+                                     '_names': _stop_names(tags, stopping, ref)})
     records = []
     for f, mode in [*lines, *((f, 'metro') for f in metro)]:
         if mode == 'metro' and (f['properties'].get('zf') or f['properties'].get('zn') or f['properties'].get('k') == 's'):
@@ -748,7 +759,12 @@ def annotate_rail(stations, lines, extract, *, metro=(), skip=None, audit=None, 
                 seats = [(row[1].get('off') or 0) * (1 if sum(a * b for a, b in zip(vector(row[1]['a'], row[1]['t']), (ux, uy))) >= 0 else -1)
                          for row in accepted]
                 members = []
-                if spread >= .3 or max(seats) - min(seats) >= .1:
+                # a city line drawn over the railway it runs on (KTM Komuter on the West Coast Line,
+                # Jakarta's KRL, 名鉄小牧線 into 上飯田) lies on the other track of one double line:
+                # one track on screen, a dot (2026-10-19: 44 Malaysian stations had a capsule over one line)
+                modes = {row[4][0][2] for row in accepted}
+                overlay = {'metro', 'rail'} <= modes and spread < SAME_LINE_M and max(seats) - min(seats) < .1
+                if (spread >= .3 or max(seats) - min(seats) >= .1) and not overlay:
                     members = [m for row in accepted for m in (row[1], row[2]) if m]
                     shift = _common_shift(members, reference, coslat)
                     if shift:

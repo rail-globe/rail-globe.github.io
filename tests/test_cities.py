@@ -33,11 +33,13 @@ BOX = {"cn": (73, 15, 136, 54), "jp": (122, 24, 146, 46), "kr": (124, 33, 131, 3
        "de": (5.5, 47.2, 15.6, 55.2), "fr": (-5.3, 41.2, 9.8, 51.2),
        "ch": (5.8, 45.7, 10.6, 47.9), "es": (-18.2, 27.5, 4.4, 43.9),
        "nl": (3.2, 50.6, 7.4, 53.7), "be": (2.4, 49.4, 6.5, 51.6),
-       "it": (6.5, 35.4, 18.7, 47.2)}
+       "it": (6.5, 35.4, 18.7, 47.2), "la": (100.0, 13.9, 107.7, 22.5),
+       "my": (99.6, 0.8, 119.3, 7.4), "sg": (103.6, 1.2, 104.1, 1.5), "th": (97.3, 5.6, 105.7, 20.5), "id": (95.0, -11.0, 141.1, 6.0)}
 # Abroad: how many cities, and how many of rank 1 (the capital and the cities the world knows).
 ABROAD = {"jp": (47, 6), "kr": (16, 2), "uk": (7, 5),
           "de": (18, 5), "fr": (14, 5), "ch": (26, 5), "es": (21, 5),
-          "nl": (14, 3), "be": (4, 3), "it": (20, 6)}
+          "nl": (14, 3), "be": (4, 3), "it": (20, 6), "la": (18, 1),
+          "my": (16, 3), "sg": (1, 1), "th": (49, 3), "id": (38, 4)}
 country = lambda e: e.get("g", "cn")
 FIELDS = ("n", "at", "r", "g", "side", "nz", "ne", "m", "name_ref")
 EUROPE_SOURCE = json.loads((ROOT / "data/europe_city_names.json").read_text())
@@ -99,7 +101,8 @@ class Cities(unittest.TestCase):
         for g, (count, first) in ABROAD.items():
             there = [e for e in CITIES if country(e) == g]
             self.assertEqual(len(there), count, g)
-            self.assertEqual(Counter(e["r"] for e in there), {1: first, 2: count - first}, g)
+            # (Singapore is one city, of rank 1)
+            self.assertEqual(Counter(e["r"] for e in there), {r: n for r, n in {1: first, 2: count - first}.items() if n}, g)
         rank1 = {g: [(e["n"], e["nz"]) for e in CITIES if country(e) == g and e["r"] == 1] for g in ABROAD}
         self.assertEqual(rank1["jp"], [("東京", "东京"), ("大阪", "大阪"), ("京都", "京都"), ("名古屋", "名古屋"), ("札幌", "札幌"), ("福岡", "福冈")])
         self.assertEqual(rank1["kr"], [("서울", "首尔"), ("부산", "釜山")])

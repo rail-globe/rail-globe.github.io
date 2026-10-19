@@ -1,0 +1,211 @@
+kind	name	lon	lat	name_zh	tier	source	note
+station	Aljunied	103.88291	1.31645	阿裕尼	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW9 Aljunied
+station	Kallang	103.87134	1.31147	加冷	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW10 Kallang
+station	Yio Chu Kang	103.84494	1.38179	杨厝港	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS15 Yio Chu Kang
+station	Bedok	103.93022	1.32397	勿洛	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW5 Bedok
+station	Redhill	103.81677	1.28964	红山	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW18 Redhill
+station	Queenstown	103.80604	1.29462	女皇镇	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW19 Queenstown
+station	Commonwealth	103.79831	1.30244	联邦	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW20 Commonwealth
+station	Dover	103.77861	1.31142	杜弗	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW22 Dover
+station	Jurong East	103.74229	1.33311	裕廊东	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS1 Jurong East
+station	Chinese Garden	103.73255	1.34241	裕华园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW25 Chinese Garden
+station	Lakeside	103.72069	1.34425	湖畔	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW26 Lakeside
+station	Ranggung	103.89736	1.38405	兰岗	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SE5 Ranggung
+station	Boon Lay	103.70581	1.33855	文礼	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW27 Boon Lay
+station	Pioneer	103.69741	1.33759	先驱	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW28 Pioneer
+station	Joo Koon	103.67822	1.32774	裕群	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW29 Joo Koon
+station	Cheng Lim	103.89379	1.39629	振林	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW1 Cheng Lim
+station	Farmway	103.88922	1.39719	农道	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW2 Farmway
+station	Fernvale	103.87628	1.3919	芬微	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW5 Fernvale
+station	Kupang	103.88125	1.3982	古邦	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW3 Kupang
+station	Thanggam	103.87563	1.39733	丹甘	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW4 Thanggam
+station	Layar	103.88003	1.39208	拉雅	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW6 Layar
+station	Tongkang	103.88583	1.38941	同港	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW7 Tongkang
+station	Renjong	103.89053	1.38673	仁宗	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SW8 Renjong
+station	Gul Circle	103.66066	1.31964	卡尔圈	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW30 Gul Circle; the dataset writes '卡尔圈 站'
+station	Tuas Crescent	103.64891	1.32116	大士弯	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW31 Tuas Crescent; the dataset writes '大士弯站'
+station	Tuas West Road	103.63957	1.33005	大士西路	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW32 Tuas West Road; the dataset writes '大 士 西 路站'
+station	Tuas Link	103.63677	1.34029	大士连路	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW33 Tuas Link; the dataset writes '大士连路站'
+station	Kembangan	103.91293	1.32103	景万岸	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW6 Kembangan
+station	Simei	103.95337	1.34319	四美	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW3 Simei
+station	Bukit Batok	103.74959	1.34906	武吉巴督	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS2 Bukit Batok
+station	Admiralty	103.80096	1.44064	海军部	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS10 Admiralty
+station	Bangkit	103.77265	1.38004	万吉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP9 Bangkit
+station	Bukit Gombak	103.75182	1.35889	武吉甘柏	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS3 Bukit Gombak
+station	Fajar	103.77088	1.38459	法嘉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP10 Fajar
+station	Jelapang	103.76451	1.38669	泽拉邦	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP12 Jelapang
+station	Keat Hong	103.74902	1.3786	吉丰	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP3 Keat Hong
+station	Kranji	103.76199	1.42522	克兰芝	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS7 Kranji
+station	Marsiling	103.77412	1.43257	马西岭	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS8 Marsiling
+station	Pending	103.77126	1.37618	秉定	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP8 Pending
+station	Petir	103.76663	1.37777	柏提	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP7 Petir
+station	Phoenix	103.75801	1.37862	凤凰	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP5 Phoenix
+station	Segar	103.76958	1.38779	实加	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP11 Segar
+station	Sembawang	103.82006	1.44909	三巴旺	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS11 Sembawang
+station	Senja	103.76238	1.38268	信佳	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP13 Senja
+station	South View	103.74528	1.38027	南山	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP2 South View
+station	Teck Whye	103.75365	1.37667	德惠	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA BP4 Teck Whye
+station	Yew Tee	103.7474	1.39746	油池	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS5 Yew Tee
+station	Yishun	103.83503	1.42938	义顺	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS13 Yishun
+station	Bakau	103.90542	1.38801	码高	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SE3 Bakau
+station	Compassvale	103.90043	1.39452	康埔桦	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SE1 Compassvale
+station	Kangkar	103.90221	1.38393	港脚	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SE4 Kangkar
+station	Rumbia	103.90597	1.39147	棕美	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA SE2 Rumbia
+station	Bukit Panjang	103.76309	1.37792	武吉班让	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT1 Bukit Panjang
+station	Choa Chu Kang	103.74433	1.38532	蔡厝港	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS4 Choa Chu Kang
+station	Eunos	103.90289	1.3198	友诺士	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW7 Eunos
+station	Khatib	103.83302	1.41736	卡迪	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS14 Khatib
+station	Choa Chu Kang	103.74453	1.38475	蔡厝港	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS4 Choa Chu Kang
+station	Ang Mo Kio	103.84952	1.37008	宏茂桥	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS16 Ang Mo Kio
+station	HarbourFront	103.82155	1.26536	港湾	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE1 HarbourFront
+station	Punggol Point	103.90666	1.41686	榜鹅坊	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW3 Punggol Point
+station	Samudera	103.90215	1.41591	山姆	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW4 Samudera
+station	Teck Lee	103.90658	1.4128	德利	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW2 Teck Lee
+station	Stadium	103.8755	1.30296	体育场	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC6 Stadium
+station	Changi Airport	103.98858	1.35748	樟宜机场	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CG2 Changi Airport
+station	Marina Bay	103.85514	1.27534	滨海湾	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS27 Marina Bay
+station	Orchard	103.83159	1.30332	乌节	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS22 Orchard
+station	Stevens	103.82575	1.3201	史蒂芬	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT10 Stevens
+station	Woodlands	103.78757	1.43627	兀兰	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS9 Woodlands
+station	Tampines	103.94365	1.3547	淡滨尼	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW2 Tampines
+station	Bendemeer	103.86296	1.31362	明地迷亚	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT23 Bendemeer
+station	Kaki Bukit	103.90898	1.33516	加基武吉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT28 Kaki Bukit
+station	Mattar	103.88322	1.32695	玛达	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT25 Mattar
+station	MacPherson	103.88968	1.32621	麦波申	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC10 MacPherson
+station	Ubi	103.8993	1.3299	乌美	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT27 Ubi
+station	Tampines West	103.93841	1.34571	淡滨尼西	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT31 Tampines West
+station	Tampines East	103.95494	1.35597	淡滨尼东	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT33 Tampines East
+station	Upper Changi	103.96135	1.34169	樟宜上段	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT34 Upper Changi
+station	Expo	103.96201	1.33489	博览	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CG1 Expo
+station	Bedok North	103.91801	1.33475	勿洛北	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT29 Bedok North
+station	Bedok Reservoir	103.93238	1.33657	勿洛蓄水池	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT30 Bedok Reservoir
+station	Geylang Bahru	103.8718	1.3215	芽笼峇鲁	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT24 Geylang Bahru
+station	Tanjong Pagar	103.84598	1.27662	丹戎巴葛	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW15 Tanjong Pagar
+station	Caldecott	103.83983	1.33755	加利谷	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC17 Caldecott
+station	Marina South Pier	103.86291	1.27128	滨海南码头	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS28 Marina South Pier
+station	Bishan	103.84918	1.35108	碧山	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS17 Bishan
+station	Braddell	103.84678	1.34065	布莱德	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS18 Braddell
+station	Newton	103.83794	1.31286	纽顿	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS21 Newton
+station	Dhoby Ghaut	103.84548	1.29946	多美歌	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS24 Dhoby Ghaut
+station	Rochor	103.85261	1.30394	梧槽	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT13 Rochor
+station	Jalan Besar	103.85551	1.30537	惹兰勿刹	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT22 Jalan Besar
+station	Bukit Panjang	103.76171	1.37909	武吉班让	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT1 Bukit Panjang
+station	Holland Village	103.79615	1.31192	荷兰村	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC21 Holland Village
+station	Farrer Road	103.80759	1.31754	花拉路	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC20 Farrer Road
+station	Botanic Gardens	103.8156	1.32228	植物园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC19 Botanic Gardens
+station	Tiong Bahru	103.82685	1.28615	中峇鲁	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW17 Tiong Bahru
+station	Raffles Place	103.85159	1.28348	莱佛士坊	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS26 Raffles Place
+station	Bugis	103.85612	1.30019	武吉士	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW12 Bugis
+station	Little India	103.84929	1.30691	小印度	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE7 Little India
+station	Farrer Park	103.85438	1.31233	花拉公园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE8 Farrer Park
+station	Boon Keng	103.86165	1.3194	文庆	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE9 Boon Keng
+station	Lavender	103.86296	1.3074	劳明达	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW11 Lavender
+station	Downtown	103.8526	1.27956	市中心	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT17 Downtown
+station	Chinatown	103.84387	1.28454	牛车水	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE4 Chinatown
+station	Clarke Quay	103.84638	1.28808	克拉码头	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE5 Clarke Quay
+station	City Hall	103.85256	1.29308	政府大厦	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS25 City Hall
+station	Telok Ayer	103.84843	1.28223	直落亚逸	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT18 Telok Ayer
+station	Bayfront	103.85957	1.28246	海湾舫	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CE1 Bayfront
+station	Potong Pasir	103.86902	1.3315	波东巴西	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE10 Potong Pasir
+station	Woodleigh	103.87079	1.33889	兀里	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE11 Woodleigh
+station	Serangoon	103.87312	1.35009	实龙岗	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE12 Serangoon
+station	Kovan	103.88511	1.36018	高文	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE13 Kovan
+station	Bartley	103.87972	1.34287	巴特礼	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC12 Bartley
+station	Dakota	103.88851	1.30834	达科达	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC8 Dakota
+station	Pasir Panjang	103.7913	1.27613	巴西班让	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC26 Pasir Panjang
+station	Cashew	103.76466	1.36963	凯秀	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT2 Cashew
+station	Hillview	103.76752	1.36231	山景	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT3 Hillview
+station	Beauty World	103.77585	1.34103	美世界	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT5 Beauty World
+station	Tan Kah Kee	103.80747	1.32572	陈嘉庚	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT8 Tan Kah Kee
+station	Fort Canning	103.84416	1.29245	福康宁	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT20 Fort Canning
+station	Novena	103.84402	1.3206	诺维娜	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS20 Novena
+station	Toa Payoh	103.84718	1.33278	大巴窑	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS19 Toa Payoh
+station	Bras Basah	103.85074	1.29692	百胜	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC2 Bras Basah
+station	Soo Teck	103.89727	1.40534	树德	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW7 Soo Teck
+station	Sumang	103.89856	1.40846	苏芒	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW6 Sumang
+station	Nibong	103.90035	1.41186	尼蒙	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW5 Nibong
+station	Sam Kee	103.90489	1.40972	三记	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PW1 Sam Kee
+station	Damai	103.90861	1.40525	达迈	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE7 Damai
+station	Oasis	103.91273	1.4023	绿洲	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE6 Oasis
+station	Kadaloor	103.91651	1.39955	卡达鲁	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE5 Kadaloor
+station	Riviera	103.91614	1.39455	里维拉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE4 Riviera
+station	Coral Edge	103.91266	1.39386	珊瑚	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE3 Coral Edge
+station	Meridian	103.90888	1.39694	丽园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE2 Meridian
+station	Cove	103.9058	1.39947	海湾	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE1 Cove
+station	Somerset	103.83878	1.30029	索美塞	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NS23 Somerset
+station	Buangkok	103.89309	1.38306	万国	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE15 Buangkok
+station	Buona Vista	103.79052	1.30678	波那维斯达	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW21 Buona Vista
+station	Paya Lebar	103.8922	1.31755	巴耶利峇	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW8 Paya Lebar
+station	Esplanade	103.85571	1.2932	滨海中心	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC3 Esplanade
+station	Promenade	103.86059	1.29319	宝门廊	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC4 Promenade
+station	Nicoll Highway	103.86385	1.29984	尼诰大道	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC5 Nicoll Highway
+station	Mountbatten	103.88269	1.30641	蒙巴登	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC7 Mountbatten
+station	Tai Seng	103.88807	1.33552	大成	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC11 Tai Seng
+station	Lorong Chuan	103.86393	1.35164	罗弄泉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC14 Lorong Chuan
+station	Marymount	103.83938	1.34863	玛丽蒙	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC16 Marymount
+station	one-north	103.78739	1.29965	纬壹	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC23 one-north
+station	Kent Ridge	103.78454	1.29344	肯特岗	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC24 Kent Ridge
+station	Haw Par Villa	103.78188	1.28259	虎豹别墅	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC25 Haw Par Villa
+station	Labrador Park	103.80305	1.27229	拉柏多公园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC27 Labrador Park
+station	Telok Blangah	103.8098	1.27078	直落布兰雅	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA CC28 Telok Blangah
+station	Sengkang	103.89539	1.39154	盛港	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE16 Sengkang
+station	King Albert Park	103.78388	1.33567	阿尔柏王园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT6 King Albert Park
+station	Sixth Avenue	103.79727	1.33087	第六道	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT7 Sixth Avenue
+station	Bencoolen	103.85017	1.29857	明古连	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT21 Bencoolen
+station	Pasir Ris	103.94917	1.37121	巴西立	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW1 Pasir Ris
+station	King Albert Park	103.7828	1.33457	阿尔柏王园	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA DT6 King Albert Park
+station	Clementi	103.7658	1.31627	金文泰	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW23 Clementi
+station	Punggol	103.90236	1.4053	榜鹅	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA NE17 Punggol
+station	Riviera	103.91561	1.39597	里维拉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA PE4 Riviera
+station	Tanah Merah	103.94606	1.32717	丹那美拉	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW4 Tanah Merah
+station	Gul Circle	103.66132	1.31705	卡尔圈	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA EW30 Gul Circle; the dataset writes '卡尔圈 站'
+station	Woodlands Train Checkpoint	103.76999	1.44503	兀兰火车关卡	A	https://zh.wikipedia.org/zh-cn/%E5%85%80%E5%85%B0%E7%81%AB%E8%BD%A6%E5%85%B3%E5%8D%A1	en.wikipedia Woodlands Train Checkpoint (157 m from the station); zh-cn title 兀兰火车关卡; matched by its first words
+station	Toh Guan	103.74253	1.33995	卓源	A	https://zh.wikipedia.org/zh-cn/%E5%8D%93%E6%BA%90%E7%AB%99	en.wikipedia Toh Guan MRT station (26 m from the station); zh-cn title 卓源站
+station	VivoCity	103.82233	1.2651	怡丰城	A	https://zh.wikipedia.org/zh-cn/%E6%80%A1%E4%B8%B0%E5%9F%8E	en.wikipedia VivoCity (135 m from the station); zh-cn title 怡丰城; matched by its first words
+station	Bayshore	103.94208	1.31297	碧湾	A	https://zh.wikipedia.org/zh-cn/%E7%A2%A7%E6%B9%BE%E7%AB%99	en.wikipedia Bayshore MRT station (259 m from the station); zh-cn title 碧湾站
+station	Gardens by the Bay	103.86811	1.27939	滨海湾花园	A	https://zh.wikipedia.org/zh-cn/%E6%BB%A8%E6%B5%B7%E6%B9%BE%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Gardens by the Bay MRT station (118 m from the station); zh-cn title 滨海湾花园站
+station	Great World	103.83331	1.29446	大世界	A	https://zh.wikipedia.org/zh-cn/%E5%A4%A7%E4%B8%96%E7%95%8C%E7%AB%99_%28%E6%96%B0%E5%8A%A0%E5%9D%A1%29	en.wikipedia Great World MRT station (60 m from the station); zh-cn title 大世界站 (新加坡)
+station	Havelock	103.83363	1.28863	合乐	A	https://zh.wikipedia.org/zh-cn/%E5%90%88%E4%B9%90%E7%AB%99	en.wikipedia Havelock MRT station (95 m from the station); zh-cn title 合乐站
+station	Tanjong Rhu	103.87342	1.29738	丹戎禺	A	https://zh.wikipedia.org/zh-cn/%E4%B8%B9%E6%88%8E%E7%A6%BA%E7%AB%99	en.wikipedia Tanjong Rhu MRT station (20 m from the station); zh-cn title 丹戎禺站
+station	Katong Park	103.88572	1.29805	加东公园	A	https://zh.wikipedia.org/zh-cn/%E5%8A%A0%E4%B8%9C%E5%85%AC%E5%9B%AD%E7%AB%99	en.wikipedia Katong Park MRT station (58 m from the station); zh-cn title 加东公园站
+station	Lentor	103.83676	1.38452	伦多	A	https://zh.wikipedia.org/zh-cn/%E4%BC%A6%E5%A4%9A%E7%AB%99	en.wikipedia Lentor MRT station (25 m from the station); zh-cn title 伦多站
+station	Marina South	103.86285	1.27426	滨海南	A	https://zh.wikipedia.org/zh-cn/%E6%BB%A8%E6%B5%B7%E5%8D%97%E7%AB%99_%28%E6%96%B0%E5%8A%A0%E5%9D%A1%29	en.wikipedia Marina South MRT station (47 m from the station); zh-cn title 滨海南站 (新加坡)
+station	Marine Parade	103.90681	1.30372	马林百列	A	https://zh.wikipedia.org/zh-cn/%E9%A9%AC%E6%9E%97%E7%99%BE%E5%88%97%E7%AB%99	en.wikipedia Marine Parade MRT station (243 m from the station); zh-cn title 马林百列站
+station	Marine Terrace	103.91481	1.30667	马林台	A	https://zh.wikipedia.org/zh-cn/%E9%A9%AC%E6%9E%97%E5%8F%B0%E7%AB%99	en.wikipedia Marine Terrace MRT station (21 m from the station); zh-cn title 马林台站
+station	Maxwell	103.8439	1.28066	麦士威	A	https://zh.wikipedia.org/zh-cn/%E9%BA%A6%E5%A3%AB%E5%A8%81%E7%AB%99	en.wikipedia Maxwell MRT station (43 m from the station); zh-cn title 麦士威站
+station	Mayflower	103.83683	1.37216	美华	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E5%8D%8E%E7%AB%99	en.wikipedia Mayflower MRT station (58 m from the station); zh-cn title 美华站
+station	Mount Pleasant	103.83529	1.32856	快乐山	A	https://zh.wikipedia.org/zh-cn/%E5%BF%AB%E4%B9%90%E5%B1%B1%E7%AB%99_%28%E6%96%B0%E5%8A%A0%E5%9D%A1%29	en.wikipedia Mount Pleasant MRT station (30 m from the station); zh-cn title 快乐山站 (新加坡)
+station	Napier	103.81912	1.30676	纳比雅	A	https://zh.wikipedia.org/zh-cn/%E7%BA%B3%E6%AF%94%E9%9B%85%E7%AB%99	en.wikipedia Napier MRT station (28 m from the station); zh-cn title 纳比雅站
+station	Orchard Boulevard	103.82366	1.30356	乌节大道	A	https://zh.wikipedia.org/zh-cn/%E4%B9%8C%E8%8A%82%E5%A4%A7%E9%81%93%E7%AB%99	en.wikipedia Orchard Boulevard MRT station (121 m from the station); zh-cn title 乌节大道站
+station	Shenton Way	103.85082	1.27749	珊顿道	A	https://zh.wikipedia.org/zh-cn/%E7%8F%8A%E9%A1%BF%E9%81%93%E7%AB%99	en.wikipedia Shenton Way MRT station (2 m from the station); zh-cn title 珊顿道站
+station	Siglap	103.92998	1.30994	实乞纳	A	https://zh.wikipedia.org/zh-cn/%E5%AE%9E%E4%B9%9E%E7%BA%B3%E7%AB%99	en.wikipedia Siglap MRT station (124 m from the station); zh-cn title 实乞纳站
+station	Springleaf	103.81781	1.39818	春叶	A	https://zh.wikipedia.org/zh-cn/%E6%98%A5%E5%8F%B6%E7%AB%99	en.wikipedia Springleaf MRT station (73 m from the station); zh-cn title 春叶站
+station	Upper Thomson	103.83307	1.35428	汤申路上段	A	https://zh.wikipedia.org/zh-cn/%E6%B1%A4%E7%94%B3%E8%B7%AF%E4%B8%8A%E6%AE%B5%E7%AB%99	en.wikipedia Upper Thomson MRT station (32 m from the station); zh-cn title 汤申路上段站
+station	Bright Hill	103.8341	1.36325	光明山	A	https://zh.wikipedia.org/zh-cn/%E5%85%89%E6%98%8E%E5%B1%B1%E7%AB%99	en.wikipedia Bright Hill MRT station (99 m from the station); zh-cn title 光明山站
+station	Woodlands North	103.78559	1.44834	兀兰北	A	https://zh.wikipedia.org/zh-cn/%E5%85%80%E5%85%B0%E5%8C%97%E7%AB%99	en.wikipedia Woodlands North MRT station (66 m from the station); zh-cn title 兀兰北站
+station	Woodlands South	103.79384	1.42717	兀兰南	A	https://zh.wikipedia.org/zh-cn/%E5%85%80%E5%85%B0%E5%8D%97%E7%AB%99	en.wikipedia Woodlands South MRT station (8 m from the station); zh-cn title 兀兰南站
+station	Canberra	103.82965	1.44309	坎贝拉	A	https://zh.wikipedia.org/zh-cn/%E5%9D%8E%E8%B4%9D%E6%8B%89%E7%AB%99	en.wikipedia Canberra MRT station (9 m from the station); zh-cn title 坎贝拉站
+station	Founders' Memorial	103.86874	1.29105	建国先贤纪念园	A	https://zh.wikipedia.org/zh-cn/%E5%BB%BA%E5%9B%BD%E5%85%88%E8%B4%A4%E7%BA%AA%E5%BF%B5%E5%9B%AD%E7%AB%99	en.wikipedia Founders' Memorial MRT station (53 m from the station); zh-cn title 建国先贤纪念园站
+station	Punggol Coast	103.91046	1.41504	榜鹅海岸	A	https://zh.wikipedia.org/zh-cn/%E6%A6%9C%E9%B9%85%E6%B5%B7%E5%B2%B8%E7%AB%99	en.wikipedia Punggol Coast MRT station (77 m from the station); zh-cn title 榜鹅海岸站
+station	Tanjong Katong	103.89746	1.29957	丹戎加东	A	https://zh.wikipedia.org/zh-cn/%E4%B8%B9%E6%88%8E%E5%8A%A0%E4%B8%9C%E7%AB%99	en.wikipedia Tanjong Katong MRT station (45 m from the station); zh-cn title 丹戎加东站
+station	Keppel	103.83055	1.27046	吉宝	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E5%AE%9D%E7%AB%99	en.wikipedia Keppel MRT station (81 m from the station); zh-cn title 吉宝站
+station	Cantonment	103.8369	1.27308	广东民	A	https://zh.wikipedia.org/zh-cn/%E5%B9%BF%E4%B8%9C%E6%B0%91%E7%AB%99	en.wikipedia Cantonment MRT station (42 m from the station); zh-cn title 广东民站
+station	Prince Edward Road	103.84697	1.27326	爱德华太子路	A	https://zh.wikipedia.org/zh-cn/%E7%88%B1%E5%BE%B7%E5%8D%8E%E5%A4%AA%E5%AD%90%E8%B7%AF%E7%AB%99	en.wikipedia Prince Edward Road MRT station (29 m from the station); zh-cn title 爱德华太子路站
+station	Bukit Brown	103.83067	1.33381	武吉布朗	A	https://zh.wikipedia.org/zh-cn/%E6%AD%A6%E5%90%89%E5%B8%83%E6%9C%97%E7%AB%99	en.wikipedia Bukit Brown MRT station (78 m from the station); zh-cn title 武吉布朗站
+station	Jurong Lake District	103.73983	1.32705	裕廊湖区	A	https://zh.wikipedia.org/zh-cn/%E8%A3%95%E5%BB%8A%E6%B9%96%E5%8C%BA%E7%AB%99	en.wikipedia Jurong Lake District MRT station (76 m from the station); zh-cn title 裕廊湖区站
+station	Hume	103.76906	1.35452	谦道	A	https://zh.wikipedia.org/zh-cn/%E8%B0%A6%E9%81%93%E7%AB%99	en.wikipedia Hume MRT station (15 m from the station); zh-cn title 谦道站
+metro line	MRT North-South Line			南北线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name North South Line
+metro line	MRT East-West Line			东西线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name East West Line
+metro line	MRT North East Line			东北线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name North East Line
+metro line	MRT Circle Line			环线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Circle Line
+metro line	MRT Downtown Line			滨海市区线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Downtown Line
+metro line	LRT Bukit Panjang Line			武吉班让轻轨线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Bukit Panjang LRT
+metro line	LRT Sengkang Line			盛港轻轨线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Sengkang LRT
+metro line	LRT Punggol Line			榜鹅轻轨线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Punggol LRT
+line being built	Downtown Line			滨海市区线	O	https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view	LTA line name Downtown Line
+line being built	Cross Island Line			跨岛线	A	https://zh.wikipedia.org/zh-cn/%E8%B7%A8%E5%B2%9B%E7%BA%BF	en.wikipedia Cross Island Line; zh-cn title 跨岛线
+line being built	Jurong Region Line			裕廊区域线	A	https://zh.wikipedia.org/zh-cn/%E8%A3%95%E5%BB%8A%E5%8C%BA%E5%9F%9F%E7%BA%BF	en.wikipedia Jurong Region Line; zh-cn title 裕廊区域线
+line being built	Johor Bahru–Singapore Rapid Transit System			新山—新加坡捷运系统	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E5%B1%B1%E2%80%94%E6%96%B0%E5%8A%A0%E5%9D%A1%E6%8D%B7%E8%BF%90%E7%B3%BB%E7%BB%9F	en.wikipedia Johor Bahru–Singapore Rapid Transit System; zh-cn title 新山—新加坡捷运系统
+metro line	MRT Thomson–East Coast Line			汤申—东海岸线	A	https://zh.wikipedia.org/zh-cn/%E6%B1%A4%E7%94%B3%E2%80%94%E4%B8%9C%E6%B5%B7%E5%B2%B8%E7%BA%BF	en.wikipedia Thomson–East Coast Line; zh-cn title 汤申—东海岸线
+metro line	Sentosa Express			圣淘沙捷运	A	https://zh.wikipedia.org/zh-cn/%E5%9C%A3%E6%B7%98%E6%B2%99%E6%8D%B7%E8%BF%90	en.wikipedia Sentosa Express; zh-cn title 圣淘沙捷运
+rail line	KTM Laluan kereta api Pantai Barat			西海岸铁路线	A	https://zh.wikipedia.org/zh-cn/%E8%A5%BF%E6%B5%B7%E5%B2%B8%E9%93%81%E8%B7%AF%E7%BA%BF	en.wikipedia KTM West Coast railway line; zh-cn title 西海岸铁路线

@@ -22,7 +22,7 @@ const { viewDepth, unpackViewRing } = new Function(core + '\nreturn {viewDepth, 
 const declarations = app.slice(app.indexOf('  const emptyBorders ='), app.indexOf('  const PLACE_RANKS ='));
 const { unpackBorders } = new Function('unpackViewRing', declarations + '\nreturn {unpackBorders};')(unpackViewRing);
 const foreignText = app.slice(app.indexOf('  const FOREIGN ='), app.indexOf('  for (const g of Object.keys(FOREIGN))'));
-const flags = ['jp', 'kr', 'uk', ...codes].map(g => `const WITH_${g.toUpperCase()} = true;`).join('\n');
+const flags = ['jp', 'kr', 'uk', ...codes, 'la', 'my', 'sg', 'th', 'id'].map(g => `const WITH_${g.toUpperCase()} = true;`).join('\n');
 const countries = new Function('viewDepth', 'VIEW_BOUNDARIES', flags + foreignText + '\nreturn FOREIGN;')(
   viewDepth, view.countries);
 

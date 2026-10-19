@@ -1,0 +1,15 @@
+kind	name	lon	lat	name_zh	tier	source	note
+station	ບໍ່ເຕັນ	101.67128	21.15514	磨丁	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28: 列车停靠磨丁站、纳堆站、孟赛站、琅勃拉邦站、万荣站、万象站; also NDRC repost of Xinhua 2021-11-24 and zh.wikipedia 磨丁站 (A)
+station	ນາເຕີຍ	101.64455	21.05378	纳堆	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28 (as above); zh.wikipedia 纳堆站 (A)
+station	ນາໝໍ້	101.73185	20.94335	纳磨	O	https://www.ndrc.gov.cn/xwdt/ztzl/zltl/202111/t20211124_1328345.html	国家发改委转载新华社 2021-11-24: 磨丁、纳堆、纳磨、孟赛、孟雅5座客货运车站; no zh.wikipedia article
+station	ເມືອງໄຊ	101.96875	20.68107	孟赛	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28 (as above); zh.wikipedia 孟赛站 (A)
+station	ເມືອງງາ	101.98158	20.28054	孟雅	O	https://www.ndrc.gov.cn/xwdt/ztzl/zltl/202111/t20211124_1328345.html	国家发改委转载新华社 2021-11-24 writes 孟雅 (decision 2026-10-19: the official 孟雅, not zh.wikipedia navbox 孟阿; OSM name:zh 孟阿 not used)
+station	ຫຼວງພະບາງ	102.21355	19.86772	琅勃拉邦	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28 (as above); zh.wikipedia 琅勃拉邦站 (A)
+station	ກາສີ	102.23479	19.26022	嘎西	O	https://www.thepaper.cn/newsDetail_forward_15370248	中铁建设集团 via 澎湃号·政务 2021-11-13: 承建了中老铁路磨万段琅勃拉邦站、嘎西站、万荣站、蓬洪站、万象站5座站房; no zh.wikipedia article
+station	ວັງວຽງ	102.45639	18.9539	万荣	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28 (as above); zh.wikipedia 万荣站 (万象省) (A, disambiguator dropped)
+station	ໂພນໂຮງ	102.38932	18.48445	蓬洪	O	https://www.thepaper.cn/newsDetail_forward_15370248	中铁建设集团 via 澎湃号·政务 2021-11-13 (as above); no zh.wikipedia article
+station	ວຽງຈັນ	102.69074	18.04705	万象	O	https://www.news.cn/world/20260928/b36943f782944baeba6211049102d174/c.html	新华社 2026-09-28 (as above); zh.wikipedia 万象站 (A)
+station	ທ່ານາແລ້ງ	102.70967	17.90339	塔纳楞	A	https://zh.wikipedia.org/zh-cn/塔纳楞站	zh.wikipedia article 塔納楞站, zh-cn title 塔纳楞站 (API varianttitles, read 2026-10-19); metre-gauge station
+station	ຄໍາສະຫວາດ	102.67486	17.95766	坎萨瓦	A	https://zh.wikipedia.org/zh-cn/坎萨瓦站	zh.wikipedia article 坎萨瓦站 (read 2026-10-19); metre-gauge terminus, also called 甘沙越站
+rail line	ທາງລົດໄຟ ລາວ-ຈີນ			中老铁路	A	https://zh.wikipedia.org/zh-cn/中老铁路	zh.wikipedia article 中老铁路 (read 2026-10-19)
+rail line	สายตะวันออกเฉียงเหนือ			东北线	A	https://zh.wikipedia.org/zh-cn/东北线_(泰国)	zh.wikipedia article 东北线 (泰国), disambiguator dropped (read 2026-10-19); the Lao end of the line, r17458406

@@ -103,7 +103,9 @@ class EndpointSourceTests(unittest.TestCase):
         for g, city in (("ch", "巴塞尔"), ("de", "汉堡"), ("de", "鲁尔")):
             self.assertIn(city, ENDPOINT_CITIES[g])
         self.assertNotIn("德国其他", ENDPOINT_CITIES["de"])
-        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 69)
+        # 2026-10-19: Kuala Lumpur, Palembang and Jakarta passed the same comparison
+        self.assertEqual((ENDPOINT_CITIES["my"], ENDPOINT_CITIES["id"]), (("吉隆坡",), ("巨港", "雅加达")))
+        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 72)
         self.assertFalse(endpoint_sources.ENDPOINT_TRIAL)
 
 

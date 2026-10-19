@@ -26,6 +26,11 @@ ENDPOINT_CITIES = {
     "be": ("列日", "奥斯坦德", "安特卫普", "布鲁塞尔", "根特", "沙勒罗瓦",),
     "fr": ("南特", "图卢兹", "尼斯", "巴黎", "斯特拉斯堡", "格勒诺布尔", "法国其他", "波尔多", "蒙彼利埃", "里尔", "里昂", "马赛", "鲁昂",),
     "de": ("不来梅", "卡尔斯鲁厄", "哈勒", "德累斯顿", "慕尼黑", "斯图加特", "杜塞尔多夫", "柏林", "汉堡", "汉诺威", "法兰克福", "科隆", "纽伦堡", "莱比锡", "鲁尔",),
+    # South-East Asia (2026-10-19), compared the same way: Kuala Lumpur's z12 self-crossings 2 -> 0,
+    # Jakarta's 1 -> 0, every line kept and on its own track. Bangkok's and Singapore's light rail
+    # lines share no stretch, so the order at their junctions is not in question.
+    "my": ("吉隆坡",),
+    "id": ("巨港", "雅加达",),
 }
 # A trial of every city of a country (2026-10-18, "将 NATIVE_FINDINGS.md 思路融入排座"): the
 # environment variable ENDPOINT_TRIAL=1 makes every city of the light rail use endpoint ordering,

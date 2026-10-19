@@ -96,6 +96,55 @@ COUNTRIES = {
                       "Birmingham": ("Birmingham", "伯明翰"), "Glasgow": ("Glasgow", "格拉斯哥"), "Cardiff": ("Cardiff", "加的夫"),
                       "Belfast": ("Belfast", "贝尔法斯特")}},
 }
+# Laos: the seats of the 18 first-level divisions (17 provinces and the prefecture of Vientiane),
+# with the Chinese names of https://zh.wikipedia.org/zh-cn/老挝行政区划 (read 2026-10-19): the
+# capital 万象, and 阿速坡, 会晒, 北汕 (Pakxan), 巴色, 桑怒 (Xam Neua), 他曲, 琅南塔, 琅勃拉邦,
+# 芒赛 (Muang Xay), 丰沙里, 沙拉湾, 凯山丰威汉 (Savannakhet, the page's 凯山丰威汉市 without 市),
+# 丰洪 (Phonhong), 沙耶武里, 塞公, 丰沙湾 (Phonsavan) and 阿努翁 (Anouvong, the page gives 阿努翁／
+# 班蒙查). The places are the extract's place nodes of those Lao names. The China–Laos railway's
+# stations have names of their own (孟赛 for the station of Muang Xay, 蓬洪 for Phonhong's):
+# data/la_names.tsv.
+COUNTRIES["la"] = {"file": "laos-latest.osm.pbf", "metro": "la_metro_cities.json", "count": 18,
+                   "first": ["ວຽງຈັນ"],
+                   "places": {name: (name, zh) for name, zh in (
+                       ("ວຽງຈັນ", "万象"), ("ອັດຕະປື", "阿速坡"), ("ຫ້ວຍຊາຍ", "会晒"), ("ປາກຊັນ", "北汕"), ("ປາກເຊ", "巴色"),
+                       ("ຊຳເໜືອ", "桑怒"), ("ທ່າແຂກ", "他曲"), ("ຫຼວງນ້ຳທາ", "琅南塔"), ("ຫຼວງພະບາງ", "琅勃拉邦"), ("ເມືອງໄຊ", "芒赛"),
+                       ("ຜົ້ງສາລີ", "丰沙里"), ("ສາລະວັນ", "沙拉湾"), ("ສະຫວັນນະເຂດ", "凯山丰威汉"), ("ໂພນໂຮງ", "丰洪"),
+                       ("ໄຊຍະບູລີ", "沙耶武里"), ("ເຊກອງ", "塞公"), ("ໂພນສະຫວັນ", "丰沙湾"), ("ອະນຸວົງ", "阿努翁"))}}
+# Malaysia: the capital, the two other federal territories' seats (Putrajaya, Victoria on Labuan)
+# and the capitals of the 13 states. The Chinese names are the zh-cn titles of the zh.wikipedia
+# articles that the en.wikipedia articles of these cities link to (read 2026-10-19): 吉隆坡, 布城,
+# 维多利亚 (马来西亚), 乔治市, 亚罗士打, 加央, 怡保, 莎阿南, 芙蓉 (森美兰), 马六甲市, 新山, 关丹,
+# 瓜拉登嘉楼, 哥打峇鲁, 亚庇, 古晋 (the bracket that tells two articles apart taken off). The own
+# name is the place node's, without Bandar / Bandaraya ("city").
+COUNTRIES["my"] = {"file": "malaysia-singapore-brunei-latest.osm.pbf", "metro": "my_metro_cities.json", "count": 16,
+                   "first": ["Kuala Lumpur", "George Town", "Johor Bahru"],
+                   "places": {"Kuala Lumpur": ("Kuala Lumpur", "吉隆坡"), "Putrajaya": ("Putrajaya", "布城"), "Bandar Victoria": ("Victoria", "维多利亚"),
+                              "George Town": ("George Town", "乔治市"), "Alor Setar": ("Alor Setar", "亚罗士打"), "Kangar": ("Kangar", "加央", "Kangar"),
+                              "Ipoh": ("Ipoh", "怡保"), "Shah Alam": ("Shah Alam", "莎阿南"), "Seremban": ("Seremban", "芙蓉"),
+                              "Bandaraya Melaka": ("Melaka", "马六甲市", "Malacca City"), "Johor Bahru": ("Johor Bahru", "新山"),
+                              "Kuantan": ("Kuantan", "关丹"), "Kuala Terengganu": ("Kuala Terengganu", "瓜拉登嘉楼"),
+                              "Kota Bharu": ("Kota Bharu", "哥打峇鲁"), "Kota Kinabalu": ("Kota Kinabalu", "亚庇"), "Kuching": ("Kuching", "古晋")}}
+# Singapore: the city, 新加坡 (the zh-cn title of the article that en.wikipedia "Singapore" links to).
+COUNTRIES["sg"] = {"file": "malaysia-singapore-brunei-latest.osm.pbf", "metro": "sg_metro_cities.json", "count": 1,
+                   "first": ["Singapore"], "places": {"Singapore": ("Singapore", "新加坡")}}
+# Thailand: Bangkok and the seats of the provinces (the admin_centre of each admin_level=4 relation
+# of the extract) that have a Chinese name: the zh-cn title of the zh.wikipedia article that the
+# en.wikipedia article of the town links to (read 2026-10-19; the article found within 4 km of the
+# place node, or by the town's English name), without the bracket that tells two articles apart:
+# 曼谷 (Bangkok); 北榄 (Samut Prakan); 暖武里 (Nonthaburi); 大城 (Phra Nakhon Si Ayutthaya (city)); 红统 (Ang Thong); 华富里 (Lopburi); 猜纳 (Chai Nat); 春武里 (Chonburi); 罗勇市 (Rayong); 庄他武里 (Chanthaburi); 达叻 (Trat); 差春骚 (Chachoengsao); 沙缴市 (Sa Kaeo); 那空叻差是玛 (Nakhon Ratchasima); 武里南 (Buriram); 乌汶叻差他尼 (Ubon Ratchathani); 猜也蓬 (Chaiyaphum); 安纳乍伦 (Amnat Charoen); 汶干 (Bueng Kan); 农磨兰普 (Nong Bua Lamphu); 孔敬 (Khon Kaen); 乌隆他尼 (Udon Thani); 廊开 (Nong Khai); 马哈沙拉堪 (Maha Sarakham); 黎逸 (Roi Et); 沙功那空 (Sakon Nakhon); 那空拍侬 (Nakhon Phanom); 穆达汉 (Mukdahan); 清迈 (Chiang Mai); 南奔 (Lamphun); 南邦 (Lampang); 程逸 (Uttaradit); 清莱 (Chiang Rai); 夜丰颂 (Mae Hong Son); 那空沙旺 (Nakhon Sawan); 乌泰他尼 (Uthai Thani); 彭世洛 (Phitsanulok); 披集 (Phichit); 干乍那武里 (Kanchanaburi); 佛统 (Nakhon Pathom); 那空是贪玛叻 (Nakhon Si Thammarat); 甲米 (Krabi); 普吉市 (Phuket (city)); 素叻他尼 (Surat Thani); 拉廊 (Ranong); 宋卡 (Songkhla); 董里市 (Trang, Thailand); 北大年 (Pattani, Thailand); 那拉提瓦 (Narathiwat).
+# 49 of the 77; the other 28 seats have no such pair and no label (none made up).
+COUNTRIES["th"] = {"file": "thailand-latest.osm.pbf", "metro": "th_metro_cities.json", "count": 49,
+                   "first": ["กรุงเทพมหานคร", "เชียงใหม่", "ภูเก็ต"],
+                   "places": {"กรุงเทพมหานคร": ("กรุงเทพมหานคร", "曼谷"), "สมุทรปราการ": ("สมุทรปราการ", "北榄"), "นนทบุรี": ("นนทบุรี", "暖武里"), "พระนครศรีอยุธยา": ("พระนครศรีอยุธยา", "大城"), "อ่างทอง": ("อ่างทอง", "红统"), "ลพบุรี": ("ลพบุรี", "华富里"), "ชัยนาท": ("ชัยนาท", "猜纳"), "ชลบุรี": ("ชลบุรี", "春武里"), "ระยอง": ("ระยอง", "罗勇市"), "จันทบุรี": ("จันทบุรี", "庄他武里"), "ตราด": ("ตราด", "达叻"), "ฉะเชิงเทรา": ("ฉะเชิงเทรา", "差春骚"), "สระแก้ว": ("สระแก้ว", "沙缴市"), "นครราชสีมา": ("นครราชสีมา", "那空叻差是玛"), "บุรีรัมย์": ("บุรีรัมย์", "武里南"), "อุบลราชธานี": ("อุบลราชธานี", "乌汶叻差他尼"), "ชัยภูมิ": ("ชัยภูมิ", "猜也蓬"), "อำนาจเจริญ": ("อำนาจเจริญ", "安纳乍伦"), "บึงกาฬ": ("บึงกาฬ", "汶干"), "หนองบัวลำภู": ("หนองบัวลำภู", "农磨兰普"), "ขอนแก่น": ("ขอนแก่น", "孔敬"), "อุดรธานี": ("อุดรธานี", "乌隆他尼"), "หนองคาย": ("หนองคาย", "廊开"), "มหาสารคาม": ("มหาสารคาม", "马哈沙拉堪"), "ร้อยเอ็ด": ("ร้อยเอ็ด", "黎逸"), "สกลนคร": ("สกลนคร", "沙功那空"), "นครพนม": ("นครพนม", "那空拍侬"), "มุกดาหาร": ("มุกดาหาร", "穆达汉"), "เชียงใหม่": ("เชียงใหม่", "清迈"), "ลำพูน": ("ลำพูน", "南奔"), "ลำปาง": ("ลำปาง", "南邦"), "อุตรดิตถ์": ("อุตรดิตถ์", "程逸"), "เชียงราย": ("เชียงราย", "清莱"), "แม่ฮ่องสอน": ("แม่ฮ่องสอน", "夜丰颂"), "นครสวรรค์": ("นครสวรรค์", "那空沙旺"), "อุทัยธานี": ("อุทัยธานี", "乌泰他尼"), "พิษณุโลก": ("พิษณุโลก", "彭世洛"), "พิจิตร": ("พิจิตร", "披集"), "กาญจนบุรี": ("กาญจนบุรี", "干乍那武里"), "นครปฐม": ("นครปฐม", "佛统"), "นครศรีธรรมราช": ("นครศรีธรรมราช", "那空是贪玛叻"), "กระบี่": ("กระบี่", "甲米"), "ภูเก็ต": ("ภูเก็ต", "普吉市"), "สุราษฎร์ธานี": ("สุราษฎร์ธานี", "素叻他尼"), "ระนอง": ("ระนอง", "拉廊"), "สงขลา": ("สงขลา", "宋卡"), "ตรัง": ("ตรัง", "董里市"), "ปัตตานี": ("ปัตตานี", "北大年"), "นราธิวาส": ("นราธิวาส", "那拉提瓦")}}
+# Indonesia: Jakarta and the capitals of the 38 provinces (the admin_centre of each admin_level=4
+# relation of the extract). The Chinese names are the zh-cn titles of the zh.wikipedia articles
+# that the en.wikipedia articles of these cities link to (read 2026-10-19; found within 6 km of the
+# place node, or by the city's English name), without the bracket that tells two articles apart:
+# 班达亚齐 (Banda Aceh); 丹帕沙 (Denpasar); 邦加槟港 (Pangkalpinang); 明古鲁 (Bengkulu (city)); 西冷 (Serang); 哥伦打洛 (Gorontalo (city)); 占碑 (Jambi (city)); 万隆 (Bandung); 泗水 (Surabaya); 雅加达 (Jakarta); 三宝垄 (Semarang); 坤甸 (Pontianak); 沙马林达 (Samarinda); 班贾尔巴鲁 (Banjarbaru); 帕朗卡拉亚 (Palangka Raya); 丹戎施乐 (Tanjung Selor); 班达楠榜 (Bandar Lampung); 安汶 (Ambon, Maluku); 索菲菲 (Sofifi); 马塔兰 (Mataram (city)); 古邦 (Kupang); 查亚普拉 (Jayapura); 马诺夸里 (Manokwari); 索龙 (Sorong); 瓦梅纳 (Wamena); 纳比雷 (Nabire); 北干巴鲁 (Pekanbaru); 万鸦老 (Manado); 巴东 (Padang); 肯达里 (Kendari); 望加锡 (Makassar); 马穆朱 (Mamuju (city)); 巨港 (Palembang); 帕卢 (Palu); 棉兰 (Medan); 日惹 (Yogyakarta); 丹戎槟榔 (Tanjungpinang); 马老奇 (Merauke).
+COUNTRIES["id"] = {"file": "indonesia-latest.osm.pbf", "metro": "id_metro_cities.json", "count": 38,
+                   "first": ["Jakarta", "Surabaya", "Bandung", "Medan"],
+                   "places": {"Banda Aceh": ("Banda Aceh", "班达亚齐"), "Denpasar": ("Denpasar", "丹帕沙"), "Pangkalpinang": ("Pangkalpinang", "邦加槟港"), "Bengkulu": ("Bengkulu", "明古鲁"), "Serang": ("Serang", "西冷"), "Gorontalo": ("Gorontalo", "哥伦打洛"), "Jambi": ("Jambi", "占碑"), "Bandung": ("Bandung", "万隆"), "Surabaya": ("Surabaya", "泗水"), "Jakarta": ("Jakarta", "雅加达"), "Semarang": ("Semarang", "三宝垄"), "Pontianak": ("Pontianak", "坤甸"), "Samarinda": ("Samarinda", "沙马林达"), "Banjarbaru": ("Banjarbaru", "班贾尔巴鲁"), "Palangka Raya": ("Palangka Raya", "帕朗卡拉亚"), "Tanjung Selor": ("Tanjung Selor", "丹戎施乐"), "Bandar Lampung": ("Bandar Lampung", "班达楠榜"), "Ambon": ("Ambon", "安汶"), "Sofifi": ("Sofifi", "索菲菲"), "Mataram": ("Mataram", "马塔兰"), "Kupang": ("Kupang", "古邦"), "Jayapura": ("Jayapura", "查亚普拉"), "Manokwari": ("Manokwari", "马诺夸里"), "Sorong": ("Sorong", "索龙"), "Wamena": ("Wamena", "瓦梅纳"), "Nabire": ("Nabire", "纳比雷"), "Pekanbaru": ("Pekanbaru", "北干巴鲁"), "Manado": ("Manado", "万鸦老"), "Padang": ("Padang", "巴东"), "Kendari": ("Kendari", "肯达里"), "Makassar": ("Makassar", "望加锡"), "Mamuju": ("Mamuju", "马穆朱"), "Palembang": ("Palembang", "巨港"), "Palu": ("Palu", "帕卢"), "Medan": ("Medan", "棉兰"), "Yogyakarta": ("Yogyakarta", "日惹"), "Tanjungpinang": ("Tanjungpinang", "丹戎槟榔"), "Merauke": ("Merauke", "马老奇")}}
 EUROPE_CITY_NAMES = json.loads((ROOT / "data/europe_city_names.json").read_text())
 EUROPE_FILES = {"de": "germany", "fr": "france", "ch": "switzerland", "es": "spain",
                 "nl": "netherlands", "be": "belgium", "it": "italy"}

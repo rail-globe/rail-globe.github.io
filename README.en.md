@@ -2,7 +2,7 @@
 
 [中文](README.md) | English
 
-Railways, metros and trams of China, Japan, South Korea, the UK, Germany, France, Switzerland, Spain, the Netherlands, Belgium and Italy, drawn on a satellite globe.
+Railways, metros and trams of China, Japan, South Korea and the UK; Germany, France, Switzerland, Spain, the Netherlands, Belgium and Italy in Europe; and Laos, Thailand, Malaysia, Singapore and Indonesia in South-East Asia, drawn on a satellite globe.
 
 **Open the map: https://rail-globe.github.io/**
 
@@ -10,7 +10,7 @@ Railways, metros and trams of China, Japan, South Korea, the UK, Germany, France
 
 ## What you can do
 
-- **Browse lines**: all eleven countries are drawn on the globe at once, or on a flat map. Zoom in on a station to see its platforms, every track and the depots. Lines load progressively for the area in view.
+- **Browse lines**: all sixteen countries are drawn on the globe at once, or on a flat map. Zoom in on a station to see its platforms, every track and the depots. Lines load progressively for the area in view.
 - **Search**: stations, lines, cities and countries in one box, by their local, Chinese or English names.
 - **Pick a line**: click a line to light it up; its card gives the class and design speed.
 - **Find a route** (China): the way between two stations along real lines, with distance and estimated time. Rail and metro are combined, with walking changes between nearby stations.
@@ -27,7 +27,7 @@ One set of rules for every country, never by operator:
 
 ![Legend: EMU lines in seven design-speed bands, conventional railways, lines under construction](docs/images/legend.png)
 
-Dashed lines are under construction. Each railway is drawn once, with no sideways seating for European national railways. Urban services sharing track are drawn side by side and return to their own tracks as you zoom in.
+Dashed lines are under construction. Each railway is drawn once, with no sideways seating for the national railways of Europe and South-East Asia: each lies on its own track. Urban services sharing track are drawn side by side and return to their own tracks as you zoom in.
 
 Sections supported only by an operating limit are coloured by speed and marked as unconfirmed; their cards say “Top speed”. The European additions retain source OSM ways and their original speed tags. ICE, TGV and AVE service brands are not design standards.
 
@@ -58,19 +58,26 @@ Sections supported only by an operating limit are coloured by speed and marked a
 | Netherlands | European territory: railways, metros, light rail and trams; stations, construction, yards and depots |
 | Belgium | Railways, metros, light rail and trams including the coast tram; stations, construction, yards and depots |
 | Italy | The peninsula, Sicily and Sardinia: railways, metros, light rail and trams; stations, construction, yards and depots |
+| Laos | The Laos-China Railway (160 band) and the line from Thailand across the border to Khamsavath; stations, yards and depots |
+| Thailand | All railways; Bangkok's metro, light rail, monorails, Red Lines and Airport Rail Link; lines under construction including the Thai-Chinese high-speed railway; stations, yards and depots |
+| Malaysia | Railways of the Peninsula and Sabah; Kuala Lumpur's metro, light rail, monorail, KTM Komuter and airport trains, and Penang's KTM Komuter; lines under construction including the East Coast Rail Link; stations, yards and depots |
+| Singapore | Metro and light rail; lines under construction including the Cross Island Line, Jurong Region Line and RTS Link; stations, yards and depots |
+| Indonesia | Railways of Java, Sumatra and Sulawesi, and the Jakarta-Bandung high-speed railway (350 band); Jakarta's KRL commuter lines, MRT and LRT, commuter and airport trains in Yogyakarta, Solo, Medan and Padang, and Palembang's LRT; stations, yards and depots |
 
-Rail infrastructure used by S-Bahn, RER and Cercanías services is included in the railway layer. European lines and stations keep their local names. Sourced Chinese and English aliases can be searched and appear with the language switch; unnamed track is drawn without inventing a line identity. Coverage follows mapped OSM objects. France's overseas territories are outside the current source area.
+Rail infrastructure used by S-Bahn, RER and Cercanías services is included in the railway layer. European lines and stations keep their local names. Sourced Chinese and English aliases can be searched and appear with the language switch; unnamed track is drawn without inventing a line identity. Coverage follows mapped OSM objects. France's overseas territories are outside the current source area. Thai and Lao names are written in their own script followed by a sourced Chinese name, or the English name where there is none; Malaysian, Singaporean and Indonesian names are local, with sourced Chinese names shown by the language switch.
 
 ## Data and licences
 
 - Lines, stations and yards: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, ODbL. Geofabrik extracts of 2026-10-05 (China), 2026-10-06 (Japan, South Korea) and 2026-10-03 (UK).
 - European snapshots: Germany from [GWDG's Geofabrik mirror](https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/); France, Switzerland, Spain, the Netherlands, Belgium and Italy from [OSM France](https://download.openstreetmap.fr/extracts/). Spain also includes the Canary Islands, Ceuta and Melilla extracts from `africa/spain`. Source timestamps, checksums and coverage are in `data/europe_sources.json`.
+- South-East Asian snapshots: the Geofabrik `laos`, `thailand`, `malaysia-singapore-brunei` and `indonesia` extracts of 2026-10-18. Every Chinese name has its source in `data/<country>_names.tsv` (Chinese Wikipedia article titles, Xinhua and others).
+- Singapore's Chinese station names: Contains information from Train Station Chinese Names accessed on 19 October 2026 from [data.gov.sg](https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view) which is made available under the terms of the [Singapore Open Data Licence version 1.0](https://data.gov.sg/open-data-licence).
 - City aliases: [Wikidata](https://www.wikidata.org/), CC0, with a source for every entry in `data/europe_city_names.json`. Supplementary depot names have sources in `data/depot_names.json`; existing OSM names take precedence.
 - Design speeds: [China EMU line records](https://www.china-emu.cn/RailRoads/) and published sources for each line, cited section by section; where only an operating speed was found, the band is marked as unconfirmed.
 - Train timetable: [Chinese Railway GTFS](https://github.com/wensimehrp/chinese-railway-gtfs) (wensimehrp), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), collected upstream by RailGo-Parser. Filtered, simplified and converted here, with sections that stray from the map's lines moved onto them; see `data/trains/README.md`. It is not official 12306 data. Station delays are fetched from [RailGo](https://railgo.dev/) only when a reader asks for them.
 - Satellite imagery: Esri World Imagery (Esri, Maxar, Earthstar Geographics), loaded online and not part of this repository.
 - China's route length figures come from the Ministry of Transport's 2025 statistical bulletin.
-- Software: [MapLibre GL JS](https://maplibre.org/), the [PMTiles](https://github.com/protomaps/PMTiles) reader (BSD-3-Clause), and the Open Sans font (SIL Open Font License).
+- Software: [MapLibre GL JS](https://maplibre.org/), the [PMTiles](https://github.com/protomaps/PMTiles) reader (BSD-3-Clause), and the Open Sans, Noto Sans Thai and Noto Sans Lao fonts (SIL Open Font License).
 
 ## Running it locally
 
@@ -80,7 +87,7 @@ python3 scripts/serve.py
 
 Then open http://localhost:8765 . The page source is `src/app.html`; after changing it, run `python3 scripts/build.py`.
 
-Rebuilding the data needs Python 3 (`osmium`, `shapely`, `numpy`), [tippecanoe](https://github.com/felt/tippecanoe), and the Geofabrik `china`, `taiwan`, `japan-latest`, `south-korea-latest` and `united-kingdom` `.osm.pbf` files in `data/raw/`:
+Rebuilding the data needs Python 3 (`osmium`, `shapely`, `numpy`), [tippecanoe](https://github.com/felt/tippecanoe), and the Geofabrik `china`, `taiwan`, `japan-latest`, `south-korea-latest` and `united-kingdom` `.osm.pbf` files in `data/raw/` (and `laos`, `thailand`, `malaysia-singapore-brunei` and `indonesia` for South-East Asia):
 
 ```bash
 python3 scripts/build_border.py              # borders
@@ -90,9 +97,13 @@ python3 scripts/fetch_europe.py de fr ch es nl be it # European inputs, includin
 python3 scripts/extract_osm.py it            # extract each European country: de, fr, ch, es, nl, be, it
 python3 scripts/process_europe.py de fr ch es nl be it # European layers; one country can be built on its own
 python3 scripts/build_cities.py es           # city names and positions from the same inputs
+python3 scripts/extract_osm.py th            # extract each South-East Asian country: la, th, my, sg, id
+python3 scripts/process_sea.py la th my sg id # South-East Asian layers
+python3 scripts/sea_glyphs.py                # map glyphs for Thai and Lao
 python3 scripts/extract_design_points.py     # boundary points of the design-speed sections
 python3 scripts/process_osm.py               # China's layers, coloured by design speed
 python3 scripts/build_graph.py               # the network for routes between stations
+python3 scripts/clip_neighbours.py cn        # China's lines end at the border, not inside a neighbour drawn too
 python3 scripts/build_trains.py --download   # train timetable
 python3 scripts/build_tiles.py               # vector tiles, data/tiles/<country>.pmtiles
 python3 scripts/build.py                     # the page

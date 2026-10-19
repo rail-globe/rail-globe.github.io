@@ -33,7 +33,16 @@ BRACKETS = re.compile(r"[()（）\[\]【】{}「」]")
 STATION_NEAR_M = 50       # a station's row names the station of that name this close to its point
 DEPOT_NEAR_M = 1000       # a depot's label stands on its tracks, which can be this far from where its row was read
 # The columns of a country's table: (its own name, the Chinese name).
-TABLES = {"kr": ("ko", "zh"), "uk": ("name_en", "name_zh")}
+TABLES = {"kr": ("ko", "zh"), "uk": ("name_en", "name_zh"),
+          # South-East Asia (scripts/process_sea.py): one table per country, data/<g>_names.tsv
+          **{g: ("name", "name_zh") for g in ("la", "th", "my", "sg", "id")}}
+# Tables whose rows are graded by where the Chinese name comes from (column tier), as the United
+# Kingdom's: O the operator's or the government's own Chinese name (Singapore's LTA, the China–Laos
+# railway's names in Xinhua and the builders' releases), A the title of a zh.wikipedia article in
+# mainland usage, C a city's sourced name with a fixed generic word; B (a Wikidata label with no
+# article behind it) is off until the owner has seen samples.
+TIERED = {"uk", "la", "th", "my", "sg", "id"}
+SEA_TIERS = {"O", "A", "C"}
 KINDS = {"station": "station", "depot": "depot", "rail line": "line", "metro line": "line",
          "metro or tram line": "line", "line being built": "line"}
 # Rows of the UK table that are off until the owner has seen samples of them, one switch each:
@@ -41,7 +50,7 @@ KINDS = {"station": "station", "depot": "depot", "rail line": "line", "metro lin
 # the Hong Kong or Taiwan way, with no mainland form on the page.
 UK_TIER_B = False
 UK_FLAGGED_WORDING = False
-ENGLISH = {"cn", "jp", "kr", "de", "fr", "ch", "es", "nl", "be", "it"}  # countries whose features get ne from name:en
+ENGLISH = {"cn", "jp", "kr", "de", "fr", "ch", "es", "nl", "be", "it", "la", "th", "my", "sg", "id"}  # countries whose features get ne from name:en
 # Metro cities that data/cities.json does not have among its places: (own name, English name).
 # Japanese entries are read from the OSM place nodes cited below. European city names are
 # checked against data/europe_city_names.json; the regional Ruhr group is not a place label.
@@ -122,7 +131,7 @@ class Table:
         own, zh = TABLES[g]
         for row in csv.DictReader(path.read_text(encoding="utf-8").splitlines(), delimiter="\t"):
             kind = KINDS.get(row["kind"])
-            if not kind or g == "uk" and not self.in_use(row):
+            if not kind or g == "uk" and not self.in_use(row) or g in TIERED - {"uk"} and row["tier"] not in SEA_TIERS:
                 continue
             name = row[zh].strip()
             if BRACKETS.search(name):

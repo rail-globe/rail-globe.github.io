@@ -113,6 +113,19 @@ class AnnotateRailTests(unittest.TestCase):
         self.assertNotIn('cp', annotate_rail([STATION], self.lines, ex, audit=audit)[0]['properties'])
         self.assertEqual(audit[0]['reason'], 'one_line_stops_here')
 
+    def test_a_city_line_over_its_own_railway_is_one_track_not_a_capsule(self):
+        # 2026-10-19: KTM Komuter is drawn over the West Coast Line, on the other track of the double
+        # line; a capsule there stood over what the map shows as one line (44 Malaysian stations)
+        rail = [(drawn('West Coast Line', 2, 0), 'rail')]
+
+        def metro_at(metres):
+            return [{'type': 'Feature', 'properties': {'n': 'Komuter', 'g': 'my', 'jk': 'subway', 'rid': '1', 'off': 0},
+                     'geometry': {'type': 'LineString', 'coordinates': north(metres)}}]
+        ex = extract({1: ('Komuter: Rawang → Seremban', [-2], True), 2: ('ETS: Butterworth → Gemas', [2], True)})
+        self.assertNotIn('cp', annotate_rail([STATION], rail, ex, metro=metro_at(-2))[0]['properties'])
+        ex = extract({1: ('Komuter: Rawang → Seremban', [-20], True), 2: ('ETS: Butterworth → Gemas', [2], True)})
+        self.assertIn('cp', annotate_rail([STATION], rail, ex, metro=metro_at(-20))[0]['properties'])
+
     def test_a_metro_station_keeps_its_metro_capsule(self):
         station = copy.deepcopy(STATION)
         station['properties'].update(m=1, cp='{"v":1,"a":[0,51.5],"t":[1,51.5],"m":[]}')

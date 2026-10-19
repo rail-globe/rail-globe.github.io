@@ -97,7 +97,8 @@ def countries():
     site = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
     configured = (("jp", False), ("kr", False), ("uk", True),
                   ("de", False), ("fr", False), ("ch", False), ("es", False),
-                  ("nl", False), ("be", False), ("it", False))
+                  ("nl", False), ("be", False), ("it", False),
+                  ("la", False), ("th", False), ("my", False), ("sg", False), ("id", False))
     return ["cn"] + [g for g, default in configured if site.get(g, default)]
 
 

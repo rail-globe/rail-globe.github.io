@@ -185,6 +185,32 @@ MORE["fr"] = re.compile(EU_MORE.pattern + r"|Centre technique|Centre d['’]Expl
 MORE["be"] = re.compile(EU_MORE.pattern + r"|Stelplaats|Werkplaats", re.I)
 MORE["nl"] = re.compile(EU_MORE.pattern + r"|Remise|Werkplaats|Opstelterrein", re.I)
 
+# South-East Asia (scripts/process_sea.py). Railway ground there is named in the local script, in
+# English and, on the lines China built or runs (the China–Laos railway), in Chinese, so the
+# English and Chinese words are shared and each country adds its own: Lao ສາງເກັບຫົວຈັກ (a locomotive
+# shed: OSM w926439685, name:en Vientiane South Locomotive Warehouse, name:zh 万象南机务段), Thai โรงรถจักร (engine
+# shed), โรงซ่อม (works), ศูนย์ซ่อมบำรุง (maintenance centre), ย่านสินค้า (goods yard); Malay
+# and Indonesian Depoh, Depo, Dipo (a depot), Balai Yasa (railway works).
+SEA_MORE = (r"Depot|Yard\b|Workshop|Maintenance|Stabling|Marshalling|Freight Terminal|Container Yard|Dry Port"
+            r"|车辆段|車輛段|动车所|動車所|动车段|机务段|機務段|车辆基地|存车场|编组场|货场$|车场$|基地$|维修|檢修|检修")
+SEA_STRICT = (r"Rail(?:way)? Depot|Train Depot|EMU Depot|Locomotive Depot|LRT Depot|MRT Depot|Monorail Depot|Marshalling Yard"
+              r"|车辆段|車輛段|动车所|動車所|动车段|机务段|機務段|车辆基地")
+SEA_LOCAL = {"la": r"|ສາງເກັບຫົວຈັກ|ຫົວຈັກ", "th": r"|โรงรถจักร|โรงซ่อม|ศูนย์ซ่อมบำรุง|ย่านสินค้า|ศูนย์ซ่อม",
+             "my": r"|Depoh", "sg": "", "id": r"|\bDepo\b|\bDipo\b|Balai Yasa"}
+SEA_STRICT_LOCAL = {"la": r"|ສາງເກັບຫົວຈັກ", "th": r"|โรงรถจักร|ศูนย์ซ่อมบำรุง", "my": r"|Depoh", "sg": "", "id": r"|Balai Yasa|\bDipo\b"}
+SEA_NEVER = re.compile(r"\bBus\b|Bas\b|Car Park|Parking|Taxi|Truck|Lorry|School|Hospital|Police|Fire|Pre-?Cast|Casting|"     # (a builder's precast yard, Singapore)
+                       r"公交|巴士|停车场$|汽车|学校|医院|Terminal Bus|Terminal Bas|รถเมล์|รถโดยสาร|ขนส่ง", re.I)
+SEA_RAILWAY = re.compile(r"Freight|Container|Marshalling|Locomotive|Dry Port|货|貨|机务|機務|编组|โรงรถจักร|ย่านสินค้า|Balai Yasa", re.I)
+SEA_GENERIC = re.compile(r"\b(?:rail|railway|train|depot|yard|works|workshop|maintenance|stabling|terminal|the|of)\b|"
+                         r"车辆段|动车所|机务段|车辆基地|存车场|货场|基地|[&()/'’.,\-\s0-9]", re.I)
+for _country, _latitude in {"la": 18.0, "th": 14.0, "my": 4.0, "sg": 1.35, "id": -6.5}.items():
+    LAT0[_country] = _latitude
+    MORE[_country] = re.compile(SEA_MORE + SEA_LOCAL[_country], re.I)
+    STRICT[_country] = re.compile(SEA_STRICT + SEA_STRICT_LOCAL[_country], re.I)
+    NEVER[_country] = SEA_NEVER
+    RAILWAY_ONLY[_country] = SEA_RAILWAY
+    GENERIC[_country] = SEA_GENERIC
+
 
 def not_a_depot(g, name):
     """Is this the name of something that is never a depot?"""

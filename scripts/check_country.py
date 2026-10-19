@@ -91,6 +91,15 @@ def twice(by_line, step=0.002, near=0.00035):
     return sorted(found, key=lambda r: -r["km"])
 
 
+def config_of(code):
+    """The pipeline settings of a country drawn since Europe (None for Japan, the UK and Korea)."""
+    import process_sea
+    if code in process_sea.SEA:
+        return process_sea.configure(code)
+    from process_europe import COUNTRIES
+    return COUNTRIES.get(code)
+
+
 def check(code):
     report, flags = {"country": code}, []
     say = lambda bad, text: (flags.append(text) if bad else None, print(("!! " if bad else "   ") + text, flush=True))
@@ -115,7 +124,12 @@ def check(code):
     kinds = Counter(f["properties"].get("jk") for f in rail)
     say(None in kinds, f"railway classes: {dict(kinds.most_common())}")
     mk = Counter(f["properties"].get("jk") for f in metro)
-    say(set(mk) - {"subway", "urban"}, f"metro classes: {dict(mk.most_common())}")
+    # (a country may draw train routes as a class of its own: Indonesia's KRL, process_sea.SEA[g]["URBAN_TRAIN_KIND"])
+    own = set()
+    if "territory" in pickle.load(open(RAW / f"extract_{code}.pkl", "rb")):
+        from process_sea import SEA
+        own = {SEA[code].get("URBAN_TRAIN_KIND", "subway")}
+    say(set(mk) - {"subway", "urban"} - own, f"metro classes: {dict(mk.most_common())}")
     # (a line classed in stretches, each named by property st, has one class per stretch)
     split, stretches = defaultdict(set), defaultdict(set)
     for f in rail:
@@ -136,10 +150,25 @@ def check(code):
     say(abs(drawn_km - facts["km"]) > 0.01 * facts["km"], f"railway drawn: {drawn_km:.0f} km in {len(by_line)} lines (the card says {facts['km']})")
     # written locally by scripts/extract_osm.py, so loading it is safe here
     ex = pickle.load(open(RAW / f"extract_{code}.pkl", "rb"))
+    if "territory" in ex:                   # South-East Asia: what the pipeline reads, the country's own land
+        from process_sea import clip
+        ex = clip(ex, code)
     running = [(t, co) for _, t, co in ex["ways"] if t.get("railway") in ("rail", "narrow_gauge") and not t.get("service") and len(co) > 1]
     track = STRtree([LineString(co) for _, co in running])
     cut = breaks(by_line, track)
     say(len(cut) > 5, f"breaks (track in the gap, nothing drawn): {len(cut)}, {sum(c['km'] for c in cut):.1f} km " + str([(c["line"], c["km"], c["from"]) for c in sorted(cut, key=lambda c: -c["km"])[:5]]))
+    # a city line cut at a station whose platform tracks are tagged as sidings (Bangkok's Dark Red
+    # Line at Don Mueang, 790 m, 2026-10-19): any track counts here, sidings included
+    by_city_line = defaultdict(list)
+    for f in metro:
+        p = f["properties"]
+        by_city_line[f"{p.get('ct')} {p['n']} {p.get('rid', '')}".strip()].extend(parts_of(f))
+    any_track = STRtree([LineString(co) for _, t, co in ex["ways"] if len(co) > 1
+                         and t.get("railway") in ("rail", "narrow_gauge", "subway", "light_rail", "monorail", "tram")])
+    metro_cut = breaks(by_city_line, any_track)
+    say(metro_cut, f"city lines cut (track in the gap, nothing drawn): {len(metro_cut)}, {sum(c['km'] for c in metro_cut):.1f} km "
+        + str([(c["line"], c["km"], c["from"]) for c in sorted(metro_cut, key=lambda c: -c["km"])[:5]]))
+    report["metro_breaks"] = metro_cut
     double = twice(by_line)
     say(sum(d["km"] for d in double) > 0.01 * drawn_km, f"drawn twice (two pieces of a line side by side): {len(double)} lines, {sum(d['km'] for d in double):.0f} km " + str([(d["line"], d["km"]) for d in double[:5]]))
     tiny = [l["n"] for l in lines if l["tk"] < 2]
@@ -219,6 +248,21 @@ def check(code):
     alone = [f for f in stations if id(f) not in served]
     say(alone, f"stations with no drawn line passing them: {len(alone)} ({sum(1 for f in alone if f['properties'].get('m'))} of them metro stations or tram stops) "
         + str([f["properties"]["n"] for f in alone[:8]]))
+
+    # ---- drawn as Europe is (country.LIKE_EUROPE): South-East Asia was first set up the older way,
+    # with seats on its railways (Bangkok's Northern line on both sides of the Dark Red Line) and
+    # not one capsule (2026-10-19, "怎么没有follow之前处理欧洲的经验")
+    cfg = config_of(code)
+    if cfg is not None:
+        from country import LIKE_EUROPE
+        older = sorted(k for k, v in LIKE_EUROPE.items() if k != "urban_station_display" and getattr(cfg, k) != v)
+        older += [] if cfg.urban_station_display else ["urban_station_display"]
+        say(older, "settings as Europe's (country.LIKE_EUROPE): " + (f"not as Europe: {older}" if older else "yes"))
+        seated = [f["properties"]["n"] for f in rail if f["properties"].get("off")]
+        say(not cfg.rail_seats and seated, f"railway pieces moved to a side: {len(seated)} {sorted(set(seated))[:6]}")
+    capsules = sum(1 for f in stations if f["properties"].get("cp"))
+    rail_capsules = sum(1 for f in stations if '"mode":' in (f["properties"].get("cp") or ""))
+    say(metro and not capsules, f"stations with a capsule: {capsules} ({rail_capsules} at railway stations)")
 
     # ---- the names on the yards and depots layer (scripts/depots.py)
     if code in {'de','fr','ch','es','nl','be','it'}:

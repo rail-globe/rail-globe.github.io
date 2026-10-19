@@ -13,6 +13,8 @@ from continuous_offset import display_sets
 
 ROOT = Path(__file__).resolve().parents[1]
 EUROPE = ("de", "fr", "ch", "es", "nl", "be", "it")
+# South-East Asia (scripts/process_sea.py): the countries the page has a configuration for so far.
+SEA = ("la", "my", "sg", "th", "id")
 
 
 def pack_view_ring(ring):
@@ -39,7 +41,7 @@ def assemble_page(site=None, offset_artifacts=False):
     # site.json decides what the build contains; overrides are useful for read-only contracts.
     if site is None:
         site = json.loads((ROOT / "site.json").read_text()) if (ROOT / "site.json").exists() else {}
-    for code, default in (("uk", True), ("jp", False), ("kr", False), *((g, False) for g in EUROPE)):
+    for code, default in (("uk", True), ("jp", False), ("kr", False), *((g, False) for g in EUROPE + SEA)):
         marker = f"/*WITH_{code.upper()}*/true"
         assert marker in page
         page = page.replace(marker, "true" if site.get(code, default) else "false")
@@ -53,6 +55,11 @@ def assemble_page(site=None, offset_artifacts=False):
             assert geom["type"] == "MultiPolygon" and geom["coordinates"], f"{g}: missing view polygons"
             assert len(data["sources"][g]["sha256"]) == 64, f"{g}: missing source hash"
             boundaries[g] = [[pack_view_ring(ring) for ring in polygon] for polygon in geom["coordinates"]]
+    for g in (g for g in SEA if site.get(g, False)):
+        # the country's own land, from its admin_level=2 relation, as process_sea.py simplified it
+        view = json.loads((ROOT / "data" / f"{g}_view.json").read_text())
+        assert view["type"] == "MultiPolygon" and view["coordinates"] and view["source"]["relation"], f"{g}: missing view polygons"
+        boundaries[g] = [[pack_view_ring(ring) for ring in polygon] for polygon in view["coordinates"]]
     marker = "/*VIEW_BOUNDARIES*/{}"
     assert marker in page
     page = page.replace(marker, json.dumps(boundaries, separators=(",", ":")))

@@ -1,0 +1,140 @@
+kind	name	lon	lat	name_zh	tier	source	note
+station	Kepong Sentral	101.62853	3.20871	甲洞中央	A	https://zh.wikipedia.org/zh-cn/%E7%94%B2%E6%B4%9E%E4%B8%AD%E5%A4%AE%E7%AB%99	en.wikipedia Kepong Sentral station (24 m from the station); zh-cn title 甲洞中央站
+station	Kempas Baru	103.72346	1.53578	甘拔士峇鲁	A	https://zh.wikipedia.org/zh-cn/%E7%94%98%E6%8B%94%E5%A3%AB%E5%B3%87%E9%B2%81%E7%AB%99	en.wikipedia Kempas Baru railway station (51 m from the station); zh-cn title 甘拔士峇鲁站
+station	Johor Bahru Sentral	103.76463	1.46297	新山中央	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E5%B1%B1%E4%B8%AD%E5%A4%AE%E8%BD%A6%E7%AB%99	en.wikipedia Johor Bahru Sentral station (53 m from the station); zh-cn title 新山中央车站
+station	Pulau Sebang/Tampin	102.22627	2.46388	普罗士邦／淡边	A	https://zh.wikipedia.org/zh-cn/%E6%99%AE%E7%BD%97%E5%A3%AB%E9%82%A6%EF%BC%8F%E6%B7%A1%E8%BE%B9%E7%AB%99	en.wikipedia Pulau Sebang/Tampin railway station (42 m from the station); zh-cn title 普罗士邦／淡边站
+station	Seputeh	101.68142	3.11369	士布爹	A	https://zh.wikipedia.org/zh-cn/%E5%A3%AB%E5%B8%83%E7%88%B9%E7%AB%99	en.wikipedia Seputeh Komuter station (9 m from the station); zh-cn title 士布爹站
+station	Padang Besar	100.3202	6.66268	巴东勿刹	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E4%B8%9C%E5%8B%BF%E5%88%B9%E7%AB%99	en.wikipedia Padang Besar railway station (77 m from the station); zh-cn title 巴东勿刹站
+station	Tasek Gelugor	100.49791	5.48213	打昔汝莪	A	https://zh.wikipedia.org/zh-cn/%E6%89%93%E6%98%94%E6%B1%9D%E8%8E%AA	en.wikipedia Tasek Gelugor (268 m from the station); zh-cn title 打昔汝莪; matched by its first words
+station	Batang Kali	101.63772	3.46853	峇冬加里	A	https://zh.wikipedia.org/zh-cn/%E5%B3%87%E5%86%AC%E5%8A%A0%E9%87%8C%E7%AB%99	en.wikipedia Batang Kali railway station (43 m from the station); zh-cn title 峇冬加里站
+station	Tanjung Malim	101.51825	3.68477	丹绒马林	A	https://zh.wikipedia.org/zh-cn/%E4%B8%B9%E7%BB%92%E9%A9%AC%E6%9E%97%E7%AB%99	en.wikipedia Tanjung Malim railway station (46 m from the station); zh-cn title 丹绒马林站
+station	Rembau	102.09443	2.5929	林茂	A	https://zh.wikipedia.org/zh-cn/%E6%9E%97%E8%8C%82%E7%AB%99	en.wikipedia Rembau railway station (29 m from the station); zh-cn title 林茂站
+station	KL Sentral	101.68652	3.13411	吉隆坡中央	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E4%B8%AD%E5%A4%AE%E8%BD%A6%E7%AB%99	en.wikipedia Kuala Lumpur Sentral station (25 m from the station); zh-cn title 吉隆坡中央车站
+station	KLCC	101.71337	3.15925	城中城	A	https://zh.wikipedia.org/zh-cn/%E5%9F%8E%E4%B8%AD%E5%9F%8E%E7%AB%99	en.wikipedia KLCC LRT station (58 m from the station); zh-cn title 城中城站
+station	Masjid Jamek	101.69646	3.14941	占美清真寺	A	https://zh.wikipedia.org/zh-cn/%E5%8D%A0%E7%BE%8E%E6%B8%85%E7%9C%9F%E5%AF%BA%E7%AB%99	en.wikipedia Masjid Jamek LRT station (29 m from the station); zh-cn title 占美清真寺站
+station	KLIA T1	101.70464	2.75473	吉隆坡国际机场1号航站楼	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E5%9B%BD%E9%99%85%E6%9C%BA%E5%9C%BA1%E5%8F%B7%E8%88%AA%E7%AB%99%E6%A5%BC%E7%AB%99	en.wikipedia KLIA T1 ERL station (42 m from the station); zh-cn title 吉隆坡国际机场1号航站楼站; matched by its first words
+station	Gemas	102.61376	2.57974	金马士	A	https://zh.wikipedia.org/zh-cn/%E9%87%91%E9%A9%AC%E5%A3%AB%E7%AB%99	en.wikipedia Gemas railway station (11 m from the station); zh-cn title 金马士站
+station	Butterworth	100.36657	5.39336	北海	A	https://zh.wikipedia.org/zh-cn/%E5%8C%97%E6%B5%B7%E7%AB%99_%28%E6%A7%9F%E5%9F%8E%29	en.wikipedia Butterworth railway station (20 m from the station); zh-cn title 北海站 (槟城)
+station	Tumpat	102.16751	6.19903	道北	A	https://zh.wikipedia.org/zh-cn/%E9%81%93%E5%8C%97%E7%AB%99	en.wikipedia Tumpat railway station (16 m from the station); zh-cn title 道北站
+station	Segamat	102.81319	2.50743	昔加末	A	https://zh.wikipedia.org/zh-cn/%E6%98%94%E5%8A%A0%E6%9C%AB%E7%AB%99	en.wikipedia Segamat railway station (115 m from the station); zh-cn title 昔加末站
+station	Kulai	103.5981	1.66422	古来	A	https://zh.wikipedia.org/zh-cn/%E5%8F%A4%E6%9D%A5%E7%AB%99	en.wikipedia Kulai railway station (15 m from the station); zh-cn title 古来站
+station	Bahau	102.40389	2.81136	马口	A	https://zh.wikipedia.org/zh-cn/%E9%A9%AC%E5%8F%A3%E7%AB%99	en.wikipedia Bahau railway station (25 m from the station); zh-cn title 马口站
+station	Kuala Lipis	102.05302	4.18721	瓜拉立卑	A	https://zh.wikipedia.org/zh-cn/%E7%93%9C%E6%8B%89%E7%AB%8B%E5%8D%91%E7%AB%99	en.wikipedia Kuala Lipis railway station (30 m from the station); zh-cn title 瓜拉立卑站
+station	Mentakab	102.34327	3.48444	文德甲	A	https://zh.wikipedia.org/zh-cn/%E6%96%87%E5%BE%B7%E7%94%B2%E7%AB%99	en.wikipedia Mentakab railway station (7 m from the station); zh-cn title 文德甲站
+station	Triang	102.41126	3.24619	直凉	A	https://zh.wikipedia.org/zh-cn/%E7%9B%B4%E5%87%89%E7%AB%99	en.wikipedia Triang railway station (84 m from the station); zh-cn title 直凉站
+station	Jerantut	102.35773	3.93714	而连突	A	https://zh.wikipedia.org/zh-cn/%E8%80%8C%E8%BF%9E%E7%AA%81%E7%AB%99	en.wikipedia Jerantut railway station (11 m from the station); zh-cn title 而连突站
+station	Arau	100.26832	6.43191	亚娄	A	https://zh.wikipedia.org/zh-cn/%E4%BA%9A%E5%A8%84	en.wikipedia Arau (242 m from the station); zh-cn title 亚娄; matched by its first words
+station	Pudu	101.71203	3.13493	半山芭	A	https://zh.wikipedia.org/zh-cn/%E5%8D%8A%E5%B1%B1%E8%8A%AD%E7%AB%99	en.wikipedia Pudu LRT station (4 m from the station); zh-cn title 半山芭站
+station	Maluri	101.72693	3.1233	马鲁里	A	https://zh.wikipedia.org/zh-cn/%E9%A9%AC%E9%B2%81%E9%87%8C%E7%AB%99	en.wikipedia Maluri station (6 m from the station); zh-cn title 马鲁里站
+station	Titiwangsa	101.69527	3.17355	蒂蒂旺沙	A	https://zh.wikipedia.org/zh-cn/%E8%92%82%E8%92%82%E6%97%BA%E6%B2%99%E7%AB%99	en.wikipedia Titiwangsa station (42 m from the station); zh-cn title 蒂蒂旺沙站
+station	KL Sentral (Monorail)	101.68767	3.13292	吉隆坡中央	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E4%B8%AD%E5%A4%AE%E8%BD%A6%E7%AB%99	en.wikipedia Kuala Lumpur Sentral station (209 m from the station); zh-cn title 吉隆坡中央车站
+station	Kerinchi	101.66851	3.1155	格灵芝	A	https://zh.wikipedia.org/zh-cn/%E6%A0%BC%E7%81%B5%E8%8A%9D%E7%AB%99	en.wikipedia Kerinchi LRT station (56 m from the station); zh-cn title 格灵芝站
+station	PWTC	101.69358	3.16658	布特拉世界贸易中心	A	https://zh.wikipedia.org/zh-cn/%E5%B8%83%E7%89%B9%E6%8B%89%E4%B8%96%E7%95%8C%E8%B4%B8%E6%98%93%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia PWTC LRT station (35 m from the station); zh-cn title 布特拉世界贸易中心站
+station	Universiti	101.66174	3.11456	大学	A	https://zh.wikipedia.org/zh-cn/%E5%A4%A7%E5%AD%A6%E7%AB%99_%28%E5%90%89%E9%9A%86%E5%9D%A1%29	en.wikipedia Universiti LRT station (15 m from the station); zh-cn title 大学站 (吉隆坡)
+station	Bukit Bintang	101.71151	3.14606	武吉免登	A	https://zh.wikipedia.org/zh-cn/%E6%AD%A6%E5%90%89%E5%85%8D%E7%99%BB	en.wikipedia Bukit Bintang (78 m from the station); zh-cn title 武吉免登; matched by its first words
+station	Sungai Besi	101.70807	3.06393	新街场	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E8%A1%97%E5%9C%BA%E7%AB%99	en.wikipedia Sungai Besi station (8 m from the station); zh-cn title 新街场站
+station	Pasar Seni	101.69603	3.14237	中央艺术坊	A	https://zh.wikipedia.org/zh-cn/%E4%B8%AD%E5%A4%AE%E8%89%BA%E6%9C%AF%E5%9D%8A%E7%AB%99	en.wikipedia Pasar Seni station (85 m from the station); zh-cn title 中央艺术坊站
+station	Taman Bahagia	101.61276	3.11068	幸福花园	A	https://zh.wikipedia.org/zh-cn/%E5%B9%B8%E7%A6%8F%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Bahagia LRT station (32 m from the station); zh-cn title 幸福花园站
+station	Kelana Jaya	101.60459	3.11246	格拉那再也	A	https://zh.wikipedia.org/zh-cn/%E6%A0%BC%E6%8B%89%E9%82%A3%E5%86%8D%E4%B9%9F%E7%AB%99	en.wikipedia Kelana Jaya LRT station (78 m from the station); zh-cn title 格拉那再也站
+station	Gombak	101.72441	3.23115	鹅唛	A	https://zh.wikipedia.org/zh-cn/%E9%B9%85%E5%94%9B%E7%AB%99	en.wikipedia Gombak LRT station (8 m from the station); zh-cn title 鹅唛站
+station	Setiawangsa	101.73593	3.17589	斯迪亚旺沙	A	https://zh.wikipedia.org/zh-cn/%E6%96%AF%E8%BF%AA%E4%BA%9A%E6%97%BA%E6%B2%99%E7%AB%99	en.wikipedia Setiawangsa LRT station (21 m from the station); zh-cn title 斯迪亚旺沙站
+station	Taman Paramount	101.62309	3.10476	百乐花园	A	https://zh.wikipedia.org/zh-cn/%E7%99%BE%E4%B9%90%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Paramount LRT station (35 m from the station); zh-cn title 百乐花园站
+station	Kuang	101.55468	3.2583	轰埠	A	https://zh.wikipedia.org/zh-cn/%E8%BD%B0%E5%9F%A0%E7%AB%99	en.wikipedia Kuang Komuter station (45 m from the station); zh-cn title 轰埠站
+station	Mid Valley	101.67881	3.11878	谷中城	A	https://zh.wikipedia.org/zh-cn/%E8%B0%B7%E4%B8%AD%E5%9F%8E%E7%AB%99	en.wikipedia Mid Valley Komuter station (54 m from the station); zh-cn title 谷中城站
+station	Subang Jaya	101.58743	3.0846	梳邦再也	A	https://zh.wikipedia.org/zh-cn/%E6%A2%B3%E9%82%A6%E5%86%8D%E4%B9%9F%E7%AB%99	en.wikipedia Subang Jaya station (71 m from the station); zh-cn title 梳邦再也站
+station	Kampung Batu	101.67565	3.2048	甘榜峇都	A	https://zh.wikipedia.org/zh-cn/%E7%94%98%E6%A6%9C%E5%B3%87%E9%83%BD%E7%AB%99	en.wikipedia Kampung Batu station (14 m from the station); zh-cn title 甘榜峇都站
+station	Kuala Kubu Bharu	101.63951	3.55328	新古毛	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E5%8F%A4%E6%AF%9B%E7%AB%99	en.wikipedia Kuala Kubu Bharu railway station (63 m from the station); zh-cn title 新古毛站
+station	Ipoh	101.07337	4.59756	怡保	A	https://zh.wikipedia.org/zh-cn/%E6%80%A1%E4%BF%9D%E7%AB%99	en.wikipedia Ipoh railway station (38 m from the station); zh-cn title 怡保站
+station	Serendah	101.61458	3.37609	双文丹	A	https://zh.wikipedia.org/zh-cn/%E5%8F%8C%E6%96%87%E4%B8%B9%E7%AB%99	en.wikipedia Serendah Komuter station (33 m from the station); zh-cn title 双文丹站
+station	Batu Gajah	101.04952	4.45989	华都牙也	A	https://zh.wikipedia.org/zh-cn/%E5%8D%8E%E9%83%BD%E7%89%99%E4%B9%9F%E7%AB%99	en.wikipedia Batu Gajah railway station (13 m from the station); zh-cn title 华都牙也站
+station	Nibong Tebal	100.47981	5.16944	高渊	A	https://zh.wikipedia.org/zh-cn/%E9%AB%98%E6%B8%8A	en.wikipedia Nibong Tebal (145 m from the station); zh-cn title 高渊; matched by its first words
+station	Ampang	101.76024	3.15039	安邦	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E9%82%A6%E7%AB%99	en.wikipedia Ampang LRT station (29 m from the station); zh-cn title 安邦站
+station	Awan Besar	101.67059	3.06209	阿旺柏沙	A	https://zh.wikipedia.org/zh-cn/%E9%98%BF%E6%97%BA%E6%9F%8F%E6%B2%99%E7%AB%99	en.wikipedia Awan Besar LRT station (2 m from the station); zh-cn title 阿旺柏沙站
+station	Putra Heights	101.57547	2.99609	布特拉高原	A	https://zh.wikipedia.org/zh-cn/%E5%B8%83%E7%89%B9%E6%8B%89%E9%AB%98%E5%8E%9F%E7%AB%99	en.wikipedia Putra Heights LRT station (10 m from the station); zh-cn title 布特拉高原站
+station	IOI Puchong Jaya	101.6211	3.04815	IOI蒲种再也	A	https://zh.wikipedia.org/zh-cn/IOI%E8%92%B2%E7%A7%8D%E5%86%8D%E4%B9%9F%E7%AB%99	en.wikipedia IOI Puchong Jaya LRT station (25 m from the station); zh-cn title IOI蒲种再也站
+station	Pusat Bandar Puchong	101.61608	3.03326	蒲种市中心	A	https://zh.wikipedia.org/zh-cn/%E8%92%B2%E7%A7%8D%E5%B8%82%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Pusat Bandar Puchong LRT station (6 m from the station); zh-cn title 蒲种市中心站
+station	Alam Megah	101.57215	3.02317	美佳园	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E4%BD%B3%E5%9B%AD%E7%AB%99	en.wikipedia Alam Megah LRT station (22 m from the station); zh-cn title 美佳园站
+station	Ara Damansara	101.58652	3.10842	阿拉白沙罗	A	https://zh.wikipedia.org/zh-cn/%E9%98%BF%E6%8B%89%E7%99%BD%E6%B2%99%E7%BD%97%E7%AB%99	en.wikipedia Ara Damansara LRT station (8 m from the station); zh-cn title 阿拉白沙罗站
+station	Glenmarie	101.59022	3.09583	格林玛丽	A	https://zh.wikipedia.org/zh-cn/%E6%A0%BC%E6%9E%97%E7%8E%9B%E4%B8%BD%E7%AB%99	en.wikipedia Glenmarie LRT station (31 m from the station); zh-cn title 格林玛丽站
+station	Lembah Subang	101.59122	3.11211	梳邦谷	A	https://zh.wikipedia.org/zh-cn/%E6%A2%B3%E9%82%A6%E8%B0%B7%E7%AB%99	en.wikipedia Lembah Subang LRT station (2 m from the station); zh-cn title 梳邦谷站
+station	Taiping	100.7322	4.85285	太平	A	https://zh.wikipedia.org/zh-cn/%E5%A4%AA%E5%B9%B3%E7%AB%99_%28%E9%9C%B9%E9%9B%B3%29	en.wikipedia Taiping railway station (179 m from the station); zh-cn title 太平站 (霹雳)
+station	Kuala Kangsar	100.93195	4.7762	江沙	A	https://zh.wikipedia.org/zh-cn/%E6%B1%9F%E6%B2%99%E7%AB%99	en.wikipedia Kuala Kangsar railway station (38 m from the station); zh-cn title 江沙站
+station	Sungai Siput	101.07129	4.81881	和丰	A	https://zh.wikipedia.org/zh-cn/%E5%92%8C%E4%B8%B0	en.wikipedia Sungai Siput (195 m from the station); zh-cn title 和丰; matched by its first words
+station	Rawang	101.57501	3.3189	万挠	A	https://zh.wikipedia.org/zh-cn/%E4%B8%87%E6%8C%A0%E7%AB%99	en.wikipedia Rawang railway station (2 m from the station); zh-cn title 万挠站
+station	Tapah Road	101.1895	4.17393	打巴路	A	https://zh.wikipedia.org/zh-cn/%E6%89%93%E5%B7%B4%E8%B7%AF%E7%AB%99	en.wikipedia Tapah Road railway station (133 m from the station); zh-cn title 打巴路站
+station	Sungai Buloh	101.58176	3.20628	双溪毛糯	A	https://zh.wikipedia.org/zh-cn/%E5%8F%8C%E6%BA%AA%E6%AF%9B%E7%B3%AF%E7%AB%99	en.wikipedia Sungai Buloh station (166 m from the station); zh-cn title 双溪毛糯站
+station	Kampung Selamat	101.57841	3.19725	甘榜士拉玛	A	https://zh.wikipedia.org/zh-cn/%E7%94%98%E6%A6%9C%E5%A3%AB%E6%8B%89%E7%8E%9B%E7%AB%99	en.wikipedia Kampung Selamat MRT station (13 m from the station); zh-cn title 甘榜士拉玛站
+station	Surian	101.59387	3.14959	苏丽雅	A	https://zh.wikipedia.org/zh-cn/%E8%8B%8F%E4%B8%BD%E9%9B%85%E7%AB%99	en.wikipedia Surian MRT station (31 m from the station); zh-cn title 苏丽雅站
+station	Mutiara Damansara	101.60877	3.15523	珍珠白沙罗	A	https://zh.wikipedia.org/zh-cn/%E7%8F%8D%E7%8F%A0%E7%99%BD%E6%B2%99%E7%BD%97%E7%AB%99	en.wikipedia Mutiara Damansara MRT station (7 m from the station); zh-cn title 珍珠白沙罗站
+station	Bandar Utama	101.61875	3.14667	万达镇	A	https://zh.wikipedia.org/zh-cn/%E4%B8%87%E8%BE%BE%E9%95%87%E7%AB%99	en.wikipedia Bandar Utama station (3 m from the station); zh-cn title 万达镇站
+station	Taman Tun Dr Ismail	101.63088	3.13602	敦依斯迈花园	A	https://zh.wikipedia.org/zh-cn/%E6%95%A6%E4%BE%9D%E6%96%AF%E8%BF%88%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Tun Dr Ismail MRT station (15 m from the station); zh-cn title 敦依斯迈花园站
+station	Phileo Damansara	101.64292	3.12925	菲利欧白沙罗	A	https://zh.wikipedia.org/zh-cn/%E8%8F%B2%E5%88%A9%E6%AC%A7%E7%99%BD%E6%B2%99%E7%BD%97%E7%AB%99	en.wikipedia Phileo Damansara MRT station (5 m from the station); zh-cn title 菲利欧白沙罗站
+station	Pusat Bandar Damansara	101.66241	3.14335	白沙罗市中心	A	https://zh.wikipedia.org/zh-cn/%E7%99%BD%E6%B2%99%E7%BD%97%E5%B8%82%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Pusat Bandar Damansara MRT station (20 m from the station); zh-cn title 白沙罗市中心站
+station	Semantan	101.66555	3.15104	士曼丹	A	https://zh.wikipedia.org/zh-cn/%E5%A3%AB%E6%9B%BC%E4%B8%B9%E7%AB%99	en.wikipedia Semantan MRT station (12 m from the station); zh-cn title 士曼丹站
+station	Kwasa Damansara	101.57235	3.17634	桂莎白沙罗	A	https://zh.wikipedia.org/zh-cn/%E6%A1%82%E8%8E%8E%E7%99%BD%E6%B2%99%E7%BD%97%E7%AB%99	en.wikipedia Kwasa Damansara MRT station (27 m from the station); zh-cn title 桂莎白沙罗站
+station	Kwasa Sentral	101.56477	3.16971	桂莎中央	A	https://zh.wikipedia.org/zh-cn/%E6%A1%82%E8%8E%8E%E4%B8%AD%E5%A4%AE%E7%AB%99	en.wikipedia Kwasa Sentral MRT station (23 m from the station); zh-cn title 桂莎中央站
+station	Kota Damansara	101.57884	3.15019	哥打白沙罗	A	https://zh.wikipedia.org/zh-cn/%E5%93%A5%E6%89%93%E7%99%BD%E6%B2%99%E7%BD%97%E7%AB%99	en.wikipedia Kota Damansara MRT station (28 m from the station); zh-cn title 哥打白沙罗站
+station	Merdeka	101.70205	3.1429	默迪卡	A	https://zh.wikipedia.org/zh-cn/%E9%BB%98%E8%BF%AA%E5%8D%A1%E7%AB%99	en.wikipedia Merdeka MRT station (104 m from the station); zh-cn title 默迪卡站
+station	Rasa	101.63408	3.50025	叻思	A	https://zh.wikipedia.org/zh-cn/%E5%8F%BB%E6%80%9D%E7%AB%99	en.wikipedia Rasa Komuter station (29 m from the station); zh-cn title 叻思站
+station	Taman Pertama	101.72934	3.1125	第一花园	A	https://zh.wikipedia.org/zh-cn/%E7%AC%AC%E4%B8%80%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Pertama MRT station (27 m from the station); zh-cn title 第一花园站
+station	Taman Midah	101.73221	3.10449	美达花园	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E8%BE%BE%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Midah MRT station (2 m from the station); zh-cn title 美达花园站
+station	Taman Suntex	101.76346	3.07168	山力花园	A	https://zh.wikipedia.org/zh-cn/%E5%B1%B1%E5%8A%9B%E8%8A%B1%E5%9B%AD%E7%AB%99	en.wikipedia Taman Suntex MRT station (18 m from the station); zh-cn title 山力花园站
+station	Stadium Kajang	101.78619	2.99415	加影体育场	A	https://zh.wikipedia.org/zh-cn/%E5%8A%A0%E5%BD%B1%E4%BD%93%E8%82%B2%E5%9C%BA%E7%AB%99	en.wikipedia Stadium Kajang MRT station (18 m from the station); zh-cn title 加影体育场站
+station	Seremban	101.9407	2.71873	芙蓉	A	https://zh.wikipedia.org/zh-cn/%E8%8A%99%E8%93%89%E7%AB%99_%28%E6%A3%AE%E7%BE%8E%E5%85%B0%29	en.wikipedia Seremban railway station (24 m from the station); zh-cn title 芙蓉站 (森美兰)
+station	Pasir Mas	102.14254	6.04269	巴西马	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E8%A5%BF%E9%A9%AC%E7%AB%99	en.wikipedia Pasir Mas railway station (11 m from the station); zh-cn title 巴西马站
+station	Batang Melaka	102.41561	2.47362	巴登马六甲	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E7%99%BB%E9%A9%AC%E5%85%AD%E7%94%B2%E7%AB%99	en.wikipedia Batang Melaka railway station (18 m from the station); zh-cn title 巴登马六甲站
+station	Merapoh	102.00315	4.6932	美拉坡	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E6%8B%89%E5%9D%A1%E7%AB%99	en.wikipedia Merapoh railway station (44 m from the station); zh-cn title 美拉坡站
+station	Muzium Negara	101.68706	3.13721	马来西亚国家博物馆	A	https://zh.wikipedia.org/zh-cn/%E9%A9%AC%E6%9D%A5%E8%A5%BF%E4%BA%9A%E5%9B%BD%E5%AE%B6%E5%8D%9A%E7%89%A9%E9%A6%86	en.wikipedia National Museum (Malaysia) (55 m from the station); zh-cn title 马来西亚国家博物馆; matched by its first words
+station	KL Sentral	101.68643	3.13431	吉隆坡中央	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E4%B8%AD%E5%A4%AE%E8%BD%A6%E7%AB%99	en.wikipedia Kuala Lumpur Sentral station (4 m from the station); zh-cn title 吉隆坡中央车站
+station	Labis	103.01988	2.38349	拉美士	A	https://zh.wikipedia.org/zh-cn/%E6%8B%89%E7%BE%8E%E5%A3%AB%E7%AB%99	en.wikipedia Labis railway station (42 m from the station); zh-cn title 拉美士站
+station	Anak Bukit	100.37471	6.1832	安南武吉	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E5%8D%97%E6%AD%A6%E5%90%89	en.wikipedia Anak Bukit (92 m from the station); zh-cn title 安南武吉; matched by its first words
+station	Tun Razak Exchange	101.71999	3.14272	敦拉萨国际贸易中心	A	https://zh.wikipedia.org/zh-cn/%E6%95%A6%E6%8B%89%E8%90%A8%E5%9B%BD%E9%99%85%E8%B4%B8%E6%98%93%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Tun Razak Exchange MRT station (40 m from the station); zh-cn title 敦拉萨国际贸易中心站
+station	Kampung Batu	101.67508	3.20599	甘榜峇都	A	https://zh.wikipedia.org/zh-cn/%E7%94%98%E6%A6%9C%E5%B3%87%E9%83%BD%E7%AB%99	en.wikipedia Kampung Batu station (151 m from the station); zh-cn title 甘榜峇都站
+station	Metro Prima	101.64021	3.21447	美娜园	A	https://zh.wikipedia.org/zh-cn/%E7%BE%8E%E5%A8%9C%E5%9B%AD%E7%AB%99	en.wikipedia Metro Prima MRT station (20 m from the station); zh-cn title 美娜园站
+station	Sri Damansara Sentral	101.62108	3.19849	斯里白沙罗中心	A	https://zh.wikipedia.org/zh-cn/%E6%96%AF%E9%87%8C%E7%99%BD%E6%B2%99%E7%BD%97%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Sri Damansara Sentral MRT station (26 m from the station); zh-cn title 斯里白沙罗中心站
+station	Damansara Damai	101.59262	3.19979	白沙罗达迈	A	https://zh.wikipedia.org/zh-cn/%E7%99%BD%E6%B2%99%E7%BD%97%E8%BE%BE%E8%BF%88%E7%AB%99	en.wikipedia Damansara Damai MRT station (12 m from the station); zh-cn title 白沙罗达迈站
+station	16 Sierra	101.6548	2.96544	16岭	A	https://zh.wikipedia.org/zh-cn/16%E5%B2%AD%E7%AB%99	en.wikipedia 16 Sierra MRT station (10 m from the station); zh-cn title 16岭站
+station	Cyberjaya Utara	101.6574	2.94939	赛城北	A	https://zh.wikipedia.org/zh-cn/%E8%B5%9B%E5%9F%8E%E5%8C%97%E7%AB%99	en.wikipedia Cyberjaya Utara MRT station (79 m from the station); zh-cn title 赛城北站
+station	Kajang 2	101.79209	2.96264	加影新城	A	https://zh.wikipedia.org/zh-cn/%E5%8A%A0%E5%BD%B1%E6%96%B0%E5%9F%8E%E7%AB%99	en.wikipedia Kajang 2 railway station (2 m from the station); zh-cn title 加影新城站
+station	Cyberjaya City Centre	101.66561	2.93901	赛城市中心	A	https://zh.wikipedia.org/zh-cn/%E8%B5%9B%E5%9F%8E%E5%B8%82%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Cyberjaya City Centre MRT station (69 m from the station); zh-cn title 赛城市中心站
+station	Putrajaya Sentral	101.67149	2.93151	布城中央	A	https://zh.wikipedia.org/zh-cn/%E5%B8%83%E5%9F%8E%E4%B8%AD%E5%A4%AE%E8%BD%A6%E7%AB%99	en.wikipedia Putrajaya Sentral (61 m from the station); zh-cn title 布城中央车站; matched by its first words
+station	Sungai Besi	101.70842	3.06408	新街场	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E8%A1%97%E5%9C%BA%E7%AB%99	en.wikipedia Sungai Besi station (49 m from the station); zh-cn title 新街场站
+station	Alor Setar	100.36958	6.11321	亚罗士打	A	https://zh.wikipedia.org/zh-cn/%E4%BA%9A%E7%BD%97%E5%A3%AB%E6%89%93%E7%AB%99	en.wikipedia Alor Setar railway station (23 m from the station); zh-cn title 亚罗士打站
+station	Kuchai	101.69402	3.08938	古仔	A	https://zh.wikipedia.org/zh-cn/%E5%8F%A4%E4%BB%94%E7%AB%99	en.wikipedia Kuchai MRT station (24 m from the station); zh-cn title 古仔站
+station	Bekok	103.12905	2.29692	彼咯	A	https://zh.wikipedia.org/zh-cn/%E5%BD%BC%E5%92%AF%E7%AB%99	en.wikipedia Bekok railway station (16 m from the station); zh-cn title 彼咯站
+station	Layang-Layang	103.47743	1.81195	拉央拉央	A	https://zh.wikipedia.org/zh-cn/%E6%8B%89%E5%A4%AE%E6%8B%89%E5%A4%AE%E7%AB%99	en.wikipedia Layang-Layang railway station (102 m from the station); zh-cn title 拉央拉央站
+station	Klang Jaya	101.44183	3.00542	良木园	A	https://zh.wikipedia.org/zh-cn/%E8%89%AF%E6%9C%A8%E5%9B%AD%E7%AB%99	en.wikipedia Klang Jaya LRT station (10 m from the station); zh-cn title 良木园站
+station	Johan Setia	101.45943	2.9763	佐汉瑟迪亚	A	https://zh.wikipedia.org/zh-cn/%E4%BD%90%E6%B1%89%E7%91%9F%E8%BF%AA%E4%BA%9A%E7%AB%99	en.wikipedia Johan Setia LRT station (3 m from the station); zh-cn title 佐汉瑟迪亚站
+station	Sungai Buloh	101.58011	3.20618	双溪毛糯	A	https://zh.wikipedia.org/zh-cn/%E5%8F%8C%E6%BA%AA%E6%AF%9B%E7%B3%AF%E7%AB%99	en.wikipedia Sungai Buloh station (20 m from the station); zh-cn title 双溪毛糯站
+station	Batu Caves	101.68145	3.23797	黑风洞	A	https://zh.wikipedia.org/zh-cn/%E9%BB%91%E9%A3%8E%E6%B4%9E	en.wikipedia Batu Caves (280 m from the station); zh-cn title 黑风洞; matched by its first words
+station	Klang	101.44959	3.04311	巴生	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E7%94%9F%E7%AB%99	en.wikipedia Klang Komuter station (46 m from the station); zh-cn title 巴生站
+station	BU 11 (Bandar Utama 11)	101.60458	3.13344	万达镇11区	A	https://zh.wikipedia.org/zh-cn/%E4%B8%87%E8%BE%BE%E9%95%8711%E5%8C%BA%E7%AB%99	en.wikipedia BU 11 LRT station (146 m from the station); zh-cn title 万达镇11区站; matched by its first words
+station	Dato' Menteri	101.52123	3.06995	拿督孟德里	A	https://zh.wikipedia.org/zh-cn/%E6%8B%BF%E7%9D%A3%E5%AD%9F%E5%BE%B7%E9%87%8C%E7%AB%99	en.wikipedia Dato' Menteri LRT station (7 m from the station); zh-cn title 拿督孟德里站
+station	Kayu Ara	101.61684	3.13497	卡尤阿拉	A	https://zh.wikipedia.org/zh-cn/%E5%8D%A1%E5%B0%A4%E9%98%BF%E6%8B%89%E7%AB%99	en.wikipedia Kayu Ara LRT station (9 m from the station); zh-cn title 卡尤阿拉站
+station	Subang	101.59127	3.10632	梳邦	A	https://zh.wikipedia.org/zh-cn/%E6%A2%B3%E9%82%A6%E7%AB%99	en.wikipedia Subang LRT station (33 m from the station); zh-cn title 梳邦站
+station	Kluang	103.3167	2.0352	居銮	A	https://zh.wikipedia.org/zh-cn/%E5%B1%85%E9%8A%AE%E7%AB%99	en.wikipedia Kluang railway station (15 m from the station); zh-cn title 居銮站
+station	Ampang Park	101.71792	3.16186	安邦购物中心	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E9%82%A6%E8%B4%AD%E7%89%A9%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Ampang Park LRT station (250 m from the station); zh-cn title 安邦购物中心站
+station	Persiaran KLCC	101.718	3.15691	城中城道	A	https://zh.wikipedia.org/zh-cn/%E5%9F%8E%E4%B8%AD%E5%9F%8E%E9%81%93%E7%AB%99	en.wikipedia Persiaran KLCC MRT station (91 m from the station); zh-cn title 城中城道站
+station	Kuala Lumpur	101.6935	3.13992	吉隆坡火车总	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E7%81%AB%E8%BD%A6%E6%80%BB%E7%AB%99	en.wikipedia Kuala Lumpur railway station (56 m from the station); zh-cn title 吉隆坡火车总站
+station	Ampang Park	101.71886	3.16013	安邦购物中心	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E9%82%A6%E8%B4%AD%E7%89%A9%E4%B8%AD%E5%BF%83%E7%AB%99	en.wikipedia Ampang Park LRT station (53 m from the station); zh-cn title 安邦购物中心站
+station	Paloh	103.18989	2.19086	巴罗	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E7%BD%97%E7%AB%99	en.wikipedia Paloh railway station (15 m from the station); zh-cn title 巴罗站
+station	Rengam	103.40397	1.88395	令金	A	https://zh.wikipedia.org/zh-cn/%E4%BB%A4%E9%87%91%E7%AB%99	en.wikipedia Rengam railway station (12 m from the station); zh-cn title 令金站
+rail line	KTM Laluan kereta api Pantai Barat			西海岸铁路线	A	https://zh.wikipedia.org/zh-cn/%E8%A5%BF%E6%B5%B7%E5%B2%B8%E9%93%81%E8%B7%AF%E7%BA%BF	en.wikipedia KTM West Coast railway line; zh-cn title 西海岸铁路线
+rail line	KTM Laluan kereta api Pantai Timur			东海岸铁路线	A	https://zh.wikipedia.org/zh-cn/%E4%B8%9C%E6%B5%B7%E5%B2%B8%E9%93%81%E8%B7%AF%E7%BA%BF	en.wikipedia KTM East Coast railway line; zh-cn title 东海岸铁路线
+rail line	Laluan Keretapi Barat Sabah			西沙巴铁路线	A	https://zh.wikipedia.org/zh-cn/%E8%A5%BF%E6%B2%99%E5%B7%B4%E9%93%81%E8%B7%AF%E7%BA%BF	en.wikipedia Western Sabah Railway Line; zh-cn title 西沙巴铁路线
+rail line	ERL			吉隆坡机场快铁	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E6%9C%BA%E5%9C%BA%E5%BF%AB%E9%93%81	en.wikipedia Express Rail Link; zh-cn title 吉隆坡机场快铁
+line being built	East Coast Rail Link			东海岸衔接铁道	A	https://zh.wikipedia.org/zh-cn/%E4%B8%9C%E6%B5%B7%E5%B2%B8%E8%A1%94%E6%8E%A5%E9%93%81%E9%81%93	en.wikipedia MRL East Coast Rail Link; zh-cn title 东海岸衔接铁道
+line being built	LRT Laluan Mutiara			珍珠线	A	https://zh.wikipedia.org/zh-cn/%E7%8F%8D%E7%8F%A0%E7%BA%BF	en.wikipedia Mutiara Line; zh-cn title 珍珠线
+line being built	Johor Bahru–Singapore Rapid Transit System			新山—新加坡捷运系统	A	https://zh.wikipedia.org/zh-cn/%E6%96%B0%E5%B1%B1%E2%80%94%E6%96%B0%E5%8A%A0%E5%9D%A1%E6%8D%B7%E8%BF%90%E7%B3%BB%E7%BB%9F	en.wikipedia Johor Bahru–Singapore Rapid Transit System; zh-cn title 新山—新加坡捷运系统
+metro line	Kelana Jaya Line			格拉那再也线	A	https://zh.wikipedia.org/zh-cn/%E6%A0%BC%E6%8B%89%E9%82%A3%E5%86%8D%E4%B9%9F%E7%BA%BF	en.wikipedia Kelana Jaya Line; zh-cn title 格拉那再也线
+metro line	Shah Alam Line			莎阿南线	A	https://zh.wikipedia.org/zh-cn/%E8%8E%8E%E9%98%BF%E5%8D%97%E7%BA%BF	en.wikipedia Shah Alam Line; zh-cn title 莎阿南线
+metro line	KL Monorail			吉隆坡单轨列车	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E5%8D%95%E8%BD%A8%E5%88%97%E8%BD%A6	en.wikipedia KL Monorail; zh-cn title 吉隆坡单轨列车
+metro line	Laluan Kajang			加影线	A	https://zh.wikipedia.org/zh-cn/%E5%8A%A0%E5%BD%B1%E7%BA%BF	en.wikipedia Kajang Line; zh-cn title 加影线
+metro line	Laluan Putrajaya			布城线	A	https://zh.wikipedia.org/zh-cn/%E5%B8%83%E5%9F%8E%E7%BA%BF	en.wikipedia Putrajaya Line; zh-cn title 布城线
+metro line	KLIA Ekspres			吉隆坡机场快线	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E6%9C%BA%E5%9C%BA%E5%BF%AB%E7%BA%BF	en.wikipedia KLIA Ekspres; zh-cn title 吉隆坡机场快线
+metro line	KLIA Transit			吉隆坡机场支线	A	https://zh.wikipedia.org/zh-cn/%E5%90%89%E9%9A%86%E5%9D%A1%E6%9C%BA%E5%9C%BA%E6%94%AF%E7%BA%BF	en.wikipedia KLIA Transit; zh-cn title 吉隆坡机场支线
+metro line	Seremban Line			芙蓉线	A	https://zh.wikipedia.org/zh-cn/%E8%8A%99%E8%93%89%E7%BA%BF	en.wikipedia Batu Caves–Pulau Sebang Line; zh-cn title 芙蓉线
+metro line	Port Klang Line			巴生港线	A	https://zh.wikipedia.org/zh-cn/%E5%B7%B4%E7%94%9F%E6%B8%AF%E7%BA%BF	en.wikipedia Tanjung Malim–Port Klang Line; zh-cn title 巴生港线
+metro line	Ampang Line			安邦线	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E9%82%A6%E7%BA%BF%E5%92%8C%E5%A4%A7%E5%9F%8E%E5%A0%A1%E7%BA%BF	the zh-cn title of the article of both lines (en.wikipedia Ampang and Sri Petaling lines) is 安邦线和大城堡线
+metro line	Sri Petaling Line			大城堡线	A	https://zh.wikipedia.org/zh-cn/%E5%AE%89%E9%82%A6%E7%BA%BF%E5%92%8C%E5%A4%A7%E5%9F%8E%E5%A0%A1%E7%BA%BF	the zh-cn title of the article of both lines (en.wikipedia Ampang and Sri Petaling lines) is 安邦线和大城堡线
+metro system or city	Penang			槟城	A	https://zh.wikipedia.org/zh-cn/%E6%A7%9F%E5%9F%8E	en.wikipedia Penang; zh-cn title 槟城
