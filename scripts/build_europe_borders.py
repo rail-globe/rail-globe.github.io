@@ -18,7 +18,7 @@ from build_view_boundaries import pack_ring
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CACHE = ROOT / "data" / "cache" / "borders"
 COUNTRIES = {"de": "DEU", "fr": "FRA", "ch": "CHE", "es": "ESP",
-             "nl": "NLD", "be": "BEL", "it": "ITA"}
+             "nl": "NLD", "be": "BEL", "it": "ITA", "at": "AUT", "hu": "HUN"}
 EUROPE_BOUNDS = (-25, 34, 45, 72)
 SOURCE = {
     "url": "https://gisco-services.ec.europa.eu/distribution/v2/countries/geojson/CNTR_BN_01M_2024_4326.geojson",

@@ -13,8 +13,9 @@ def tags(*rows):
 
 
 class EuropeanCountryTest(unittest.TestCase):
-    def test_all_seven_countries_share_the_complete_layer_contract(self):
-        self.assertEqual(set(COUNTRIES), {"de", "fr", "ch", "es", "nl", "be", "it"})
+    def test_all_european_countries_share_the_complete_layer_contract(self):
+        # the seven of 2026-10-17, and Austria and Hungary (2026-10-21)
+        self.assertEqual(set(COUNTRIES), {"de", "fr", "ch", "es", "nl", "be", "it", "at", "hu"})
         for code, country in COUNTRIES.items():
             self.assertEqual(country.code, code)
             self.assertTrue(country.cities)

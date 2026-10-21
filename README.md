@@ -2,7 +2,7 @@
 
 中文 | [English](README.en.md)
 
-中国、日本、韩国、英国，欧洲的德国、法国、瑞士、西班牙、荷兰、比利时、意大利，东南亚的老挝、泰国、马来西亚、新加坡、印度尼西亚：铁路、地铁和有轨电车画在卫星影像的地球上。
+中国、日本、韩国、英国，欧洲的德国、法国、瑞士、西班牙、荷兰、比利时、意大利、奥地利、匈牙利，东南亚的老挝、泰国、马来西亚、新加坡、印度尼西亚：铁路、地铁和有轨电车画在卫星影像的地球上。
 
 **在线查看：https://rail-globe.github.io/**
 
@@ -58,18 +58,20 @@
 | 荷兰 | 欧洲领土的铁路、地铁、轻轨和电车；车站、在建线路、站场与车辆基地 |
 | 比利时 | 铁路、地铁、轻轨和电车，含沿海电车；车站、在建线路、站场与车辆基地 |
 | 意大利 | 意大利半岛、西西里和撒丁岛的铁路、地铁、轻轨和电车；车站、在建线路、站场与车辆基地 |
+| 奥地利 | 铁路与遗产铁路，Koralmbahn、维也纳至圣珀尔滕、下因河谷三条新建高速线；维也纳地铁，维也纳、格拉茨、林茨、因斯布鲁克的电车；车站、在建线路、站场与车辆基地 |
+| 匈牙利 | 铁路与遗产铁路；布达佩斯地铁、HÉV 和电车，塞格德、德布勒森、米什科尔茨的电车；车站、在建线路、站场与车辆基地 |
 | 老挝 | 中老铁路(160 档)和从泰国过境到 Khamsavath 的铁路；车站、站场与车辆基地 |
 | 泰国 | 全国铁路，曼谷的地铁、轻轨、单轨、红线和机场线；中泰高铁等在建线路；车站、站场与车辆基地 |
 | 马来西亚 | 半岛和沙巴的铁路，吉隆坡的地铁、轻轨、单轨、KTM 通勤线和机场快线，槟城的 KTM 通勤线；东海岸铁路等在建线路；车站、站场与车辆基地 |
 | 新加坡 | 地铁和轻轨；跨岛线、裕廊区域线、新柔捷运等在建线路；车站、站场与车辆基地 |
 | 印度尼西亚 | 爪哇、苏门答腊和苏拉威西的铁路，雅加达至万隆高铁(350 档)；雅加达的 KRL 通勤线、地铁和轻轨，日惹、梭罗、棉兰、巴东的通勤和机场线，巨港轻轨；车站、站场与车辆基地 |
 
-S-Bahn、RER、Cercanías 使用的铁路轨道包含在铁路层。欧洲线路与站名保留当地写法；有来源的中文、英文名字随语言切换并可搜索，缺名轨道保留显示但不编造线路名。铁路范围依 OSM 已绘制对象，法国海外地区不在当前源范围内。泰国、老挝的名字写当地文字，后面括号里是有出处的中文名，没有中文名的写英文名；马来西亚、新加坡、印度尼西亚写当地名，有出处的中文名随语言切换。
+S-Bahn、RER、Cercanías 使用的铁路轨道包含在铁路层。欧洲线路与站名保留当地写法；有来源的中文、英文名字随语言切换并可搜索，缺名轨道保留显示但不编造线路名。铁路范围依 OSM 已绘制对象，法国海外地区不在当前源范围内。泰国、老挝的名字写当地文字，后面括号里是有出处的中文名，没有中文名的写英文名；马来西亚、新加坡、印度尼西亚写当地名，有出处的中文名随语言切换。奥地利、匈牙利只画本国国界以内的部分；地图标注没有 ő、ű 等字形，写成最近的 ö、ü，卡片照原样显示。
 
 ## 数据与许可
 
 - 线路、车站、站场：© [OpenStreetMap](https://www.openstreetmap.org/copyright) 贡献者，ODbL。Geofabrik 快照：中国 2026-10-05，日本、韩国 2026-10-06，英国 2026-10-03。
-- 欧洲快照：德国使用 [GWDG 的 Geofabrik 镜像](https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/)，法国、瑞士、西班牙、荷兰、比利时、意大利使用 [OSM France](https://download.openstreetmap.fr/extracts/)；西班牙另合并 `africa/spain` 的加那利、休达、梅利利亚。逐源时间、校验值及范围见 `data/europe_sources.json`。
+- 欧洲快照：德国使用 [GWDG 的 Geofabrik 镜像](https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/)，法国、瑞士、西班牙、荷兰、比利时、意大利使用 [OSM France](https://download.openstreetmap.fr/extracts/)；西班牙另合并 `africa/spain` 的加那利、休达、梅利利亚；奥地利、匈牙利使用 Geofabrik 的 `austria`、`hungary`，2026-10-20。逐源时间、校验值及范围见 `data/europe_sources.json`。
 - 东南亚快照：Geofabrik 的 `laos`、`thailand`、`malaysia-singapore-brunei`、`indonesia`，2026-10-18。中文名逐条记出处，见 `data/<国家>_names.tsv`(中文维基条目名、新华社等)。
 - 新加坡车站中文名：Contains information from Train Station Chinese Names accessed on 19 October 2026 from [data.gov.sg](https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view) which is made available under the terms of the [Singapore Open Data Licence version 1.0](https://data.gov.sg/open-data-licence).
 - 城市的中英文别名：[Wikidata](https://www.wikidata.org/)，CC0，逐条出处见 `data/europe_city_names.json`。车辆基地的补充名称在 `data/depot_names.json` 中逐条记出处，OSM 已有名字优先。

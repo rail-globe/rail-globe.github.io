@@ -50,7 +50,7 @@ KINDS = {"station": "station", "depot": "depot", "rail line": "line", "metro lin
 # the Hong Kong or Taiwan way, with no mainland form on the page.
 UK_TIER_B = False
 UK_FLAGGED_WORDING = False
-ENGLISH = {"cn", "jp", "kr", "de", "fr", "ch", "es", "nl", "be", "it", "la", "th", "my", "sg", "id"}  # countries whose features get ne from name:en
+ENGLISH = {"cn", "jp", "kr", "de", "fr", "ch", "es", "nl", "be", "it", "at", "hu", "la", "th", "my", "sg", "id"}  # countries whose features get ne from name:en
 # Metro cities that data/cities.json does not have among its places: (own name, English name).
 # Japanese entries are read from the OSM place nodes cited below. European city names are
 # checked against data/europe_city_names.json; the regional Ruhr group is not a place label.

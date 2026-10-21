@@ -127,10 +127,11 @@ class EuropeanHSRTests(unittest.TestCase):
         self.assertNotEqual(cfg.stretch_of('HSL-Zuid',tags,[]),cfg.stretch_of('HSL-Zuid',unknown,[]))
         with self.assertRaises(ValueError):cfg.rail_properties({123:tags,124:unknown})
 
-    def test_catalog_all_80_research_records_have_review_state(self):
+    def test_catalog_all_research_records_have_review_state(self):
+        # the 80 researched for the seven countries (2026-10-17/18) and Austria's 3 (2026-10-21)
         rows=self.registry.data['records']
-        self.assertEqual(len(rows),80)
-        self.assertEqual(len({r['id'] for r in rows}),80)
+        self.assertEqual(len(rows),83)
+        self.assertEqual(len({r['id'] for r in rows}),83)
         self.assertTrue(all(r['blockers'] and 'research' in r for r in rows))
         self.assertTrue(all(r['design_binding'] is None for r in rows))
 

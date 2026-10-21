@@ -177,5 +177,20 @@ class TheList(unittest.TestCase):
                 self.assertTrue(steps and all(len(step["at"]) == 2 for step in steps), (row["name"], name))
 
 
+class UrbanBase(unittest.TestCase):
+    """2026-10-21: run on its own without the urban layer set aside, reseat() seated the seated
+    layer again, and it grew run after run (1914 -> 2066 -> 2252 features)."""
+
+    def test_the_urban_lines_are_not_seated_again_without_their_base(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data" / "raw").mkdir(parents=True)
+            before = json.dumps({"type": "FeatureCollection", "features": [line("A", track(0))]})
+            (root / "data" / "metro.geojson").write_text(before)
+            with self.assertRaises(SystemExit):
+                S.reseat(root)
+            self.assertEqual((root / "data" / "metro.geojson").read_text(), before)
+
+
 if __name__ == "__main__":
     unittest.main()

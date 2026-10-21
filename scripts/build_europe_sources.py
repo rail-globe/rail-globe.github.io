@@ -14,6 +14,8 @@ SCOPE = {
     "nl": "European Netherlands; no Caribbean territories.",
     "be": "Belgium; complete OSM ways may extend slightly across national borders.",
     "it": "Italy including Sicily and Sardinia.",
+    "at": "Austria, clipped to its own admin_level=2 boundary (OSM relation 16239) read from the same file.",
+    "hu": "Hungary, clipped to its own admin_level=2 boundary (OSM relation 21335) read from the same file.",
 }
 
 
@@ -24,13 +26,17 @@ def country(code):
     for row in extract["sources"]:
         file_path = RAW / row["file"]
         receipt = json.loads(file_path.with_name(file_path.name + ".source.json").read_text())
+        digest = hashlib.sha256()               # (in blocks: hashlib.file_digest is Python 3.11+)
         with file_path.open("rb") as stream:
-            digest = hashlib.file_digest(stream, "sha256").hexdigest()
+            for block in iter(lambda: stream.read(1 << 24), b""):
+                digest.update(block)
+        digest = digest.hexdigest()
         if (receipt["bytes"] != file_path.stat().st_size or receipt["sha256"] != digest
                 or row.get("sha256") != digest or row["timestamp"] != receipt["timestamp"]):
             raise ValueError(f"{code}: source receipt/extraction/file identity differs for {file_path.name}")
+        # (Geofabrik's downloads come with an md5 file and no strong ETag: those keys are absent)
         sources.append({"file": file_path.name, **{key: receipt[key] for key in
-                        ("url", "bytes", "timestamp", "sha256", "md5", "etag", "last_modified")}})
+                        ("url", "bytes", "timestamp", "sha256", "md5", "etag", "last_modified") if key in receipt}})
     coords = [point for _, _, points in extract["ways"] for point in points]
     facts = json.loads((DATA / f"{code}_facts.json").read_text())
     counts = {layer: len(json.loads((DATA / f"{code}_{layer}.geojson").read_text())["features"])

@@ -1,6 +1,6 @@
 """European countries through the shared country pipeline.
 
-    python3 scripts/process_europe.py de fr ch es nl be it
+    python3 scripts/process_europe.py de fr ch es nl be it at hu
 
 Railways keep their local OSM infrastructure names, including unique names on
 route=railway relations, never long-distance route=train service names. Class
@@ -13,6 +13,7 @@ railway coverage; no unverified train-service overlay or company colour is added
 Unresolved infrastructure is retained without a name or a searchable line identity.
 """
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -207,6 +208,28 @@ def belgian_urban_line(tags, master):
     return urban_line_of_route(tags, master)
 
 
+def hungarian_urban_line(tags, master):
+    """A Hungarian city line is known by its number: M1, H5, 12 (BKK, Szeged, Debrecen, Miskolc).
+    Most of Budapest's tram routes have no route_master name and network=local, which read
+    "local 12"; Budapest's M1 has the name of its old company (Millenniumi Földalatti Vasút)."""
+    network, name, col = urban_line_of_route(tags, master)
+    ref = master.get("ref") or tags.get("ref")
+    return network, (re.sub(r"\s+", " ", ref).strip() if name and ref else name), col
+
+
+def austrian_urban_line(tags, master):
+    """An Austrian city line without the ends written after it: "U1 Oberlaa <=> Leopoldau" is U1,
+    "Linie 1: Universität – Auwiesen" Linie 1, "Tram 1: Innsbruck Bergisel <=> ..." Tram 1 (as
+    Vienna's and Graz's own route masters write theirs: Tram 1)."""
+    network, name, col = urban_line_of_route(tags, master)
+    ref = master.get("ref") or tags.get("ref")
+    if name and ":" in name:
+        name = name.split(":")[0].strip()
+    elif name and "<=>" in name and ref:
+        name = ref
+    return network, name, col
+
+
 def station_display(stations, metro, extract):
     selected = [f for f in stations if f['properties'].get('m')]
     annotated = iter(annotate_capsules(selected, metro, stopping=extract.get('stops'),
@@ -312,7 +335,125 @@ COUNTRIES = {
         ("卡利亚里", 9.11, 39.22, 0.28), ("墨西拿", 15.55, 38.19, 0.20),
         ("萨萨里", 8.56, 40.73, 0.20), ("的里雅斯特", 13.77, 45.65, 0.22),
     ], elsewhere="意大利其他", **COMMON),
+    # Austria and Hungary (2026-10-21, "加一下匈牙利奥地利"): the cities with metro, light rail or
+    # trams (output/at-hu-research/findings.md, section 2). Innsbruck reaches Fulpmes (Stubaitalbahn),
+    # Szeged Hódmezővásárhely (the tram-train); Gmunden's Traunseetram is 奥地利其他.
+    "at": Country(code="at", cities=[
+        ("维也纳", 16.37, 48.21, 0.30), ("格拉茨", 15.44, 47.07, 0.20),
+        ("林茨", 14.29, 48.31, 0.20), ("因斯布鲁克", 11.40, 47.24, 0.22),
+    ], elsewhere="奥地利其他", **{**COMMON, "urban_line_of": austrian_urban_line}),
+    "hu": Country(code="hu", cities=[
+        ("布达佩斯", 19.05, 47.50, 0.35), ("德布勒森", 21.63, 47.53, 0.15),
+        ("米什科尔茨", 20.78, 48.10, 0.15), ("塞格德", 20.15, 46.25, 0.30),
+    ], elsewhere="匈牙利其他", **{**COMMON, "urban_line_of": hungarian_urban_line}),
 }
+
+# Countries drawn on their own land alone. Geofabrik's extract of a country holds whole ways across
+# its border (Austria's runs into Bavaria, South Tyrol and Slovenia; Hungary's into Slovakia,
+# Romania and Serbia), and the countries around are drawn from their own extracts: each of these
+# is cut at its own admin_level=2 boundary, which scripts/extract_osm.py keeps from the same file
+# (iso=), as South-East Asia is (scripts/process_sea.py). The neighbours already drawn are cut at
+# the same boundary (scripts/clip_neighbours.py), so both end on one line.
+OWN_LAND = ("at", "hu")
+VIEW_TOL = 0.01       # degrees: the outline the page tells the country by
+
+
+def own_land(code):
+    def prepare(ex):
+        from process_sea import land_of
+        from shapely.geometry import LineString, Point
+        from shapely.prepared import prep
+        land = land_of(ex["territory"])
+        inside = prep(land)
+        ways, cut, dropped = [], 0, 0
+        for wid, t, co in ex["ways"]:
+            line = LineString(co)
+            if inside.contains(line):
+                ways.append((wid, t, co))
+                continue
+            if not inside.intersects(line):
+                dropped += 1
+                continue
+            part = line.intersection(land)
+            pieces = [g for g in (part.geoms if hasattr(part, "geoms") else [part]) if g.geom_type == "LineString" and g.length > 0]
+            cut += 1
+            # (a sliver of a way that only grazes the border is one point once rounded: left out)
+            pieces = [co for co in ([(round(x, 7), round(y, 7)) for x, y in piece.coords] for piece in pieces) if len(set(co)) > 1]
+            for k, co in enumerate(pieces):
+                # (a way that leaves and comes back: its second piece gets a number no OSM way has)
+                ways.append((wid if k == 0 else wid * 1000 + k, t, co))
+        keep = lambda lon, lat: inside.covers(Point(lon, lat))
+        stations = [s for s in ex["stations"] if keep(s[1], s[2])]
+        named = [o for o in ex.get("named") or [] if keep(*o["at"])]
+        places = [p for p in ex.get("places") or [] if keep(p[2], p[3])]
+        print(f"{code}: clipped to relation {ex['territory']['relation']} ({ex['territory']['name']}): "
+              f"{len(ex['ways'])} ways -> {len(ways)} ({cut} cut at the border, {dropped} outside); "
+              f"stations {len(ex['stations'])} -> {len(stations)}; named ground {len(ex.get('named') or [])} -> {len(named)}", flush=True)
+        return {**ex, "ways": ways, "stations": stations, "named": named, "places": places}
+    return prepare
+
+
+def write_view(code):
+    """The country's outline for the page (which country a place is in), simplified: data/<code>_view.json."""
+    import pickle
+    from shapely.geometry import MultiPolygon
+    from process_sea import land_of
+    from country import OUT
+    with (OUT / "raw" / f"extract_{code}.pkl").open("rb") as stream:     # written locally by scripts/extract_osm.py
+        territory = pickle.load(stream)["territory"]
+    land = land_of(territory).simplify(VIEW_TOL, preserve_topology=True)
+    polys = list(land.geoms) if isinstance(land, MultiPolygon) else [land]
+    coords = [[[[round(x, 6), round(y, 6)] for x, y in poly.exterior.coords]] + [[[round(x, 6), round(y, 6)] for x, y in hole.coords] for hole in poly.interiors]
+              for poly in polys]
+    view = {"type": "MultiPolygon", "coordinates": coords,
+            "source": {"relation": territory["relation"], "iso": territory["iso"], "tolerance_deg": VIEW_TOL}}
+    (OUT / f"{code}_view.json").write_text(json.dumps(view, separators=(",", ":")))
+    print(f"{code}_view.json: {sum(len(r) for p in coords for r in p)} points", flush=True)
+
+
+for _code in OWN_LAND:
+    COUNTRIES[_code].prepare = own_land(_code)
+
+# The countries already drawn around each, whose lines it meets at the border.
+DRAWN_AROUND = {"at": ("de", "ch", "it", "hu"), "hu": ("at",)}
+MEET_M = 150          # metres: an own line end on the border this near a neighbour's line end is drawn on to it
+
+
+def meet_neighbours(code):
+    """Where a neighbour's railway line ends on the border and one of this country's drawn lines
+    ends near it, but not on it, the line is drawn on to that point (as in South-East Asia,
+    process_sea.meet_neighbours): both cut the track at the same border, but each draws one track
+    of a double line, and at Hegyeshalom Hungary's line ended 4.5 m from Austria's."""
+    import pickle
+    from shapely.geometry import Point
+    from process_sea import land_of
+    from country import OUT
+    from owned_output import atomic_json
+    with (OUT / "raw" / f"extract_{code}.pkl").open("rb") as stream:     # written locally by scripts/extract_osm.py
+        edge = land_of(pickle.load(stream)["territory"]).boundary
+    metres = lambda a, b: math.hypot((a[0] - b[0]) * math.cos(math.radians((a[1] + b[1]) / 2)), a[1] - b[1]) * 111320
+    parts_of = lambda f: f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]
+    on_border = lambda p: edge.distance(Point(p)) * 111320 < 2
+    theirs = [(g, tuple(co[k])) for g in DRAWN_AROUND[code] if (OUT / f"{g}_rail.geojson").exists()
+              for f in json.loads((OUT / f"{g}_rail.geojson").read_text())["features"] for co in parts_of(f) for k in (0, -1)
+              if on_border(co[k])]
+    path = OUT / f"{code}_rail.geojson"
+    data = json.loads(path.read_text())
+    met = []
+    for f in data["features"]:
+        for co in parts_of(f):
+            for k in (0, -1):
+                if not on_border(co[k]) or not theirs:
+                    continue
+                g, p = min(theirs, key=lambda e: metres(e[1], co[k]))
+                d = metres(p, co[k])
+                if 1.0 <= d <= MEET_M:
+                    co.insert(0, list(p)) if k == 0 else co.append(list(p))
+                    met.append({"line": f["properties"].get("n"), "neighbour": g, "at": list(p), "drawn_on_m": round(d, 1)})
+    if met:
+        atomic_json(path, data)
+    print(f"{code}: lines drawn on to a neighbour's line end on the border: {met or 'none'}", flush=True)
+    return met
 
 # Every city of these countries, for a line of one country's "elsewhere" that is another's: the
 # metro cities above and the city labels (capitals of regions, cantons and provinces).
@@ -422,12 +563,18 @@ for cfg in COUNTRIES.values():
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('codes',nargs='*',help='de fr ch es nl be it (default: all seven)')
+    parser.add_argument('codes',nargs='*',help='de fr ch es nl be it at hu (default: all)')
     parser.add_argument('--rail-only',action='store_true',help='rebuild native rail stages while retaining generated urban/station/yard products')
     args = parser.parse_args()
     codes = args.codes or list(COUNTRIES)
     if any(code not in COUNTRIES for code in codes):
-        sys.exit("usage: python3 scripts/process_europe.py [de|fr|ch|es|nl|be|it ...]")
+        sys.exit("usage: python3 scripts/process_europe.py [de|fr|ch|es|nl|be|it|at|hu ...]")
     for code in codes:
         COUNTRIES[code].urban_abroad = {g: route_relations(g) for g in COUNTRIES if g != code}
         run(COUNTRIES[code],rail_only=args.rail_only)
+        if code in OWN_LAND:
+            write_view(code)
+            meet_neighbours(code)
+        from clip_neighbours import NEIGHBOURS, main as clip_neighbours
+        if code in NEIGHBOURS:            # (its extract reaches into Austria: cut at Austria's border)
+            clip_neighbours(code)

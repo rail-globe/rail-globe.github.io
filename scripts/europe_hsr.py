@@ -321,7 +321,7 @@ def audit_extract(extract, code, cfg, registry=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('codes', nargs='*', default=['de','fr','ch','es','nl','be','it'])
+    parser.add_argument('codes', nargs='*', default=['de','fr','ch','es','nl','be','it','at','hu'])
     parser.add_argument('--report-dir', type=Path, required=True)
     args = parser.parse_args()
     from process_europe import COUNTRIES

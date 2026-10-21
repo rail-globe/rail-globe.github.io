@@ -74,6 +74,8 @@ def centre(way):
     return sum(xs) / len(xs), sum(ys) / len(ys)
 
 
+# continental Europe: depot names are read off buildings too (named_ground)
+EUROPE = ("de", "fr", "ch", "es", "nl", "be", "it", "at", "hu")
 GAP_KM = 30          # the longest gap in a country's boundary (ways the extract lacks) closed with a straight line
 RING_POINTS = 400     # an outline is kept with at most so many points: enough to tell what it holds
 
@@ -88,12 +90,12 @@ def named_ground(path, g):
     in its name (depots.worth_keeping): there are tens of thousands of named factories.
     No index of every node is built: the nodes of the outlines are fetched by their numbers."""
     forms = [("landuse", v) for v in AREA_USES] + [("railway", k) for k in YARD_KINDS]
-    if g in ("de", "fr", "ch", "es", "nl", "be", "it"):
+    if g in EUROPE:
         # Swiss tram depots, among others, put their names on the depot building.
         # Still keep only a depot name; its actual outline must hold yard track.
         forms += [("building", k) for k in ("industrial", "transportation", "train_station", "service", "yes")]
     def named_form(tags):
-        return form_of(tags) or ("building=" + tags["building"] if g in ("de", "fr", "ch", "es", "nl", "be", "it") and tags.get("building") else None)
+        return form_of(tags) or ("building=" + tags["building"] if g in EUROPE and tags.get("building") else None)
     tags_of = lambda o: {t.k: t.v for t in o.tags}
 
     def thinned(refs):
@@ -380,8 +382,11 @@ def main(files, out, more=(), stops=(), g="cn", iso=None, lean=False):
         if receipt.exists():
             import hashlib
             provenance = json.loads(receipt.read_text())
+            digest = hashlib.sha256()                 # (in blocks: hashlib.file_digest is Python 3.11+, the project's interpreter is 3.9)
             with path.open("rb") as stream:
-                digest = hashlib.file_digest(stream, "sha256").hexdigest()
+                for block in iter(lambda: stream.read(1 << 24), b""):
+                    digest.update(block)
+            digest = digest.hexdigest()
             if provenance.get("bytes") != path.stat().st_size or provenance.get("sha256") != digest:
                 sys.exit(f"source receipt does not match {pbf}, nothing written")
             sources[-1].update({key: provenance[key] for key in ("url", "sha256", "etag", "last_modified")
@@ -488,6 +493,10 @@ COUNTRIES = {
     "nl": dict(files=["netherlands-latest.osm.pbf"], out="extract_nl.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
     "be": dict(files=["belgium-latest.osm.pbf"], out="extract_be.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
     "it": dict(files=["italy-latest.osm.pbf"], out="extract_it.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt")),
+    # Austria and Hungary (2026-10-21): Geofabrik's extracts hold whole ways across the border, so
+    # each is clipped to the country's own admin_level=2 boundary from the same file, as in South-East Asia
+    "at": dict(files=["austria-latest.osm.pbf"], out="extract_at.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt"), iso="AT"),
+    "hu": dict(files=["hungary-latest.osm.pbf"], out="extract_hu.pkl", more=("tram", "narrow_gauge", "preserved"), stops=("tram_stop", "halt"), iso="HU"),
     # Trams are light rail here (Shenyang, Suzhou, Dalian, Wuhan, Hong Kong's 電車), so their track,
     # routes and stops are taken too. Halts are not: in China a halt is a stop on the railway,
     # and the railway stations would change with it.
@@ -507,7 +516,7 @@ if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if a not in ("places", "stops")]
     g = args[0] if args else "cn"
     if g not in COUNTRIES or len(args) > 1:
-        sys.exit("usage: python3 scripts/extract_osm.py [uk|jp|kr|de|fr|ch|es|nl|be|it|la|th|my|sg|id] [places] [stops]")
+        sys.exit("usage: python3 scripts/extract_osm.py [uk|jp|kr|de|fr|ch|es|nl|be|it|at|hu|la|th|my|sg|id] [places] [stops]")
     if "places" in sys.argv[1:]:
         places_again(COUNTRIES[g]["files"], COUNTRIES[g]["out"], g)
     if "stops" in sys.argv[1:]:

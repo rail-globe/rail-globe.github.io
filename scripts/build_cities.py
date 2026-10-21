@@ -36,6 +36,7 @@ import math
 import re
 import sys
 import time
+import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -147,7 +148,7 @@ COUNTRIES["id"] = {"file": "indonesia-latest.osm.pbf", "metro": "id_metro_cities
                    "places": {"Banda Aceh": ("Banda Aceh", "班达亚齐"), "Denpasar": ("Denpasar", "丹帕沙"), "Pangkalpinang": ("Pangkalpinang", "邦加槟港"), "Bengkulu": ("Bengkulu", "明古鲁"), "Serang": ("Serang", "西冷"), "Gorontalo": ("Gorontalo", "哥伦打洛"), "Jambi": ("Jambi", "占碑"), "Bandung": ("Bandung", "万隆"), "Surabaya": ("Surabaya", "泗水"), "Jakarta": ("Jakarta", "雅加达"), "Semarang": ("Semarang", "三宝垄"), "Pontianak": ("Pontianak", "坤甸"), "Samarinda": ("Samarinda", "沙马林达"), "Banjarbaru": ("Banjarbaru", "班贾尔巴鲁"), "Palangka Raya": ("Palangka Raya", "帕朗卡拉亚"), "Tanjung Selor": ("Tanjung Selor", "丹戎施乐"), "Bandar Lampung": ("Bandar Lampung", "班达楠榜"), "Ambon": ("Ambon", "安汶"), "Sofifi": ("Sofifi", "索菲菲"), "Mataram": ("Mataram", "马塔兰"), "Kupang": ("Kupang", "古邦"), "Jayapura": ("Jayapura", "查亚普拉"), "Manokwari": ("Manokwari", "马诺夸里"), "Sorong": ("Sorong", "索龙"), "Wamena": ("Wamena", "瓦梅纳"), "Nabire": ("Nabire", "纳比雷"), "Pekanbaru": ("Pekanbaru", "北干巴鲁"), "Manado": ("Manado", "万鸦老"), "Padang": ("Padang", "巴东"), "Kendari": ("Kendari", "肯达里"), "Makassar": ("Makassar", "望加锡"), "Mamuju": ("Mamuju", "马穆朱"), "Palembang": ("Palembang", "巨港"), "Palu": ("Palu", "帕卢"), "Medan": ("Medan", "棉兰"), "Yogyakarta": ("Yogyakarta", "日惹"), "Tanjungpinang": ("Tanjungpinang", "丹戎槟榔"), "Merauke": ("Merauke", "马老奇")}}
 EUROPE_CITY_NAMES = json.loads((ROOT / "data/europe_city_names.json").read_text())
 EUROPE_FILES = {"de": "germany", "fr": "france", "ch": "switzerland", "es": "spain",
-                "nl": "netherlands", "be": "belgium", "it": "italy"}
+                "nl": "netherlands", "be": "belgium", "it": "italy", "at": "austria", "hu": "hungary"}
 for code in EUROPE_CITY_NAMES["label_cities"]:
     filename = EUROPE_FILES[code]
     locals_ = EUROPE_CITY_NAMES["label_cities"][code]
@@ -314,7 +315,14 @@ def abroad(g, nodes):
         theirs = re.split(r"\s*[/;；]\s*", tags.get("name:zh-Hans") or tags.get("name:zh") or "")[0]
         if theirs and not theirs.startswith(zh_name):
             differs.append(f"{local}: {theirs}, here {zh_name}")
-        out.append(entry(own, x, y, 1 if local in conf["first"] else 2, g=g, side=conf.get("side", {}).get(local, ""), nz=zh_name, ne=next(iter(en), english(tags)) if next(iter(en), english(tags)) != own else "", m=zh_name if zh_name in metro else "", name_ref=source.get("ref")))
+        # (an English name that is only the own name without its accents, where the sourced English
+        # name keeps them, is none: OSM's name:en of Győr is "Gyor", of Düsseldorf "Dusseldorf", the
+        # letters a keyboard lacked; Zurich and Valencia are English names of their own)
+        ne = next(iter(en), english(tags))
+        bare = lambda text: unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode()
+        if ne and ne != own and bare(ne) == bare(own) and source.get("ne") == own:
+            ne = ""
+        out.append(entry(own, x, y, 1 if local in conf["first"] else 2, g=g, side=conf.get("side", {}).get(local, ""), nz=zh_name, ne=ne if ne != own else "", m=zh_name if zh_name in metro else "", name_ref=source.get("ref")))
     if len(out) != conf["count"] or len({e["n"] for e in out}) != len(out):
         sys.exit(f"nothing written: {g} is to have {conf['count']} labels, each of a name of its own")
     known = {e.get("m") for e in out}

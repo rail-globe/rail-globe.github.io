@@ -126,8 +126,8 @@ def check(code):
     mk = Counter(f["properties"].get("jk") for f in metro)
     # (a country may draw train routes as a class of its own: Indonesia's KRL, process_sea.SEA[g]["URBAN_TRAIN_KIND"])
     own = set()
-    if "territory" in pickle.load(open(RAW / f"extract_{code}.pkl", "rb")):
-        from process_sea import SEA
+    from process_sea import SEA
+    if code in SEA:          # (Austria and Hungary have a territory too, and no class of their own)
         own = {SEA[code].get("URBAN_TRAIN_KIND", "subway")}
     say(set(mk) - {"subway", "urban"} - own, f"metro classes: {dict(mk.most_common())}")
     # (a line classed in stretches, each named by property st, has one class per stretch)
@@ -150,9 +150,8 @@ def check(code):
     say(abs(drawn_km - facts["km"]) > 0.01 * facts["km"], f"railway drawn: {drawn_km:.0f} km in {len(by_line)} lines (the card says {facts['km']})")
     # written locally by scripts/extract_osm.py, so loading it is safe here
     ex = pickle.load(open(RAW / f"extract_{code}.pkl", "rb"))
-    if "territory" in ex:                   # South-East Asia: what the pipeline reads, the country's own land
-        from process_sea import clip
-        ex = clip(ex, code)
+    if "territory" in ex:                   # what the pipeline reads: the country's own land (South-East Asia, Austria, Hungary)
+        ex = config_of(code).prepare(ex)
     running = [(t, co) for _, t, co in ex["ways"] if t.get("railway") in ("rail", "narrow_gauge") and not t.get("service") and len(co) > 1]
     track = STRtree([LineString(co) for _, co in running])
     cut = breaks(by_line, track)
@@ -264,8 +263,25 @@ def check(code):
     rail_capsules = sum(1 for f in stations if '"mode":' in (f["properties"].get("cp") or ""))
     say(metro and not capsules, f"stations with a capsule: {capsules} ({rail_capsules} at railway stations)")
 
+    # ---- every label can be drawn: the map has glyphs for Latin-1, punctuation, Thai and Lao
+    # (data/glyphs.json); Chinese, Japanese and Korean are drawn by the system's fonts. A letter it
+    # has no glyph for is left out of the label (Kőbánya would read Kbánya): src/app.html swaps
+    # such letters for the nearest it has (STAND_INS), in a name of up to STAND_IN_CHARS letters.
+    page = (Path(__file__).resolve().parents[1] / "src" / "app.html").read_text()
+    table = page.split("const STAND_INS = ")[1].split(";")[0]
+    mine = re.search(r"\b" + code + r": \[(.*?\])\]", table, re.S)
+    stand = dict(re.findall(r"\['(.)', '(.)'\]", mine.group(1))) if mine else {}
+    longest = int(re.search(r"const STAND_IN_CHARS = (\d+);", page).group(1))
+    drawn = lambda ch: ord(ch) <= 0xFF or 0x0E00 <= ord(ch) <= 0x0EFF or 0x2000 <= ord(ch) <= 0x206F or 0x3000 <= ord(ch) <= 0x30FF \
+        or 0xFF00 <= ord(ch) <= 0xFFEF or 0x3400 <= ord(ch) <= 0x9FFF or 0xAC00 <= ord(ch) <= 0xD7AF or 0xF900 <= ord(ch) <= 0xFAFF
+    labels = [f["properties"].get(k) for f in stations + depots for k in ("n", "ne") if f["properties"].get(k)]
+    labels += [c.get(k) for c in json.loads((DATA / "cities.json").read_text()) if c.get("g") == code for k in ("n", "ne") if c.get(k)]
+    undrawn = sorted({t for t in labels if any(not drawn(stand.get(ch, ch)) for ch in t)
+                      or stand and len(t) > longest and any(ch in t for ch in stand)})
+    say(undrawn, f"labels with a letter the map has no glyph for: {len(undrawn)} {undrawn[:6]}")
+
     # ---- the names on the yards and depots layer (scripts/depots.py)
-    if code in {'de','fr','ch','es','nl','be','it'}:
+    if code in {'de','fr','ch','es','nl','be','it','at','hu'}:
         from metro_source_audit import audit as audit_metro_sources
         from process_europe import COUNTRIES
         from europe_urban_policy import load_relations

@@ -184,6 +184,25 @@ GENERIC["de"] = re.compile(EU_GENERIC.pattern + r"|\bBetriebshof\b|\bBetriebsbah
 MORE["fr"] = re.compile(EU_MORE.pattern + r"|Centre technique|Centre d['’]Exploitation|Unité de transport métro", re.I)
 MORE["be"] = re.compile(EU_MORE.pattern + r"|Stelplaats|Werkplaats", re.I)
 MORE["nl"] = re.compile(EU_MORE.pattern + r"|Remise|Werkplaats|Opstelterrein", re.I)
+# Austria and Hungary (2026-10-21, output/at-hu-research/findings.md, section 3). Vienna's tram and
+# U-Bahn depots are officially a Betriebsbahnhof, Linz's and Graz's a Remise, the works a
+# Hauptwerkstätte; Innsbruck's the IVB-Tramdepot. Hungarian: kocsiszín (a tram depot, BKV),
+# járműtelep (a metro depot), főműhely (works), fűtőház (an engine shed), járműjavító (a rolling-stock
+# repair works). Remise also names halls and event venues in Austria (Remise Bludenz), so it is
+# never a strict word: it counts only on railway ground or ground holding yard track.
+# A bus garage is not a depot: Garage, Busgarage; garázs, busz, trolibusz.
+for _country, _latitude in {"at": 47.5, "hu": 47.2}.items():
+    LAT0[_country] = _latitude
+    RAILWAY_ONLY[_country] = EU_RAILWAY
+MORE["at"] = re.compile(EU_MORE.pattern + r"|Betriebshof|Betriebsbahnhof|Remise|Hauptwerkst[äa]tte|Werkst[äa]tte|Tramdepot", re.I)
+STRICT["at"] = re.compile(EU_STRICT.pattern + r"|Hauptwerkst[äa]tte|Tramdepot", re.I)
+NEVER["at"] = re.compile(EU_NEVER.pattern + r"|Busbetriebshof|Buswerkstatt|Busgarage|Omnibus|Garage", re.I)
+GENERIC["at"] = re.compile(EU_GENERIC.pattern + r"|\bBetriebshof\b|\bBetriebsbahnhof\b|\bRemise\b|\bHauptwerkst[äa]tte\b|\bWerkst[äa]tte\b|\bÖBB\b", re.I)
+HU_WORDS = r"kocsiszín|járműtelep|főműhely|fűtőház|járműjavító"
+MORE["hu"] = re.compile(EU_MORE.pattern + "|" + HU_WORDS, re.I)
+STRICT["hu"] = re.compile(EU_STRICT.pattern + "|" + HU_WORDS, re.I)
+NEVER["hu"] = re.compile(EU_NEVER.pattern + r"|garázs|busz|trolibusz", re.I)
+GENERIC["hu"] = re.compile(EU_GENERIC.pattern + r"|\b(?:" + HU_WORDS + r"|vasúti|MÁV|BKV|GYSEV)\b", re.I)
 
 # South-East Asia (scripts/process_sea.py). Railway ground there is named in the local script, in
 # English and, on the lines China built or runs (the China–Laos railway), in Chinese, so the

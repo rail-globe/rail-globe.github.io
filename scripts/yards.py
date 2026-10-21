@@ -171,8 +171,8 @@ def write_yards(ex, g):
 
 if __name__ == "__main__":
     code = sys.argv[1] if len(sys.argv) > 1 else ""
-    if code not in ("jp", "uk", "kr", "de", "fr", "ch", "es", "nl", "be", "it", "cn"):
-        sys.exit("usage: python3 scripts/yards.py jp|uk|kr|de|fr|ch|es|nl|be|it|cn")
+    if code not in ("jp", "uk", "kr", "de", "fr", "ch", "es", "nl", "be", "it", "at", "hu", "cn"):
+        sys.exit("usage: python3 scripts/yards.py jp|uk|kr|de|fr|ch|es|nl|be|it|at|hu|cn")
     # written locally by scripts/extract_osm.py, so loading it is safe here
     if code == "cn":          # China's yard track is written by scripts/process_osm.py: only the labels again
         lines = [co for f in json.loads((OUT / "yards.geojson").read_text())["features"]

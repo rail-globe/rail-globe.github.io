@@ -12,7 +12,10 @@ from pathlib import Path
 from continuous_offset import display_sets
 
 ROOT = Path(__file__).resolve().parents[1]
-EUROPE = ("de", "fr", "ch", "es", "nl", "be", "it")
+EUROPE = ("de", "fr", "ch", "es", "nl", "be", "it", "at", "hu")
+# Europe drawn on its own land (scripts/process_europe.py OWN_LAND): its outline is its own boundary
+# relation, data/<g>_view.json, as in South-East Asia, not a polygon of data/view_boundaries.json.
+OWN_LAND = ("at", "hu")
 # South-East Asia (scripts/process_sea.py): the countries the page has a configuration for so far.
 SEA = ("la", "my", "sg", "th", "id")
 
@@ -50,12 +53,12 @@ def assemble_page(site=None, offset_artifacts=False):
     if enabled:
         data = json.loads((ROOT / "data" / "view_boundaries.json").read_text())
         assert data["crs"] == "WGS84 longitude, latitude"
-        for g in enabled:
+        for g in (g for g in enabled if g not in OWN_LAND):
             geom = data["countries"][g]
             assert geom["type"] == "MultiPolygon" and geom["coordinates"], f"{g}: missing view polygons"
             assert len(data["sources"][g]["sha256"]) == 64, f"{g}: missing source hash"
             boundaries[g] = [[pack_view_ring(ring) for ring in polygon] for polygon in geom["coordinates"]]
-    for g in (g for g in SEA if site.get(g, False)):
+    for g in (g for g in SEA + OWN_LAND if site.get(g, False)):
         # the country's own land, from its admin_level=2 relation, as process_sea.py simplified it
         view = json.loads((ROOT / "data" / f"{g}_view.json").read_text())
         assert view["type"] == "MultiPolygon" and view["coordinates"] and view["source"]["relation"], f"{g}: missing view polygons"

@@ -14,17 +14,20 @@ const borderData = process.env.BORDERS_DATA_DIR || join(root, 'data');
 const canonicalBytes = readFileSync(join(borderData, 'europe_borders.geojson'));
 const canonical = JSON.parse(canonicalBytes);
 const packed = JSON.parse(readFileSync(join(borderData, 'europe_borders.packed.json'), 'utf8'));
-const codes = ['de', 'fr', 'ch', 'es', 'nl', 'be', 'it'];
+const codes = ['de', 'fr', 'ch', 'es', 'nl', 'be', 'it', 'at', 'hu'];
+// Austria and Hungary (2026-10-21): their outline is their own boundary relation, data/<g>_view.json
+const ownLand = ['at', 'hu'];
+const outlines = { ...Object.fromEntries(Object.entries(view.countries).map(([g, geometry]) => [g, geometry.coordinates])),
+  ...Object.fromEntries(ownLand.map(g => [g, JSON.parse(readFileSync(join(root, `data/${g}_view.json`), 'utf8')).coordinates])) };
 const core = app.split('/*VIEW-CORE*/')[1].split('/*VIEW-CORE-END*/')[0]
-  .replace('/*VIEW_BOUNDARIES*/{}', JSON.stringify(Object.fromEntries(
-    Object.entries(view.countries).map(([g, geometry]) => [g, geometry.coordinates]))));
+  .replace('/*VIEW_BOUNDARIES*/{}', JSON.stringify(outlines));
 const { viewDepth, unpackViewRing } = new Function(core + '\nreturn {viewDepth, unpackViewRing};')();
 const declarations = app.slice(app.indexOf('  const emptyBorders ='), app.indexOf('  const PLACE_RANKS ='));
 const { unpackBorders } = new Function('unpackViewRing', declarations + '\nreturn {unpackBorders};')(unpackViewRing);
 const foreignText = app.slice(app.indexOf('  const FOREIGN ='), app.indexOf('  for (const g of Object.keys(FOREIGN))'));
 const flags = ['jp', 'kr', 'uk', ...codes, 'la', 'my', 'sg', 'th', 'id'].map(g => `const WITH_${g.toUpperCase()} = true;`).join('\n');
 const countries = new Function('viewDepth', 'VIEW_BOUNDARIES', flags + foreignText + '\nreturn FOREIGN;')(
-  viewDepth, view.countries);
+  viewDepth, outlines);
 
 test('packed visible boundaries decode without any coordinate loss', () => {
   assert.equal(packed.canonical_sha256, createHash('sha256').update(canonicalBytes).digest('hex'));
@@ -109,7 +112,7 @@ test('page packed wrapper rejects degenerate and out-of-range national lines', (
 test('actual land boundaries are open except genuine source loops, with every neighbor', () => {
   assert.match(canonical.purpose, /no coastlines or maritime/);
   assert.equal(canonical.selection.COAS_FLAG, 'F');
-  assert.equal(canonical.selection.unique_in_scope_boundaries, 29);
+  assert.equal(canonical.selection.unique_in_scope_boundaries, 40);      // (29 for the seven; Austria and Hungary 11 more)
   assert.deepEqual(canonical.features.map(f => f.properties.g).sort(), [...codes].sort());
   const neighbors = {
     de: ['AUT', 'BEL', 'CHE', 'CZE', 'DNK', 'FRA', 'LUX', 'NLD', 'POL'],
@@ -117,6 +120,7 @@ test('actual land boundaries are open except genuine source loops, with every ne
     ch: ['AUT', 'DEU', 'FRA', 'ITA', 'LIE'], es: ['AND', 'FRA', 'GIB', 'MAR', 'PRT'],
     nl: ['BEL', 'DEU'], be: ['DEU', 'FRA', 'LUX', 'NLD'],
     it: ['AUT', 'CHE', 'FRA', 'SMR', 'SVN', 'VAT'],
+    at: ['CHE', 'CZE', 'DEU', 'HUN', 'ITA', 'LIE', 'SVK', 'SVN'], hu: ['AUT', 'HRV', 'ROU', 'SRB', 'SVK', 'SVN', 'UKR'],
   };
   for (const feature of canonical.features) {
     const g = feature.properties.g;
@@ -141,7 +145,7 @@ test('actual land boundaries are open except genuine source loops, with every ne
 });
 
 test('shared source lines occur unchanged under both country g switches', () => {
-  const iso = { de: 'DEU', fr: 'FRA', ch: 'CHE', es: 'ESP', nl: 'NLD', be: 'BEL', it: 'ITA' };
+  const iso = { de: 'DEU', fr: 'FRA', ch: 'CHE', es: 'ESP', nl: 'NLD', be: 'BEL', it: 'ITA', at: 'AUT', hu: 'HUN' };
   const sourceParts = (g, id) => {
     let offset = 0;
     const feature = canonical.features.find(f => f.properties.g === g);
@@ -158,12 +162,13 @@ test('shared source lines occur unchanged under both country g switches', () => 
   }
 });
 
-test('seven configurations use sourced ownership instead of country boxes', () => {
+test('the European configurations use sourced ownership instead of country boxes', () => {
   for (const g of codes) {
     assert.equal(countries[g].on, true);
     assert.equal(countries[g].name, g);
     assert.equal(countries[g].optional, true);
-    assert.deepEqual(countries[g].rail.map(r => r[0]), ['hs', 'main', 'branch', 'heritage']);
+    // (Hungary has no line built for 200 km/h: no high-speed row)
+    assert.deepEqual(countries[g].rail.map(r => r[0]), g === 'hu' ? ['main', 'branch', 'heritage'] : ['hs', 'main', 'branch', 'heritage']);
   }
   const locations = [
     ['de', 13.405, 52.52], ['fr', 2.35, 48.856], ['fr', 8.737, 41.926],
@@ -174,12 +179,21 @@ test('seven configurations use sourced ownership instead of country boxes', () =
     ['it', 12.49, 41.90], ['it', 13.36, 38.115], ['it', 9.122, 39.224],
     ['ch', 6.143, 46.204], ['fr', 6.235, 46.193],
     ['fr', 7.75, 48.58], ['de', 7.814, 48.573],
+    ['at', 16.373, 48.208], ['at', 11.40, 47.265], ['at', 14.31, 46.62], ['at', 9.74, 47.42],
+    ['hu', 19.04, 47.50], ['hu', 21.63, 47.53], ['hu', 17.63, 47.68],
+    ['de', 12.12, 47.86], ['it', 11.45, 46.90], ['ch', 9.37, 47.42],
   ];
   for (const [g, x, y] of locations) {
     assert.deepEqual(codes.filter(code => countries[code].inside(x, y)), [g], `${g}: ${x},${y}`);
   }
   for (const [x, y] of [[-9.14, 38.72], [6.13, 49.61], [5, 38], [4, 55]]) {
     assert.deepEqual(codes.filter(g => countries[g].inside(x, y)), []);
+  }
+});
+
+test('Austria and Hungary are named in both languages', () => {
+  for (const [g, zh, en] of [['at', '奥地利', 'Austria'], ['hu', '匈牙利', 'Hungary']]) {
+    assert.ok(app.includes(`'${g}': ['${zh}', '${en}']`));
   }
 });
 

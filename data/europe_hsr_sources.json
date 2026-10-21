@@ -3726,6 +3726,33 @@
    "scope": "identity",
    "read": "2026-10-18",
    "publisher_kind": "reference"
+  },
+  "at-wiki-koralmbahn": {
+   "url": "https://de.wikipedia.org/wiki/Koralmbahn",
+   "title": "Koralmbahn",
+   "read": "2026-10-21",
+   "publisher_kind": "reference",
+   "scope": "identity",
+   "excerpt": "ist eine österreichische Eisenbahn-Neubaustrecke zwischen den beiden Landeshauptstädten",
+   "claim": "Graz–Klagenfurt, 127 km, new-build; passenger service on the whole line since 14 December 2025. Design speed is not taken from here: speed is each way's own OSM tag."
+  },
+  "at-wiki-westbahn": {
+   "url": "https://en.wikipedia.org/wiki/Western_Railway_(Austria)",
+   "title": "Western Railway (Austria)",
+   "read": "2026-10-21",
+   "publisher_kind": "reference",
+   "scope": "identity",
+   "excerpt": "The new Vienna–St. Pölten section of the New Western Railway is a high-speed railway.",
+   "claim": "Vienna–St. Pölten new line (Lainz Tunnel, Vienna Woods Tunnel, Tullnerfeld), in service since 9 December 2012. West of St. Pölten the line OSM also names Neue Westbahn is the four-tracked old line: \"Speeds on other already upgraded sections, such as St. Valentin–Linz Kleinmünchen, were increased from 200 to 230 km/h in December 2012.\""
+  },
+  "at-wiki-unterinntalbahn": {
+   "url": "https://de.wikipedia.org/wiki/Unterinntalbahn",
+   "title": "Unterinntalbahn",
+   "read": "2026-10-21",
+   "publisher_kind": "reference",
+   "scope": "identity",
+   "excerpt": "eine neue Hochleistungsstrecke errichtet, die seit dem 9. Dezember 2012 planmäßig von Zügen befahren wird.",
+   "claim": "Kundl/Radfeld–Baumkirchen (Fritzens-Wattens), beside the old Unterinntalbahn: the new line, in service since 9 December 2012."
   }
  },
  "records": [
@@ -11742,6 +11769,149 @@
    "identity_conclusion": "new_build_urban_av_bypass",
    "scope_note": "官方证明新隧道及新AV站，与区域地面网络分流。无本次明确完整原way身份绑定，不能凭Firenze地名或泛隧道名绑定。",
    "official_speed_evidence": []
+  },
+  {
+   "country": "at",
+   "design_binding": null,
+   "blockers": [
+    "design_speed_not_revalidated"
+   ],
+   "operational_status": "in_service",
+   "research_file": "output/at-hu-research/findings.md",
+   "id": "at-01",
+   "name": "Koralmbahn",
+   "identity": "new_build",
+   "infrastructure_identity": "new_build",
+   "verified_sources": [
+    "at-wiki-koralmbahn"
+   ],
+   "exact_names": [
+    "Koralmbahn"
+   ],
+   "supported_scope": "Graz–Klagenfurt new line, the ways OSM names Koralmbahn",
+   "conclusion": "新建线（维基：Eisenbahn-Neubaustrecke），2025-12-14 全线客运。OSM 轨道名 Koralmbahn 全部是这条新线（两头进站段限速较低，按各自轨道的限速归档）。",
+   "research": {
+    "country": "at",
+    "name": "Koralmbahn",
+    "aliases": [],
+    "osm_names": [
+     "Koralmbahn"
+    ],
+    "from": "Graz Hbf",
+    "to": "Klagenfurt Hbf",
+    "length_km": 127,
+    "design_kmh": null,
+    "sources": [
+     {
+      "url": "https://de.wikipedia.org/wiki/Koralmbahn",
+      "quote": "Die Strecke ist 127 Kilometer lang und auf eine Höchstgeschwindigkeit von 250 km/h ausgelegt.",
+      "read": "2026-10-21"
+     }
+    ],
+    "confidence": "medium",
+    "status": "in_service",
+    "notes": "Am 14. Dezember 2025 begann der planmäßige Personenverkehr auf der Gesamtstrecke (de.wikipedia). 'ausgelegt' is not official design wording: speed stays each way's own OSM tag."
+   }
+  },
+  {
+   "country": "at",
+   "design_binding": null,
+   "blockers": [
+    "design_speed_not_revalidated"
+   ],
+   "operational_status": "in_service",
+   "research_file": "output/at-hu-research/findings.md",
+   "id": "at-02",
+   "name": "Neubaustrecke Wien–St. Pölten",
+   "identity": "new_build",
+   "infrastructure_identity": "new_build",
+   "verified_sources": [
+    "at-wiki-westbahn"
+   ],
+   "exact_names": [],
+   "scoped_names": [
+    {
+     "name": "Neue Westbahn",
+     "box": [
+      15.6,
+      48.15,
+      16.4,
+      48.32
+     ]
+    }
+   ],
+   "supported_scope": "Wien–St. Pölten new line only; OSM's Neue Westbahn west of St. Pölten (lon < 15.5) is the four-tracked old line",
+   "conclusion": "OSM 把维也纳到林茨的新线和四线化改造段都叫 Neue Westbahn。只有圣珀尔滕以东（经 Lainzer、Wienerwald 隧道到维也纳）是新建线；圣珀尔滕以西是老线四线化，按改造处理，不算高速。分界：St. Pölten（新线 lon 15.63 起，改造段 lon 15.45 止）。",
+   "research": {
+    "country": "at",
+    "name": "Neubaustrecke Wien–St. Pölten",
+    "aliases": [
+     "Neue Westbahn"
+    ],
+    "osm_names": [],
+    "osm_names_partial": [
+     "Neue Westbahn"
+    ],
+    "from": "Wien Meidling / Hadersdorf",
+    "to": "St. Pölten (Knoten Wagram)",
+    "length_km": null,
+    "design_kmh": null,
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Western_Railway_(Austria)",
+      "quote": "The section was put into scheduled operation on 9 December 2012.",
+      "read": "2026-10-21"
+     }
+    ],
+    "confidence": "medium",
+    "status": "in_service",
+    "notes": "OSM's Neue Westbahn also names the four-tracked old line west of St. Pölten (an upgrade): bound by a box."
+   }
+  },
+  {
+   "country": "at",
+   "design_binding": null,
+   "blockers": [
+    "design_speed_not_revalidated"
+   ],
+   "operational_status": "in_service",
+   "research_file": "output/at-hu-research/findings.md",
+   "id": "at-03",
+   "name": "Neue Unterinntalbahn",
+   "identity": "new_build",
+   "infrastructure_identity": "new_build",
+   "verified_sources": [
+    "at-wiki-unterinntalbahn"
+   ],
+   "exact_names": [
+    "Neue Unterinntalbahn"
+   ],
+   "supported_scope": "Kundl/Radfeld–Baumkirchen new line, the ways OSM names Neue Unterinntalbahn",
+   "conclusion": "新建线（维基：neue Hochleistungsstrecke，2012-12-09 通车），与老 Unterinntalbahn 并行。",
+   "research": {
+    "country": "at",
+    "name": "Neue Unterinntalbahn",
+    "aliases": [
+     "Neubaustrecke Kundl/Radfeld–Baumkirchen"
+    ],
+    "osm_names": [
+     "Neue Unterinntalbahn"
+    ],
+    "from": "Kundl/Radfeld",
+    "to": "Baumkirchen (Fritzens-Wattens)",
+    "length_km": null,
+    "design_kmh": null,
+    "sources": [
+     {
+      "url": "https://de.wikipedia.org/wiki/Unterinntalbahn",
+      "quote": "Die Ausbaustrecke ist für den gemischten Verkehr bis 220 km/h ausgelegt.",
+      "read": "2026-10-21"
+     }
+    ],
+    "confidence": "medium",
+    "status": "in_service",
+    "notes": "The article calls it both a neue Hochleistungsstrecke and an Ausbaustrecke; it is a separate new alignment beside the old Unterinntalbahn, in service since 9 December 2012."
+   }
   }
  ],
  "exclusions": [
@@ -12868,6 +13038,30 @@
    ],
    "design_binding": null,
    "conclusion": "提速的既有线或老线，不算高速（2026-10-18 核查）"
+  },
+  {
+   "id": "at-existing-westbahn",
+   "country": "at",
+   "name": "Westbahn (upgraded sections)",
+   "identity": "upgraded_existing",
+   "exact_names": [
+    "Westbahn"
+   ],
+   "scoped_names": [
+    {
+     "name": "Neue Westbahn",
+     "box": [
+      13.9,
+      48.0,
+      15.55,
+      48.35
+     ]
+    }
+   ],
+   "verified_sources": [
+    "at-wiki-westbahn"
+   ],
+   "conclusion": "老 Westbahn 的 200、230 km/h 区段和圣珀尔滕以西的四线化（OSM 也叫 Neue Westbahn）是改造，不是新建线：按干线画。"
   }
  ],
  "evidence_fragments": [

@@ -11,6 +11,12 @@ way), so both countries end at the same line.
 China: after process_osm.py and build_graph.py (the route network keeps its stations; only what
 the map draws and lists is clipped), before station_capsules.py and build_tiles.py. Running it
 again changes nothing.
+
+Germany, Switzerland and Italy, once Austria was drawn (2026-10-21): their extracts reach over
+the border and drew Austrian lines (Italy's Gailtalbahn and Rudolfsbahn, Switzerland's
+Vorarlbergbahn and the stations of Lustenau, Germany's Außerfernbahn), 55 km in all, under
+Austria's own. scripts/process_europe.py runs this after each of them; a row of the line list
+whose line has nothing left drawn is taken out too (Italy listed the Gailtalbahn).
 """
 import json
 import pickle
@@ -24,10 +30,12 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 
 # the neighbours of a country that are on the map, and the files of its drawn layers
-NEIGHBOURS = {"cn": ["la"]}
+NEIGHBOURS = {"cn": ["la"], "de": ["at"], "ch": ["at"], "it": ["at"]}
 SLIVER_M = 100       # a line left shorter than this at the border lies under the neighbour's line
 FILES = {"cn": ["rail_hsr.geojson", "rail_conv.geojson", "rail_shared.geojson", "rail_build.geojson",
-                "yards.geojson", "depots.geojson", "stations.geojson", "metro.geojson", "metro_stations.geojson"]}
+                "yards.geojson", "depots.geojson", "stations.geojson", "metro.geojson", "metro_stations.geojson"],
+         **{g: [f"{g}_{k}.geojson" for k in ("rail", "build", "metro", "stations", "yards", "depots")] for g in ("de", "ch", "it")}}
+LINES = {g: (f"{g}_lines.json", [f"{g}_rail.geojson", f"{g}_build.geojson"]) for g in ("de", "ch", "it")}
 
 
 def land_of(code):
@@ -114,6 +122,44 @@ def main(code):
         data["features"] = features
         path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ("\n" if text.endswith("\n") else ""))
         print(f"{name}: {cut} cut at the border, {len(dropped)} dropped {dropped[:5]}")
+    if code in LINES:
+        # a station whose only drawn line lay over the border is a dot in the middle of nothing:
+        # Switzerland's Widnau Habsburg and Kriessern stood on the Rhine dike railway, drawn on the
+        # Austrian bank (the same test as the pipeline's, process_jp.with_a_line)
+        from process_jp import with_a_line
+        drawn = lambda layer: [co for f in json.loads((DATA / f"{code}_{layer}.geojson").read_text())["features"]
+                               for co in (f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]])]
+        path = DATA / f"{code}_stations.geojson"
+        text = path.read_text()
+        data = json.loads(text)
+        served = {id(f) for f in with_a_line(data["features"], drawn("rail") + drawn("build"), drawn("metro"))}
+        alone = [f for f in data["features"] if id(f) not in served and land.distance(shape(f["geometry"])) * 111320 < 2000]
+        if alone:
+            data["features"] = [f for f in data["features"] if id(f) in served or f not in alone]
+            path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ("\n" if text.endswith("\n") else ""))
+            print(f"{path.name}: {len(alone)} stations near the border left with no drawn line taken out {[f['properties'].get('n') for f in alone]}")
+        listed, layers = LINES[code]
+        path = DATA / listed
+        drawn = {f["properties"].get("n") for name in layers if (DATA / name).exists()
+                 for f in json.loads((DATA / name).read_text())["features"]}
+        text = path.read_text()
+        rows = json.loads(text)
+        kept = [row for row in rows if row.get("n") in drawn]
+        if len(kept) != len(rows):
+            path.write_text(json.dumps(kept, ensure_ascii=False, separators=(",", ":")) + ("\n" if text.endswith("\n") else ""))
+            print(f"{listed}: {len(rows) - len(kept)} lines with nothing left drawn taken out {sorted({r['n'] for r in rows} - {r['n'] for r in kept})[:8]}")
+        # the card's railway length, summed as scripts/country.py sums it, of what is left
+        from country import km
+        facts_path, rail = DATA / f"{code}_facts.json", json.loads((DATA / f"{code}_rail.geojson").read_text())["features"]
+        by_kind = {}
+        for f in rail:
+            parts = f["geometry"]["coordinates"] if f["geometry"]["type"] == "MultiLineString" else [f["geometry"]["coordinates"]]
+            by_kind[f["properties"]["jk"]] = by_kind.get(f["properties"]["jk"], 0) + sum(km(co) for co in parts)
+        facts = json.loads(facts_path.read_text())
+        totals = {"km": round(sum(by_kind.values())), "fast_km": round(by_kind.get("hs", 0))}
+        if {k: facts[k] for k in totals} != totals:
+            print(f"{facts_path.name}: {({k: facts[k] for k in totals})} -> {totals}")
+            facts_path.write_text(json.dumps({**facts, **totals}, ensure_ascii=False, separators=(",", ":")))
 
 
 if __name__ == "__main__":

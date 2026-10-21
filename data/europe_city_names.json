@@ -25,6 +25,26 @@
     {
       "file": "insee-regions-2026.csv",
       "sha256": "d903566d9c0d263389d279baea6761917b7460749a07bec8ba37dd8f2ff7d98a"
+    },
+    {
+      "file": "output/at-hu-research/wikidata/wikidata-cities-at.json",
+      "sha256": "32e45defbf5825b36f90c8f356548adb2ba60e483d24e269d2873984e2424e4f"
+    },
+    {
+      "file": "output/at-hu-research/wikidata/wikidata-cities-hu.json",
+      "sha256": "c751ce3154c3135bec978337ff4e87d98928faf250d5bdb6386f2f2ddc8d3dea"
+    },
+    {
+      "file": "output/at-hu-research/wikidata/wikidata-seats-at.json",
+      "sha256": "730eda3ad76cef9e61ca811cec98fc1addd9379af93caf8a34d45f71624e9d21"
+    },
+    {
+      "file": "output/at-hu-research/wikidata/wikidata-seats-hu.json",
+      "sha256": "ce31c190674a918f5de7820be3bc42b0a72b89fafba796029a12daf4396633b4"
+    },
+    {
+      "file": "output/at-hu-research/wikidata/osm-places.json",
+      "sha256": "e18181cb5249494a89a74f22420387cd85f0d03c74f113956965e38c8a381bba"
     }
   ],
   "countries": {
@@ -2612,6 +2632,794 @@
         "name_evidence_file": "output/review/nl-be-it-cities/name-evidence.json",
         "name_evidence_strength": "Wikidata label/sitelink; OSM independently read but not assumed independent authorship"
       }
+    },
+    "at": {
+      "Wien": {
+        "n": "Wien",
+        "nz": "维也纳",
+        "ne": "Vienna",
+        "ref": "https://www.wikidata.org/wiki/Q1741",
+        "source_text": "维也纳",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1741",
+        "english_source_text": "Vienna",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/17328659",
+        "local_name_source_text": "Wien",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/17328659",
+        "osm_node_id": 17328659,
+        "osm_place": "city",
+        "osm_coordinates": [
+          16.3725042,
+          48.2083537
+        ],
+        "osm_wikidata": "Q1741",
+        "name_wikidata": "Q1741",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Graz": {
+        "n": "Graz",
+        "nz": "格拉茨",
+        "ne": "Graz",
+        "ref": "https://www.wikidata.org/wiki/Q13298",
+        "source_text": "格拉茨",
+        "basis": "label:zh",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q13298",
+        "english_source_text": "Graz",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/21015489",
+        "local_name_source_text": "Graz",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/21015489",
+        "osm_node_id": 21015489,
+        "osm_place": "city",
+        "osm_coordinates": [
+          15.4382786,
+          47.0708678
+        ],
+        "osm_wikidata": "Q13298",
+        "name_wikidata": "Q13298",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Linz": {
+        "n": "Linz",
+        "nz": "林茨",
+        "ne": "Linz",
+        "ref": "https://www.wikidata.org/wiki/Q41329",
+        "source_text": "林茨",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q41329",
+        "english_source_text": "Linz",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/25181326",
+        "local_name_source_text": "Linz",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/25181326",
+        "osm_node_id": 25181326,
+        "osm_place": "city",
+        "osm_coordinates": [
+          14.286198,
+          48.3059078
+        ],
+        "osm_wikidata": "Q41329",
+        "name_wikidata": "Q41329",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Salzburg": {
+        "n": "Salzburg",
+        "nz": "萨尔茨堡",
+        "ne": "Salzburg",
+        "ref": "https://www.wikidata.org/wiki/Q34713",
+        "source_text": "萨尔茨堡",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q34713",
+        "english_source_text": "Salzburg",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/34964314",
+        "local_name_source_text": "Salzburg",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/34964314",
+        "osm_node_id": 34964314,
+        "osm_place": "city",
+        "osm_coordinates": [
+          13.0464806,
+          47.7981346
+        ],
+        "osm_wikidata": "Q34713",
+        "name_wikidata": "Q34713",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Innsbruck": {
+        "n": "Innsbruck",
+        "nz": "因斯布鲁克",
+        "ne": "Innsbruck",
+        "ref": "https://www.wikidata.org/wiki/Q1735",
+        "source_text": "因斯布鲁克",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1735",
+        "english_source_text": "Innsbruck",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/34840064",
+        "local_name_source_text": "Innsbruck",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/34840064",
+        "osm_node_id": 34840064,
+        "osm_place": "city",
+        "osm_coordinates": [
+          11.3927685,
+          47.2654296
+        ],
+        "osm_wikidata": "Q1735",
+        "name_wikidata": "Q1735",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "St. Pölten": {
+        "n": "St. Pölten",
+        "nz": "圣珀尔滕",
+        "ne": "St. Pölten",
+        "ref": "https://www.wikidata.org/wiki/Q82500",
+        "source_text": "圣珀尔滕",
+        "basis": "label:zh-hans",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q82500",
+        "english_source_text": "St. Pölten",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/240038219",
+        "local_name_source_text": "St. Pölten",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/240038219",
+        "osm_node_id": 240038219,
+        "osm_place": "town",
+        "osm_coordinates": [
+          15.6229118,
+          48.2043985
+        ],
+        "osm_wikidata": "Q82500",
+        "name_wikidata": "Q82500",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Klagenfurt": {
+        "n": "Klagenfurt",
+        "nz": "克拉根福",
+        "ne": "Klagenfurt",
+        "ref": "https://www.wikidata.org/wiki/Q41753",
+        "source_text": "克拉根福",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q41753",
+        "english_source_text": "Klagenfurt",
+        "english_basis": "enwiki sitelink title",
+        "local_name_ref": "https://www.openstreetmap.org/node/29777988",
+        "local_name_source_text": "Klagenfurt",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/29777988",
+        "osm_node_id": 29777988,
+        "osm_place": "city",
+        "osm_coordinates": [
+          14.3075976,
+          46.623943
+        ],
+        "osm_wikidata": "Q41753",
+        "name_wikidata": "Q41753",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Bregenz": {
+        "n": "Bregenz",
+        "nz": "布雷根茨",
+        "ne": "Bregenz",
+        "ref": "https://www.wikidata.org/wiki/Q1737",
+        "source_text": "布雷根茨",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1737",
+        "english_source_text": "Bregenz",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1898614152",
+        "local_name_source_text": "Bregenz",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1898614152",
+        "osm_node_id": 1898614152,
+        "osm_place": "town",
+        "osm_coordinates": [
+          9.7472924,
+          47.5025779
+        ],
+        "osm_wikidata": "Q1737",
+        "name_wikidata": "Q1737",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      },
+      "Eisenstadt": {
+        "n": "Eisenstadt",
+        "nz": "艾森斯塔特",
+        "ne": "Eisenstadt",
+        "ref": "https://www.wikidata.org/wiki/Q126321",
+        "source_text": "艾森斯塔特",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q126321",
+        "english_source_text": "Eisenstadt",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/26807241",
+        "local_name_source_text": "Eisenstadt",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/26807241",
+        "osm_node_id": 26807241,
+        "osm_place": "town",
+        "osm_coordinates": [
+          16.5249288,
+          47.8454821
+        ],
+        "osm_wikidata": "Q126321",
+        "name_wikidata": "Q126321",
+        "osm_pbf_sha256": "fb077066119241a9ba3512fb6469870c09ce491bd5631f1bb58611b71e3ddfd8",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-at.json"
+      }
+    },
+    "hu": {
+      "Budapest": {
+        "n": "Budapest",
+        "nz": "布达佩斯",
+        "ne": "Budapest",
+        "ref": "https://www.wikidata.org/wiki/Q1781",
+        "source_text": "布达佩斯",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q1781",
+        "english_source_text": "Budapest",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/85788293",
+        "local_name_source_text": "Budapest",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/85788293",
+        "osm_node_id": 85788293,
+        "osm_place": "city",
+        "osm_coordinates": [
+          19.0402383,
+          47.4978789
+        ],
+        "osm_wikidata": "Q1781",
+        "name_wikidata": "Q1781",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Debrecen": {
+        "n": "Debrecen",
+        "nz": "德布勒森",
+        "ne": "Debrecen",
+        "ref": "https://www.wikidata.org/wiki/Q79880",
+        "source_text": "德布勒森",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q79880",
+        "english_source_text": "Debrecen",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/26757724",
+        "local_name_source_text": "Debrecen",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/26757724",
+        "osm_node_id": 26757724,
+        "osm_place": "city",
+        "osm_coordinates": [
+          21.6259782,
+          47.531399
+        ],
+        "osm_wikidata": "Q79880",
+        "name_wikidata": "Q79880",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Szeged": {
+        "n": "Szeged",
+        "nz": "塞格德",
+        "ne": "Szeged",
+        "ref": "https://www.wikidata.org/wiki/Q81581",
+        "source_text": "塞格德",
+        "basis": "label:zh",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q81581",
+        "english_source_text": "Szeged",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/30453579",
+        "local_name_source_text": "Szeged",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/30453579",
+        "osm_node_id": 30453579,
+        "osm_place": "city",
+        "osm_coordinates": [
+          20.1486016,
+          46.2546312
+        ],
+        "osm_wikidata": "Q81581",
+        "name_wikidata": "Q81581",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Békéscsaba": {
+        "n": "Békéscsaba",
+        "nz": "贝凯什乔包",
+        "ne": "Békéscsaba",
+        "ref": "https://www.wikidata.org/wiki/Q178878",
+        "source_text": "贝凯什乔包",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q178878",
+        "english_source_text": "Békéscsaba",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/32444521",
+        "local_name_source_text": "Békéscsaba",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/32444521",
+        "osm_node_id": 32444521,
+        "osm_place": "city",
+        "osm_coordinates": [
+          21.0985425,
+          46.6798003
+        ],
+        "osm_wikidata": "Q178878",
+        "name_wikidata": "Q178878",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Eger": {
+        "n": "Eger",
+        "nz": "埃格尔",
+        "ne": "Eger",
+        "ref": "https://www.wikidata.org/wiki/Q167109",
+        "source_text": "埃格尔",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q167109",
+        "english_source_text": "Eger",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/26757722",
+        "local_name_source_text": "Eger",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/26757722",
+        "osm_node_id": 26757722,
+        "osm_place": "city",
+        "osm_coordinates": [
+          20.3743665,
+          47.8989887
+        ],
+        "osm_wikidata": "Q167109",
+        "name_wikidata": "Q167109",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Győr": {
+        "n": "Győr",
+        "nz": "杰尔",
+        "ne": "Győr",
+        "ref": "https://www.wikidata.org/wiki/Q134494",
+        "source_text": "杰尔",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q134494",
+        "english_source_text": "Győr",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/64624269",
+        "local_name_source_text": "Győr",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/64624269",
+        "osm_node_id": 64624269,
+        "osm_place": "city",
+        "osm_coordinates": [
+          17.6342832,
+          47.6835029
+        ],
+        "osm_wikidata": "Q134494",
+        "name_wikidata": "Q134494",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Kaposvár": {
+        "n": "Kaposvár",
+        "nz": "考波什堡",
+        "ne": "Kaposvár",
+        "ref": "https://www.wikidata.org/wiki/Q184998",
+        "source_text": "考波什堡",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q184998",
+        "english_source_text": "Kaposvár",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/25926749",
+        "local_name_source_text": "Kaposvár",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/25926749",
+        "osm_node_id": 25926749,
+        "osm_place": "city",
+        "osm_coordinates": [
+          17.7886886,
+          46.3564692
+        ],
+        "osm_wikidata": "Q184998",
+        "name_wikidata": "Q184998",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Kecskemét": {
+        "n": "Kecskemét",
+        "nz": "凯奇凯梅特",
+        "ne": "Kecskemét",
+        "ref": "https://www.wikidata.org/wiki/Q171357",
+        "source_text": "凯奇凯梅特",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q171357",
+        "english_source_text": "Kecskemét",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/32443002",
+        "local_name_source_text": "Kecskemét",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/32443002",
+        "osm_node_id": 32443002,
+        "osm_place": "city",
+        "osm_coordinates": [
+          19.6922302,
+          46.9075423
+        ],
+        "osm_wikidata": "Q171357",
+        "name_wikidata": "Q171357",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Miskolc": {
+        "n": "Miskolc",
+        "nz": "米什科尔茨",
+        "ne": "Miskolc",
+        "ref": "https://www.wikidata.org/wiki/Q102397",
+        "source_text": "米什科尔茨",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q102397",
+        "english_source_text": "Miskolc",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/64622559",
+        "local_name_source_text": "Miskolc",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/64622559",
+        "osm_node_id": 64622559,
+        "osm_place": "city",
+        "osm_coordinates": [
+          20.7900429,
+          48.1030643
+        ],
+        "osm_wikidata": "Q102397",
+        "name_wikidata": "Q102397",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Nyíregyháza": {
+        "n": "Nyíregyháza",
+        "nz": "尼赖吉哈佐",
+        "ne": "Nyíregyháza",
+        "ref": "https://www.wikidata.org/wiki/Q171223",
+        "source_text": "尼赖吉哈佐",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q171223",
+        "english_source_text": "Nyíregyháza",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/64627511",
+        "local_name_source_text": "Nyíregyháza",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/64627511",
+        "osm_node_id": 64627511,
+        "osm_place": "city",
+        "osm_coordinates": [
+          21.7167982,
+          47.9557802
+        ],
+        "osm_wikidata": "Q171223",
+        "name_wikidata": "Q171223",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Pécs": {
+        "n": "Pécs",
+        "nz": "佩奇",
+        "ne": "Pécs",
+        "ref": "https://www.wikidata.org/wiki/Q45779",
+        "source_text": "佩奇",
+        "basis": "label:zh",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q45779",
+        "english_source_text": "Pécs",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/17550787",
+        "local_name_source_text": "Pécs",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/17550787",
+        "osm_node_id": 17550787,
+        "osm_place": "city",
+        "osm_coordinates": [
+          18.2280317,
+          46.0765092
+        ],
+        "osm_wikidata": "Q45779",
+        "name_wikidata": "Q45779",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Salgótarján": {
+        "n": "Salgótarján",
+        "nz": "绍尔戈陶尔扬",
+        "ne": "Salgótarján",
+        "ref": "https://www.wikidata.org/wiki/Q189769",
+        "source_text": "绍尔戈陶尔扬",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q189769",
+        "english_source_text": "Salgótarján",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/243688523",
+        "local_name_source_text": "Salgótarján",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/243688523",
+        "osm_node_id": 243688523,
+        "osm_place": "city",
+        "osm_coordinates": [
+          19.8005642,
+          48.0960676
+        ],
+        "osm_wikidata": "Q189769",
+        "name_wikidata": "Q189769",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Szekszárd": {
+        "n": "Szekszárd",
+        "nz": "塞克萨德",
+        "ne": "Szekszárd",
+        "ref": "https://www.wikidata.org/wiki/Q189761",
+        "source_text": "塞克萨德",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q189761",
+        "english_source_text": "Szekszárd",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/25553427",
+        "local_name_source_text": "Szekszárd",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/25553427",
+        "osm_node_id": 25553427,
+        "osm_place": "city",
+        "osm_coordinates": [
+          18.701663,
+          46.3484884
+        ],
+        "osm_wikidata": "Q189761",
+        "name_wikidata": "Q189761",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Székesfehérvár": {
+        "n": "Székesfehérvár",
+        "nz": "塞克什白堡",
+        "ne": "Székesfehérvár",
+        "ref": "https://www.wikidata.org/wiki/Q130212",
+        "source_text": "塞克什白堡",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q130212",
+        "english_source_text": "Székesfehérvár",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/76464246",
+        "local_name_source_text": "Székesfehérvár",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/76464246",
+        "osm_node_id": 76464246,
+        "osm_place": "city",
+        "osm_coordinates": [
+          18.410811,
+          47.1910169
+        ],
+        "osm_wikidata": "Q130212",
+        "name_wikidata": "Q130212",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Szolnok": {
+        "n": "Szolnok",
+        "nz": "索尔诺克",
+        "ne": "Szolnok",
+        "ref": "https://www.wikidata.org/wiki/Q181276",
+        "source_text": "索尔诺克",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q181276",
+        "english_source_text": "Szolnok",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1801839190",
+        "local_name_source_text": "Szolnok",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1801839190",
+        "osm_node_id": 1801839190,
+        "osm_place": "city",
+        "osm_coordinates": [
+          20.1946279,
+          47.1753833
+        ],
+        "osm_wikidata": "Q181276",
+        "name_wikidata": "Q181276",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Szombathely": {
+        "n": "Szombathely",
+        "nz": "松博特海伊",
+        "ne": "Szombathely",
+        "ref": "https://www.wikidata.org/wiki/Q42007",
+        "source_text": "松博特海伊",
+        "basis": "label:zh",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q42007",
+        "english_source_text": "Szombathely",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/1704499260",
+        "local_name_source_text": "Szombathely",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/1704499260",
+        "osm_node_id": 1704499260,
+        "osm_place": "city",
+        "osm_coordinates": [
+          16.6187625,
+          47.2291184
+        ],
+        "osm_wikidata": "Q42007",
+        "name_wikidata": "Q42007",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Tatabánya": {
+        "n": "Tatabánya",
+        "nz": "陶陶巴尼奥",
+        "ne": "Tatabánya",
+        "ref": "https://www.wikidata.org/wiki/Q187821",
+        "source_text": "陶陶巴尼奥",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q187821",
+        "english_source_text": "Tatabánya",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/282420922",
+        "local_name_source_text": "Tatabánya",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/282420922",
+        "osm_node_id": 282420922,
+        "osm_place": "city",
+        "osm_coordinates": [
+          18.3979855,
+          47.583845
+        ],
+        "osm_wikidata": "Q187821",
+        "name_wikidata": "Q187821",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Veszprém": {
+        "n": "Veszprém",
+        "nz": "维斯普雷姆",
+        "ne": "Veszprém",
+        "ref": "https://www.wikidata.org/wiki/Q146317",
+        "source_text": "维斯普雷姆",
+        "basis": "label:zh-cn",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q146317",
+        "english_source_text": "Veszprém",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/334943106",
+        "local_name_source_text": "Veszprém",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/334943106",
+        "osm_node_id": 334943106,
+        "osm_place": "city",
+        "osm_coordinates": [
+          17.9080406,
+          47.0933824
+        ],
+        "osm_wikidata": "Q146317",
+        "name_wikidata": "Q146317",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      },
+      "Zalaegerszeg": {
+        "n": "Zalaegerszeg",
+        "nz": "佐洛埃格塞格",
+        "ne": "Zalaegerszeg",
+        "ref": "https://www.wikidata.org/wiki/Q60037",
+        "source_text": "佐洛埃格塞格",
+        "basis": "label:zh",
+        "checked": "2026-10-21",
+        "confidence": "high; sourced naming, not an official Chinese naming standard",
+        "english_ref": "https://www.wikidata.org/wiki/Q60037",
+        "english_source_text": "Zalaegerszeg",
+        "english_basis": "label:en",
+        "local_name_ref": "https://www.openstreetmap.org/node/183813583",
+        "local_name_source_text": "Zalaegerszeg",
+        "local_name_basis": "OSM name in complete PBF bound to source receipt",
+        "osm_ref": "https://www.openstreetmap.org/node/183813583",
+        "osm_node_id": 183813583,
+        "osm_place": "city",
+        "osm_coordinates": [
+          16.8456316,
+          46.8415803
+        ],
+        "osm_wikidata": "Q60037",
+        "name_wikidata": "Q60037",
+        "osm_pbf_sha256": "81406b3e917d091094d2f891e93341accf3cb5eb5952995e0bf0dc4ab133117b",
+        "node_evidence_file": "output/at-hu-research/wikidata/osm-places.json",
+        "name_evidence_file": "output/at-hu-research/wikidata/wikidata-cities-hu.json"
+      }
     }
   },
   "administrative_seats": {
@@ -3605,6 +4413,158 @@
       ],
       "evidence_file": "output/review/nl-be-it-cities/administrative-evidence.json",
       "note": "rank1 and seats are deduplicated by actual local city node; no rank3"
+    },
+    "at": {
+      "ref": "https://query.wikidata.org/ (P31 Q261543 state of Austria, P36 capital)",
+      "evidence_file": "output/at-hu-research/wikidata/wikidata-seats-at.json",
+      "seats": [
+        {
+          "region": "Wien",
+          "n": "Wien",
+          "basis": "Vienna is itself a state and the federal capital"
+        },
+        {
+          "region": "Burgenland",
+          "n": "Eisenstadt",
+          "ref": "https://www.wikidata.org/entity/Q126321"
+        },
+        {
+          "region": "Kärnten",
+          "n": "Klagenfurt",
+          "ref": "https://www.wikidata.org/entity/Q41753"
+        },
+        {
+          "region": "Niederösterreich",
+          "n": "St. Pölten",
+          "ref": "https://www.wikidata.org/entity/Q82500"
+        },
+        {
+          "region": "Oberösterreich",
+          "n": "Linz",
+          "ref": "https://www.wikidata.org/entity/Q41329"
+        },
+        {
+          "region": "Salzburg",
+          "n": "Salzburg",
+          "ref": "https://www.wikidata.org/entity/Q34713"
+        },
+        {
+          "region": "Steiermark",
+          "n": "Graz",
+          "ref": "https://www.wikidata.org/entity/Q13298"
+        },
+        {
+          "region": "Tirol",
+          "n": "Innsbruck",
+          "ref": "https://www.wikidata.org/entity/Q1735"
+        },
+        {
+          "region": "Vorarlberg",
+          "n": "Bregenz",
+          "ref": "https://www.wikidata.org/entity/Q21882134"
+        }
+      ]
+    },
+    "hu": {
+      "ref": "https://query.wikidata.org/ (P31 Q188604 county of Hungary, P36 capital)",
+      "evidence_file": "output/at-hu-research/wikidata/wikidata-seats-hu.json",
+      "seats": [
+        {
+          "region": "Komitat Baranya",
+          "n": "Pécs",
+          "ref": "https://www.wikidata.org/entity/Q45779"
+        },
+        {
+          "region": "Komitat Borsod-Abaúj-Zemplén",
+          "n": "Miskolc",
+          "ref": "https://www.wikidata.org/entity/Q102397"
+        },
+        {
+          "region": "Komitat Bács-Kiskun",
+          "n": "Kecskemét",
+          "ref": "https://www.wikidata.org/entity/Q171357"
+        },
+        {
+          "region": "Komitat Békés",
+          "n": "Békéscsaba",
+          "ref": "https://www.wikidata.org/entity/Q178878"
+        },
+        {
+          "region": "Komitat Csongrád-Csanád",
+          "n": "Szeged",
+          "ref": "https://www.wikidata.org/entity/Q81581"
+        },
+        {
+          "region": "Komitat Fejér",
+          "n": "Székesfehérvár",
+          "ref": "https://www.wikidata.org/entity/Q130212"
+        },
+        {
+          "region": "Komitat Győr-Moson-Sopron",
+          "n": "Győr",
+          "ref": "https://www.wikidata.org/entity/Q134494"
+        },
+        {
+          "region": "Komitat Hajdú-Bihar",
+          "n": "Debrecen",
+          "ref": "https://www.wikidata.org/entity/Q79880"
+        },
+        {
+          "region": "Komitat Heves",
+          "n": "Eger",
+          "ref": "https://www.wikidata.org/entity/Q167109"
+        },
+        {
+          "region": "Komitat Jász-Nagykun-Szolnok",
+          "n": "Szolnok",
+          "ref": "https://www.wikidata.org/entity/Q181276"
+        },
+        {
+          "region": "Komitat Komárom-Esztergom",
+          "n": "Tatabánya",
+          "ref": "https://www.wikidata.org/entity/Q187821"
+        },
+        {
+          "region": "Komitat Nógrád",
+          "n": "Salgótarján",
+          "ref": "https://www.wikidata.org/entity/Q189769"
+        },
+        {
+          "region": "Komitat Pest",
+          "n": "Budapest",
+          "ref": "https://www.wikidata.org/entity/Q1781"
+        },
+        {
+          "region": "Komitat Somogy",
+          "n": "Kaposvár",
+          "ref": "https://www.wikidata.org/entity/Q184998"
+        },
+        {
+          "region": "Komitat Szabolcs-Szatmár-Bereg",
+          "n": "Nyíregyháza",
+          "ref": "https://www.wikidata.org/entity/Q171223"
+        },
+        {
+          "region": "Komitat Tolna",
+          "n": "Szekszárd",
+          "ref": "https://www.wikidata.org/entity/Q189761"
+        },
+        {
+          "region": "Komitat Vas",
+          "n": "Szombathely",
+          "ref": "https://www.wikidata.org/entity/Q42007"
+        },
+        {
+          "region": "Komitat Veszprém",
+          "n": "Veszprém",
+          "ref": "https://www.wikidata.org/entity/Q146317"
+        },
+        {
+          "region": "Komitat Zala",
+          "n": "Zalaegerszeg",
+          "ref": "https://www.wikidata.org/entity/Q60037"
+        }
+      ]
     }
   },
   "rank1": {
@@ -3653,6 +4613,18 @@
       "Torino",
       "Firenze",
       "Venezia"
+    ],
+    "at": [
+      "Wien",
+      "Graz",
+      "Linz",
+      "Salzburg",
+      "Innsbruck"
+    ],
+    "hu": [
+      "Budapest",
+      "Debrecen",
+      "Szeged"
     ]
   },
   "label_cities": {
@@ -3786,6 +4758,38 @@
       "Trento",
       "Perugia",
       "Aosta - Aoste"
+    ],
+    "at": [
+      "Wien",
+      "Graz",
+      "Linz",
+      "Salzburg",
+      "Innsbruck",
+      "St. Pölten",
+      "Klagenfurt",
+      "Bregenz",
+      "Eisenstadt"
+    ],
+    "hu": [
+      "Budapest",
+      "Debrecen",
+      "Szeged",
+      "Békéscsaba",
+      "Eger",
+      "Győr",
+      "Kaposvár",
+      "Kecskemét",
+      "Miskolc",
+      "Nyíregyháza",
+      "Pécs",
+      "Salgótarján",
+      "Szekszárd",
+      "Székesfehérvár",
+      "Szolnok",
+      "Szombathely",
+      "Tatabánya",
+      "Veszprém",
+      "Zalaegerszeg"
     ]
   }
 }

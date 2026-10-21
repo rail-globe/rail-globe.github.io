@@ -2,7 +2,7 @@
 
 [中文](README.md) | English
 
-Railways, metros and trams of China, Japan, South Korea and the UK; Germany, France, Switzerland, Spain, the Netherlands, Belgium and Italy in Europe; and Laos, Thailand, Malaysia, Singapore and Indonesia in South-East Asia, drawn on a satellite globe.
+Railways, metros and trams of China, Japan, South Korea and the UK; Germany, France, Switzerland, Spain, the Netherlands, Belgium, Italy, Austria and Hungary in Europe; and Laos, Thailand, Malaysia, Singapore and Indonesia in South-East Asia, drawn on a satellite globe.
 
 **Open the map: https://rail-globe.github.io/**
 
@@ -58,18 +58,20 @@ Sections supported only by an operating limit are coloured by speed and marked a
 | Netherlands | European territory: railways, metros, light rail and trams; stations, construction, yards and depots |
 | Belgium | Railways, metros, light rail and trams including the coast tram; stations, construction, yards and depots |
 | Italy | The peninsula, Sicily and Sardinia: railways, metros, light rail and trams; stations, construction, yards and depots |
+| Austria | Railways and heritage railways, with three new high-speed lines (Koralmbahn, Vienna to St. Pölten, Lower Inn Valley); the Vienna U-Bahn and the trams of Vienna, Graz, Linz and Innsbruck; stations, construction, yards and depots |
+| Hungary | Railways and heritage railways; Budapest's metro, HÉV and trams, and the trams of Szeged, Debrecen and Miskolc; stations, construction, yards and depots |
 | Laos | The Laos-China Railway (160 band) and the line from Thailand across the border to Khamsavath; stations, yards and depots |
 | Thailand | All railways; Bangkok's metro, light rail, monorails, Red Lines and Airport Rail Link; lines under construction including the Thai-Chinese high-speed railway; stations, yards and depots |
 | Malaysia | Railways of the Peninsula and Sabah; Kuala Lumpur's metro, light rail, monorail, KTM Komuter and airport trains, and Penang's KTM Komuter; lines under construction including the East Coast Rail Link; stations, yards and depots |
 | Singapore | Metro and light rail; lines under construction including the Cross Island Line, Jurong Region Line and RTS Link; stations, yards and depots |
 | Indonesia | Railways of Java, Sumatra and Sulawesi, and the Jakarta-Bandung high-speed railway (350 band); Jakarta's KRL commuter lines, MRT and LRT, commuter and airport trains in Yogyakarta, Solo, Medan and Padang, and Palembang's LRT; stations, yards and depots |
 
-Rail infrastructure used by S-Bahn, RER and Cercanías services is included in the railway layer. European lines and stations keep their local names. Sourced Chinese and English aliases can be searched and appear with the language switch; unnamed track is drawn without inventing a line identity. Coverage follows mapped OSM objects. France's overseas territories are outside the current source area. Thai and Lao names are written in their own script followed by a sourced Chinese name, or the English name where there is none; Malaysian, Singaporean and Indonesian names are local, with sourced Chinese names shown by the language switch.
+Rail infrastructure used by S-Bahn, RER and Cercanías services is included in the railway layer. European lines and stations keep their local names. Sourced Chinese and English aliases can be searched and appear with the language switch; unnamed track is drawn without inventing a line identity. Coverage follows mapped OSM objects. France's overseas territories are outside the current source area. Thai and Lao names are written in their own script followed by a sourced Chinese name, or the English name where there is none; Malaysian, Singaporean and Indonesian names are local, with sourced Chinese names shown by the language switch. Austria and Hungary are drawn within their own borders; map labels have no glyphs for letters such as ő and ű and show the nearest, ö and ü, while the card keeps the name as written.
 
 ## Data and licences
 
 - Lines, stations and yards: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, ODbL. Geofabrik extracts of 2026-10-05 (China), 2026-10-06 (Japan, South Korea) and 2026-10-03 (UK).
-- European snapshots: Germany from [GWDG's Geofabrik mirror](https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/); France, Switzerland, Spain, the Netherlands, Belgium and Italy from [OSM France](https://download.openstreetmap.fr/extracts/). Spain also includes the Canary Islands, Ceuta and Melilla extracts from `africa/spain`. Source timestamps, checksums and coverage are in `data/europe_sources.json`.
+- European snapshots: Germany from [GWDG's Geofabrik mirror](https://ftp5.gwdg.de/pub/misc/openstreetmap/download.geofabrik.de/); France, Switzerland, Spain, the Netherlands, Belgium and Italy from [OSM France](https://download.openstreetmap.fr/extracts/). Spain also includes the Canary Islands, Ceuta and Melilla extracts from `africa/spain`. Austria and Hungary are the Geofabrik `austria` and `hungary` extracts of 2026-10-20. Source timestamps, checksums and coverage are in `data/europe_sources.json`.
 - South-East Asian snapshots: the Geofabrik `laos`, `thailand`, `malaysia-singapore-brunei` and `indonesia` extracts of 2026-10-18. Every Chinese name has its source in `data/<country>_names.tsv` (Chinese Wikipedia article titles, Xinhua and others).
 - Singapore's Chinese station names: Contains information from Train Station Chinese Names accessed on 19 October 2026 from [data.gov.sg](https://data.gov.sg/datasets/d_d312a5b127e1ae74299b8ae664cedd4e/view) which is made available under the terms of the [Singapore Open Data Licence version 1.0](https://data.gov.sg/open-data-licence).
 - City aliases: [Wikidata](https://www.wikidata.org/), CC0, with a source for every entry in `data/europe_city_names.json`. Supplementary depot names have sources in `data/depot_names.json`; existing OSM names take precedence.

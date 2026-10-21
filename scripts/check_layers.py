@@ -153,6 +153,35 @@ def loose(lines, least=5.0, most=300.0):
     return sorted(found, key=lambda f: -f[0])
 
 
+def jumps(near=15.0, apart=.75):
+    """A railway that ends where another railway of its colour carries on, drawn a seat or more
+    away from it: the colour stops in one place and goes on beside it, and the line looks cut
+    (京包线 into 东北环线 at 昌平, seated a step apart, 2026-10-21: "昌平这里绿线断了")."""
+    pieces = [(p, g) for name in ("rail_hsr.geojson", "rail_conv.geojson") for p, parts in load(name) for g in parts]
+    tree = STRtree([g for _, g in pieces])
+    by_line = defaultdict(list)
+    for i, (p, _) in enumerate(pieces):
+        if p.get("n"):
+            by_line[p["n"]].append(i)
+    found, reach = [], near / 111320
+    for name, members in by_line.items():
+        own = STRtree([pieces[i][1] for i in members])
+        for k, i in enumerate(members):
+            p, g = pieces[i]
+            for c in (g.coords[0], g.coords[-1]):
+                end = Point(c)
+                if any(int(j) != k for j in own.query(end, predicate="dwithin", distance=0.00003)):
+                    continue                    # the line goes on from here
+                for j in tree.query(end, predicate="dwithin", distance=reach):
+                    q, _ = pieces[int(j)]
+                    if q.get("n") == name or not q.get("n") or q.get("c") != p.get("c") or q.get("lc") != p.get("lc"):
+                        continue
+                    if abs((q.get("off") or 0) - (p.get("off") or 0)) >= apart:
+                        found.append((name, q["n"], p.get("off") or 0, q.get("off") or 0, end))
+                        break
+    return found
+
+
 def broken(lines):
     """Lines that stop and resume: the gaps between the connected parts of a line."""
     found = []
@@ -302,6 +331,12 @@ def report(layer):
     print(f"   loose: {len(found)} places where two ends of a line stop short of each other (5 to 300 m)")
     for gap, key, pt in found[:25]:
         print(f"      gap {gap:5.0f} m  {key[1]} ({key[0]})  {here(pt, 16)}")
+    if layer == "rail":
+        found = jumps()
+        result["jumps"] = [{"line": a, "into": b, "seats": [sa, sb], "view": here(pt, 15)} for a, b, sa, sb, pt in found]
+        print(f"   jumps: {len(found)} places where a railway ends beside one of its colour drawn a seat or more away")
+        for a, b, sa, sb, pt in found[:20]:
+            print(f"      {a} ({sa:+g}) ends beside {b} ({sb:+g})  {here(pt, 15)}")
     found = sharp(lines)
     result["sharp"] = [{"angle": angle, "line": list(key), "view": here(pt, 17)} for angle, key, pt in found]
     print(f"   sharp: {len(found)} turns of more than 70 degrees")

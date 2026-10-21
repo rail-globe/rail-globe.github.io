@@ -440,7 +440,12 @@ def reseat(root=ROOT):
     The railways are seated where they are coloured by design speed (scripts/design_speeds.py)."""
     data = root / "data"
     base = data / "raw" / "seat_base" / "metro.geojson"
-    fc = json.loads((base if base.exists() else data / "metro.geojson").read_text())
+    if not base.exists():
+        # data/metro.geojson already carries its seats: seated again it grew run after run
+        # (1914 -> 2066 -> 2252 features, 2026-10-21)
+        raise SystemExit("data/raw/seat_base/metro.geojson is missing: scripts/process_osm.py sets it aside; "
+                         "to seat the railways alone: python3 scripts/seat_overrides.py rail")
+    fc = json.loads(base.read_text())
     rail = [f for name in LAYERS for f in json.loads((data / name).read_text())["features"]]
     listed = corridors("cn", rail + fc["features"], data / "seat_overrides.json")
     feats, receipt = apply(fc["features"], listed, urban=True)
@@ -458,6 +463,9 @@ def told(receipt, what, corridors_listed):
 
 if __name__ == "__main__":
     # after the list has changed: the railways are coloured and seated again, then the urban lines
+    # (python3 scripts/seat_overrides.py rail: the railways only, the urban layer as it is)
+    import sys
     from design_speeds import apply as colour
     colour(ROOT)
-    reseat(ROOT)
+    if sys.argv[1:] != ["rail"]:
+        reseat(ROOT)

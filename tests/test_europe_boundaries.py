@@ -42,13 +42,14 @@ class BoundaryDataTests(unittest.TestCase):
         cls.lines = {g: unary_union([LineString(p) for p in f["geometry"]["coordinates"]])
                      for g, f in cls.features.items()}
 
-    def test_seven_countries_and_inland_contract(self):
+    def test_countries_and_inland_contract(self):
         self.assertEqual(set(self.features), set(borders.COUNTRIES))
         self.assertIn("no coastlines or maritime", self.visible["purpose"])
         self.assertIn("not ADM1", self.visible["purpose"])
         self.assertEqual(self.visible["selection"]["COAS_FLAG"], "F")
         self.assertEqual(self.visible["crs_note"], "WGS84 longitude, latitude")
-        self.assertEqual(self.visible["selection"]["unique_in_scope_boundaries"], 29)
+        # 29 for the seven of 2026-10-17; Austria and Hungary added 11 (2026-10-21)
+        self.assertEqual(self.visible["selection"]["unique_in_scope_boundaries"], 40)
 
     def test_finite_actual_lines_not_closed_country_outlines(self):
         for g, feature in self.features.items():
