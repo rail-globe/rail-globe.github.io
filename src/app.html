@@ -1891,6 +1891,18 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     pitchWithRotate: false,
   });
   map.touchZoomRotate.disableRotation();
+  // The page builds every layer, filter and source it adds, and its tests check them. MapLibre's
+  // own check of each call serialises the whole style first, every GeoJSON source's data with it:
+  // with 440 layers and a million points of offset lines that was seconds at start and a stall
+  // each time a country's offsets came in ("现在网页很卡", 2026-10-21). The page's calls skip it
+  // (MapLibre 5.9: Map.addLayer and addSource pass no options to the style, the setters do).
+  const unchecked = { validate: false };
+  map.addLayer = (layer, before) => { map.style.addLayer(layer, before, unchecked); return map._update(true); };
+  map.addSource = (id, source) => { map.style.addSource(id, source, unchecked); return map._update(true); };
+  for (const [name, at] of [['setFilter', 2], ['setPaintProperty', 3], ['setLayoutProperty', 3]]) {
+    const own = map[name].bind(map);
+    map[name] = (...args) => own(...args.slice(0, at), { ...(args[at] || {}), ...unchecked });
+  }
   // Until the viewer moves the map, keep the whole country framed when the window changes size
   // (the container can still be settling when the map is created).
   let touched = !!startView;
@@ -2109,6 +2121,16 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     document.head.appendChild(tag);
   });
   const archiveOf = g => abs(`data/tiles/${g}.pmtiles`);
+  // The lists of the card and the borders do not depend on the tiles: they are fetched at once,
+  // beside the archives' first bytes, not after them (one slow archive held them all back; after a
+  // release the host's cache took 12 s to give China's first bytes). The imagery check runs beside
+  // them too and only changes the note under the map when it comes back.
+  const listed = new Map();
+  const list = u => { if (!listed.has(u)) listed.set(u, getJSON(u)); return listed.get(u); };
+  for (const u of ['data/lines.json', 'data/cities.json', 'data/border.geojson', 'data/metro_cities.json',
+    ...Object.keys(FOREIGN).flatMap(g => [`data/${g}_lines.json`, `data/${g}_metro_cities.json`, `data/${g}_facts.json`])])
+    list(u).catch(() => {});                      // (each is awaited, and its failure handled, below)
+  const liveProbe = probeLive();
   const tilesReady = !TILES ? Promise.resolve(null)
     : Promise.all([script('vendor/pmtiles.js'), ...everyCountry.map(g => getJSON(`data/tiles/${g}.json`, 1))]).then(async ([, ...beside]) => {
       const protocol = new window.pmtiles.Protocol();          // answers pmtiles://<archive>/z/x/y by range requests
@@ -2128,13 +2150,13 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     const whole = file => (tiles ? Promise.resolve({ type: 'FeatureCollection', features: [] }) : getJSON(file));
     return Promise.all([
       whole('data/rail_hsr.geojson'), whole('data/rail_build.geojson'),
-      whole('data/rail_conv.geojson'), whole('data/stations.geojson'), getJSON('data/lines.json'),
-      getJSON('data/cities.json'), getJSON('data/border.geojson'), whole('data/metro.geojson'),
-      whole('data/metro_stations.geojson'), probeLive(),
-      whole('data/rail_shared.geojson'), getJSON('data/metro_cities.json'),
+      whole('data/rail_conv.geojson'), whole('data/stations.geojson'), list('data/lines.json'),
+      list('data/cities.json'), list('data/border.geojson'), whole('data/metro.geojson'),
+      whole('data/metro_stations.geojson'), null,
+      whole('data/rail_shared.geojson'), list('data/metro_cities.json'),
       Promise.all(Object.keys(FOREIGN).map(g => Promise.all([
         whole(`data/${g}_rail.geojson`), whole(`data/${g}_metro.geojson`), whole(`data/${g}_stations.geojson`),
-        getJSON(`data/${g}_lines.json`), getJSON(`data/${g}_metro_cities.json`), getJSON(`data/${g}_facts.json`),
+        list(`data/${g}_lines.json`), list(`data/${g}_metro_cities.json`), list(`data/${g}_facts.json`),
         ...(FOREIGN[g].build ? [whole(`data/${g}_build.geojson`)] : [])]).catch(err => {
           if (!FOREIGN[g].optional) throw err;
           unavailableCountries.add(g);
@@ -2321,8 +2343,9 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     };
     const offsetMode = layer => ['shared', 'suburb', 'suburb-casing'].includes(layer.id) ? 'guest'
       : ['conv', 'hsr'].includes(layer['source-layer'] || layer.source) ? 'rail' : 'metro';
+    // (match is a lookup; ['in', key, literal] went through thousands of keys for every feature of every tile)
     const offsetExcluded = (spec, keys) => {
-      const excluded = ['!', ['in', offsetKeyExpr, ['literal', keys]]];
+      const excluded = keys.length ? ['match', offsetKeyExpr, keys, false, true] : true;
       return spec.filter ? ['all', spec.filter, excluded] : excluded;
     };
     const offsetDisplayFilter = spec => writtenTwice(spec)
@@ -2337,6 +2360,37 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     };
     const offsetContains = (outer, inner) => outer && outer[0] <= inner[0] && outer[1] <= inner[1]
       && outer[2] >= inner[2] && outer[3] >= inner[3];
+    // An offset line is drawn for one zoom: a point within a third of a pixel of the line through
+    // its neighbours adds nothing at that zoom (at the globe the offset lines had 1.1 million).
+    const SLIM_PX = .3;
+    const slim = (display, zoom) => {
+      const world = 512 * 2 ** zoom, tolerance = (SLIM_PX / world) ** 2;
+      for (const f of display.features) {
+        const co = f.geometry?.coordinates;
+        if (!co || co.length < 3) continue;
+        const p = co.map(ContinuousOffset.mercator), keep = new Uint8Array(co.length), stack = [[0, co.length - 1]];
+        keep[0] = keep[co.length - 1] = 1;
+        while (stack.length) {
+          const [a, b] = stack.pop(), [ax, ay] = p[a], dx = p[b][0] - ax, dy = p[b][1] - ay, length = dx * dx + dy * dy;
+          let far = -1, most = tolerance;
+          for (let i = a + 1; i < b; i++) {
+            const t = length ? Math.min(1, Math.max(0, ((p[i][0] - ax) * dx + (p[i][1] - ay) * dy) / length)) : 0;
+            const ex = ax + t * dx - p[i][0], ey = ay + t * dy - p[i][1], d = ex * ex + ey * ey;
+            if (d > most) { most = d; far = i; }
+          }
+          if (far >= 0) { keep[far] = 1; stack.push([a, far], [far, b]); }
+        }
+        f.geometry.coordinates = co.filter((_, i) => keep[i]);
+      }
+      return display;
+    };
+    const offsetRender = (chains, zoom, mode, bounds, selected) => slim(ContinuousOffset.render(chains, zoom, mode, bounds, selected), zoom);
+    // A file of offsets is fetched and drawn only near the zoom its layers show from: at the globe
+    // every country's metro offsets were drawn, unseen below z4.5 (with the rest, 560 MB).
+    const offsetFrom = key => {
+      const zooms = [...offsetSpecs.values()].filter(spec => offsetSourceOf(spec) === key).map(spec => spec.minzoom ?? 0);
+      return zooms.length ? Math.min(...zooms) : 0;
+    };
     const offsetInstall = (key, data) => {
       const keys = [...new Set(data.features.map(f => offsetKey(f.properties)))];
       const chains = ContinuousOffset.prepare(data.features);
@@ -2346,7 +2400,7 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       for (const [id, spec] of offsetSpecs) if (offsetSourceOf(spec) === key) {
         const mode = offsetMode(spec), source = `continuous-${key}-${mode}`, copy = id + '~continuous';
         if (!loaded.sources.has(mode)) {
-          const display = ContinuousOffset.render(chains, loaded.zoom, mode, loaded.bounds);
+          const display = offsetRender(chains, loaded.zoom, mode, loaded.bounds);
           loaded.empty = !display.features.length;
           map.addSource(source, { type: 'geojson', data: display, tolerance: 0, buffer: 256, maxzoom: 18 });
           loaded.sources.set(mode, source);
@@ -2371,7 +2425,7 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
           rail.selected = selected;
           rail.bounds = offsetBounds(); rail.zoom = map.getZoom();
           for (const [mode, source] of rail.sources) map.getSource(source).setData(
-            ContinuousOffset.render(rail.chains, rail.zoom, mode, rail.bounds, selected));
+            offsetRender(rail.chains, rail.zoom, mode, rail.bounds, selected));
         }
       }
     };
@@ -2417,11 +2471,12 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     const offsetRefresh = () => {
       offsetTimer = 0;
       const zoom = map.getZoom(), view = offsetView(), bounds = offsetBounds();
-      for (const loaded of offsetLoaded.values()) {
+      for (const [key, loaded] of offsetLoaded) {
         if (zoom === loaded.zoom && offsetContains(loaded.bounds, view)) continue;
+        if (zoom < offsetFrom(key) - 1) continue;           // its layers do not show: drawn again on the way back in
         let empty = true;
         for (const [mode, source] of loaded.sources) {
-          const display = ContinuousOffset.render(loaded.chains, zoom, mode, bounds, loaded.selected);
+          const display = offsetRender(loaded.chains, zoom, mode, bounds, loaded.selected);
           if (display.features.length || !loaded.empty) map.getSource(source).setData(display);
           empty = empty && !display.features.length;
         }
@@ -2438,7 +2493,7 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       if (!tiles) return;
       const bounds = map.getBounds();
       for (const [key, info] of Object.entries(offsetManifest)) {
-        if (offsetPending.has(key)) continue;
+        if (offsetPending.has(key) || map.getZoom() < offsetFrom(key) - .5) continue;
         const [w, s, e, n] = info.bbox;
         if (e < bounds.getWest() || w > bounds.getEast() || n < bounds.getSouth() || s > bounds.getNorth()) continue;
         offsetPending.add(key);
@@ -2939,17 +2994,26 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       const anchor = Math.abs(ux) >= Math.abs(uy) ? (ux > 0 ? 'left' : 'right') : (uy > 0 ? 'top' : 'bottom');
       return {type:'Feature',properties:{...properties,_label:kind,_anchor:anchor},geometry:{type:'Point',coordinates:at}};
     };
-    const capsuleData = () => {
+    // (each station's capsule is read from its text once)
+    const capsuleRead = new WeakMap();
+    const capsuleOf = p => {
+      if (!capsuleRead.has(p)) {
+        let capsule = null;
+        try { capsule = JSON.parse(p.cp); } catch { /* drawn as a dot */ }
+        capsuleRead.set(p, capsule && Array.isArray(capsule.m) ? capsule : null);
+      }
+      return capsuleRead.get(p);
+    };
+    const inBox = ([x, y], box) => x >= box[0] && x <= box[2] && y >= box[1] && y <= box[3];
+    const capsuleData = box => {
       const zoom=map.getZoom(), features=[];
       if (zoom<5) return {type:'FeatureCollection',features};
       const dots=zoom>=CAPSULE_UNTIL;
-      const bounds=map.getBounds();
       for (const f of stations.features) {
         const p=f.properties, code=typeof p.g==='string' ? p.g : 'cn';
-        if (!p.cp || zoom<RAIL_CAPSULE_FROM(p) || !bounds.contains(f.geometry.coordinates) || !rowOn('stations',code)) continue;
-        let capsule;
-        try { capsule=JSON.parse(p.cp); } catch { continue; }
-        if (!Array.isArray(capsule.m)) continue;
+        if (!p.cp || zoom<RAIL_CAPSULE_FROM(p) || !inBox(f.geometry.coordinates,box) || !rowOn('stations',code)) continue;
+        let capsule=capsuleOf(p);
+        if (!capsule) continue;
         capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
         const shown=member => twinShown(member,zoom) && memberOn(member);
         const fill=p.h ? col('station') : '#c9dbe6';
@@ -2970,11 +3034,10 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       if (zoom<11) return {type:'FeatureCollection',features};
       for (const f of metroStations.features) {
         const p=f.properties, code=typeof p.g==='string' ? p.g : 'cn';
-        if (!p.cp || !bounds.contains(f.geometry.coordinates)) continue;
+        if (!p.cp || !inBox(f.geometry.coordinates,box)) continue;
         if (code!=='cn' && !rowOn('stations',code)) continue;
-        let capsule;
-        try { capsule=JSON.parse(p.cp); } catch { continue; }
-        if (!Array.isArray(capsule.m)) continue;
+        let capsule=capsuleOf(p);
+        if (!capsule) continue;
         if (zoom<TRAM_STOPS_FROM && (p.t || capsule.m.every(m => m.jk==='urban'))) continue;
         capsule={...capsule,m:capsule.m.map(capsuleOffsetMember)};
         const shown = member => {
@@ -3020,8 +3083,38 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
       layout:{'text-field':['get','n'],'text-font':['sans'],'text-size':['interpolate',['linear'],['zoom'],12,10.5,16,13],
         'text-anchor':['get','_anchor'],'text-optional':true},
       paint:{'text-color':'#eaf4fb','text-halo-color':'rgba(8,14,18,0.9)','text-halo-width':1.3}});
-    refreshCapsules=()=>map.getSource('station-capsules').setData(capsuleData());
-    map.on('move',refreshCapsules);
+    // The capsules are drawn in screen terms (seats, widths), so they are worked out again as the
+    // zoom changes, not on every frame of a move: at most every CAPSULE_MS while zooming, then once
+    // when the map stops; a pan stays within the box they were worked out for (the view and a
+    // quarter of it on each side), and below z11 there are none to work out. They had been redone,
+    // over every station of every country, on each frame of every move ("现在网页很卡", 2026-10-21).
+    const CAPSULES_FROM = Math.min(RAIL_CAPSULES_FROM, 11), CAPSULE_MS = 100;
+    let capsuleDrawn = null, capsuleTimer = 0;
+    const capsuleBox = () => {
+      const b = map.getBounds(), dx = (b.getEast() - b.getWest()) / 4, dy = (b.getNorth() - b.getSouth()) / 4;
+      return [b.getWest() - dx, b.getSouth() - dy, b.getEast() + dx, b.getNorth() + dy];
+    };
+    refreshCapsules = () => {
+      clearTimeout(capsuleTimer);
+      const zoom = map.getZoom(), box = capsuleBox();
+      const data = zoom < CAPSULES_FROM ? EMPTY : capsuleData(box);
+      if (data.features.length || !capsuleDrawn?.empty) map.getSource('station-capsules').setData(data);
+      capsuleDrawn = { zoom, box, empty: !data.features.length, at: performance.now() };
+    };
+    const capsuleMove = () => {
+      const zoom = map.getZoom(), view = map.getBounds();
+      if (capsuleDrawn && zoom < CAPSULES_FROM && capsuleDrawn.empty) return;
+      if (capsuleDrawn && zoom === capsuleDrawn.zoom && inBox([view.getWest(), view.getSouth()], capsuleDrawn.box)
+        && inBox([view.getEast(), view.getNorth()], capsuleDrawn.box)) return;
+      if (capsuleDrawn && performance.now() - capsuleDrawn.at < CAPSULE_MS) {
+        clearTimeout(capsuleTimer);
+        capsuleTimer = setTimeout(capsuleMove, CAPSULE_MS);
+        return;
+      }
+      refreshCapsules();
+    };
+    map.on('move', capsuleMove);
+    map.on('moveend', capsuleMove);
     // (from z11, with the light rail and trams: the data does not tell a tram stop from a metro
     // station, and a stop of a line not yet drawn is a dot in the middle of nothing)
     addMixed('metro-stations', { id: 'metro-stations', type: 'circle', minzoom: 11,
@@ -3116,7 +3209,8 @@ body.tucked #dock { opacity: 1; visibility: visible; pointer-events: auto;
     };
     nameTheMap();
 
-    say(document.getElementById('baseNote'), live ? 'imagery.note' : 'imagery.offline');
+    say(document.getElementById('baseNote'), 'imagery.note');
+    liveProbe.then(ok => { if (!ok) say(document.getElementById('baseNote'), 'imagery.offline'); });
 
     const dimOut = document.getElementById('dimOut');
     const applyDim = () => {

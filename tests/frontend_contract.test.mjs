@@ -161,7 +161,11 @@ const checks = [
     "map.addSource('border', { type: 'geojson', data: border, tolerance: 0.3 })", "whole('yards', { data: EMPTY, tolerance: 0.2 })", "whole('depots', { data: EMPTY })"].every(line => page.includes(line))],
   ['a layer names its source for either mode', /const from = \(name, g = 'cn'\) => \(tiles \? \{ source: 'tiles-' \+ g, 'source-layer': name \} : \{ source: name \}\);/],
   ['no layer names a line source outright', /^(?![\s\S]*source: '(?:conv|hsr|shared|build|metro|metro-stations|stations|yards|depots)')/],
-  ['the border is one whole file in both modes', /getJSON\('data\/border\.geojson'\), whole\('data\/metro\.geojson'\)/],
+  ['the border is one whole file in both modes', /list\('data\/border\.geojson'\), whole\('data\/metro\.geojson'\)/],
+  // 2026-10-21 ("现在网页很卡"): the card's lists are fetched beside the tiles' first bytes, and the
+  // imagery check does not hold the page back
+  ['the card\'s lists do not wait for the tiles', page => /const list = u => \{ if \(!listed\.has\(u\)\) listed\.set\(u, getJSON\(u\)\); return listed\.get\(u\); \};/.test(page)
+    && page.indexOf("list(u).catch(() => {});") < page.indexOf('const dataReady =') && !/probeLive\(\),/.test(page.slice(page.indexOf('const dataReady =')))],
   ['a layer of a country abroad reads that country', /\.\.\.from\('conv', g\),[\s\S]*\.\.\.from\('metro', g\),/],
   ['a layer that mixed countries is one per country in tile mode', /copies\[spec\.id\] = tiles \? everyCountry\.filter\(g => has\(name, g\)\)\.map\(g => \[g === 'cn' \? spec\.id : spec\.id \+ '@' \+ g, g\]\) : \[\[spec\.id, null\]\];/],
   ['the mixed layers', page => ['yards', 'build', 'hl-conv-core', 'stations', 'station-labels', 'depots', 'depot-labels', 'metro-stations', 'metro-station-labels'].every(id => new RegExp(`addMixed\\('[a-z-]+', \\{ id: '${id}',`).test(page))],
@@ -1154,7 +1158,7 @@ if (core) {
   // Request sentinels test the loader, without inventing railway files or invoking a pipeline.
   const loaderCode = between(page, '  const dataReady =', '  dataReady.catch(');
   const load = (foreign, failCode) => new Function('FOREIGN', 'getJSON', 'console', `
-    const tilesReady = Promise.resolve(null), probeLive = () => Promise.resolve(true);
+    const tilesReady = Promise.resolve(null), probeLive = () => Promise.resolve(true), list = getJSON;
     const VIEW_BOUNDARIES = Object.fromEntries(Object.keys(FOREIGN).map(g => [g, true]));
     const unpackBorders = data => data;
     const unavailableCountries = new Set();

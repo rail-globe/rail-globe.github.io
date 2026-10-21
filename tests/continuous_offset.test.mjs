@@ -255,6 +255,7 @@ test('camera gestures defer work, reuse buffered pans and rebuild once after zoo
       getWest: () => view[0], getSouth: () => view[1], getEast: () => view[2], getNorth: () => view[3] }),
       getSource: () => ({ setData: () => writes++ }), on: (name, fn) => handlers.set(name, fn) },
     offsetLoaded: new Map([['test', loaded]]), offsetDynamic: new Map(), tiles: false,
+    offsetSpecs: new Map(), offsetSourceOf: () => null,
     ContinuousOffset: { render: () => { renders++; return { features: [{}] }; } },
     setTimeout: fn => { timers.set(++next, fn); return next; }, clearTimeout: id => timers.delete(id),
   };
