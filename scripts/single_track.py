@@ -199,6 +199,251 @@ def one_track(parts, near=NEAR, gap=GAP, keep=KEEP, apart=APART, apart_min=APART
     return lines_of(linemerge(MultiLineString(drawn)))
 
 
+FOLD_APART = 10.0    # metres: a line beside itself this close, heading the other way, is the other track of a double track
+FOLD_LEAST = 100.0   # metres: ... for at least this long (a shorter one is the turn itself)
+FOLD_GAP = 150.0     # metres: where the two tracks part around a stop for less than this, the stretch goes on
+FOLD_WANDER = 20.0   # metres: ... as long as they stay this near each other (further, they are two streets)
+FOLD_END = 50.0      # metres: a doubled stretch this near an end of a run is cut off with that end
+FOLD_MIDDLE = 300.0  # metres: one in the middle of a run is cut out only when it is at least this long
+FOLD_CLOSE = 1.5     # metres: a cut is made where the two copies are no further apart than usual and this
+FOLD_STEP = 2.0      # metres between the points compared
+
+
+def _metres(g):
+    """g in local metres (the same vertices, scaled), and the scale."""
+    co = list(g.coords)
+    k = math.cos(math.radians(sum(c[1] for c in co) / len(co))) * 111320.0
+    return LineString([(x * k, y * 111320.0) for x, y in co]), k
+
+
+def _degrees_along(g, m, at):
+    """The distance along g (degrees) of the point `at` metres along m, its copy in metres."""
+    co, cm = list(g.coords), list(m.coords)
+    done_m = done_d = 0.0
+    for (a, b), (am, bm) in zip(zip(co, co[1:]), zip(cm, cm[1:])):
+        lm, ld = math.dist(am, bm), math.dist(a, b)
+        if done_m + lm >= at:
+            return done_d + (ld * (at - done_m) / lm if lm else 0.0)
+        done_m, done_d = done_m + lm, done_d + ld
+    return g.length
+
+
+def folds(g, apart=FOLD_APART, least=FOLD_LEAST, gap=FOLD_GAP, wander=FOLD_WANDER, step=FOLD_STEP):
+    """Where the run g comes back beside itself heading the other way: out on one track of a double
+    track and back on the other. [(early_from, early_to, late_from, late_to)] in metres along g, the
+    longest later stretch first; then where the two copies first come as near each other as along
+    the rest of the stretch (later, earlier: metres), and which turn the stretch belongs to.
+
+    The points of the two stretches pair off mirrored around the turn, so the sum of their distances
+    along the run stays about the same over one doubled stretch, and over all those of one turn.
+    Where the two tracks part, around a stop, the stretch goes on; where they part for longer than
+    `gap` or further than `wander` (a one-way pair: two streets), it is cut in two and the parting
+    is no part of either."""
+    import numpy as np
+    m, _ = _metres(g)
+    length = m.length
+    if length < 2 * least:
+        return []
+    s = np.linspace(0.0, length, int(length / step) + 1)
+    pts = shapely.line_interpolate_point(m, s)
+    ahead = shapely.get_coordinates(shapely.line_interpolate_point(m, np.clip(s + 1, 0, length)))
+    behind = shapely.get_coordinates(shapely.line_interpolate_point(m, np.clip(s - 1, 0, length)))
+    heading = ahead - behind
+    norm = np.hypot(heading[:, 0], heading[:, 1])
+    heading /= np.where(norm > 0, norm, 1.0)[:, None]
+    i, j = STRtree(pts).query(pts, predicate="dwithin", distance=apart)
+    mask = (j > i) & (s[j] - s[i] > 3 * apart) & ((heading[i] * heading[j]).sum(1) < -0.8)
+    i, j = i[mask], j[mask]
+    if not len(i):
+        return []
+    xy = shapely.get_coordinates(pts)
+    apartness = np.hypot(*(xy[i] - xy[j]).T)
+    total = s[i] + s[j]
+    order = np.argsort(total, kind="stable")
+    cut = np.flatnonzero(np.diff(total[order]) > 10 * step) + 1
+    found = []
+    for turn, group in enumerate(np.split(order, cut)):
+        late = np.unique(j[group])
+        runs, start = [], 0
+        for k in range(1, len(late) + 1):
+            if k == len(late) or s[late[k]] - s[late[k - 1]] > gap:
+                runs.append(late[start:k])
+                start = k
+        split = []
+        for run in runs:
+            # where the later copy leaves the earlier by more than `wander`, the two are two streets
+            pairs = group[np.isin(j[group], run)]
+            early = s[i[pairs]]
+            beside = substring(m, max(float(early.min()) - gap, 0), min(float(early.max()) + gap, length))
+            start = 0
+            for k in range(1, len(run)):
+                a, b = run[k - 1], run[k]
+                if s[b] - s[a] > 4 * step and float(shapely.distance(pts[a:b], beside).max()) > wander:
+                    split.append(run[start:k])
+                    start = k
+            split.append(run[start:])
+        for run in split:
+            pairs = group[np.isin(j[group], run)]
+            lo, hi = s[run[0]], s[run[-1]]
+            early = s[i[pairs]]
+            e_lo, e_hi = float(early.min()), float(early.max())
+            if hi - lo < least or e_hi > lo:
+                continue
+            # the copies close in towards the turn; the cut is where they are as near as elsewhere
+            d = apartness[pairs]
+            near = pairs[d <= float(np.median(d)) + FOLD_CLOSE]
+            found.append((e_lo, e_hi, float(lo), float(hi), float(s[j[near]].min()), float(s[i[near]].max()), turn))
+    return sorted(found, key=lambda f: (f[2] - f[3], f[2]))
+
+
+def one_copy(pieces, apart=FOLD_APART, least=FOLD_LEAST, end=FOLD_END, middle=FOLD_MIDDLE):
+    """Drop the second copy of a line that a run drew on both tracks of a double track.
+
+    Where a line's two tracks are joined at both ends (a turning loop, a crossover), the run goes out
+    on one track and back on the other, and unfold() can miss the turn: the points of the way back
+    fall between those of the way out (Budapest 59B, Vienna 27, Bremen 1: 2026-10-22). Of each such
+    doubled stretch (folds()) the later copy is left out, or the earlier one where it begins the
+    run, the same copy for every stretch of one turn: the turn stays whole (a turning loop ends
+    where the two tracks come as near each other as along the stretch). A copy in
+    the middle of a run is left out only when it is at least `middle` long; where the rest of the run
+    leaves the copy that stays, it is joined to it at a slant, as stitch() joins an end to the side
+    of a run, or end to end where two cut ends lie abreast. A ring is first opened in the middle of
+    the other turn of its longest doubled stretch. Everything else (terminal loops, one-way pairs of
+    streets, branches) is kept as it was; pieces without a doubled stretch come back unchanged.
+    This comes after stitch(): it joins ends up to 120 m apart, and would draw a short copy taken
+    out here again."""
+    out, changed = [], False
+    for g in pieces:
+        kept = _one_copy(g, apart, least, end, middle)
+        # a ring opened shows the stretches that ran across its seam: they are looked at again
+        for _ in range(3):
+            if kept is None:
+                break
+            changed, again = True, [(x, _one_copy(x, apart, least, end, middle)) for x in kept]
+            if all(k is None for _, k in again):
+                break
+            kept = [y for x, k in again for y in (k if k is not None else [x])]
+        out += kept if kept is not None else [g]
+    return out if changed else pieces
+
+
+def _one_copy(g, apart, least, end, middle):
+    """one_copy() for one run: the pieces it becomes, or None where it has no doubled stretch."""
+    ring = len(g.coords) > 3 and g.coords[0] == g.coords[-1]
+    m, _ = _metres(g)
+
+    def wanted(p, length):
+        return [f for f in folds(p, apart, least)
+                if length - f[3] <= end or f[0] <= end or f[3] - f[2] >= middle]
+
+    found = folds(g, apart, least) if ring else wanted(g, m.length)
+    if not found:
+        return None
+    if ring:
+        # opened in the middle of the other turn of its longest doubled stretch: every copy of the
+        # way out then comes before every copy of the way back, and both turns stay whole
+        e_lo, l_hi, length = found[0][0], found[0][3], m.length
+        at = _degrees_along(g, m, (l_hi + e_lo + length) / 2 % length)
+        head, tail = substring(g, at, g.length), substring(g, 0, at)
+        g = LineString(list(head.coords) + list(tail.coords)[1:])
+        m, _ = _metres(g)
+        found = wanted(g, m.length)
+        if not found:
+            return None
+    length = m.length
+    # The same copy of every stretch of one turn is left out: the later, unless one of them begins
+    # the run and none ends it. The stretches left out, and their cut ends: {where: the place on the
+    # copy that stays beside it}.
+    ending = {f[6] for f in found if length - f[3] <= end}
+    beginning = {f[6] for f in found if f[0] <= end} - ending
+    drops = []
+    for e_lo, e_hi, l_lo, l_hi, l_near, e_near, turn in found:
+        if turn not in beginning:
+            drops.append([l_near, length, {l_near: e_near}] if length - l_hi <= end else
+                         [l_near, l_hi, {l_near: e_near, l_hi: e_lo}])
+        else:
+            drops.append([0.0, e_near, {e_near: l_near}] if e_lo <= end else
+                         [e_lo, e_near, {e_lo: l_hi, e_near: l_near}])
+    drops.sort(key=lambda d: d[0])
+    merged = [drops[0]]
+    for d in drops[1:]:
+        if d[0] <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], d[1])
+            merged[-1][2].update(d[2])
+        else:
+            merged.append(d)
+    partner = {}
+    for lo, hi, cuts in merged:
+        for x in (lo, hi):
+            if x in cuts:
+                partner[x] = cuts[x]
+    bounds = [0.0] + [x for lo, hi, _ in merged for x in (lo, hi)] + [length]
+    parts = [[a, b] for a, b in zip(bounds[::2], bounds[1::2]) if b - a > 0]
+    # a sliver left between two stretches taken out goes with them
+    parts = [p for p in parts if p[1] - p[0] > 2 * apart or p[0] == 0.0 or p[1] == length]
+    if not parts:
+        return None
+    pos = lambda x: g.interpolate(_degrees_along(g, m, x))
+    coords = [list(substring(g, _degrees_along(g, m, a), _degrees_along(g, m, b)).coords) for a, b in parts]
+    links = []                          # ((part, side), (part, side)): joined end to end (side 0 start, 1 end)
+    if ring and parts[0][0] == 0.0 and parts[-1][1] == length and len(parts) > 1:
+        links.append(((len(parts) - 1, 1), (0, 0)))
+    reach = 3 * apart
+    joins = {}
+    for k, (a, b) in enumerate(parts):
+        for side, x in ((0, a), (1, b)):
+            if x not in partner:
+                continue
+            target = partner[x]
+            if a - reach <= target <= b + reach:
+                continue                # its own turn: the end of a turning loop, left where the tracks meet
+            near = min(range(len(parts)), key=lambda t: max(parts[t][0] - target, target - parts[t][1], 0))
+            ta, tb = parts[near]
+            if max(ta - target, target - tb, 0) > reach:
+                continue
+            at = min(max(target, ta), tb)
+            # two cut ends abreast of each other: joined end to end
+            other = [(t_side, y) for t_side, y in ((0, ta), (1, tb)) if abs(y - at) <= reach and y in partner
+                     and a - reach <= partner[y] <= b + reach]
+            if other:
+                pair = tuple(sorted([(k, side), (near, other[0][0])]))
+                if pair not in links:
+                    links.append(pair)
+                continue
+            # further along the copy that stays, in the direction this part was going at its end
+            end_pt = m.interpolate(x)
+            inner = m.interpolate(min(x + 1.0, b) if side == 0 else max(x - 1.0, a))
+            d = end_pt.distance(m.interpolate(at))
+            ahead = [y for y in (at - 3 * d, at + 3 * d) if ta <= y <= tb] or [at]
+            going = lambda y: ((m.interpolate(y).x - end_pt.x) * (end_pt.x - inner.x)
+                               + (m.interpolate(y).y - end_pt.y) * (end_pt.y - inner.y))
+            q = pos(max(ahead, key=going))
+            joins[(k, side)] = (q.x, q.y)
+    for (k, side), q in joins.items():
+        coords[k] = [q] + coords[k] if side == 0 else coords[k] + [q]
+    # chains of parts joined end to end, eased into each other as stitch() does
+    nxt = {}
+    for u, v in links:
+        if u not in nxt and v not in nxt and u[0] != v[0]:
+            nxt[u], nxt[v] = v, u
+    out, seen = [], set()
+    for k in sorted(range(len(parts)), key=lambda k: ((k, 0) in nxt) + ((k, 1) in nxt)):
+        if k in seen:
+            continue
+        side = 0 if (k, 0) not in nxt else 1
+        chain, cur, enter = [], k, side
+        while cur is not None and cur not in seen:
+            seen.add(cur)
+            co = coords[cur] if enter == 0 else coords[cur][::-1]
+            if chain and chain[-1] != co[0]:
+                chain, co = eased(chain, co, bends=True)
+            chain += co if not chain or chain[-1] != co[0] else co[1:]
+            link = nxt.get((cur, 1 - enter))
+            cur, enter = link if link else (None, 0)
+        out.append(LineString(chain))
+    return [x for x in out if x.length > 0]
+
+
 def smooth(co, reverse=150.0, corner=55.0):
     """A line has no sudden changes of direction. Two kinds are taken out of a coordinate run:
 

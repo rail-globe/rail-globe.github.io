@@ -37,8 +37,9 @@ BOX = {"cn": (73, 15, 136, 54), "jp": (122, 24, 146, 46), "kr": (124, 33, 131, 3
        "my": (99.6, 0.8, 119.3, 7.4), "sg": (103.6, 1.2, 104.1, 1.5), "th": (97.3, 5.6, 105.7, 20.5), "id": (95.0, -11.0, 141.1, 6.0)}
 # Abroad: how many cities, and how many of rank 1 (the capital and the cities the world knows).
 ABROAD = {"jp": (47, 6), "kr": (16, 2), "uk": (7, 5),
-          "de": (18, 5), "fr": (14, 5), "ch": (26, 5), "es": (21, 5),
-          "nl": (14, 3), "be": (4, 3), "it": (20, 6), "at": (9, 5), "hu": (19, 3), "la": (18, 1),
+          # continental Europe: seven in ten of each table drawn (2026-10-22, build_cities.EUROPE_LABEL_SHARE)
+          "de": (13, 5), "fr": (10, 5), "ch": (18, 5), "es": (15, 5),
+          "nl": (10, 3), "be": (3, 3), "it": (14, 6), "at": (6, 5), "hu": (13, 3), "la": (18, 1),
           "my": (16, 3), "sg": (1, 1), "th": (49, 3), "id": (38, 4)}
 country = lambda e: e.get("g", "cn")
 FIELDS = ("n", "at", "r", "g", "side", "nz", "ne", "m", "name_ref")
@@ -109,17 +110,31 @@ class Cities(unittest.TestCase):
         self.assertEqual(rank1["uk"], [("London", "伦敦"), ("Edinburgh", "爱丁堡"), ("Manchester", "曼彻斯特"), ("Birmingham", "伯明翰"), ("Glasgow", "格拉斯哥")])
 
     def test_europe_rank2_labels_are_first_level_administrative_seats(self):
+        # (seven in ten of the table drawn: every rank 1, then the metro lists' cities, then the largest)
         for g, regions in (("de", 16), ("fr", 13), ("ch", 26), ("es", 19),
-                           ("nl", 12), ("be", 3), ("it", 20)):
+                           ("nl", 12), ("be", 3), ("it", 20), ("at", 9), ("hu", 19)):
             source = EUROPE_SOURCE["administrative_seats"][g]
             self.assertTrue(source["ref"].startswith("https://"))
             self.assertEqual(len({seat["region"] for seat in source["seats"]}), regions)
             seats = {seat["n"] for seat in source["seats"]}
             first = set(EUROPE_SOURCE["rank1"][g])
             there = [c for c in CITIES if country(c) == g]
-            self.assertEqual({c["n"] for c in there}, seats | first)
+            self.assertTrue({c["n"] for c in there} <= seats | first)
+            self.assertEqual(len(there), round(0.7 * len(seats | first)), g)
             self.assertTrue(all(c["n"] in seats for c in there if c["r"] == 2))
             self.assertEqual({c["n"] for c in there if c["r"] == 1}, first)
+
+    def test_the_pipeline_sees_every_place_of_a_european_table(self):
+        # (2026-10-22: with labels left off the map, scripts/process_europe.py lost Saarbrücken and
+        # handed the Saarbahn to France; it reads every place of the table from europe_places.json)
+        places = json.loads((ROOT / "data/europe_places.json").read_text())
+        for g, names in EUROPE_SOURCE["label_cities"].items():
+            self.assertEqual({n for n, _, _ in places[g]}, {EUROPE_NAMES[g][local]["n"] for local in names}, g)
+            drawn = {e["n"]: e["at"] for e in CITIES if country(e) == g}
+            self.assertTrue(all(drawn[n] == [x, y] for n, x, y in places[g] if n in drawn), g)
+        source = (ROOT / "scripts/process_europe.py").read_text()
+        self.assertIn("europe_places.json", source)
+        self.assertNotIn('"cities.json"', source)
 
     def test_the_names_abroad_are_in_their_form(self):
         han = r"[一-鿿]+"

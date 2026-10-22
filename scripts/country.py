@@ -41,7 +41,7 @@ from process_jp import CURVE, TOL, adopt_unnamed, bbox_of, being_built, colour_o
 from side_by_side import abreast, side_by_side
 from names import Names, city_names, name_city
 from yards import write_yards
-from single_track import join_up, one_track, stitch
+from single_track import join_up, one_copy, one_track, stitch
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW, OUT = ROOT / "data" / "raw", ROOT / "data"
@@ -116,6 +116,8 @@ class Country:
                                                # clipped to the country's own land, scripts/process_sea.py)
     urban_trains: Callable = None              # (route=train relation's tags, its route_master's) -> drawn as a metro line?
     urban_train_kind: str = "subway"           # ... and its class: a metro line's ("subway"), or one of its own
+    urban_one_copy: bool = False               # a city line drawn out on one track and back on the other kept once (single_track.one_copy)
+    urban_one_copy_left_out: tuple = ()        # ... but not in these cities, where the comparison with the drawing without it failed
 
 
 PLATFORM_SIDING_KM = 2.0     # a station's platform track, not a yard
@@ -193,10 +195,12 @@ def capsule_display(stations, metro, extract):
 #   scripts/endpoint_sources.py ENDPOINT_CITIES, each once compared with its drawing without the order.
 # - urban_station_display: capsules across the lines that stop at a metro station, the name
 #   beside the capsule, one capsule for two same-named stations of one interchange.
+# - urban_one_copy: a city line that a run drew out on one track of a double track and back on
+#   the other is drawn once (single_track.one_copy; Budapest 59B, Vienna 27, Bremen 1: 2026-10-22).
 # A country whose train services are drawn as city lines over its railways (Korea's 首都圈电铁,
 # Bangkok's Red Lines, KTM Komuter, Jakarta's KRL) also sets rail_capsules=True.
 LIKE_EUROPE = dict(rail_seats=False, merge_urban_by_colour=False, urban_bundles=True,
-                   urban_station_display=capsule_display)
+                   urban_station_display=capsule_display, urban_one_copy=True)
 
 
 def line_colours(routes, networks=None, many=5, brand=1 / 4):
@@ -571,6 +575,17 @@ def run(cfg, *, rail_only=False):
     # The services of one network in one colour are one line (the five DLR services, both
     # directions of a circle): named after the network where there are several.
     merged = urban_groups(cfg, routes)
+
+    def city_at(network, name, mid):
+        """The city a line belongs to, by the middle of its longest piece."""
+        if cfg.urban_nearest_city:
+            from europe_urban_policy import nearest_city
+            city = nearest_city(cfg.cities, mid, cfg.elsewhere)
+        else:
+            city = next((c[0] for c in cfg.cities if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), cfg.elsewhere)
+        if cfg.urban_city_of:
+            city = cfg.urban_city_of(network, name, mid, city)
+        return city
     covered = set()
     metro_feats, metro_rows, urban_sources = [], [], []
     applied_geometry = set()
@@ -597,6 +612,16 @@ def run(cfg, *, rail_only=False):
                 continue
             light = decision["jk"] == "urban"
         drawn = stitch(one_track(runs_of([ways[w][1] for w in wids])), bends=True)
+        if cfg.urban_one_copy:
+            # after stitch(): it joins ends up to 120 m apart, and would draw a short removed copy again
+            once = one_copy(drawn)
+            if once is not drawn and cfg.urban_one_copy_left_out:
+                # a city left out keeps the line as it was: its city as the line is drawn without it
+                kept = cfg.urban_drawn(cfg.code, network, name, source_relations, ways, relations, drawn) if cfg.urban_drawn else drawn
+                rough = rounded(kept, TOL["light" if light else "metro"], (6, 6, 0.00004) if light else (5, 4, 0.0003), adaptive=True)
+                if rough and city_at(network, name, LineString(max(rough, key=len)).interpolate(0.5, normalized=True)) in cfg.urban_one_copy_left_out:
+                    once = drawn
+            drawn = once
         if cfg.urban_drawn:
             original_drawn = drawn
             drawn = cfg.urban_drawn(cfg.code, network, name, source_relations, ways, relations, drawn)
@@ -609,13 +634,7 @@ def run(cfg, *, rail_only=False):
         covered.update(wids)
         jk = own_class or ("urban" if light else "subway")
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
-        if cfg.urban_nearest_city:
-            from europe_urban_policy import nearest_city
-            city = nearest_city(cfg.cities, mid, cfg.elsewhere)
-        else:
-            city = next((c[0] for c in cfg.cities if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), cfg.elsewhere)
-        if cfg.urban_city_of:
-            city = cfg.urban_city_of(network, name, mid, city)
+        city = city_at(network, name, mid)
         if city == cfg.elsewhere and cfg.urban_places and cfg.urban_abroad:
             # A tram line across a border, or near one, is in both countries' extracts whole
             # (Basel's in France's and Germany's, Geneva's in France's). Outside this country's

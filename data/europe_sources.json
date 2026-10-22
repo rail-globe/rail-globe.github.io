@@ -380,7 +380,7 @@
         },
         "feature_counts": {
           "rail": 23572,
-          "metro": 4155,
+          "metro": 4194,
           "build": 48,
           "stations": 14173,
           "yards": 134,
@@ -426,7 +426,7 @@
         },
         "feature_counts": {
           "rail": 7780,
-          "metro": 380,
+          "metro": 381,
           "build": 42,
           "stations": 5674,
           "yards": 75,
@@ -957,7 +957,7 @@
         },
         "feature_counts": {
           "rail": 4233,
-          "metro": 339,
+          "metro": 386,
           "build": 5,
           "stations": 2580,
           "yards": 30,
@@ -3082,7 +3082,7 @@
         },
         "feature_counts": {
           "rail": 6197,
-          "metro": 379,
+          "metro": 380,
           "build": 150,
           "stations": 4782,
           "yards": 51,
@@ -3124,7 +3124,7 @@
         },
         "feature_counts": {
           "rail": 3643,
-          "metro": 346,
+          "metro": 379,
           "build": 19,
           "stations": 2387,
           "yards": 23,
@@ -3161,7 +3161,7 @@
         },
         "feature_counts": {
           "rail": 927,
-          "metro": 288,
+          "metro": 281,
           "build": 2,
           "stations": 2117,
           "yards": 17,

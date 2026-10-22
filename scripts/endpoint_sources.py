@@ -33,11 +33,13 @@ ENDPOINT_CITIES = {
     "id": ("巨港", "雅加达",),
     # Austria and Hungary (2026-10-21), compared the same way (output/at-hu-runs/endpoint/compare-*.txt):
     # every line kept and on its own track; z12 self-crossings Vienna 30 -> 10, Graz 15 -> 7,
-    # Innsbruck 19 -> 4, Linz 10 -> 2, Szeged 5 -> 1, Miskolc 2 -> 0. Left out, legacy drawing:
-    # Budapest, where the trial draws one more line twice beside itself (tram 51; tram 59 more of
-    # its length), though its self-crossings fall 42 -> 22.
+    # Innsbruck 19 -> 4, Linz 10 -> 2, Szeged 5 -> 1, Miskolc 2 -> 0. At first left out, legacy drawing:
+    # Budapest, where the trial drew one more line twice beside itself (tram 51; tram 59 more of
+    # its length), though its self-crossings fell 42 -> 22. With the lines drawn once
+    # (single_track.one_copy, 2026-10-22) Budapest passes too: z12 self-crossings 42 -> 27, z14
+    # 15 -> 7, z16 9 -> 1, every line on its own track (59 was at 35%, 61 at 65%).
     "at": ("因斯布鲁克", "奥地利其他", "林茨", "格拉茨", "维也纳",),
-    "hu": ("塞格德", "德布勒森", "米什科尔茨",),
+    "hu": ("塞格德", "德布勒森", "米什科尔茨", "布达佩斯",),
 }
 # A trial of every city of a country (2026-10-18, "将 NATIVE_FINDINGS.md 思路融入排座"): the
 # environment variable ENDPOINT_TRIAL=1 makes every city of the light rail use endpoint ordering,

@@ -105,10 +105,11 @@ class EndpointSourceTests(unittest.TestCase):
         self.assertNotIn("德国其他", ENDPOINT_CITIES["de"])
         # 2026-10-19: Kuala Lumpur, Palembang and Jakarta passed the same comparison
         self.assertEqual((ENDPOINT_CITIES["my"], ENDPOINT_CITIES["id"]), (("吉隆坡",), ("巨港", "雅加达")))
-        # 2026-10-21: Austria's five and Hungary's three (output/at-hu-runs/endpoint/); Budapest keeps the legacy one
+        # 2026-10-21: Austria's five and Hungary's three (output/at-hu-runs/endpoint/); Budapest on
+        # 2026-10-22, once its lines were drawn once (single_track.one_copy)
         self.assertEqual(set(ENDPOINT_CITIES["at"]), {"维也纳", "格拉茨", "林茨", "因斯布鲁克", "奥地利其他"})
-        self.assertEqual(set(ENDPOINT_CITIES["hu"]), {"塞格德", "德布勒森", "米什科尔茨"})
-        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 80)
+        self.assertEqual(set(ENDPOINT_CITIES["hu"]), {"塞格德", "德布勒森", "米什科尔茨", "布达佩斯"})
+        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 81)
         self.assertFalse(endpoint_sources.ENDPOINT_TRIAL)
 
 

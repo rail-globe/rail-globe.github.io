@@ -52,6 +52,23 @@ class SourceLoopTests(unittest.TestCase):
         self.assertFalse(any(e['u']==e['v'] and 'service' in e['lines'] for e in edges))
         self.assert_covered(LineString(trunk),self.own(edges,'trunk'),1)
 
+    def test_thin_loop_at_its_node_is_no_loop(self):
+        # Munich Karlsplatz (2026-10-22): a run passed a node a few metres off it and both ends
+        # snapped to it, a closed course 65 m long, 0.6 m wide on average, never 21 m from the
+        # node; kept as a loop it was drawn as a knot. A longer out-and-back is a branch drawn on
+        # both its tracks (Basel 8, Antwerp 12) and stays.
+        from line_bundles import thin_loop
+        self.assertTrue(thin_loop([(0,0),(-19.2,6.2),(-8.6,3.1),(-0.5,2.2),(11.8,5.1),(0,0)]))
+        self.assertFalse(thin_loop([(0,0),(0,400),(3,400),(3,0),(0,0)]))
+        self.assertFalse(thin_loop([(0,0),(0,200),(200,200),(200,80),(0,80),(0,0)]))
+        trunk=[(-700,0),(700,0)]
+        route=[(-150,0),(0,0),(0,400),(3,400),(3,0),(150,0)]
+        for reverse in [False,True]:
+            run=list(reversed(route)) if reverse else route
+            g=build([(trunk,frozenset(['trunk'])),(run,frozenset(['service']))],source_bound=True)
+            generated=self.own(contract(g),'service')
+            self.assertLess(Point(1.5,400).distance(generated),3)
+
     def test_closed_input_reversal_keeps_coverage(self):
         co=[(0,0),(0,200),(200,200),(200,0),(0,0)]
         a=build([(co,frozenset(['loop']))],source_bound=True)

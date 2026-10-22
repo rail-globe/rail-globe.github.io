@@ -1,0 +1,582 @@
+{
+ "purpose": "Which European city labels are drawn when only some are (scripts/build_cities.py EUROPE_LABEL_SHARE).",
+ "source": "Wikidata P1082 population, preferred rank first, then the latest point in time",
+ "query": "SPARQL: ?city p:P1082 ?s . ?s ps:P1082 ?pop ; wikibase:rank ?rank . OPTIONAL { ?s pq:P585 ?time }",
+ "read": "2026-10-22",
+ "response_sha256": "1521b7e83a01e43e39d2f0962c3e097579f7e2163851c4f80a5bec76747a4881",
+ "license": "CC0 1.0",
+ "cities": {
+  "Q1022": {
+   "population": 609365,
+   "point_in_time": "2025-12-31"
+  },
+  "Q102397": {
+   "population": 139246,
+   "point_in_time": "2026-01-01"
+  },
+  "Q10282": {
+   "population": 209094,
+   "point_in_time": "2025-01-01"
+  },
+  "Q10305": {
+   "population": 693091,
+   "point_in_time": "2025-01-01"
+  },
+  "Q1055": {
+   "population": 1869473,
+   "point_in_time": "2025-12-31"
+  },
+  "Q11974": {
+   "population": 381868,
+   "point_in_time": "2025-01-01"
+  },
+  "Q12191": {
+   "population": 327734,
+   "point_in_time": "2023-01-01"
+  },
+  "Q12225": {
+   "population": 479405,
+   "point_in_time": "2025-01-01"
+  },
+  "Q12233": {
+   "population": 175425,
+   "point_in_time": "2025-01-01"
+  },
+  "Q126321": {
+   "population": 14476,
+   "point_in_time": "2018-01-01"
+  },
+  "Q12892": {
+   "population": 529247,
+   "point_in_time": "2020-01-01"
+  },
+  "Q12994": {
+   "population": 118509,
+   "point_in_time": "2022-01-01"
+  },
+  "Q130212": {
+   "population": 94605,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1309": {
+   "population": 120227,
+   "point_in_time": "2021-01-01"
+  },
+  "Q1310": {
+   "population": 164096,
+   "point_in_time": "2022-01-31"
+  },
+  "Q13298": {
+   "population": 306971,
+   "point_in_time": "2026-01-01"
+  },
+  "Q134121": {
+   "population": 115330,
+   "point_in_time": "2026-01-01"
+  },
+  "Q134494": {
+   "population": 128225,
+   "point_in_time": "2026-01-01"
+  },
+  "Q14274": {
+   "population": 22710,
+   "point_in_time": "2024-12-31"
+  },
+  "Q14314": {
+   "population": 100965,
+   "point_in_time": "2025-01-01"
+  },
+  "Q14317": {
+   "population": 223968,
+   "point_in_time": "2025-01-01"
+  },
+  "Q14318": {
+   "population": 260699,
+   "point_in_time": "2025-01-01"
+  },
+  "Q14323": {
+   "population": 60225,
+   "point_in_time": "2025-01-01"
+  },
+  "Q14325": {
+   "population": 152150,
+   "point_in_time": "2025-01-01"
+  },
+  "Q14328": {
+   "population": 211957,
+   "point_in_time": "2025-01-01"
+  },
+  "Q1449": {
+   "population": 558745,
+   "point_in_time": "2023-01-01"
+  },
+  "Q146317": {
+   "population": 54590,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1479": {
+   "population": 267991,
+   "point_in_time": "2023-01-01"
+  },
+  "Q1492": {
+   "population": 1731649,
+   "point_in_time": "2025-01-01"
+  },
+  "Q166065": {
+   "population": 83033,
+   "point_in_time": "2023-01-01"
+  },
+  "Q167109": {
+   "population": 47921,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1707": {
+   "population": 251842,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1709": {
+   "population": 97922,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1711": {
+   "population": 185137,
+   "point_in_time": "2025-12-31"
+  },
+  "Q171223": {
+   "population": 114096,
+   "point_in_time": "2026-01-01"
+  },
+  "Q171357": {
+   "population": 108106,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1715": {
+   "population": 522803,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1718": {
+   "population": 619444,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1720": {
+   "population": 223888,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1721": {
+   "population": 288584,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1724": {
+   "population": 182859,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1726": {
+   "population": 1505036,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1729": {
+   "population": 217159,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1731": {
+   "population": 562764,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1733": {
+   "population": 244494,
+   "point_in_time": "2025-12-31"
+  },
+  "Q1735": {
+   "population": 132499,
+   "point_in_time": "2025-01-01"
+  },
+  "Q1737": {
+   "population": 29476,
+   "point_in_time": "2025-01-01"
+  },
+  "Q1741": {
+   "population": 2028289,
+   "point_in_time": "2025-01-01"
+  },
+  "Q1781": {
+   "population": 1675777,
+   "point_in_time": "2026-01-01"
+  },
+  "Q178878": {
+   "population": 53433,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1794": {
+   "population": 760656,
+   "point_in_time": "2025-12-31"
+  },
+  "Q181276": {
+   "population": 64681,
+   "point_in_time": "2026-01-01"
+  },
+  "Q184998": {
+   "population": 57454,
+   "point_in_time": "2026-01-01"
+  },
+  "Q187821": {
+   "population": 64546,
+   "point_in_time": "2026-01-01"
+  },
+  "Q1891": {
+   "population": 387971,
+   "point_in_time": "2023-01-01"
+  },
+  "Q189761": {
+   "population": 28975,
+   "point_in_time": "2026-01-01"
+  },
+  "Q189769": {
+   "population": 29824,
+   "point_in_time": "2026-01-01"
+  },
+  "Q2044": {
+   "population": 360930,
+   "point_in_time": "2023-01-01"
+  },
+  "Q209270": {
+   "population": 6096,
+   "point_in_time": "2024-12-31"
+  },
+  "Q220": {
+   "population": 2748109,
+   "point_in_time": "2023-01-01"
+  },
+  "Q23482": {
+   "population": 886040,
+   "point_in_time": "2023-01-01"
+  },
+  "Q239": {
+   "population": 195546,
+   "point_in_time": "2024-01-01"
+  },
+  "Q24879": {
+   "population": 588413,
+   "point_in_time": "2025-12-31"
+  },
+  "Q25390": {
+   "population": 93765,
+   "point_in_time": "2021-01-01"
+  },
+  "Q25607": {
+   "population": 78863,
+   "point_in_time": "2024-12-31"
+  },
+  "Q2634": {
+   "population": 913462,
+   "point_in_time": "2023-01-01"
+  },
+  "Q2656": {
+   "population": 630167,
+   "point_in_time": "2023-01-01"
+  },
+  "Q2766547": {
+   "population": 158753,
+   "point_in_time": "2023-01-01"
+  },
+  "Q2807": {
+   "population": 3506730,
+   "point_in_time": "2025-01-01"
+  },
+  "Q30974": {
+   "population": 117662,
+   "point_in_time": "2023-01-01"
+  },
+  "Q3367": {
+   "population": 33093,
+   "point_in_time": "2023-01-01"
+  },
+  "Q3376": {
+   "population": 119359,
+   "point_in_time": "2025-12-31"
+  },
+  "Q33959": {
+   "population": 357737,
+   "point_in_time": "2023-01-01"
+  },
+  "Q3437": {
+   "population": 161748,
+   "point_in_time": "2023-01-01"
+  },
+  "Q34370": {
+   "population": 664311,
+   "point_in_time": "2023-01-01"
+  },
+  "Q34713": {
+   "population": 155021,
+   "point_in_time": "2020-01-01"
+  },
+  "Q3476": {
+   "population": 69558,
+   "point_in_time": "2023-01-01"
+  },
+  "Q3497": {
+   "population": 47075,
+   "point_in_time": "2023-01-01"
+  },
+  "Q3519": {
+   "population": 315473,
+   "point_in_time": "2025-01-01"
+  },
+  "Q3543": {
+   "population": 64406,
+   "point_in_time": "2023-01-01"
+  },
+  "Q36378": {
+   "population": 39151,
+   "point_in_time": "2024-12-31"
+  },
+  "Q365": {
+   "population": 1025523,
+   "point_in_time": "2025-12-31"
+  },
+  "Q36600": {
+   "population": 548320,
+   "point_in_time": "2021-01-01"
+  },
+  "Q3883": {
+   "population": 84670,
+   "point_in_time": "2023-01-01"
+  },
+  "Q40104": {
+   "population": 76320,
+   "point_in_time": "2023-01-01"
+  },
+  "Q41329": {
+   "population": 211944,
+   "point_in_time": "2024-01-01"
+  },
+  "Q41753": {
+   "population": 101403,
+   "point_in_time": "2020-01-01"
+  },
+  "Q4191": {
+   "population": 86234,
+   "point_in_time": "2024-12-31"
+  },
+  "Q42007": {
+   "population": 76389,
+   "point_in_time": "2026-01-01"
+  },
+  "Q456": {
+   "population": 519127,
+   "point_in_time": "2023-01-01"
+  },
+  "Q45779": {
+   "population": 137976,
+   "point_in_time": "2026-01-01"
+  },
+  "Q490": {
+   "population": 1354196,
+   "point_in_time": "2023-01-01"
+  },
+  "Q495": {
+   "population": 841600,
+   "point_in_time": "2023-01-01"
+  },
+  "Q52101": {
+   "population": 49956,
+   "point_in_time": "2023-01-01"
+  },
+  "Q546": {
+   "population": 198417,
+   "point_in_time": "2023-01-01"
+  },
+  "Q5823": {
+   "population": 83595,
+   "point_in_time": "2025-01-01"
+  },
+  "Q5831": {
+   "population": 86780,
+   "point_in_time": "2025-01-01"
+  },
+  "Q5836": {
+   "population": 87216,
+   "point_in_time": "2025-01-01"
+  },
+  "Q60037": {
+   "population": 53494,
+   "point_in_time": "2026-01-01"
+  },
+  "Q63896": {
+   "population": 12813,
+   "point_in_time": "2024-12-31"
+  },
+  "Q63912": {
+   "population": 12886,
+   "point_in_time": "2024-12-31"
+  },
+  "Q63931": {
+   "population": 8508,
+   "point_in_time": "2024-12-31"
+  },
+  "Q63964": {
+   "population": 10862,
+   "point_in_time": "2024-12-31"
+  },
+  "Q63970": {
+   "population": 15943,
+   "point_in_time": "2024-12-31"
+  },
+  "Q64": {
+   "population": 3700577,
+   "point_in_time": "2025-12-31"
+  },
+  "Q64044": {
+   "population": 45305,
+   "point_in_time": "2024-12-31"
+  },
+  "Q641": {
+   "population": 250369,
+   "point_in_time": "2023-01-01"
+  },
+  "Q647": {
+   "population": 230890,
+   "point_in_time": "2023-01-01"
+  },
+  "Q648": {
+   "population": 238246,
+   "point_in_time": "2023-01-01"
+  },
+  "Q6548": {
+   "population": 116357,
+   "point_in_time": "2023-01-01"
+  },
+  "Q6602": {
+   "population": 293771,
+   "point_in_time": "2023-01-01"
+  },
+  "Q68120": {
+   "population": 27099,
+   "point_in_time": "2024-12-31"
+  },
+  "Q68136": {
+   "population": 37844,
+   "point_in_time": "2025-12-31"
+  },
+  "Q68144": {
+   "population": 32122,
+   "point_in_time": "2024-12-31"
+  },
+  "Q68150": {
+   "population": 10495,
+   "point_in_time": "2024-12-31"
+  },
+  "Q68155": {
+   "population": 16446,
+   "point_in_time": "2024-12-31"
+  },
+  "Q68965": {
+   "population": 16847,
+   "point_in_time": "2024-12-31"
+  },
+  "Q68972": {
+   "population": 16081,
+   "point_in_time": "2025-12-31"
+  },
+  "Q69007": {
+   "population": 39177,
+   "point_in_time": "2024-12-31"
+  },
+  "Q69345": {
+   "population": 45466,
+   "point_in_time": "2025-12-31"
+  },
+  "Q70": {
+   "population": 136988,
+   "point_in_time": "2023-12-31"
+  },
+  "Q7003": {
+   "population": 161830,
+   "point_in_time": "2023-01-01"
+  },
+  "Q71": {
+   "population": 211152,
+   "point_in_time": "2025-12-31"
+  },
+  "Q72": {
+   "population": 452421,
+   "point_in_time": "2025-12-31"
+  },
+  "Q727": {
+   "population": 921468,
+   "point_in_time": "2023-01-01"
+  },
+  "Q749": {
+   "population": 238147,
+   "point_in_time": "2023-01-01"
+  },
+  "Q78": {
+   "population": 176329,
+   "point_in_time": "2024-12-31"
+  },
+  "Q7880": {
+   "population": 514819,
+   "point_in_time": "2023-01-01"
+  },
+  "Q793": {
+   "population": 129840,
+   "point_in_time": "2021-01-01"
+  },
+  "Q798": {
+   "population": 68836,
+   "point_in_time": "2021-01-01"
+  },
+  "Q79880": {
+   "population": 202331,
+   "point_in_time": "2026-01-01"
+  },
+  "Q803": {
+   "population": 359370,
+   "point_in_time": "2021-01-01"
+  },
+  "Q807": {
+   "population": 144873,
+   "point_in_time": "2024-12-31"
+  },
+  "Q81581": {
+   "population": 157596,
+   "point_in_time": "2026-01-01"
+  },
+  "Q82500": {
+   "population": 55514,
+   "point_in_time": "2020-01-01"
+  },
+  "Q8356": {
+   "population": 302614,
+   "point_in_time": "2025-01-01"
+  },
+  "Q8692": {
+   "population": 351124,
+   "point_in_time": "2025-01-01"
+  },
+  "Q8717": {
+   "population": 689423,
+   "point_in_time": "2025-01-01"
+  },
+  "Q8818": {
+   "population": 840792,
+   "point_in_time": "2025-01-01"
+  },
+  "Q8826": {
+   "population": 434786,
+   "point_in_time": "2025-01-01"
+  },
+  "Q90": {
+   "population": 2103778,
+   "point_in_time": "2023-01-01"
+  },
+  "Q9009": {
+   "population": 38964,
+   "point_in_time": "2024-12-31"
+  },
+  "Q9920": {
+   "population": 162543,
+   "point_in_time": "2021-01-01"
+  }
+ }
+}

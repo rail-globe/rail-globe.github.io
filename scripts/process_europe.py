@@ -270,6 +270,7 @@ COMMON = dict(
     skip_stations=("funicular", "miniature"),
     tag_keys=EVIDENCE_TAGS,
     urban_bundles=True,                         # every city's light rail and trams along shared centre lines (scripts/line_bundles.py)
+    urban_one_copy=True,                        # a line out on one track and back on the other drawn once (single_track.one_copy)
     urban_policy=policy,
     urban_nearest_city=True,
     urban_station_display=station_display,
@@ -414,6 +415,19 @@ def write_view(code):
 for _code in OWN_LAND:
     COUNTRIES[_code].prepare = own_land(_code)
 
+# Cities that keep their lines as drawn before single_track.one_copy (2026-10-22): each was compared
+# with and without it (compare_folds.py: rendered self-crossings, structural checks, a legacy
+# course kept within 30 m, each line on its own track) and failed. In most the change of one line
+# made the city's bundles take another order: Basel (z12 self-crossings 10 -> 14), Brussels
+# (10 -> 11), Amsterdam (0 -> 4), Rotterdam (5 -> 9), Berlin (12 -> 14), Frankfurt (15 -> 22),
+# Germany's elsewhere (152 -> 160); Antwerp's tram 7 gets a sharp tip at its turning loop, Milan's
+# endpoint bundles drop tram 31's west carriageway on Viale Fulvio Testi, Marseille's Val'Tram
+# a loose end. Budapest passes with endpoint ordering (scripts/endpoint_sources.py).
+ONE_COPY_LEFT_OUT = {"ch": ("巴塞尔",), "be": ("安特卫普", "布鲁塞尔"), "nl": ("阿姆斯特丹", "鹿特丹"),
+                     "it": ("米兰",), "fr": ("马赛",), "de": ("德国其他", "柏林", "法兰克福")}
+for _code, _cities in ONE_COPY_LEFT_OUT.items():
+    COUNTRIES[_code].urban_one_copy_left_out = _cities
+
 # The countries already drawn around each, whose lines it meets at the border.
 DRAWN_AROUND = {"at": ("de", "ch", "it", "hu"), "hu": ("at",)}
 MEET_M = 150          # metres: an own line end on the border this near a neighbour's line end is drawn on to it
@@ -457,9 +471,10 @@ def meet_neighbours(code):
 
 # Every city of these countries, for a line of one country's "elsewhere" that is another's: the
 # metro cities above and the city labels (capitals of regions, cantons and provinces).
+# (every place of the countries' tables, drawn or not: data/europe_places.json, scripts/build_cities.py)
 PLACES = sorted({(lon, lat, code, name) for code, cfg in COUNTRIES.items() for name, lon, lat, _ in cfg.cities}
-                | {(c["at"][0], c["at"][1], c["g"], c["n"]) for c in json.loads((Path(__file__).resolve().parents[1] / "data" / "cities.json").read_text())
-                   if c.get("g") in COUNTRIES})
+                | {(lon, lat, code, name) for code, rows in json.loads((Path(__file__).resolve().parents[1] / "data" / "europe_places.json").read_text()).items()
+                   if code in COUNTRIES for name, lon, lat in rows})
 for cfg in COUNTRIES.values():
     cfg.urban_places = PLACES
 

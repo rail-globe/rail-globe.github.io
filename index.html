@@ -565,7 +565,7 @@ const ContinuousOffset = (() => {
       || (period !== null && (!Number.isFinite(period) || period <= 0)) || !Array.isArray(p.ramps)
       || p.ramps.some((r, i) => !Array.isArray(r) || r.length !== 4 || !r.every(Number.isFinite)
         || r[1] <= r[0] || (i && r[0] < p.ramps[i - 1][1]))) throw Error('Invalid offset profile');
-    return { ...p, origin, direction, period };
+    return { ...p, origin, direction, period, lo: p.lo ? parse(p.lo) : undefined };
   }
   function value(p, d) {
     let at = (p.origin || 0) + (p.direction || 1) * d;
@@ -605,6 +605,27 @@ const ContinuousOffset = (() => {
         }
       }
     }
+    // A junction profile (op.jn) names, where its line meets three or more of
+    // its own stretches, the stretch it runs on along (s: the spine) or the one
+    // it leaves as a branch (t: the trunk), by that stretch's first drawn point
+    // away from the node. A spine is chained through the node like any other
+    // two-part port; every other port of three or more parts ends a chain.
+    const awayOf = (i, end) => {
+      const co = parts[i].coords, last = co.length - 1, at = end === 0 ? 0 : last, step = end === 0 ? 1 : -1;
+      let k = at + step;
+      while (k > 0 && k < last && endpoint(co[k]) === endpoint(co[at])) k += step;
+      return endpoint(co[k]);
+    };
+    const joinOf = (i, end) => parts[i].profile?.jn?.[end === 0 ? 0 : 1] ?? null;
+    const portOf = (i, end) => ports.get(parts[i].key + endpoint(parts[i].coords.at(end)));
+    const link = (current, end, free = () => true) => {
+      const port = portOf(current, end);
+      if (port.length === 2) return port.find(([i]) => i !== current && free(i)) ?? null;
+      const want = joinOf(current, end)?.s;
+      if (!want) return null;
+      const target = endpoint(want);
+      return port.find(([i, e]) => i !== current && free(i) && joinOf(i, e)?.s && awayOf(i, e) === target) ?? null;
+    };
     const used = new Set(), chains = [];
     for (let seed = 0; seed < parts.length; seed++) {
       if (used.has(seed)) continue;
@@ -612,14 +633,12 @@ const ContinuousOffset = (() => {
       const seen = new Set();
       while (!seen.has(current)) {
         seen.add(current);
-        const p = parts[current], port = ports.get(p.key + endpoint(p.coords.at(end)));
-        if (port.length !== 2) break;
-        const other = port.find(([i]) => i !== current);
+        const other = link(current, end);
         if (!other) break;
         [current, end] = other;
         end = end === 0 ? -1 : 0;
       }
-      if (seen.has(current) && ports.get(parts[current].key + endpoint(parts[current].coords.at(end))).length === 2) {
+      if (seen.has(current) && (portOf(current, end).length === 2 || link(current, end))) {
         current = seed; end = 0;
       }
       const co = [], members = [];
@@ -632,9 +651,7 @@ const ContinuousOffset = (() => {
         members.push({ ...p, start: at, end: at + p.len, sign, first, last: first + coords.length - 1 });
         for (let i = co.length ? 1 : 0; i < coords.length; i++) co.push(coords[i]);
         at += p.len;
-        const port = ports.get(p.key + endpoint(coords.at(-1)));
-        if (port.length !== 2) break;
-        const other = port.find(([i]) => i !== current && !used.has(i));
+        const other = link(current, sign === 1 ? -1 : 0, i => !used.has(i));
         if (!other) break;
         [current, end] = other;
       }
@@ -686,12 +703,14 @@ const ContinuousOffset = (() => {
       }
       // At an ambiguous same-line branch, a common zero-offset port is the
       // only source-supported anchor; do not guess a continuation through it.
+      // A junction profile naming the port's spine or trunk (op.jn) already
+      // gives the port its seat (2026-10-22: not pulled to the centre here).
       const anchors = [];
       if (!closed) for (const [m, start] of [[members[0], true], [members.at(-1), false]]) {
         const vertex = start ? co[0] : co.at(-1);
         const local = (start === (m.sign === 1)) ? 0 : m.len;
-        const explicitCentre = m.f.properties.jc && m.profile && Math.abs(value(m.profile, local)) < 1e-9
-          && !m.f.properties.goff && !m.f.properties.sh;
+        const explicitCentre = m.f.properties.jc && m.profile && !m.f.properties.goff && !m.f.properties.sh
+          && (Math.abs(value(m.profile, local)) < 1e-9 || m.profile.jn?.[local === 0 ? 0 : 1]);
         if (ports.get(m.key + endpoint(vertex)).length > 2 && !explicitCentre) {
           const room = Math.min(rampSize, m.len * .45);
           anchors.push(start ? [0, room, true] : [at - room, at, false]);
@@ -722,7 +741,9 @@ const ContinuousOffset = (() => {
         maxSeat = Math.max(maxSeat, (off + 2 * Math.abs(p.goff || 0))
           * Math.max(1, Math.abs(p.sh || 0), Math.abs(1 - (p.sh || 0))));
       }
-      chains.push({ co, members, distances, points, normals, ramps: joinedRamps, anchors, closed, len: at, box, blocks, maxSeat });
+      // a chain end no other part of the line meets (a dead end)
+      const dead = closed ? [false, false] : [co[0], co.at(-1)].map(v => ports.get(members[0].key + endpoint(v)).length === 1);
+      chains.push({ co, members, distances, points, normals, ramps: joinedRamps, anchors, closed, len: at, box, blocks, maxSeat, dead });
     }
     return chains;
   }
@@ -742,11 +763,19 @@ const ContinuousOffset = (() => {
       ...render(prepare(plain), zoom, mode).features,
       ...render([...selected.keys()], zoom, mode, null, selected).features] };
   }
+  // Below z13 a junction profile's held ports give way to the earlier common
+  // centre port (op.lo): there seats are a few pixels apart and a held seat
+  // folds round a junction's short corners. Blended over z12.5 to z13.5.
+  let lowWeight = 0;
+  const profileValue = (profile, d) => profile.lo && lowWeight > 0
+    ? value(profile, d) * (1 - lowWeight) + value(profile.lo, d) * lowWeight : value(profile, d);
+  const profileRamps = profile => !profile.lo || lowWeight <= 0 ? profile.ramps
+    : lowWeight >= 1 ? profile.lo.ramps : [...profile.ramps, ...profile.lo.ramps];
   function offsetValues(chain, member, at, out, ramps = chain.ramps) {
     const p = member.f.properties;
     const local = member.sign === 1 ? at - member.start : member.end - at;
     let off = (p.off || 0) * member.sign, group = (p.goff || 0) * member.sign, shared = p.sh || 0;
-    if (member.profile) off = value(member.profile, local) * member.sign;
+    if (member.profile) off = profileValue(member.profile, local) * member.sign;
     for (const [lo, hi, a, b, mask] of ramps) {
       let x = at;
       if (chain.closed && at < lo) x += chain.len;
@@ -840,6 +869,9 @@ const ContinuousOffset = (() => {
           if (!den) continue;
           const t=cross(v,s)/den,u=cross(v,r)/den;
           if(t<0 || t>1 || u<0 || u>1) continue;
+          // A contracted loop leaves its crossing as a doubled vertex; meeting
+          // there again end to end is no new loop (it used up the passes).
+          if(lowWeight<1 && t>1-1e-9 && u<1e-9 && j===i+2 && points[i+1][0]===points[i+2][0] && points[i+1][1]===points[i+2][1]) continue;
           const point=[a[0]+t*r[0],a[1]+t*r[1]],ll=lnglat(point);
           const lo=parameters[i]+t*(parameters[i+1]-parameters[i]),hi=parameters[j]+u*(parameters[j+1]-parameters[j]);
           if (hi<=lo) continue;
@@ -919,9 +951,111 @@ const ContinuousOffset = (() => {
     contractLoops(out, out.map(lnglat), parameters ? at : null);
     return parameters ? { co: out.map(lnglat), at } : out.map(lnglat);
   }
+  // A seat held round a curve tighter than its offset, or a seat ramp on such
+  // a curve, runs the display backwards against its own source for a moment:
+  // a loop, or a Z-shaped fold without a crossing (2026-10-22, Karlsruhe
+  // Mühlburger Tor, Düsseldorf 706). Cut each backward run where the display
+  // before it and after it are level along the source, within the seat's own
+  // displacement; real source turnbacks stay. co, parameters in chain order.
+  function unfold(co, parameters, chain, bound, ends = [false, false]) {
+    if (co.length < 3) return;
+    const tangent = at => {
+      let i = Math.min(Math.max(lowerBound(chain.distances, at), 1), chain.points.length - 1);
+      while (i < chain.points.length - 1 && chain.distances[i] === chain.distances[i - 1]) i++;
+      const a = chain.points[i - 1], b = chain.points[i], dx = b[0] - a[0], dy = b[1] - a[1], n = Math.hypot(dx, dy);
+      return n ? [dx / n, dy / n] : null;
+    };
+    const turnback = (lo, hi) => {
+      for (let i = Math.max(1, lowerBound(chain.distances, lo)); i < chain.points.length - 1 && chain.distances[i] <= hi; i++) {
+        const a = chain.points[i - 1], b = chain.points[i], c = chain.points[i + 1];
+        const u = [b[0] - a[0], b[1] - a[1]], v = [c[0] - b[0], c[1] - b[1]], den = Math.hypot(...u) * Math.hypot(...v);
+        if (den && (u[0] * v[0] + u[1] * v[1]) / den < -.5) return true;
+      }
+      return false;
+    };
+    const back = k => {
+      const t = tangent((parameters[k] + parameters[k + 1]) / 2);
+      const p = mercator(co[k]), q = mercator(co[k + 1]), s = [q[0] - p[0], q[1] - p[1]], n = Math.hypot(...s);
+      return !!t && n > 1e-12 && (s[0] * t[0] + s[1] * t[1]) / n < -.05;
+    };
+    for (let pass = 0, k = 0; pass < 64 && k + 1 < co.length; ) {
+      if (!back(k)) { k++; continue; }
+      let j = k;
+      while (j + 2 < co.length && back(j + 1)) j++;
+      const p = co.map(mercator), A = p[k], B = p[j + 1];
+      const t0 = tangent((parameters[k] + parameters[j + 1]) / 2);
+      const f = P => (P[0] - A[0]) * t0[0] + (P[1] - A[1]) * t0[1], fB = f(B);
+      let a = k, b = j + 1;
+      while (a > 0 && f(p[a]) > fB && Math.hypot(p[a][0] - A[0], p[a][1] - A[1]) <= bound) a--;
+      while (b < p.length - 1 && f(p[b]) < 0 && Math.hypot(p[b][0] - B[0], p[b][1] - B[1]) <= bound) b++;
+      const cut = (i, level) => {
+        const fi = f(p[i]), fj = f(p[i + 1]), t = fj === fi ? 0 : Math.max(0, Math.min(1, (level - fi) / (fj - fi)));
+        return [[p[i][0] + (p[i + 1][0] - p[i][0]) * t, p[i][1] + (p[i + 1][1] - p[i][1]) * t],
+          parameters[i] + (parameters[i + 1] - parameters[i]) * t];
+      };
+      const side = (P, Q) => Math.abs((P[0] - Q[0]) * t0[1] - (P[1] - Q[1]) * t0[0]);
+      if (f(p[a]) > fB && a === 0 && f(p[b]) >= 0 && ends[0]) {
+        // the fold starts the line (a branch's first corner): keep its first
+        // point and go on from there no steeper than the side step it makes
+        b = j + 1;
+        while (b < p.length - 1 && f(p[b]) < side(p[b], p[0]) && Math.hypot(p[b][0] - p[0][0], p[b][1] - p[0][1]) <= 2 * bound) b++;
+        if (f(p[b]) < side(p[b], p[0]) || turnback(parameters[0], parameters[b])) { k = j + 1; continue; }
+        co.splice(1, b - 1); parameters.splice(1, b - 1);
+        pass++; k = 0; continue;
+      } else if (f(p[b]) < 0 && b === p.length - 1 && f(p[a]) <= fB && ends[1]) {
+        const last = p.length - 1, fl = f(p[last]);
+        a = k;
+        while (a > 0 && fl - f(p[a]) < side(p[a], p[last]) && Math.hypot(p[a][0] - p[last][0], p[a][1] - p[last][1]) <= 2 * bound) a--;
+        if (fl - f(p[a]) < side(p[a], p[last]) || turnback(parameters[a], parameters[last])) { k = j + 1; continue; }
+        co.splice(a + 1, last - a - 1); parameters.splice(a + 1, last - a - 1);
+        pass++; k = Math.max(0, a - 1); continue;
+      }
+      if (f(p[a]) > fB || f(p[b]) < 0 || turnback(parameters[a], parameters[b])) { k = j + 1; continue; }
+      const [pa, ta] = cut(a, fB), [pb, tb] = cut(b - 1, 0);
+      // the dropped stretch must stay within the seat's displacement of the cut
+      const dx = pb[0] - pa[0], dy = pb[1] - pa[1], len2 = dx * dx + dy * dy;
+      const far = p.slice(a + 1, b).some(P => {
+        const t = len2 ? Math.max(0, Math.min(1, ((P[0] - pa[0]) * dx + (P[1] - pa[1]) * dy) / len2)) : 0;
+        return Math.hypot(P[0] - pa[0] - t * dx, P[1] - pa[1] - t * dy) > bound;
+      });
+      if (far || tb < ta) { k = j + 1; continue; }
+      co.splice(a + 1, b - a - 1, lnglat(pa), lnglat(pb));
+      parameters.splice(a + 1, b - a - 1, ta, tb);
+      pass++; k = Math.max(0, a);
+    }
+  }
+  // A: display ending at a joint, B: display starting there (both in chain
+  // order). The first crossing of A's last stretch within bound of the joint
+  // with B's first stretch within bound: A ends and B starts at it.
+  function trimJoint(A, B, bound) {
+    if (A.length < 2 || B.length < 2) return null;
+    const pa = A.map(mercator), pb = B.map(mercator), joint = pa.at(-1);
+    let ia = pa.length - 1, ib = 0;
+    while (ia > 0 && Math.hypot(pa[ia - 1][0] - joint[0], pa[ia - 1][1] - joint[1]) <= bound) ia--;
+    while (ib < pb.length - 1 && Math.hypot(pb[ib + 1][0] - joint[0], pb[ib + 1][1] - joint[1]) <= bound) ib++;
+    const cross = (p, q, r, t) => {
+      const u = [q[0] - p[0], q[1] - p[1]], v = [t[0] - r[0], t[1] - r[1]], w = [r[0] - p[0], r[1] - p[1]];
+      const den = u[0] * v[1] - u[1] * v[0];
+      if (!den) return null;
+      const s1 = (w[0] * v[1] - w[1] * v[0]) / den, s2 = (w[0] * u[1] - w[1] * u[0]) / den;
+      return s1 > 1e-9 && s1 < 1 - 1e-9 && s2 > 1e-9 && s2 < 1 - 1e-9 ? [p[0] + s1 * u[0], p[1] + s1 * u[1]] : null;
+    };
+    for (let i = Math.max(0, ia - 1); i < pa.length - 1; i++) {
+      for (let j = Math.min(ib, pb.length - 2); j >= 0; j--) {
+        const x = cross(pa[i], pa[i + 1], pb[j], pb[j + 1]);
+        if (!x) continue;
+        const point = lnglat(x);
+        return [[...A.slice(0, i + 1), point], [point, ...B.slice(j + 1)]];
+      }
+    }
+    return null;
+  }
   function render(chains, zoom, mode, bounds = null, selected = null) {
+    lowWeight = 1 - smooth(zoom - 12.5);
     const features = [], world = 512 * 2 ** zoom;
+    const atPorts = new Map(), branches = [], meets = new Map(), ofLine = new Map(), deadEnds = [];
     for (const chain of chains) {
+      const pieces = [];
       const ranges = visibleRanges(chain, bounds, zoom);
       if (!ranges.length) continue;
       const members = selected?.get(chain) || chain.members.map(member => ({
@@ -941,7 +1075,7 @@ const ContinuousOffset = (() => {
       if (member.f.properties.jc && member.profile) for (const begin of [true, false]) {
         const index = begin ? member.first : member.last;
         const local = (begin === (member.sign === 1)) ? 0 : member.len;
-        if (Math.abs(value(member.profile, local)) > 1e-9) continue;
+        if (Math.abs(profileValue(member.profile, local)) > 1e-9) continue;
         let other = index + (begin ? 1 : -1);
         while (other >= member.first && other <= member.last &&
           Math.hypot(chain.points[other][0]-chain.points[index][0],chain.points[other][1]-chain.points[index][1]) < 1e-15)
@@ -950,6 +1084,25 @@ const ContinuousOffset = (() => {
         const a = chain.points[begin ? index : other], b = chain.points[begin ? other : index];
         const dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
         portNormals.set(index,[-dy/length,dx/length]);
+      }
+      // A branch leaves its trunk at the trunk's seat: its end normal is the
+      // miter of the trunk and the branch, as if the chain came from the trunk,
+      // so the branch starts on the offset line the trunk runs along.
+      if (member.f.properties.jc && member.profile?.jn) for (const begin of [true, false]) {
+        const index = begin ? member.first : member.last;
+        if (index !== 0 && index !== chain.co.length - 1) continue;
+        const trunk = member.profile.jn[(begin === (member.sign === 1)) ? 0 : 1]?.t;
+        if (!trunk) continue;
+        let other = index + (begin ? 1 : -1);
+        while (other > member.first && other < member.last &&
+          Math.hypot(chain.points[other][0]-chain.points[index][0],chain.points[other][1]-chain.points[index][1]) < 1e-15)
+          other += begin ? 1 : -1;
+        const unit = (p, q) => { const dx = q[0] - p[0], dy = q[1] - p[1], n = Math.hypot(dx, dy) || 1; return [dx / n, dy / n]; };
+        const node = chain.points[index], out = unit(node, chain.points[other]), into = unit(mercator(trunk), node);
+        const a = begin ? into : [-out[0], -out[1]], b = begin ? out : [-into[0], -into[1]];
+        const x = a[0] + b[0], y = a[1] + b[1], den = 1 + a[0] * b[0] + a[1] * b[1];
+        const scale = den > .5 ? 1 / den : 1 / Math.max(Math.hypot(x, y), 1e-12);
+        portNormals.set(index, [-y * scale, x * scale]);
       }
       const normal = i => portNormals.get(i) || chain.normals[i];
       const shifted = at => {
@@ -979,14 +1132,14 @@ const ContinuousOffset = (() => {
         transitions.push([lo, hi]);
         if (chain.closed) transitions.push([lo - chain.len, hi - chain.len]);
       }
-      if (member.profile) for (const [lo, hi] of member.profile.ramps) for (const d of [lo, hi]) {
+      if (member.profile) for (const [lo, hi] of profileRamps(member.profile)) for (const d of [lo, hi]) {
         for (const at of member.profile.period ? [d, d - member.profile.period] : [d]) {
           const local = (at - member.profile.origin) / member.profile.direction;
           const pos = member.sign === 1 ? member.start + local : member.end - local;
           if (pos > start && pos < end) positions.push(pos);
         }
       }
-      if (member.profile) for (const [lo, hi] of member.profile.ramps) {
+      if (member.profile) for (const [lo, hi] of profileRamps(member.profile)) {
         const toChain = d => {
           const local = (d - member.profile.origin) / member.profile.direction;
           return member.sign === 1 ? member.start + local : member.end - local;
@@ -1041,8 +1194,10 @@ const ContinuousOffset = (() => {
       const p = { ...f.properties, _continuous: 1 };
       // Width/host decisions retain the original seat; line-offset is zero on
       // this independent display source. Reverse back to the source direction.
-      let display = co;
+      let display = co, at = null;
       if (member.f.properties.jc) {
+        if (lowWeight < 1) unfold(co, parameters, chain, 2.5 * (chain.maxSeat + 1) * pixels({ off: 1, goff: 0, sh: 0, jk }, zoom, mode) / world,
+          [!chain.closed && start <= 1e-12, !chain.closed && end >= chain.len - 1e-12]);
         const turnbacks=parameters.map(at=>{
           const i=lowerBound(chain.distances,at);
           if (!i || i>=chain.points.length-1 || Math.abs(chain.distances[i]-at)>1e-12) return false;
@@ -1051,7 +1206,7 @@ const ContinuousOffset = (() => {
           return !den || (u[0]*v[0]+u[1]*v[1])/den<-.8;
         });
         const rounded = roundDisplay(co, zoom, parameters, turnbacks, !!member.f.properties.cl);
-        display = rounded.co;
+        display = rounded.co; at = rounded.at;
         if (selected) {
           const atPoint = at => {
             let i = Math.min(rounded.at.length - 1, lowerBound(rounded.at, at));
@@ -1063,9 +1218,172 @@ const ContinuousOffset = (() => {
           display=[atPoint(memberStart), ...rounded.co.filter((_,i)=>rounded.at[i]>memberStart && rounded.at[i]<memberEnd), atPoint(memberEnd)];
         }
       }
-      features.push({ ...f, properties: p, geometry: { type: 'LineString', coordinates: member.sign === 1 ? display : display.reverse() } });
+      pieces.push({ f, p, member, display, at, start, end, joint: !selected && !!member.f.properties.jc });
       }
       }
+      // Two members of a chain meet at a junction node. Where a held seat
+      // runs round a curve tighter than its offset there, the two offset
+      // curves cross each other just before and after the node (a small
+      // swallowtail split between two features). Cut both at that crossing,
+      // within the seat's own displacement of the node, as roundDisplay does
+      // for a loop inside one feature.
+      const stepPx = pixels({ off: 1, goff: 0, sh: 0, jk: chain.members[0].f.properties.jk }, zoom, mode);
+      const bound = 2.5 * (chain.maxSeat + 1) * stepPx / world;
+      // A fold across the joint of two members (a seat held round the node's
+      // corner, its miter point beyond the node): unfold the two as one line
+      // and split them again at the joint.
+      if (lowWeight < 1) for (let k = 0; k + 1 < pieces.length; k++) {
+        const a = pieces[k], b = pieces[k + 1], joint = a.member.end;
+        if (!a.joint || !b.joint || !a.at || !b.at || a.member === b.member || Math.abs(a.end - a.member.end) > 1e-12
+          || Math.abs(b.start - b.member.start) > 1e-12 || Math.abs(joint - b.member.start) > 1e-12) continue;
+        const co = [...a.display, ...b.display.slice(1)], parameters = [...a.at, ...b.at.slice(1)];
+        if (parameters.some((t, i) => i && t < parameters[i - 1])) continue;
+        const length = co.length;
+        unfold(co, parameters, chain, bound);
+        if (co.length === length) continue;
+        let i = lowerBound(parameters, joint);
+        let point;
+        if (i < parameters.length && parameters[i] === joint) point = co[i];
+        else if (i > 0 && i < parameters.length) {
+          const t = (joint - parameters[i - 1]) / (parameters[i] - parameters[i - 1]), u = mercator(co[i - 1]), v = mercator(co[i]);
+          point = lnglat([u[0] + (v[0] - u[0]) * t, u[1] + (v[1] - u[1]) * t]);
+        } else continue;
+        const before = co.slice(0, i).concat([point]), after = [point].concat(co.slice(parameters[i] === joint ? i + 1 : i));
+        const atBefore = parameters.slice(0, i).concat([joint]), atAfter = [joint].concat(parameters.slice(parameters[i] === joint ? i + 1 : i));
+        if (before.length < 2 || after.length < 2) continue;
+        a.display = before; a.at = atBefore; b.display = after; b.at = atAfter;
+      }
+      for (let k = 0; k + 1 < pieces.length; k++) {
+        const a = pieces[k], b = pieces[k + 1];
+        const held = (m, atEnd) => m.profile?.jn?.[(atEnd === (m.sign === 1)) ? 1 : 0];
+        if (lowWeight >= 1 || !a.joint || !b.joint || !(held(a.member, true) || held(b.member, false))
+          || a.member === b.member || Math.abs(a.end - a.member.end) > 1e-12
+          || Math.abs(b.start - b.member.start) > 1e-12 || Math.abs(a.member.end - b.member.start) > 1e-12) continue;
+        const cut = trimJoint(a.display, b.display, bound);
+        if (cut) [a.display, b.display] = cut;
+      }
+      for (const { f, p, member, display, start, end, joint } of pieces) {
+        const feature = { ...f, properties: p, geometry: { type: 'LineString', coordinates: member.sign === 1 ? display : display.reverse() } };
+        features.push(feature);
+        if (joint && lowWeight < 1) {
+          (ofLine.get(member.key) || ofLine.set(member.key, []).get(member.key)).push(feature);
+          for (const [featureEnd, chainEnd] of [[0, member.sign === 1 ? 0 : 1], [-1, member.sign === 1 ? 1 : 0]]) {
+            const at = chainEnd === 0 ? start : end;
+            if (chain.dead[chainEnd] && Math.abs(at - (chainEnd === 0 ? 0 : chain.len)) < 1e-12)
+              deadEnds.push({ feature, featureEnd, key: member.key, bound: (chain.maxSeat + 2) * pixels({ off: 1, goff: 0, sh: 0, jk: member.f.properties.jk }, zoom, mode) / world });
+          }
+        }
+        if (joint && lowWeight < 1) for (const [featureEnd, covered] of [[0, member.sign === 1 ? start === member.start : end === member.end],
+          [-1, member.sign === 1 ? end === member.end : start === member.start]]) {
+          if (!covered) continue;
+          const port = member.key + endpoint(member.coords.at(featureEnd));
+          if (!meets.has(port)) meets.set(port, []);
+          meets.get(port).push({ feature, featureEnd, bound: (chain.maxSeat + 2) * pixels({ off: 1, goff: 0, sh: 0, jk: member.f.properties.jk }, zoom, mode) / world });
+        }
+        if (!joint || !member.profile?.jn) continue;
+        for (const [featureEnd, covered] of [[0, member.sign === 1 ? start === member.start : end === member.end],
+          [-1, member.sign === 1 ? end === member.end : start === member.start]]) {
+          const join = member.profile.jn[featureEnd === 0 ? 0 : 1];
+          if (!covered || !join) continue;
+          const port = member.key + endpoint(member.coords.at(featureEnd));
+          if (!atPorts.has(port)) atPorts.set(port, []);
+          atPorts.get(port).push({ feature, featureEnd, join });
+          if (join.t) branches.push({ feature, featureEnd, port, bound: (chain.maxSeat + 2) * pixels({ off: 1, goff: 0, sh: 0, jk: member.f.properties.jk }, zoom, mode) / world });
+        }
+      }
+    }
+    // A branch starts on its trunk's offset line, at the trunk's miter corner;
+    // where it turns towards the trunk's side that corner lies just before the
+    // node and the branch's first stretch crosses the spine's strand. Start the
+    // branch where the spine's strands meet at the node instead, cutting its
+    // first stretch up to that crossing (within its seat's displacement).
+    if (lowWeight < 1) for (const { feature, featureEnd, port, bound } of branches) {
+      const own = feature.geometry.coordinates, head = featureEnd === 0 ? own : [...own].reverse();
+      const ph = head.map(mercator), origin = ph[0];
+      let best = null;
+      for (const spine of atPorts.get(port) || []) {
+        if (!spine.join.s) continue;
+        const other = spine.feature.geometry.coordinates;
+        const tail = (spine.featureEnd === 0 ? other : [...other].reverse()).map(mercator);
+        let last = 1;
+        while (last < tail.length - 1 && Math.hypot(tail[last][0] - origin[0], tail[last][1] - origin[1]) <= 2 * bound) last++;
+        for (let i = 0; i + 1 < ph.length && Math.hypot(ph[i][0] - origin[0], ph[i][1] - origin[1]) <= bound; i++) {
+          if (best && i > best.i) break;
+          for (let j = 0; j < last; j++) {
+            const u = [ph[i + 1][0] - ph[i][0], ph[i + 1][1] - ph[i][1]], v = [tail[j + 1][0] - tail[j][0], tail[j + 1][1] - tail[j][1]];
+            const w = [tail[j][0] - ph[i][0], tail[j][1] - ph[i][1]], den = u[0] * v[1] - u[1] * v[0];
+            if (!den) continue;
+            const a = (w[0] * v[1] - w[1] * v[0]) / den, b = (w[0] * u[1] - w[1] * u[0]) / den;
+            if (a > 1e-9 && a <= 1 && b >= 0 && b <= 1 && (!best || i < best.i || i === best.i && a < best.a))
+              best = { i, a, joint: spine.featureEnd === 0 ? other[0] : other.at(-1) };
+          }
+        }
+      }
+      if (!best) continue;
+      // from the spine's own end point at the node, so the line's parts meet in one point
+      const cut = [[...best.joint], ...head.slice(best.i + 1)];
+      feature.geometry = { type: 'LineString', coordinates: featureEnd === 0 ? cut : cut.reverse() };
+    }
+    // Any two pieces of one line that meet at a node meet there, they do not
+    // cross: a piece ending on its own seat beyond the strand of the same line
+    // it joins (a stub over the strand: Halle Tram 4, Düsseldorf 706, Bremen
+    // Tram 1). Where the two heads cross within their seats' displacement of
+    // the node, both end at the crossing.
+    if (lowWeight < 1) for (const entries of meets.values()) {
+      if (entries.length < 2) continue;
+      const headOf = e => { const co = e.feature.geometry.coordinates; return e.featureEnd === 0 ? co : [...co].reverse(); };
+      // a piece whose end another piece here shares runs on through the node: it stays whole
+      const through = entries.map(e => entries.some(o => o !== e && o.feature !== e.feature
+        && Math.hypot(...[0, 1].map(k => mercator(headOf(e)[0])[k] - mercator(headOf(o)[0])[k])) * world < 1e-6));
+      for (let x = 0; x < entries.length; x++) for (let y = x + 1; y < entries.length; y++) {
+        const A = entries[x], B = entries[y];
+        if (A.feature === B.feature || through[x] && through[y]) continue;
+        const ha = headOf(A), hb = headOf(B), pa = ha.map(mercator), pb = hb.map(mercator);
+        if (pa.length < 2 || pb.length < 2) continue;
+        const bound = Math.max(A.bound, B.bound), oa = pa[0], ob = pb[0];
+        let best = null;
+        for (let i = 0; i + 1 < pa.length && Math.hypot(pa[i][0] - oa[0], pa[i][1] - oa[1]) <= bound && !best; i++) {
+          for (let j = 0; j + 1 < pb.length && Math.hypot(pb[j][0] - ob[0], pb[j][1] - ob[1]) <= bound; j++) {
+            const u = [pa[i + 1][0] - pa[i][0], pa[i + 1][1] - pa[i][1]], v = [pb[j + 1][0] - pb[j][0], pb[j + 1][1] - pb[j][1]];
+            const w = [pb[j][0] - pa[i][0], pb[j][1] - pa[i][1]], den = u[0] * v[1] - u[1] * v[0];
+            if (!den) continue;
+            const s = (w[0] * v[1] - w[1] * v[0]) / den, t = (w[0] * u[1] - w[1] * u[0]) / den;
+            if (s > 1e-9 && s < 1 - 1e-9 && t > 1e-9 && t < 1 - 1e-9) { best = { i, j, point: lnglat([pa[i][0] + s * u[0], pa[i][1] + s * u[1]]) }; break; }
+          }
+        }
+        if (!best) continue;
+        const na = [best.point, ...ha.slice(best.i + 1)], nb = [best.point, ...hb.slice(best.j + 1)];
+        if (na.length < 2 || nb.length < 2) continue;
+        if (!through[x]) A.feature.geometry = { type: 'LineString', coordinates: A.featureEnd === 0 ? na : na.reverse() };
+        if (!through[y]) B.feature.geometry = { type: 'LineString', coordinates: B.featureEnd === 0 ? nb : nb.reverse() };
+      }
+    }
+    // A dead end of a line drawn across another stretch of the same line (its
+    // source end just short of that stretch, the stretch's seat beyond it:
+    // Halle Tram 4, Düsseldorf 706, Bremen Tram 1) ends where it meets it.
+    if (lowWeight < 1) for (const { feature, featureEnd, key, bound } of deadEnds) {
+      const own = feature.geometry.coordinates, head = featureEnd === 0 ? own : [...own].reverse();
+      const ph = head.map(mercator), origin = ph[0];
+      let best = null;
+      for (const other of ofLine.get(key) || []) {
+        if (other === feature) continue;
+        const po = other.geometry.coordinates.map(mercator);
+        for (let i = 0; i + 1 < ph.length && Math.hypot(ph[i][0] - origin[0], ph[i][1] - origin[1]) <= bound; i++) {
+          if (best && i > best.i) break;
+          for (let j = 0; j + 1 < po.length; j++) {
+            const u = [ph[i + 1][0] - ph[i][0], ph[i + 1][1] - ph[i][1]], v = [po[j + 1][0] - po[j][0], po[j + 1][1] - po[j][1]];
+            const w = [po[j][0] - ph[i][0], po[j][1] - ph[i][1]], den = u[0] * v[1] - u[1] * v[0];
+            if (!den) continue;
+            const a = (w[0] * v[1] - w[1] * v[0]) / den, b = (w[0] * u[1] - w[1] * u[0]) / den;
+            if (a > 1e-9 && a < 1 - 1e-9 && b >= 0 && b <= 1 && (!best || i < best.i || i === best.i && a < best.a))
+              best = { i, a, point: lnglat([ph[i][0] + a * u[0], ph[i][1] + a * u[1]]) };
+          }
+        }
+      }
+      if (!best) continue;
+      const cut = [best.point, ...head.slice(best.i + 1)];
+      if (cut.length < 2) continue;
+      feature.geometry = { type: 'LineString', coordinates: featureEnd === 0 ? cut : cut.reverse() };
     }
     return { type: 'FeatureCollection', features };
   }
@@ -2877,7 +3195,7 @@ const ContinuousOffset = (() => {
     map.setFilter = (id, filter, ...rest) => setFilter0(id, twice.has(id) ? (filter ? ['all', filter, SIDE] : SIDE) : filter, ...rest);
     // Full-path display curves are built before MapLibre clips them into tiles.
     // Source geometry stays available to routing, stations and source audits.
-    const offsetManifest = {"cn:hsr":{"url":"dist/offsets/cn-hsr.json.gz","bbox":[112.02655470236937,22.663649,119.809011944269,41.041016519771404]},"cn:conv":{"url":"dist/offsets/cn-conv.json.gz","bbox":[112.622688,22.961115,116.56408,40.391559]},"cn:metro":{"url":"dist/offsets/cn-metro.json.gz","bbox":[102.6137646,22.2402333,125.5503391,43.896742]},"jp:conv":{"url":"dist/offsets/jp-conv.json.gz","bbox":[129.5782,31.19028,145.59797,45.41698]},"jp:metro":{"url":"dist/offsets/jp-metro.json.gz","bbox":[130.324279,33.580766,140.189014,35.788959]},"kr:conv":{"url":"dist/offsets/kr-conv.json.gz","bbox":[126.38643,34.61552,129.45336,38.25845]},"kr:metro":{"url":"dist/offsets/kr-metro.json.gz","bbox":[126.801209,37.475236,127.223705,37.577399]},"uk:conv":{"url":"dist/offsets/uk-conv.json.gz","bbox":[-6.78032,50.14639,1.43389,57.64281]},"uk:metro":{"url":"dist/offsets/uk-metro.json.gz","bbox":[-2.347841,51.342668,0.251795,55.043636]},"de:metro":{"url":"dist/offsets/de-metro.json.gz","bbox":[6.496994637,47.964417,14.9870702,54.1556361]},"fr:metro":{"url":"dist/offsets/fr-metro.json.gz","bbox":[-4.553655,43.256353,7.816185006,50.743432]},"ch:metro":{"url":"dist/offsets/ch-metro.json.gz","bbox":[6.055548,46.166195,8.710054,47.594678]},"es:metro":{"url":"dist/offsets/es-metro.json.gz","bbox":[-16.318130971,28.443102,2.715216214,43.401739]},"nl:metro":{"url":"dist/offsets/nl-metro.json.gz","bbox":[4.105673,51.833282,5.183793734,52.402157]},"be:metro":{"url":"dist/offsets/be-metro.json.gz","bbox":[2.581468768,50.399972132,5.612565,51.342019766]},"it:metro":{"url":"dist/offsets/it-metro.json.gz","bbox":[7.614194983,38.088662,15.56572,45.757851]},"at:metro":{"url":"dist/offsets/at-metro.json.gz","bbox":[11.340201,47.030079005,16.50636452,48.334833]},"hu:metro":{"url":"dist/offsets/hu-metro.json.gz","bbox":[18.964192,46.239467548,21.630517281,48.108946]}};
+    const offsetManifest = {"cn:hsr":{"url":"dist/offsets/cn-hsr.json.gz","bbox":[112.02655470236937,22.663649,119.809011944269,41.041016519771404]},"cn:conv":{"url":"dist/offsets/cn-conv.json.gz","bbox":[112.622688,22.961115,116.56408,40.391559]},"cn:metro":{"url":"dist/offsets/cn-metro.json.gz","bbox":[102.6137646,22.2402333,125.5503391,43.896742]},"jp:conv":{"url":"dist/offsets/jp-conv.json.gz","bbox":[129.5782,31.19028,145.59797,45.41698]},"jp:metro":{"url":"dist/offsets/jp-metro.json.gz","bbox":[130.324279,33.580766,140.189014,35.788959]},"kr:conv":{"url":"dist/offsets/kr-conv.json.gz","bbox":[126.38643,34.61552,129.45336,38.25845]},"kr:metro":{"url":"dist/offsets/kr-metro.json.gz","bbox":[126.801209,37.475236,127.223705,37.577399]},"uk:conv":{"url":"dist/offsets/uk-conv.json.gz","bbox":[-6.78032,50.14639,1.43389,57.64281]},"uk:metro":{"url":"dist/offsets/uk-metro.json.gz","bbox":[-2.347841,51.342668,0.251795,55.043636]},"de:metro":{"url":"dist/offsets/de-metro.json.gz","bbox":[6.496994636,47.964417,14.9870702,54.1556361]},"fr:metro":{"url":"dist/offsets/fr-metro.json.gz","bbox":[-4.553655,43.256353,7.816185006,50.743432]},"ch:metro":{"url":"dist/offsets/ch-metro.json.gz","bbox":[6.055548,46.166195,8.710054,47.594678]},"es:metro":{"url":"dist/offsets/es-metro.json.gz","bbox":[-16.318130971,28.443102,2.715216214,43.401739]},"nl:metro":{"url":"dist/offsets/nl-metro.json.gz","bbox":[4.105673,51.833282,5.183793734,52.402157]},"be:metro":{"url":"dist/offsets/be-metro.json.gz","bbox":[2.581468768,50.399972931,5.612565,51.342019766]},"it:metro":{"url":"dist/offsets/it-metro.json.gz","bbox":[7.614190719,38.088662,15.56572,45.757851]},"at:metro":{"url":"dist/offsets/at-metro.json.gz","bbox":[11.340201,47.030079005,16.506364628,48.334833]},"hu:metro":{"url":"dist/offsets/hu-metro.json.gz","bbox":[18.940120565,46.239467548,21.630517281,48.108946]}};
     const offsetSpecs = new Map(), offsetCopies = new Map(), offsetLoaded = new Map();
     const offsetAdd = map.addLayer.bind(map), offsetFilter = map.setFilter.bind(map);
     const offsetPaint = map.setPaintProperty.bind(map), offsetLayout = map.setLayoutProperty.bind(map);

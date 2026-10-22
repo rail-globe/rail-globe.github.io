@@ -225,7 +225,11 @@ class Network:
             # Its equal endpoint IDs do not make a kilometre-long loop empty.
             # Match close_short's existing small-loop limit, while retaining
             # the actual sampled source course and both source_bound checks.
-            if u != v or LineString(co2).length >= 2 * SHORT:
+            # A loop with next to no width that stays at the node is no loop (thin_loop): the
+            # line passed the junction a few metres off it and both ends were snapped to that one
+            # node (Munich Karlsplatz, 2026-10-22: 65 m long, 0.6 m wide on average, never 21 m
+            # from the node, drawn as a knot of trams 19, N19 and 21).
+            if u != v or LineString(co2).length >= 2 * SHORT and not thin_loop(co2):
                 self.new_edge(co2, u, v, [line])
             attach = v
 
@@ -234,6 +238,22 @@ MIN_SHARED = 40.0   # m: a shorter run along the network is a crossing or a touc
 SNAP = 25.0         # m: a line joining or leaving the centre line within this of a node uses that node
 CROP = 30.0         # m: a line's own track this near a node where it meets other lines is not drawn
 SHORT = 30.0        # m: stretches shorter than this are closed up into one node
+THIN = 5.0          # m: a loop narrower than this on average runs out and back on itself
+
+
+def thin_loop(co):
+    """A closed course from its node co[0] that is no loop: never further than CROP from the node
+    (where a line's own track is not drawn anyway) and under THIN wide on average (enclosed area
+    over half its length). A line that passed a junction a few metres off it, both ends snapped to
+    the junction's node. A longer out-and-back, a branch drawn on both of its tracks (Basel 8,
+    Antwerp 12), is the line's own course and stays."""
+    from shapely.geometry import Polygon
+    if len(co) < 4:
+        return True
+    if max(math.dist(co[0], c) for c in co) > CROP:
+        return False
+    area = Polygon(co).buffer(0).area
+    return area / (LineString(co).length / 2) < THIN
 
 
 def build(paths, *, source_bound=False):
@@ -282,8 +302,8 @@ def close_short(net):
                 if f["v"] == u:
                     co[-1] = mid
                 f["co"] = co
-                if f["u"] == f["v"] and LineString(co).length < 2 * SHORT:
-                    del net.edge[j]                        # a small loop left by closing up a triangle
+                if f["u"] == f["v"] and (LineString(co).length < 2 * SHORT or thin_loop(co)):
+                    del net.edge[j]                        # a small or thin loop left by closing up a triangle
         del net.node[v]
 
 
@@ -312,6 +332,10 @@ def contract(g):
                 if node in keep:
                     break
                 cur = next(x for x in adj[node] if x != cur)
+            # several stretches, each too long for close_short, can make up a thin loop at a node
+            # as well (Halle Marktplatz, Tram 5, 2026-10-22: 77 m, never 27 m from the node)
+            if node == start and thin_loop(co):
+                continue
             out.append({"co": co, "u": start, "v": node, "lines": sorted(g.edge[i]["lines"])})
     # rings with no kept node
     for i, e in g.edge.items():

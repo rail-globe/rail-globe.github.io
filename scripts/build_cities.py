@@ -147,6 +147,19 @@ COUNTRIES["id"] = {"file": "indonesia-latest.osm.pbf", "metro": "id_metro_cities
                    "first": ["Jakarta", "Surabaya", "Bandung", "Medan"],
                    "places": {"Banda Aceh": ("Banda Aceh", "班达亚齐"), "Denpasar": ("Denpasar", "丹帕沙"), "Pangkalpinang": ("Pangkalpinang", "邦加槟港"), "Bengkulu": ("Bengkulu", "明古鲁"), "Serang": ("Serang", "西冷"), "Gorontalo": ("Gorontalo", "哥伦打洛"), "Jambi": ("Jambi", "占碑"), "Bandung": ("Bandung", "万隆"), "Surabaya": ("Surabaya", "泗水"), "Jakarta": ("Jakarta", "雅加达"), "Semarang": ("Semarang", "三宝垄"), "Pontianak": ("Pontianak", "坤甸"), "Samarinda": ("Samarinda", "沙马林达"), "Banjarbaru": ("Banjarbaru", "班贾尔巴鲁"), "Palangka Raya": ("Palangka Raya", "帕朗卡拉亚"), "Tanjung Selor": ("Tanjung Selor", "丹戎施乐"), "Bandar Lampung": ("Bandar Lampung", "班达楠榜"), "Ambon": ("Ambon", "安汶"), "Sofifi": ("Sofifi", "索菲菲"), "Mataram": ("Mataram", "马塔兰"), "Kupang": ("Kupang", "古邦"), "Jayapura": ("Jayapura", "查亚普拉"), "Manokwari": ("Manokwari", "马诺夸里"), "Sorong": ("Sorong", "索龙"), "Wamena": ("Wamena", "瓦梅纳"), "Nabire": ("Nabire", "纳比雷"), "Pekanbaru": ("Pekanbaru", "北干巴鲁"), "Manado": ("Manado", "万鸦老"), "Padang": ("Padang", "巴东"), "Kendari": ("Kendari", "肯达里"), "Makassar": ("Makassar", "望加锡"), "Mamuju": ("Mamuju", "马穆朱"), "Palembang": ("Palembang", "巨港"), "Palu": ("Palu", "帕卢"), "Medan": ("Medan", "棉兰"), "Yogyakarta": ("Yogyakarta", "日惹"), "Tanjungpinang": ("Tanjungpinang", "丹戎槟榔"), "Merauke": ("Merauke", "马老奇")}}
 EUROPE_CITY_NAMES = json.loads((ROOT / "data/europe_city_names.json").read_text())
+# Of a continental European country's table, seven labels in ten are drawn (owner, 2026-10-22:
+# "现在欧洲（除了uk）其他国家城市显示太多，减少30%"): every city of rank 1, then the cities of the
+# metro lists, then the largest, by their Wikidata population (data/europe_city_populations.json;
+# the extract's own population where Wikidata has none: OSM's tag can be a district's, Perugia's
+# reads 69,000 against 162,000).
+EUROPE_LABEL_SHARE = 0.7
+# Every place of a European table, drawn or not, for scripts/process_europe.py: it hands a tram
+# line across a border to the country of its nearest place (Saarbrücken's Saarbahn to Germany),
+# and a place left off the map is still the nearest (without Saarbrücken the Saarbahn went to
+# France, nearest Strasbourg: 2026-10-22). [own name, lon, lat], as cities.json writes them.
+PLACES = ROOT / "data" / "europe_places.json"
+ALL_PLACES = {}
+EUROPE_POPULATIONS = json.loads((ROOT / "data/europe_city_populations.json").read_text())["cities"]
 EUROPE_FILES = {"de": "germany", "fr": "france", "ch": "switzerland", "es": "spain",
                 "nl": "netherlands", "be": "belgium", "it": "italy", "at": "austria", "hu": "hungary"}
 for code in EUROPE_CITY_NAMES["label_cities"]:
@@ -301,7 +314,7 @@ def abroad(g, nodes):
     if len(conf["places"]) != conf["count"] or not set(conf["first"]) <= set(conf["places"]):
         sys.exit(f"nothing written: the table of {g} has {len(conf['places'])} places and is to have {conf['count']}, its rank 1 among them")
     metro = [c["n"] for c in json.loads((ROOT / "data" / conf["metro"]).read_text())] if (ROOT / "data" / conf["metro"]).exists() else []
-    out, differs = [], []
+    out, differs, people = [], [], {}
     for local in conf["first"] + [name for name in conf["places"] if name not in conf["first"]]:
         own, zh_name, *en = conf["places"][local]          # (an English name where the extract's is another place's)
         source = evidence.get(local, {})
@@ -323,8 +336,16 @@ def abroad(g, nodes):
         if ne and ne != own and bare(ne) == bare(own) and source.get("ne") == own:
             ne = ""
         out.append(entry(own, x, y, 1 if local in conf["first"] else 2, g=g, side=conf.get("side", {}).get(local, ""), nz=zh_name, ne=ne if ne != own else "", m=zh_name if zh_name in metro else "", name_ref=source.get("ref")))
+        people[own] = number(tags.get("population"))
     if len(out) != conf["count"] or len({e["n"] for e in out}) != len(out):
         sys.exit(f"nothing written: {g} is to have {conf['count']} labels, each of a name of its own")
+    if g in EUROPE_FILES:
+        ALL_PLACES[g] = [[e["n"], float(f"{e['at'][0]:.2f}"), float(f"{e['at'][1]:.2f}")] for e in out]
+        population = lambda e: EUROPE_POPULATIONS.get((e.get("name_ref") or "").rsplit("/", 1)[-1], {}).get("population") or people[e["n"]]
+        ranked = sorted(out, key=lambda e: (e["r"] != 1, not e.get("m"), -population(e)))
+        drawn = {e["n"] for e in ranked[:round(EUROPE_LABEL_SHARE * len(out))]}
+        print(f"  {g}: {len(drawn)} of {len(out)} drawn; left out: " + " ".join(f"{e['n']} ({population(e)})" for e in ranked[len(drawn):]))
+        out = [e for e in out if e["n"] in drawn]
     known = {e.get("m") for e in out}
     print(f"{g}: {len(out)} labels (rank 1: {sum(e['r'] == 1 for e in out)}, rank 2: {sum(e['r'] == 2 for e in out)})")
     for rank in (1, 2):
@@ -352,6 +373,10 @@ def main(only):
         made[g] = china(nodes, relations, hand) if g == "cn" else abroad(g, nodes)
     before = OUT.stat().st_size
     write(hand + [e for g in COUNTRIES for e in made[g]])
+    if ALL_PLACES:
+        places = json.loads(PLACES.read_text()) if PLACES.exists() else {}
+        places.update(ALL_PLACES)
+        PLACES.write_text(json.dumps({g: places[g] for g in sorted(places)}, ensure_ascii=False, separators=(",", ":")) + "\n")
     print(f"wrote {OUT}: {len(hand)} hand-made and {sum(len(v) for v in made.values())} more entries, {before} -> {OUT.stat().st_size} bytes")
 
 

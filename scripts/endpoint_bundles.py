@@ -203,7 +203,7 @@ def apply_endpoint(features, code, source, audit=None, context_sink=None):
             drawings = lb.smooth_lines(edges,stretch,order)
         drawings, centre_changes = shared_centres(edges,drawings,graph)
         rendered = {key:[[round(v,9) for v in proj.back(*p)] for p in co] for key,co in drawings.items()}
-        profiles = offset_profiles(edges,order,rendered)
+        profiles = offset_profiles(edges,order,rendered,keep=frozenset(selected))
         for i,edge in enumerate(edges):
             for k,key in enumerate(order.order[i]):
                 co = rendered[i,key]

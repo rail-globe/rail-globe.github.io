@@ -147,7 +147,7 @@ def cut(g, out, maxzoom=MAXZOOM):
     text, layers = tippecanoe_input(g)
     # tippecanoe notes its command line in the archive: the features go in by standard input and
     # the archive is named without its folder, so that the same data gives the same file anywhere
-    subprocess.run([
+    command = [
         TIPPECANOE, "--output", f"{g}.pmtiles", "--force", "--quiet",
         f"--name=Rail Globe {g}", "--description=", "--attribution=© OpenStreetMap contributors",
         "--minimum-zoom=0", f"--maximum-zoom={maxzoom}", f"--full-detail={DETAIL}", "--low-detail=12",
@@ -158,7 +158,20 @@ def cut(g, out, maxzoom=MAXZOOM):
         # wide lines and their sideways offsets reach a little across a tile's edge
         "--buffer=8",
         "--preserve-input-order", "--no-tile-stats",
-    ], check=True, cwd=out, input=text.encode())
+    ]
+    # The old archive and any half-written one are taken away first, and a failed cut is tried once
+    # more: with them in place tippecanoe 2.79 now and then stopped with "Corrupt mbtiles file: null
+    # entry in map table" and left half an archive behind (hu and be, 2026-10-21 and 22; the same
+    # cut ran clean once they were gone).
+    for attempt in (1, 2):
+        for leftover in (out / f"{g}.pmtiles", out / f"{g}.pmtiles.tmp"):
+            leftover.unlink(missing_ok=True)
+        done = subprocess.run(command, cwd=out, input=text.encode())
+        if done.returncode == 0:
+            break
+        print(f"  {g}: tippecanoe stopped ({done.returncode}), attempt {attempt} of 2", flush=True)
+    else:
+        raise subprocess.CalledProcessError(done.returncode, command)
     return layers
 
 
