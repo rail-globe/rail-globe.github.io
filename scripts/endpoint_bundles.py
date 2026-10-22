@@ -179,7 +179,8 @@ def apply_endpoint(features, code, source, audit=None, context_sink=None):
             key = line_key(f['properties'])
             properties[key] = {k:v for k,v in f['properties'].items() if k not in lb.DROP and k not in ('jc','cl')}
             paths.extend(([proj(*p) for p in co],frozenset([key])) for co in lb.parts_of(f))
-        graph = lb.build(paths, source_bound=True)
+        stubs = all(f['properties'].get('ct') in lb.BRANCH_STUB_CITIES for f in mine)
+        graph = lb.build(paths, source_bound=True, branch_stubs=stubs)
         edges = lb.contract(graph)
         if not edges:
             raise ValueError('empty endpoint bundle graph')

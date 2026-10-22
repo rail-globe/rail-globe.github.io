@@ -62,8 +62,9 @@ class Network:
     stretch); elsewhere it adds its own course as new edges, joined to the network where the
     shared stretches begin and end."""
 
-    def __init__(self, source_bound=False):
+    def __init__(self, source_bound=False, branch_stubs=False):
         self.source_bound = source_bound
+        self.branch_stubs = branch_stubs
         self.source_audit = {"corridor_rejections": 0, "coverage_rejections": 0}
         self.node = {}                         # id -> (x, y)
         self.edge = {}                         # id -> {"co": [(x, y)], "u", "v", "lines": set}
@@ -238,6 +239,16 @@ MIN_SHARED = 40.0   # m: a shorter run along the network is a crossing or a touc
 SNAP = 25.0         # m: a line joining or leaving the centre line within this of a node uses that node
 CROP = 30.0         # m: a line's own track this near a node where it meets other lines is not drawn
 SHORT = 30.0        # m: stretches shorter than this are closed up into one node
+# Cities whose endpoint bundles close up branch stubs at the junction the through lines pass
+# (close_short). Tried in every city of the nine countries (2026-10-22, output/folds-final4,
+# folds-runs/final4-compare, junction-inventory-final4): pinches 44 -> 36, major 19 -> 10
+# (Karlsruhe Schillerstraße and Yorckstraße gone, Halle Saline minor). On here where the junction,
+# knot and self-crossing counts all came out no worse, or a major pinch went (Karlsruhe, Halle).
+# Elsewhere the midpoint: Basel's Tram 8, drawn on both its tracks, crossed itself; The Hague,
+# Amsterdam, Milan, Frankfurt, Berlin and Germany's elsewhere gained knots or loops.
+# (Alicante improved too, but its endpoint group also holds lines of a city not on the list, and the switch needs all.)
+BRANCH_STUB_CITIES = ("卡尔斯鲁厄", "哈勒", "莱比锡", "布达佩斯", "杜塞尔多夫", "苏黎世", "汉堡", "鲁尔",
+                      "慕尼黑", "科隆", "维也纳", "罗马", "都灵")
 THIN = 5.0          # m: a loop narrower than this on average runs out and back on itself
 
 
@@ -256,15 +267,26 @@ def thin_loop(co):
     return area / (LineString(co).length / 2) < THIN
 
 
-def build(paths, *, source_bound=False):
-    """paths: [(coords in metres, frozenset of one line)], inserted longest first."""
-    net = Network(source_bound=source_bound)
+def build(paths, *, source_bound=False, branch_stubs=False):
+    """paths: [(coords in metres, frozenset of one line)], inserted longest first. branch_stubs:
+    close_short keeps a branch stub's junction where the through lines pass (BRANCH_STUB_CITIES)."""
+    net = Network(source_bound=source_bound, branch_stubs=branch_stubs)
     for co, lines in sorted(paths, key=lambda p: -LineString(p[0]).length if len(p[0]) > 1 else 0):
         (line,) = lines
         if len(co) > 1:
             net.insert(co, line)
     close_short(net)
     return net
+
+
+def through_lines(net, node):
+    """How many lines are on two or more of the node's stretches (they run through it)."""
+    count = defaultdict(int)
+    for e in net.edge.values():
+        if node in (e["u"], e["v"]):
+            for line in e["lines"]:
+                count[line] += 2 if e["u"] == e["v"] else 1
+    return sum(1 for c in count.values() if c >= 2)
 
 
 def close_short(net):
@@ -288,7 +310,20 @@ def close_short(net):
         _, i = short[0]
         e = net.edge.pop(i)
         u, v = e["u"], e["v"]
-        mid = ((net.node[u][0] + net.node[v][0]) / 2, (net.node[u][1] + net.node[v][1]) / 2)
+        # A short branch stub closed up with the junction it leaves: the joined node stays at the
+        # junction the through lines pass, when it has more of them and the stub carries at most
+        # half as many lines. At the midpoint, a junction on a street the through lines follow,
+        # closed up with a node 28 m down a branch, moved 19 m off the street, and every through
+        # line dipped to it and back (Halle Saline; Karlsruhe Schillerstraße, 11 through lines,
+        # one on the stub; 2026-10-22). A stretch of the bundle itself (Halle Marktplatz, 7 lines)
+        # still closes up at the midpoint.
+        through = {n: through_lines(net, n) for n in (u, v)} if net.branch_stubs else {u: 0, v: 0}
+        if through[u] > through[v] and 2 * len(e["lines"]) <= through[u]:
+            mid = net.node[u]
+        elif through[v] > through[u] and 2 * len(e["lines"]) <= through[v]:
+            mid = net.node[v]
+        else:
+            mid = ((net.node[u][0] + net.node[v][0]) / 2, (net.node[u][1] + net.node[v][1]) / 2)
         net.node[u] = mid
         for j, f in list(net.edge.items()):
             if v in (f["u"], f["v"]) or u in (f["u"], f["v"]):

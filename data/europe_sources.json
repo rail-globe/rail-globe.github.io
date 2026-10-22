@@ -380,7 +380,7 @@
         },
         "feature_counts": {
           "rail": 23572,
-          "metro": 4194,
+          "metro": 4199,
           "build": 48,
           "stations": 14173,
           "yards": 134,
@@ -3124,7 +3124,7 @@
         },
         "feature_counts": {
           "rail": 3643,
-          "metro": 379,
+          "metro": 383,
           "build": 19,
           "stations": 2387,
           "yards": 23,
