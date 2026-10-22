@@ -10,7 +10,7 @@ from shapely.geometry import LineString
 from shapely.ops import unary_union
 import line_bundles as lb
 from endpoint_order import EndpointOrder, canonical_features, geographic_groups, line_key, source_turns
-from endpoint_profiles import offset_profiles
+from endpoint_profiles import NECK_CITIES, offset_profiles
 
 
 def raw_geometries(source, keys, projection):
@@ -179,8 +179,11 @@ def apply_endpoint(features, code, source, audit=None, context_sink=None):
             key = line_key(f['properties'])
             properties[key] = {k:v for k,v in f['properties'].items() if k not in lb.DROP and k not in ('jc','cl')}
             paths.extend(([proj(*p) for p in co],frozenset([key])) for co in lb.parts_of(f))
-        stubs = all(f['properties'].get('ct') in lb.BRANCH_STUB_CITIES for f in mine)
-        graph = lb.build(paths, source_bound=True, branch_stubs=stubs)
+        stubs = all(lb.listed(f['properties'], lb.BRANCH_STUB_CITIES, lb.BRANCH_STUB_IDENTITIES) for f in mine)
+        # two switches with lists of their own: necks split in the graph (line_bundles.NECK_CITIES),
+        # and necks read through in the ports (endpoint_profiles.NECK_CITIES, below)
+        split = all(lb.listed(f['properties'], lb.NECK_CITIES, ()) for f in mine)
+        graph = lb.build(paths, source_bound=True, branch_stubs=stubs, necks=split)
         edges = lb.contract(graph)
         if not edges:
             raise ValueError('empty endpoint bundle graph')
@@ -204,7 +207,8 @@ def apply_endpoint(features, code, source, audit=None, context_sink=None):
             drawings = lb.smooth_lines(edges,stretch,order)
         drawings, centre_changes = shared_centres(edges,drawings,graph)
         rendered = {key:[[round(v,9) for v in proj.back(*p)] for p in co] for key,co in drawings.items()}
-        profiles = offset_profiles(edges,order,rendered,keep=frozenset(selected))
+        necks = all(f['properties'].get('ct') in NECK_CITIES for f in mine)
+        profiles = offset_profiles(edges,order,rendered,keep=frozenset(selected),necks=necks)
         for i,edge in enumerate(edges):
             for k,key in enumerate(order.order[i]):
                 co = rendered[i,key]

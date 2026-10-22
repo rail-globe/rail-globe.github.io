@@ -415,6 +415,45 @@ def write_view(code):
 for _code in OWN_LAND:
     COUNTRIES[_code].prepare = own_land(_code)
 
+# Germany's elsewhere by its real cities (2026-10-22): a line outside the fifteen cities above is
+# listed by the nearest of these, each reaching over its own tram network and no other (Kassel's
+# RegioTram to Warburg, Heilbronn's S4 to Karlsruhe, the Rhein-Neckar network of Mannheim,
+# Ludwigshafen and Heidelberg as one, as its trams run through all three). It changes no line of
+# the fifteen cities (country.city_at asks these only for a line of elsewhere) and no line given
+# to a neighbour (that check still asks elsewhere). Chinese names where data/europe_city_names.json
+# has one from Wikidata (Erfurt, Magdeburg, Schwerin, Saarbrücken), else the city's own name.
+COUNTRIES["de"].urban_elsewhere_cities = (
+    ("奥格斯堡", 10.90, 48.37, 0.12),
+    ("巴特尚道", 14.15, 50.92, 0.10),
+    ("比勒费尔德", 8.53, 52.02, 0.10),
+    ("哈弗尔河畔勃兰登堡", 12.56, 52.41, 0.10),
+    ("不伦瑞克", 10.52, 52.27, 0.10),
+    ("开姆尼茨", 12.92, 50.83, 0.14),
+    ("科特布斯", 14.33, 51.76, 0.10),
+    ("德绍-罗斯劳", 12.24, 51.83, 0.10),
+    ("奥得河畔法兰克福", 14.55, 52.34, 0.10),
+    ("弗赖堡", 7.85, 47.99, 0.10),
+    ("格拉", 12.08, 50.88, 0.10),
+    ("哥达", 10.70, 50.95, 0.12),
+    ("格尔利茨", 14.99, 51.15, 0.10),
+    ("哈尔伯施塔特", 11.05, 51.90, 0.10),
+    ("海尔布隆", 9.22, 49.14, 0.30),
+    ("耶拿", 11.59, 50.93, 0.10),
+    ("卡塞尔", 9.48, 51.31, 0.14),
+    ("萨勒河畔瑙姆堡", 11.81, 51.15, 0.10),
+    ("诺德豪森", 10.79, 51.50, 0.10),
+    ("普劳恩", 12.14, 50.50, 0.10),
+    ("莱茵-内卡", 8.47, 49.49, 0.22),
+    ("罗斯托克", 12.10, 54.09, 0.10),
+    ("乌尔姆", 9.99, 48.40, 0.10),
+    ("维尔茨堡", 9.93, 49.79, 0.12),
+    ("茨维考", 12.50, 50.72, 0.10),
+    ("什未林", 11.41, 53.63, 0.10),
+    ("爱尔福特", 11.03, 50.98, 0.10),
+    ("萨尔布吕肯", 7.00, 49.23, 0.10),
+    ("马格德堡", 11.64, 52.13, 0.12),
+)
+
 # Cities that keep their lines as drawn before single_track.one_copy (2026-10-22): each was compared
 # with and without it (compare_folds.py: rendered self-crossings, structural checks, a legacy
 # course kept within 30 m, each line on its own track) and failed. In most the change of one line
@@ -423,8 +462,10 @@ for _code in OWN_LAND:
 # Germany's elsewhere (152 -> 160); Antwerp's tram 7 gets a sharp tip at its turning loop, Milan's
 # endpoint bundles drop tram 31's west carriageway on Viale Fulvio Testi, Marseille's Val'Tram
 # a loose end. Budapest passes with endpoint ordering (scripts/endpoint_sources.py).
+# Germany's elsewhere, by its real cities (2026-10-22): Ulm's tram 2 crosses itself twice drawn once
+# (z12-16 0 -> 2), Magdeburg's lines leave 4.3% of tram 2 (and with legacy bundles 14% of tram 9).
 ONE_COPY_LEFT_OUT = {"ch": ("巴塞尔",), "be": ("安特卫普", "布鲁塞尔"), "nl": ("阿姆斯特丹", "鹿特丹"),
-                     "it": ("米兰",), "fr": ("马赛",), "de": ("德国其他", "柏林", "法兰克福")}
+                     "it": ("米兰",), "fr": ("马赛",), "de": ("德国其他", "柏林", "法兰克福", "乌尔姆", "马格德堡")}
 for _code, _cities in ONE_COPY_LEFT_OUT.items():
     COUNTRIES[_code].urban_one_copy_left_out = _cities
 

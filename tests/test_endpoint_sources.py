@@ -109,7 +109,8 @@ class EndpointSourceTests(unittest.TestCase):
         # 2026-10-22, once its lines were drawn once (single_track.one_copy)
         self.assertEqual(set(ENDPOINT_CITIES["at"]), {"维也纳", "格拉茨", "林茨", "因斯布鲁克", "奥地利其他"})
         self.assertEqual(set(ENDPOINT_CITIES["hu"]), {"塞格德", "德布勒森", "米什科尔茨", "布达佩斯"})
-        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 81)
+        # 2026-10-22: 26 real cities of Germany's elsewhere (tests/test_de_elsewhere_cities.py)
+        self.assertEqual(sum(len(cities) for cities in ENDPOINT_CITIES.values()), 107)
         self.assertFalse(endpoint_sources.ENDPOINT_TRIAL)
 
 

@@ -246,10 +246,24 @@ SHORT = 30.0        # m: stretches shorter than this are closed up into one node
 # knot and self-crossing counts all came out no worse, or a major pinch went (Karlsruhe, Halle).
 # Elsewhere the midpoint: Basel's Tram 8, drawn on both its tracks, crossed itself; The Hague,
 # Amsterdam, Milan, Frankfurt, Berlin and Germany's elsewhere gained knots or loops.
-# (Alicante improved too, but its endpoint group also holds lines of a city not on the list, and the switch needs all.)
+# Alicante (Lucentum, four lines on one point) is on through BRANCH_STUB_IDENTITIES: its endpoint
+# group also holds Dénia-Benidorm, a line of Spain's elsewhere, and the switch needs every line on.
 BRANCH_STUB_CITIES = ("卡尔斯鲁厄", "哈勒", "莱比锡", "布达佩斯", "杜塞尔多夫", "苏黎世", "汉堡", "鲁尔",
-                      "慕尼黑", "科隆", "维也纳", "罗马", "都灵")
+                      "慕尼黑", "科隆", "维也纳", "罗马", "都灵", "阿利坎特",
+                      # the real cities of Germany's elsewhere switched on in endpoint_sources.ENDPOINT_CITIES
+                      # (2026-10-22): tried with endpoint ordering in all 28, their pinches went 10 -> 6 with branch
+                      # stubs closed up, 10 -> 11 without (output/junction-fix4c)
+                      "奥格斯堡", "巴特尚道", "比勒费尔德", "哈弗尔河畔勃兰登堡", "不伦瑞克", "开姆尼茨", "德绍-罗斯劳", "奥得河畔法兰克福", "弗赖堡", "格拉", "哥达", "格尔利茨", "哈尔伯施塔特", "耶拿", "卡塞尔", "萨勒河畔瑙姆堡", "诺德豪森", "普劳恩", "莱茵-内卡", "罗斯托克", "乌尔姆", "维尔茨堡", "茨维考", "什未林", "爱尔福特", "萨尔布吕肯")
+# Lines of cities not on the list, (g, network, n), that are drawn in one endpoint group with a
+# listed city and do not keep the group off (2026-10-22).
+BRANCH_STUB_IDENTITIES = (("es", "TRAM Metropolità d'Alacant", "Dénia ↔ Benidorm"),)
 THIN = 5.0          # m: a loop narrower than this on average runs out and back on itself
+
+
+def listed(properties, cities, identities):
+    """A line of a listed city, or one listed by itself."""
+    return (properties.get("ct") in cities
+            or (properties.get("g"), properties.get("network", ""), properties.get("n")) in identities)
 
 
 def thin_loop(co):
@@ -267,15 +281,18 @@ def thin_loop(co):
     return area / (LineString(co).length / 2) < THIN
 
 
-def build(paths, *, source_bound=False, branch_stubs=False):
+def build(paths, *, source_bound=False, branch_stubs=False, necks=False):
     """paths: [(coords in metres, frozenset of one line)], inserted longest first. branch_stubs:
-    close_short keeps a branch stub's junction where the through lines pass (BRANCH_STUB_CITIES)."""
+    close_short keeps a branch stub's junction where the through lines pass (BRANCH_STUB_CITIES).
+    necks: a junction two stretches leave together is moved to where they part (NECK_CITIES)."""
     net = Network(source_bound=source_bound, branch_stubs=branch_stubs)
     for co, lines in sorted(paths, key=lambda p: -LineString(p[0]).length if len(p[0]) > 1 else 0):
         (line,) = lines
         if len(co) > 1:
             net.insert(co, line)
     close_short(net)
+    if necks:
+        split_necks(net)
     return net
 
 
@@ -340,6 +357,149 @@ def close_short(net):
                 if f["u"] == f["v"] and (LineString(co).length < 2 * SHORT or thin_loop(co)):
                     del net.edge[j]                        # a small or thin loop left by closing up a triangle
         del net.node[v]
+
+
+# Cities whose endpoint bundles split a junction's "neck" (split_necks), 2026-10-22: Halle
+# Riebeckplatz, Saline, Südstadt and Franckeplatz, where every line converged on the junction.
+NECK_CITIES = ("哈勒",)
+NECK_TOL = 3.0      # m: two stretches leaving a junction this near each other still run together
+NECK_MIN = 5.0      # m: a shorter neck is the junction itself
+NECK_MAX = 25.0     # m: a longer one is shared track the support graph did not merge (left alone)
+NECK_PART = 40.0    # degrees: past the neck the two part at least this sharply (not a narrow fork)
+NECK_PART_MAX = 165.0   # degrees: and do not turn right back towards each other
+NECK_LOG = []       # the necks split, for diagnosis
+
+
+def _along(co, s):
+    """The point s metres along a polyline (clamped), and the index of the vertex before it."""
+    run = 0.0
+    for k, (a, b) in enumerate(zip(co, co[1:])):
+        d = math.dist(a, b)
+        if run + d >= s and d > 0:
+            t = (s - run) / d
+            return (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])), k
+        run += d
+    return tuple(co[-1]), len(co) - 2
+
+
+def neck_length(b, c, tol=NECK_TOL, step=0.5):
+    """How far two courses leaving one point (metres, both starting there) run within tol of each
+    other, measured both ways (each one's point to the other's course)."""
+    from shapely.geometry import Point
+    lb_, lc_ = LineString(b), LineString(c)
+    top = min(lb_.length, lc_.length)
+    s = 0.0
+    while s + step <= top:
+        t = s + step
+        pb, pc = lb_.interpolate(t), lc_.interpolate(t)
+        if max(pb.distance(lc_), pc.distance(lb_)) > tol:
+            return s
+        s = t
+    return s
+
+
+def _heading(co, s, reach=15.0):
+    """Direction of a course from s metres along it to s + reach (radians)."""
+    a, _ = _along(co, s)
+    b, _ = _along(co, s + reach)
+    return math.atan2(b[1] - a[1], b[0] - a[0])
+
+
+def split_necks(net):
+    """A junction whose node sits at the end of a "neck": two of its stretches leave it together,
+    a few metres apart, and only part 5 to 25 m further on (Halle Riebeckplatz, 2026-10-22: the
+    stretches east and north leave the node within 2 m of each other for 9 m). Through the node,
+    lines turning from one of the two onto the other turn back on themselves there, so every line
+    of the junction was given the common zero port (endpoint_profiles.reverses) and the bundles
+    converged on it. The two stretches are cut where they part; the junction moves there (node M)
+    and the neck becomes one stretch from the old node to M, carrying every line of the two that
+    also runs on through the old node or ends there (a line only turning from one onto the other
+    turns at M). Only where the two part sharply past the neck (NECK_PART): a narrow fork whose
+    stretches drift apart from the node on (Halle Saline, 15 degrees) is a junction where it is,
+    and moving it there only moved it down the fork, again and again. A node made here is not split
+    again. Run after close_short, which would otherwise close the neck up again."""
+    made = set()
+    while True:
+        ends = defaultdict(list)
+        for i, e in net.edge.items():
+            if e["u"] != e["v"]:
+                ends[e["u"]].append(i)
+                ends[e["v"]].append(i)
+        best = None
+        for n in sorted(ends):
+            es = sorted(ends[n])
+            if len(es) < 3 or n in made:
+                continue
+            course = {i: (net.edge[i]["co"] if net.edge[i]["u"] == n else net.edge[i]["co"][::-1]) for i in es}
+            # a stretch that comes back to this node through nodes of two stretches only is a loop
+            # (Halle Marktplatz: Tram 5 out 11 m along the bundle and back, 77 m, which contract
+            # drops as a thin loop as long as both its ends stay on this node)
+            def returns(i):
+                node, edge = n, i
+                for _ in range(len(net.edge)):
+                    e = net.edge[edge]
+                    node = e["v"] if e["u"] == node else e["u"]
+                    if node == n:
+                        return True
+                    if len(ends[node]) != 2:
+                        return False
+                    edge = next(k for k in ends[node] if k != edge)
+                return False
+            es = [i for i in es if not returns(i)]
+            for a in range(len(es)):
+                for b in range(a + 1, len(es)):
+                    i, j = es[a], es[b]
+                    if {net.edge[i]["u"], net.edge[i]["v"]} == {net.edge[j]["u"], net.edge[j]["v"]}:
+                        continue                      # two stretches between the same nodes
+                    s = neck_length(course[i], course[j])
+                    if not NECK_MIN <= s <= NECK_MAX:
+                        continue
+                    if min(LineString(course[i]).length, LineString(course[j]).length) < s + 2 * NECK_MIN:
+                        continue
+                    part = abs(math.remainder(_heading(course[i], s) - _heading(course[j], s), 2 * math.pi))
+                    if not math.radians(NECK_PART) <= part <= math.radians(NECK_PART_MAX):
+                        continue
+                    both = net.edge[i]["lines"] & net.edge[j]["lines"]
+                    others = set().union(*(net.edge[k]["lines"] for k in es if k not in (i, j)))
+                    neck = (net.edge[i]["lines"] | net.edge[j]["lines"]) - (both - others)
+                    if not neck:
+                        continue
+                    key = (-s, n, i, j)
+                    if best is None or key < best[0]:
+                        best = (key, n, i, j, s, neck)
+        if best is None:
+            return
+        _, n, i, j, s, neck = best
+        NECK_LOG.append({"node": n, "at": net.node[n], "neck_m": s, "lines": sorted(neck),
+                         "turning": sorted((net.edge[i]["lines"] & net.edge[j]["lines"]) - neck)})
+        cuts = {}
+        for k in (i, j):
+            co = net.edge[k]["co"] if net.edge[k]["u"] == n else net.edge[k]["co"][::-1]
+            p, at = _along(co, s)
+            cuts[k] = (co, p, at)
+        m_pt = tuple((cuts[i][1][c] + cuts[j][1][c]) / 2 for c in (0, 1))
+        m = net.new_node(m_pt)
+        made.add(m)
+        # the neck: the two courses averaged, point by point along them
+        steps = max(2, int(math.ceil(s / 2.0)))
+        neck_co = [net.node[n]]
+        for q in range(1, steps):
+            t = s * q / steps
+            pi_, _ = _along(cuts[i][0], t)
+            pj_, _ = _along(cuts[j][0], t)
+            neck_co.append(((pi_[0] + pj_[0]) / 2, (pi_[1] + pj_[1]) / 2))
+        neck_co.append(m_pt)
+        for k in (i, j):
+            co, p, at = cuts[k]
+            rest = [m_pt] + [tuple(c) for c in co[at + 1:]]
+            if len(rest) < 2:
+                rest.append(tuple(co[-1]))
+            e = net.edge[k]
+            if e["u"] == n:
+                e["u"], e["co"] = m, rest
+            else:
+                e["v"], e["co"] = m, rest[::-1]
+        net.new_edge(neck_co, n, m, neck)
 
 
 def contract(g):

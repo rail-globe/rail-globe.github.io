@@ -63,7 +63,34 @@ CITY_NAMES = {
            "杜塞尔多夫": ("Düsseldorf", "Düsseldorf"), "鲁尔": ("Ruhrgebiet", "Ruhr"),
            "斯图加特": ("Stuttgart", "Stuttgart"), "纽伦堡": ("Nürnberg", "Nuremberg"),
            "汉诺威": ("Hannover", "Hanover"), "莱比锡": ("Leipzig", "Leipzig"),
-           "德累斯顿": ("Dresden", "Dresden"), "不来梅": ("Bremen", "Bremen")},
+           "德累斯顿": ("Dresden", "Dresden"), "不来梅": ("Bremen", "Bremen"),
+           # the real cities of Germany's elsewhere (2026-10-22): Chinese names from Wikidata, the
+           # zh-cn label, else zh-hans, else zh, else the zhwiki title (simplified); English from its en label
+           "奥格斯堡": ("Augsburg", "Augsburg"),  # Q2749 zh-cn
+           "巴特尚道": ("Bad Schandau", "Bad Schandau"),  # Q6406 zh
+           "比勒费尔德": ("Bielefeld", "Bielefeld"),  # Q2112 zh-cn
+           "哈弗尔河畔勃兰登堡": ("Brandenburg an der Havel", "Brandenburg an der Havel"),  # Q3931 zh
+           "不伦瑞克": ("Braunschweig", "Brunswick"),  # Q2773 zh-cn
+           "开姆尼茨": ("Chemnitz", "Chemnitz"),  # Q2795 zh-cn
+           "科特布斯": ("Cottbus", "Cottbus"),  # Q3214 zh
+           "德绍-罗斯劳": ("Dessau-Roßlau", "Dessau-Roßlau"),  # Q3828 zh
+           "奥得河畔法兰克福": ("Frankfurt (Oder)", "Frankfurt (Oder)"),  # Q4024 zh
+           "弗赖堡": ("Freiburg im Breisgau", "Freiburg im Breisgau"),  # Q2833 zhwiki title
+           "格拉": ("Gera", "Gera"),  # Q3750 zh
+           "哥达": ("Gotha", "Gotha"),  # Q6986 zh-hans
+           "格尔利茨": ("Görlitz", "Görlitz"),  # Q4077 zh
+           "哈尔伯施塔特": ("Halberstadt", "Halberstadt"),  # Q7072 zh-cn
+           "海尔布隆": ("Heilbronn", "Heilbronn"),  # Q715 zh-cn
+           "耶拿": ("Jena", "Jena"),  # Q3150 zh-cn
+           "卡塞尔": ("Kassel", "Kassel"),  # Q2865 zh-cn
+           "萨勒河畔瑙姆堡": ("Naumburg (Saale)", "Naumburg"),  # Q15986 zh
+           "诺德豪森": ("Nordhausen", "Nordhausen"),  # Q7033 zh-cn
+           "普劳恩": ("Plauen", "Plauen"),  # Q3952 zh-cn
+           "莱茵-内卡": ("Rhein-Neckar", "Rhine-Neckar"),  # Q559125 zhwiki title 萊茵-內卡
+           "罗斯托克": ("Rostock", "Rostock"),  # Q2861 zh-hans
+           "乌尔姆": ("Ulm", "Ulm"),  # Q3012 zh-cn
+           "维尔茨堡": ("Würzburg", "Würzburg"),  # Q2999 zh-cn
+           "茨维考": ("Zwickau", "Zwickau")},  # Q3778 zh
     "fr": {"巴黎": ("Paris", "Paris"), "里昂": ("Lyon", "Lyon"), "马赛": ("Marseille", "Marseille"),
            "里尔": ("Lille", "Lille"), "图卢兹": ("Toulouse", "Toulouse"), "波尔多": ("Bordeaux", "Bordeaux"),
            "斯特拉斯堡": ("Strasbourg", "Strasbourg"), "南特": ("Nantes", "Nantes"),

@@ -3,8 +3,22 @@ import math
 from shapely.geometry import LineString
 
 SHORT = 120.0   # metres: a stretch between two junction ports shorter than this ramps port to port
+# A neck (after_neck below): two stretches within TOGETHER of each other at equal distance from the
+# node for at least NECK_MIN, parting within NECK; their ways compared over PARTED after that.
+TOGETHER = 2.0
+NECK_MIN = 4.0
+NECK = 30.0
+PARTED = 15.0
+# Cities whose endpoint bundles look past a neck before calling a line's way through a node a
+# turn back (2026-10-22, output/junction-fix4a): pinches Karlsruhe Tullastraße 6 -> 3 lines,
+# Hamburg Berliner Tor 3 -> 2, Hanover Goetheplatz gone; self-crossings as before. Only for a line
+# on two stretches of the node (the tight-turn rule and a line held through a branch node): let
+# through spines and branches as well, Tullastraße's S7, S8 and S51 knotted on the wye's two
+# curves and Hamburg's S5 crossed its bundle (its seat is on the wrong side for the turn).
+# Elsewhere every line through such a node takes the common zero port, as before.
+NECK_CITIES = ("卡尔斯鲁厄", "汉堡", "汉诺威")
 
-def offset_profiles(edges, order, drawings, keep=()):
+def offset_profiles(edges, order, drawings, keep=(), necks=False):
     """Shared junction port ranks become explicit per-edge offset profiles.
 
     All members of an edge use the same fractional ramp extent. The browser
@@ -35,11 +49,40 @@ def offset_profiles(edges, order, drawings, keep=()):
         length = math.hypot(dx, dy)
         return (dx / length, dy / length) if length else (0, 0)
 
-    def reverses(i, j, node):
+    def reverses(i, j, node, through=False):
         # within 60 degrees 8 m out, or over the stretches' first 30 m (order.angle)
+        if necks and through:
+            parted = after_neck(i, j, node)
+            if parted is not None:
+                return parted
         a, b = direction(i, node), direction(j, node)
         far = abs(math.remainder(order.angle[node, i] - order.angle[node, j], 2 * math.pi))
         return a[0] * b[0] + a[1] * b[1] > math.cos(math.radians(60)) or far < math.radians(60)
+
+    def after_neck(i, j, node):
+        """Two stretches that leave the node along one short neck and then part: whether they still
+        run within 60 degrees of each other over PARTED metres after parting (None: no neck).
+        close_short joins a junction a few metres off a street to the node on it, and the stretches
+        of both then start along the same street (Karlsruhe Tullastraße, Hamburg Berliner Tor,
+        Hanover Goetheplatz; 2026-10-22). Measured at the node, every line through such a junction
+        seemed to turn back on itself and was given the common zero port. Two stretches parting at
+        an angle from the node itself (Karlsruhe Marktplatz, Durlacher Tor, Entenfang) have no neck."""
+        paths = []
+        for index in (i, j):
+            edge = edges[index]
+            paths.append(LineString(edge['co'] if edge['u'] == node else edge['co'][::-1]))
+        reach = min(p.length for p in paths)
+        s = 1.0
+        while s <= min(NECK, reach) and paths[0].interpolate(s).distance(paths[1].interpolate(s)) <= TOGETHER:
+            s += 1.0
+        if s < NECK_MIN or s > NECK or s + PARTED / 3 > reach:
+            return None
+        ways = []
+        for p in paths:
+            a, b = p.interpolate(s), p.interpolate(min(s + PARTED, reach))
+            length = math.hypot(b.x - a.x, b.y - a.y) or 1
+            ways.append(((b.x - a.x) / length, (b.y - a.y) / length))
+        return ways[0][0] * ways[1][0] + ways[0][1] * ways[1][1] > math.cos(math.radians(60))
 
     for (node, i, line), j in order.next.items():
         def local_direction(index):
@@ -52,6 +95,9 @@ def offset_profiles(edges, order, drawings, keep=()):
             return (dx / length, dy / length) if length else (0, 0)
         a, b = local_direction(i), local_direction(j)
         tight_turn = a[0] * b[0] + a[1] * b[1] > math.cos(math.radians(60))
+        if necks and tight_turn and i != j:
+            parted = after_neck(i, j, node)
+            tight_turn = tight_turn if parted is None else parted
         if ((node, i, line) not in ports and (node, line) not in protected_ports
                 and order.next.get((node, j, line)) == i and tight_turn):
             ports[node, i, line] = ports[node, j, line] = 0.0
@@ -126,7 +172,7 @@ def offset_profiles(edges, order, drawings, keep=()):
             if incident[node][line] == 2:
                 # a line going through a branch node: one port on both sides;
                 # where it turns back on itself there, the common zero port
-                if len(mine) == 2 and reverses(*mine, node):
+                if len(mine) == 2 and reverses(*mine, node, through=True):
                     for i in mine:
                         ports[node, i, line] = 0.0
                 elif len(mine) == 2 and votes(*mine):

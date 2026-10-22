@@ -25,7 +25,12 @@ ENDPOINT_CITIES = {
     "nl": ("乌得勒支", "海牙", "阿姆斯特丹", "鹿特丹",),
     "be": ("列日", "奥斯坦德", "安特卫普", "布鲁塞尔", "根特", "沙勒罗瓦",),
     "fr": ("南特", "图卢兹", "尼斯", "巴黎", "斯特拉斯堡", "格勒诺布尔", "法国其他", "波尔多", "蒙彼利埃", "里尔", "里昂", "马赛", "鲁昂",),
-    "de": ("不来梅", "卡尔斯鲁厄", "哈勒", "德累斯顿", "慕尼黑", "斯图加特", "杜塞尔多夫", "柏林", "汉堡", "汉诺威", "法兰克福", "科隆", "纽伦堡", "莱比锡", "鲁尔",),
+    "de": ("不来梅", "卡尔斯鲁厄", "哈勒", "德累斯顿", "慕尼黑", "斯图加特", "杜塞尔多夫", "柏林", "汉堡", "汉诺威", "法兰克福", "科隆", "纽伦堡", "莱比锡", "鲁尔",
+           # Germany's elsewhere by its real cities (2026-10-22, process_europe: each compared on its own,
+           # output/junction-fix4c): on with branch stubs (line_bundles.BRANCH_STUB_CITIES) and, but in Ulm,
+           # with the lines drawn once. Left out: Heilbronn (its S4 runs on Karlsruhe's track and would join
+           # Karlsruhe's endpoint group), Cottbus (tram 1 to Schmellwitz kept 93.5%), Magdeburg (tram 2 kept 95.7%).
+           "奥格斯堡", "巴特尚道", "比勒费尔德", "哈弗尔河畔勃兰登堡", "不伦瑞克", "开姆尼茨", "德绍-罗斯劳", "奥得河畔法兰克福", "弗赖堡", "格拉", "哥达", "格尔利茨", "哈尔伯施塔特", "耶拿", "卡塞尔", "萨勒河畔瑙姆堡", "诺德豪森", "普劳恩", "莱茵-内卡", "罗斯托克", "乌尔姆", "维尔茨堡", "茨维考", "什未林", "爱尔福特", "萨尔布吕肯",),
     # South-East Asia (2026-10-19), compared the same way: Kuala Lumpur's z12 self-crossings 2 -> 0,
     # Jakarta's 1 -> 0, every line kept and on its own track. Bangkok's and Singapore's light rail
     # lines share no stretch, so the order at their junctions is not in question.

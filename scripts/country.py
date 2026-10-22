@@ -108,6 +108,7 @@ class Country:
     urban_abroad: object = None                # country -> the route relations in its extract (a line across a border is in both)
     urban_policy: Callable = None              # source-way European classification and exclusion policy
     urban_nearest_city: bool = False           # choose the nearest eligible city, preserving legacy defaults elsewhere
+    urban_elsewhere_cities: tuple = ()          # (name, lon, lat, reach) of the real cities a line of elsewhere is listed by
     urban_station_display: Callable = None      # stations, drawn metro, extract -> source-supported display metadata
     rail_capsules: bool = False                 # capsules at railway stations across the parallel railway lines that stop there
     urban_drawn: Callable = None               # code/network/name/rids/ways/relations/default drawn -> reviewed native paths
@@ -576,8 +577,10 @@ def run(cfg, *, rail_only=False):
     # directions of a circle): named after the network where there are several.
     merged = urban_groups(cfg, routes)
 
-    def city_at(network, name, mid):
-        """The city a line belongs to, by the middle of its longest piece."""
+    def city_at(network, name, mid, split=True):
+        """The city a line belongs to, by the middle of its longest piece. A line outside all of
+        cfg.cities is listed by the nearest of cfg.urban_elsewhere_cities, the real cities of the
+        country's elsewhere (split=False: elsewhere itself, as the border check below asks)."""
         if cfg.urban_nearest_city:
             from europe_urban_policy import nearest_city
             city = nearest_city(cfg.cities, mid, cfg.elsewhere)
@@ -585,6 +588,9 @@ def run(cfg, *, rail_only=False):
             city = next((c[0] for c in cfg.cities if math.hypot((c[1] - mid.x) * math.cos(math.radians(mid.y)), c[2] - mid.y) < c[3]), cfg.elsewhere)
         if cfg.urban_city_of:
             city = cfg.urban_city_of(network, name, mid, city)
+        if split and city == cfg.elsewhere and cfg.urban_elsewhere_cities:
+            from europe_urban_policy import nearest_city
+            city = nearest_city(cfg.urban_elsewhere_cities, mid, cfg.elsewhere)
         return city
     covered = set()
     metro_feats, metro_rows, urban_sources = [], [], []
@@ -635,7 +641,7 @@ def run(cfg, *, rail_only=False):
         jk = own_class or ("urban" if light else "subway")
         mid = LineString(max(simp, key=len)).interpolate(0.5, normalized=True)
         city = city_at(network, name, mid)
-        if city == cfg.elsewhere and cfg.urban_places and cfg.urban_abroad:
+        if city_at(network, name, mid, split=False) == cfg.elsewhere and cfg.urban_places and cfg.urban_abroad:
             # A tram line across a border, or near one, is in both countries' extracts whole
             # (Basel's in France's and Germany's, Geneva's in France's). Outside this country's
             # cities, a line whose relations another country's extract has too, and whose nearest
